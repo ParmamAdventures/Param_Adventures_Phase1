@@ -31,3 +31,10 @@ packages/
 - Avoids Accelerate/adapter requirements of v7
 - Suitable for Railway + Docker Postgres
 - Upgrade evaluated only after core product stabilizes
+
+## Phase 2.1 — Auth Foundations
+
+✔ JWT utilities (access + refresh)  
+✔ Password hashing  
+✔ Cookie-based session support  
+✔ Env validation for auth secrets

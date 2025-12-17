@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import { errorHandler } from "./middlewares/error.middleware";
+import cookieParser from "cookie-parser";
 
 export const app = express();
 
@@ -16,3 +17,4 @@ app.get("/health", (_req, res) => {
 
 // must be LAST
 app.use(errorHandler);
+app.use(cookieParser());
