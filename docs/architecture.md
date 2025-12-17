@@ -38,3 +38,10 @@ packages/
 ✔ Password hashing  
 ✔ Cookie-based session support  
 ✔ Env validation for auth secrets
+
+## Phase 2.3 — Authorization
+
+✔ Role-based access control  
+✔ Permission-based guards  
+✔ Super Admin override  
+✔ Runtime permission loading
