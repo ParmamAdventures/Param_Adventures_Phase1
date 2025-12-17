@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "zod": "^4.2.1"
+  },
+  "name": "param_adventures_phase1",
+  "version": "1.0.0",
+  "description": "Production-grade adventure travel platform.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "prettier": "^3.7.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ParmamAdventures/Param_Adventures_Phase1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ParmamAdventures/Param_Adventures_Phase1/issues"
+  },
+  "homepage": "https://github.com/ParmamAdventures/Param_Adventures_Phase1#readme"
+}
