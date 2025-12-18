@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
+import { HttpError } from "../../lib/httpError";
 
 const prisma = new PrismaClient();
 
@@ -9,15 +10,22 @@ export async function approveBooking(req: Request, res: Response) {
   const { id } = req.params;
 
   try {
-    const result = await prisma.$transaction(async (tx) => {
+    const updated = await prisma.$transaction(async (tx) => {
       const booking = await tx.booking.findUnique({ where: { id } });
-      if (!booking)
-        return { status: 404, body: { error: "Booking not found" } };
+      if (!booking) throw new HttpError(404, "NOT_FOUND", "Booking not found");
+
+      if (booking.status === "CONFIRMED" || booking.status === "REJECTED") {
+        throw new HttpError(403, "INVALID_STATE", "Booking already processed");
+      }
 
       try {
         assertBookingTransition(booking.status as any, "approve");
       } catch (err: any) {
-        return { status: 403, body: { error: "Invalid booking state" } };
+        throw new HttpError(
+          403,
+          "INVALID_BOOKING_TRANSITION",
+          "Booking cannot be approved in its current state"
+        );
       }
 
       const confirmedCount = await tx.booking.count({
@@ -25,10 +33,19 @@ export async function approveBooking(req: Request, res: Response) {
       });
 
       const trip = await tx.trip.findUnique({ where: { id: booking.tripId } });
-      if (!trip) return { status: 404, body: { error: "Trip not found" } };
+      if (!trip) throw new HttpError(404, "NOT_FOUND", "Trip not found");
 
       if (confirmedCount >= trip.capacity) {
-        return { status: 409, body: { error: "Trip capacity full" } };
+        await tx.auditLog.create({
+          data: {
+            actorId: admin.id,
+            action: "BOOKING_REJECTED_CAPACITY",
+            targetType: "BOOKING",
+            targetId: booking.id,
+            metadata: { tripId: booking.tripId },
+          },
+        });
+        throw new HttpError(409, "CAPACITY_FULL", "Trip capacity is full");
       }
 
       const updated = await tx.booking.update({
@@ -46,11 +63,12 @@ export async function approveBooking(req: Request, res: Response) {
         },
       });
 
-      return { status: 200, body: updated };
+      return updated;
     });
 
-    return res.status(result.status).json(result.body);
+    return res.json(updated);
   } catch (err) {
-    return res.status(500).json({ error: "Internal error" });
+    if (err instanceof HttpError) throw err;
+    throw new HttpError(500, "INTERNAL_ERROR", "Internal Server Error");
   }
 }

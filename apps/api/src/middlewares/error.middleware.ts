@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { HttpError } from "../lib/httpError";
 
 export function errorHandler(
   err: Error,
@@ -8,7 +9,15 @@ export function errorHandler(
 ) {
   console.error(err);
 
-  res.status(500).json({
-    error: "Internal Server Error",
-  });
+  if (err instanceof HttpError) {
+    return res
+      .status(err.status)
+      .json({ error: { code: err.code, message: err.message } });
+  }
+
+  res
+    .status(500)
+    .json({
+      error: { code: "INTERNAL_ERROR", message: "Internal Server Error" },
+    });
 }

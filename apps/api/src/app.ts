@@ -9,6 +9,7 @@ import adminUsersRoutes from "./routes/admin/users.routes";
 import adminRolesRoutes from "./routes/admin/roles.routes";
 import adminRoleAssignRoutes from "./routes/admin/role-assign.routes";
 import tripsRoutes from "./routes/trips.routes";
+import adminTripBookingsRoutes from "./routes/admin/trip-bookings.routes";
 import bookingsRoutes from "./routes/bookings.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
@@ -37,6 +38,7 @@ app.use("/admin/users", adminUsersRoutes);
 app.use("/admin/roles", adminRolesRoutes);
 app.use("/admin/roles", adminRoleAssignRoutes);
 app.use("/trips", tripsRoutes);
+app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/bookings", bookingsRoutes);
 
 // must be LAST

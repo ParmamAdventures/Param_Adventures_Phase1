@@ -23,6 +23,7 @@ async function main() {
     "booking:reject",
     "booking:cancel",
     "booking:view",
+    "booking:read:admin",
     "blog:create",
     "blog:approve",
     "audit:read",
@@ -116,6 +117,8 @@ async function main() {
     "trip:approve",
     "trip:publish",
     "trip:archive",
+    // booking admin reads
+    "booking:read:admin",
   ]);
   await grantPermissionsToRole(publicRole, ["trip:view:public"]);
 

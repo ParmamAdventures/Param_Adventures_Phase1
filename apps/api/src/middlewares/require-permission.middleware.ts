@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction } from "express";
+import { HttpError } from "../lib/httpError";
 
 export function requirePermission(permission: string) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as any).user;
 
     if (!user?.permissions) {
-      return res.status(403).json({ error: "Forbidden" });
-    }
-
-    // Super Admin bypass
-    if (user.roles.includes("SUPER_ADMIN")) {
-      return next();
+      throw new HttpError(403, "FORBIDDEN", "Unauthenticated");
     }
 
     if (!user.permissions.includes(permission)) {
-      return res.status(403).json({ error: "Insufficient permissions" });
+      throw new HttpError(
+        403,
+        "FORBIDDEN",
+        "You do not have permission to perform this action"
+      );
     }
 
     next();
