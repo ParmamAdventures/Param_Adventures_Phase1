@@ -14,6 +14,12 @@ async function main() {
     "blog:create",
     "blog:approve",
     "audit:read",
+    // Admin management permissions
+    "user:list",
+    "user:view",
+    "user:assign-role",
+    "user:remove-role",
+    "role:list",
   ];
 
   for (const key of permissions) {

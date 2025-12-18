@@ -52,3 +52,9 @@ packages/
 ✔ Auth context & session hydration  
 ✔ Login & Signup pages  
 ✔ Protected routes
+
+## Phase 3.1 — Admin APIs
+
+✔ User listing API  
+✔ Role listing API  
+✔ Permission-protected admin routes
