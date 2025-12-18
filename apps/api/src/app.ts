@@ -12,7 +12,11 @@ export const app = express();
 app.use(helmet());
 app.use(
   cors({
-    origin: "http://localhost:8080", // frontend later
+    // In development reflect the request origin so credentials (cookies)
+    // are allowed from the running frontend (Next/Vite). In production
+    // replace with a specific origin or a whitelist.
+    origin:
+      process.env.NODE_ENV === "production" ? "http://your.frontend.url" : true,
     credentials: true,
   })
 );
