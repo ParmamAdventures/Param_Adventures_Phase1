@@ -8,9 +8,15 @@ async function main() {
   const permissions = [
     "user:read",
     "user:assign-role",
+    // trip permissions
     "trip:create",
+    "trip:edit",
+    "trip:submit",
     "trip:approve",
     "trip:publish",
+    "trip:archive",
+    "trip:view:internal",
+    "trip:view:public",
     "blog:create",
     "blog:approve",
     "audit:read",
@@ -57,6 +63,55 @@ async function main() {
       },
     });
   }
+
+  // Create standard roles and assign trip-related permissions
+  const uploaderRole = await prisma.role.upsert({
+    where: { name: "UPLOADER" },
+    update: {},
+    create: {
+      name: "UPLOADER",
+      description: "Can create and edit draft trips",
+      isSystem: false,
+    },
+  });
+
+  const adminRole = await prisma.role.upsert({
+    where: { name: "ADMIN" },
+    update: {},
+    create: { name: "ADMIN", description: "Admin role", isSystem: false },
+  });
+
+  const publicRole = await prisma.role.upsert({
+    where: { name: "PUBLIC" },
+    update: {},
+    create: { name: "PUBLIC", description: "Public visitors", isSystem: false },
+  });
+
+  // helper to grant permission keys to a role
+  async function grantPermissionsToRole(role, keys) {
+    for (const key of keys) {
+      const p = await prisma.permission.findUnique({ where: { key } });
+      if (!p) continue;
+      await prisma.rolePermission.upsert({
+        where: { roleId_permissionId: { roleId: role.id, permissionId: p.id } },
+        update: {},
+        create: { roleId: role.id, permissionId: p.id },
+      });
+    }
+  }
+
+  // Assign suggested mappings
+  await grantPermissionsToRole(uploaderRole, [
+    "trip:create",
+    "trip:edit",
+    "trip:submit",
+  ]);
+  await grantPermissionsToRole(adminRole, [
+    "trip:approve",
+    "trip:publish",
+    "trip:archive",
+  ]);
+  await grantPermissionsToRole(publicRole, ["trip:view:public"]);
 }
 
 main()

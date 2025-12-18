@@ -72,3 +72,32 @@ packages/
 - Users list UI under `/admin/users` (read-only)
 - Roles & permissions UI under `/admin/roles` (read-only)
 - Frontend renders UI based on permissions; backend enforces safety
+
+## Phase 3.4 — Role Assignment UI
+
+- Permission-aware role assignment UI under `/admin/users`
+- Assign/revoke controls are shown only when the signed-in user has `user:assign-role` or `user:remove-role`
+- ADMIN users cannot see or assign system roles; SUPER_ADMIN can
+- UI confirms destructive actions; backend still enforces all safety rules and writes `AuditLog` entries
+
+## Phase 4.1 — Trip Domain Model
+
+Trip lifecycle:
+DRAFT → PENDING_REVIEW → APPROVED → PUBLISHED → ARCHIVED
+
+Roles & responsibilities:
+
+- Uploader: create/edit/submit trips
+- Admin: approve/publish/archive trips
+- Super Admin: override
+- Public: view published trips
+
+Permissions added:
+
+- `trip:create`, `trip:edit`, `trip:submit`, `trip:approve`, `trip:publish`, `trip:archive`, `trip:view:internal`, `trip:view:public`
+
+Next steps:
+
+- Add `Trip` model and `TripStatus` enum to Prisma schema
+- Run `npx prisma migrate dev --name add_trip_domain` and `npx prisma db seed`
+- Implement backend APIs and frontend UI in Phase 4.2 and 4.3
