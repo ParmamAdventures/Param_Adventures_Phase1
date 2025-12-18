@@ -68,15 +68,26 @@ export default function UsersPage() {
                         {role}
                         {myPerms.includes("user:remove-role") &&
                           currentUser?.id !== u.id &&
-                          (role !== "SUPER_ADMIN" || myRoles.includes("SUPER_ADMIN")) && (
+                          (role !== "SUPER_ADMIN" ||
+                            myRoles.includes("SUPER_ADMIN")) && (
                             <button
                               style={{ marginLeft: 8 }}
                               onClick={async () => {
-                                if (!confirm(`Remove role ${role} from ${u.email}?`)) return;
+                                if (
+                                  !confirm(
+                                    `Remove role ${role} from ${u.email}?`
+                                  )
+                                )
+                                  return;
                                 await apiFetch("/admin/roles/revoke", {
                                   method: "POST",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ userId: u.id, roleName: role }),
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    userId: u.id,
+                                    roleName: role,
+                                  }),
                                 });
                                 window.location.reload();
                               }}
@@ -90,35 +101,37 @@ export default function UsersPage() {
                 )}
               </td>
               <td>
-                {myPerms.includes("user:assign-role") && currentUser?.id !== u.id && (
-                  <select
-                    defaultValue=""
-                    onChange={async (e) => {
-                      const roleName = e.target.value;
-                      if (!roleName) return;
-                      if (!confirm(`Assign role ${roleName} to ${u.email}?`)) return;
-                      await apiFetch("/admin/roles/assign", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ userId: u.id, roleName }),
-                      });
-                      window.location.reload();
-                    }}
-                  >
-                    <option value="">Assign role</option>
-                    {roles
-                      .filter(
-                        (r) =>
-                          !(u.roles || []).includes(r.name) &&
-                          (!r.isSystem || myRoles.includes("SUPER_ADMIN"))
-                      )
-                      .map((r) => (
-                        <option key={r.id} value={r.name}>
-                          {r.name}
-                        </option>
-                      ))}
-                  </select>
-                )}
+                {myPerms.includes("user:assign-role") &&
+                  currentUser?.id !== u.id && (
+                    <select
+                      defaultValue=""
+                      onChange={async (e) => {
+                        const roleName = e.target.value;
+                        if (!roleName) return;
+                        if (!confirm(`Assign role ${roleName} to ${u.email}?`))
+                          return;
+                        await apiFetch("/admin/roles/assign", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ userId: u.id, roleName }),
+                        });
+                        window.location.reload();
+                      }}
+                    >
+                      <option value="">Assign role</option>
+                      {roles
+                        .filter(
+                          (r) =>
+                            !(u.roles || []).includes(r.name) &&
+                            (!r.isSystem || myRoles.includes("SUPER_ADMIN"))
+                        )
+                        .map((r) => (
+                          <option key={r.id} value={r.name}>
+                            {r.name}
+                          </option>
+                        ))}
+                    </select>
+                  )}
               </td>
             </tr>
           ))}
