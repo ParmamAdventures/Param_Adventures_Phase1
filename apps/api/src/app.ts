@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.routes";
 import adminUsersRoutes from "./routes/admin/users.routes";
 import adminRolesRoutes from "./routes/admin/roles.routes";
+import adminRoleAssignRoutes from "./routes/admin/role-assign.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 export const app = express();
@@ -32,6 +33,7 @@ app.get("/health", (_req, res) => {
 app.use("/auth", authRoutes);
 app.use("/admin/users", adminUsersRoutes);
 app.use("/admin/roles", adminRolesRoutes);
+app.use("/admin/roles", adminRoleAssignRoutes);
 
 // must be LAST
 app.use(errorHandler);
