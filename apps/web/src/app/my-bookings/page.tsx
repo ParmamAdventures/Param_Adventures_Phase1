@@ -93,17 +93,7 @@ export default function MyBookingsPage() {
               </td>
               <td style={{ textAlign: "center" }}>{b.trip.location}</td>
               <td style={{ textAlign: "center" }}>
-                <span
-                  style={{
-                    padding: "4px 8px",
-                    borderRadius: 6,
-                    fontSize: 12,
-                    background: "#f0f0f0",
-                    color: "#000",
-                  }}
-                >
-                  {b.status}
-                </span>
+                <TripStatusBadge status={b.status} />
               </td>
               <td style={{ textAlign: "center" }}>—</td>
             </tr>

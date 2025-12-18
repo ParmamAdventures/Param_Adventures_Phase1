@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { apiFetch } from "@/lib/api";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 type Trip = {
   id: string;
@@ -12,11 +13,8 @@ type Trip = {
 };
 
 export default async function PublicTripsPage() {
-  const res = await apiFetch("/trips/public", {
-    cache: "no-store",
-  } as any);
-
-  const trips: Trip[] = res.ok ? await res.json() : [];
+  const res = await fetch(`${API_BASE}/trips/public`, { cache: "no-store" }).catch(() => null);
+  const trips: Trip[] = res && res.ok ? await res.json() : [];
 
   return (
     <main>
