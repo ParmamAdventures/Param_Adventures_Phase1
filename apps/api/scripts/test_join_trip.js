@@ -1,6 +1,6 @@
 require("dotenv").config();
 const fetch = globalThis.fetch;
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function run() {
@@ -31,7 +31,9 @@ async function run() {
 
   // Assign booking:create permission to test user by attaching PUBLIC role (test-only)
   const testUser = await prisma.user.findUnique({ where: { email } });
-  const publicRole = await prisma.role.findUnique({ where: { name: 'PUBLIC' } });
+  const publicRole = await prisma.role.findUnique({
+    where: { name: "PUBLIC" },
+  });
   if (testUser && publicRole) {
     await prisma.userRole.upsert({
       where: { userId_roleId: { userId: testUser.id, roleId: publicRole.id } },
@@ -39,24 +41,35 @@ async function run() {
       create: { userId: testUser.id, roleId: publicRole.id },
     });
     // Ensure the PUBLIC role actually has the booking:create permission (test-only)
-    let bookingPerm = await prisma.permission.findUnique({ where: { key: 'booking:create' } });
+    let bookingPerm = await prisma.permission.findUnique({
+      where: { key: "booking:create" },
+    });
     if (!bookingPerm) {
-      bookingPerm = await prisma.permission.create({ data: { key: 'booking:create' } });
+      bookingPerm = await prisma.permission.create({
+        data: { key: "booking:create" },
+      });
     }
     await prisma.rolePermission.upsert({
-      where: { roleId_permissionId: { roleId: publicRole.id, permissionId: bookingPerm.id } },
+      where: {
+        roleId_permissionId: {
+          roleId: publicRole.id,
+          permissionId: bookingPerm.id,
+        },
+      },
       update: {},
       create: { roleId: publicRole.id, permissionId: bookingPerm.id },
     });
-    console.log('Assigned PUBLIC role to test user and ensured booking:create permission');
+    console.log(
+      "Assigned PUBLIC role to test user and ensured booking:create permission"
+    );
   }
 
   // 2. Fetch a published trip
   // Debug: fetch /auth/me to verify permissions
-  const meRes = await fetch('http://localhost:3000/auth/me', {
+  const meRes = await fetch("http://localhost:3000/auth/me", {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
-  console.log('/auth/me status:', meRes.status, await meRes.json());
+  console.log("/auth/me status:", meRes.status, await meRes.json());
 
   const tripsRes = await fetch("http://localhost:3000/trips/public");
   const trips = await tripsRes.json();
