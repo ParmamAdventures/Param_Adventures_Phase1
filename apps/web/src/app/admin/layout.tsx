@@ -17,6 +17,7 @@ export default function AdminLayout({
         <nav style={{ display: "flex", gap: 12, marginBottom: 12 }}>
           <Link href="/admin/users">Users</Link>
           <Link href="/admin/roles">Roles</Link>
+          <Link href="/trips/internal">Trips</Link>
         </nav>
 
         <hr />
