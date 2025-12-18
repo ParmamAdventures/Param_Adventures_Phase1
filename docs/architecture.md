@@ -101,3 +101,16 @@ Next steps:
 - Add `Trip` model and `TripStatus` enum to Prisma schema
 - Run `npx prisma migrate dev --name add_trip_domain` and `npx prisma db seed`
 - Implement backend APIs and frontend UI in Phase 4.2 and 4.3
+
+## Phase 4.2 — Trip APIs
+
+✔ State-driven trip lifecycle endpoints (create → submit → approve → publish → archive)
+✔ Permission-guarded actions (`trip:create`, `trip:edit`, `trip:submit`, `trip:approve`, `trip:publish`, `trip:archive`, `trip:view:internal`, `trip:view:public`)
+✔ Audit logging for all state transitions (`AuditLog` entries for created/updated/submitted/approved/published/archived)
+✔ Public vs internal visibility: `/trips/public` (anyone) and `/trips/internal` (permission-gated)
+
+Notes:
+
+- Controllers implemented under `apps/api/src/controllers/trips/` with strict state checks (no skipping allowed).
+- Routes registered at `/trips` in `apps/api/src/routes/trips.routes.ts` and wired in `apps/api/src/app.ts`.
+- Next: add frontend Uploader UI and Admin approval UI (Phase 4.3) and extend E2E tests to exercise lifecycle transitions.
