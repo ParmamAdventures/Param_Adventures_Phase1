@@ -45,3 +45,10 @@ packages/
 ✔ Permission-based guards  
 ✔ Super Admin override  
 ✔ Runtime permission loading
+
+## Phase 2.4 — Frontend Authentication
+
+✔ API client with auto refresh  
+✔ Auth context & session hydration  
+✔ Login & Signup pages  
+✔ Protected routes

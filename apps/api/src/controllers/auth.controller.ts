@@ -100,7 +100,6 @@ export async function logout(_req: Request, res: Response) {
 
 export async function me(req: Request, res: Response) {
   const userId = (req as any).user.id;
-
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
@@ -109,11 +108,33 @@ export async function me(req: Request, res: Response) {
       name: true,
       status: true,
       createdAt: true,
+      roles: {
+        select: {
+          role: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      // collect permissions via roles -> role.permissions -> permission
+      // We'll fetch permissions separately for clarity
     },
   });
 
+  const userRoles = (user?.roles ?? []).map((r: any) => r.role.name);
+
+  const rolePermissions = await prisma.rolePermission.findMany({
+    where: { role: { name: { in: userRoles } } },
+    include: { permission: true },
+  });
+
+  const permissions = Array.from(
+    new Set(rolePermissions.map((rp) => rp.permission.key))
+  );
+
   // Prevent browsers from returning cached (304) responses for auth state.
-  // This ensures the client always receives fresh user data after refresh.
   res.set("Cache-Control", "no-store");
-  res.json(user);
+  res.json({ ...user, roles: userRoles, permissions });
 }
