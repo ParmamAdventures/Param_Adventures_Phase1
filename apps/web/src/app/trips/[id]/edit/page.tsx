@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import PermissionRoute from "../../../../components/PermissionRoute";
 import TripForm from "../../../../components/trips/TripForm";
 import { apiFetch } from "../../../../lib/api";
+import { useAuth } from "../../../../context/AuthContext";
 
 export default function EditTripPage() {
   const params = useParams();
@@ -14,6 +15,12 @@ export default function EditTripPage() {
   const [loading, setLoading] = useState(true);
   const [errorStatus, setErrorStatus] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [submittingSubmit, setSubmittingSubmit] = useState(false);
+  const { user } = useAuth();
+  const hasPermission = (p: string) => {
+    const perms: string[] = (user as any)?.permissions || [];
+    return perms.includes(p);
+  };
   useEffect(() => {
     let mounted = true;
 
@@ -51,6 +58,31 @@ export default function EditTripPage() {
     setSubmitting(false);
   }
 
+  async function handleSubmitForReview() {
+    if (
+      !confirm("Submit this trip for review? You won’t be able to edit it.")
+    ) {
+      return;
+    }
+
+    setSubmittingSubmit(true);
+    try {
+      const res = await apiFetch(`/trips/${id}/submit`, { method: "POST" });
+      if (res.ok) {
+        router.push("/trips/internal");
+        return;
+      }
+
+      if (res.status === 403) setErrorStatus(403);
+      else if (res.status === 404) setErrorStatus(404);
+      else setErrorStatus(res.status || 0);
+    } catch (err) {
+      setErrorStatus(0);
+    } finally {
+      setSubmittingSubmit(false);
+    }
+  }
+
   if (loading) return <p>Loading…</p>;
   if (errorStatus === 403)
     return <p>You don't have permission to edit this trip.</p>;
@@ -69,6 +101,13 @@ export default function EditTripPage() {
           onSubmit={handleUpdate}
           submitting={submitting}
         />
+        {trip.status === "DRAFT" && hasPermission("trip:submit") && (
+          <div style={{ marginTop: 12 }}>
+            <button onClick={handleSubmitForReview} disabled={submittingSubmit}>
+              {submittingSubmit ? "Submitting…" : "Submit for Review"}
+            </button>
+          </div>
+        )}
       </div>
     </PermissionRoute>
   );
