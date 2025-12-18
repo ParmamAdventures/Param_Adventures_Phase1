@@ -14,6 +14,24 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
 
+// Public list (must be defined before param routes so '/public' doesn't match '/:id')
+router.get("/public", async (_req, res) => {
+  const trips = await prisma.trip.findMany({ where: { status: "PUBLISHED" } });
+  res.json(trips);
+});
+
+// Internal list (also placed before param routes)
+router.get(
+  "/internal",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:view:internal"),
+  async (_req, res) => {
+    const trips = await prisma.trip.findMany();
+    res.json(trips);
+  }
+);
+
 router.post(
   "/",
   requireAuth,
@@ -28,6 +46,25 @@ router.put(
   requirePermission("trip:edit"),
   updateTrip
 );
+
+// Get single trip with owner-or-internal-view logic
+router.get("/:id", requireAuth, attachPermissions, async (req, res) => {
+  const { id } = req.params;
+  const user = (req as any).user;
+  const permissions = (req as any).permissions || [];
+
+  const trip = await prisma.trip.findUnique({ where: { id } });
+  if (!trip) return res.status(404).json({ error: "Trip not found" });
+
+  if (
+    permissions.includes("trip:view:internal") ||
+    trip.createdById === user.id
+  ) {
+    return res.json(trip);
+  }
+
+  return res.status(403).json({ error: "Insufficient permissions" });
+});
 router.post(
   "/:id/submit",
   requireAuth,
@@ -58,21 +95,5 @@ router.post(
 );
 
 // Public list
-router.get("/public", async (_req, res) => {
-  const trips = await prisma.trip.findMany({ where: { status: "PUBLISHED" } });
-  res.json(trips);
-});
-
-// Internal list
-router.get(
-  "/internal",
-  requireAuth,
-  attachPermissions,
-  requirePermission("trip:view:internal"),
-  async (_req, res) => {
-    const trips = await prisma.trip.findMany();
-    res.json(trips);
-  }
-);
 
 export default router;
