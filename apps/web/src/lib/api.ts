@@ -4,15 +4,10 @@ export function setAccessToken(token: string | null) {
   accessToken = token;
 }
 
-const envBase =
-  (typeof (globalThis as any).importMeta !== "undefined" &&
-    (globalThis as any).importMeta?.env?.VITE_API_URL) ||
-  (typeof import.meta !== "undefined" &&
-    (import.meta as any).env?.VITE_API_URL);
-const baseUrl =
-  envBase ||
-  (process.env.NEXT_PUBLIC_API_URL as string) ||
-  "http://localhost:3000";
+// Prefer Next/Vite public env var. Keep this simple to avoid `any` casts
+// which trigger lint rules. For Vite dev you can set VITE_API_URL to the
+// same value as NEXT_PUBLIC_API_URL.
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
   const headers = new Headers(init.headers as HeadersInit | undefined);

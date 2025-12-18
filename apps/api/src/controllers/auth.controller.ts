@@ -112,5 +112,8 @@ export async function me(req: Request, res: Response) {
     },
   });
 
+  // Prevent browsers from returning cached (304) responses for auth state.
+  // This ensures the client always receives fresh user data after refresh.
+  res.set("Cache-Control", "no-store");
   res.json(user);
 }
