@@ -1,12 +1,6 @@
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 
-export const metadata = {
-  title: "Upcoming Adventures — Param Adventures",
-  description:
-    "Browse published adventure trips — durations, difficulty, price, and locations.",
-};
-
 type Trip = {
   id: string;
   title: string;
