@@ -58,3 +58,17 @@ packages/
 ✔ User listing API  
 ✔ Role listing API  
 ✔ Permission-protected admin routes
+
+## Phase 3.2 — Role Assignment Safety
+
+✔ Safe role assignment  
+✔ Protected system roles  
+✔ Anti self-escalation  
+✔ Audit logging for role changes
+
+## Phase 3.3 — Admin Dashboard (Read-only)
+
+- Permission-based admin routing (only users with `user:list` can access)
+- Users list UI under `/admin/users` (read-only)
+- Roles & permissions UI under `/admin/roles` (read-only)
+- Frontend renders UI based on permissions; backend enforces safety
