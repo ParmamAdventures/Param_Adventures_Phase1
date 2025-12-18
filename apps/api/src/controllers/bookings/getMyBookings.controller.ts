@@ -15,20 +15,26 @@ export async function getMyBookings(req: Request, res: Response) {
           title: true,
           slug: true,
           location: true,
-          durationDays: true,
+          publishedAt: true,
         },
       },
     },
     orderBy: { createdAt: "desc" },
   });
 
-  return res.json(
-    bookings.map((b) => ({
-      id: b.id,
-      status: b.status,
-      notes: b.notes,
-      createdAt: b.createdAt,
-      trip: b.trip,
-    }))
-  );
+  const payload = bookings.map((b) => ({
+    id: b.id,
+    status: b.status,
+    createdAt: b.createdAt,
+    trip: {
+      id: b.trip.id,
+      title: b.trip.title,
+      slug: b.trip.slug,
+      location: b.trip.location,
+      startDate: null,
+      endDate: null,
+    },
+  }));
+
+  return res.json(payload);
 }
