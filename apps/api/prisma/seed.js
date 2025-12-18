@@ -17,6 +17,12 @@ async function main() {
     "trip:archive",
     "trip:view:internal",
     "trip:view:public",
+    // booking permissions
+    "booking:create",
+    "booking:approve",
+    "booking:reject",
+    "booking:cancel",
+    "booking:view",
     "blog:create",
     "blog:approve",
     "audit:read",
@@ -112,6 +118,19 @@ async function main() {
     "trip:archive",
   ]);
   await grantPermissionsToRole(publicRole, ["trip:view:public"]);
+
+  // Booking-related grants
+  await grantPermissionsToRole(publicRole, ["booking:create", "booking:view"]);
+  await grantPermissionsToRole(uploaderRole, ["booking:view"]);
+  await grantPermissionsToRole(adminRole, [
+    "booking:approve",
+    "booking:reject",
+    "booking:cancel",
+    "booking:view",
+  ]);
+
+  // Seed a sensible default capacity for existing trips
+  await prisma.trip.updateMany({ data: { capacity: 10 } });
 }
 
 main()
