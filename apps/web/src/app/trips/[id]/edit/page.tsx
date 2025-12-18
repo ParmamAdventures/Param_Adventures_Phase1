@@ -142,7 +142,11 @@ export default function EditTripPage() {
   const canArchive = perms.includes("trip:archive");
 
   const canAccess =
-    canEdit || canApprove || canPublish || canArchive || perms.includes("trip:view:internal");
+    canEdit ||
+    canApprove ||
+    canPublish ||
+    canArchive ||
+    perms.includes("trip:view:internal");
 
   if (!canAccess) {
     // Not authorized to view this page
@@ -167,7 +171,10 @@ export default function EditTripPage() {
           />
           {trip.status === "DRAFT" && hasPermission("trip:submit") && (
             <div style={{ marginTop: 12 }}>
-              <button onClick={handleSubmitForReview} disabled={submittingSubmit}>
+              <button
+                onClick={handleSubmitForReview}
+                disabled={submittingSubmit}
+              >
                 {submittingSubmit ? "Submitting…" : "Submit for Review"}
               </button>
             </div>
@@ -175,9 +182,7 @@ export default function EditTripPage() {
         </>
       ) : (
         // Not editable UI
-        <div>
-          {canEdit ? <p>This trip can no longer be edited.</p> : null}
-        </div>
+        <div>{canEdit ? <p>This trip can no longer be edited.</p> : null}</div>
       )}
 
       {/* Admin action buttons */}
