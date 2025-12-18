@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import PermissionRoute from "../../../../components/PermissionRoute";
+import TripStatusBadge from "../../../../components/trips/TripStatusBadge";
 import TripForm from "../../../../components/trips/TripForm";
 import { apiFetch } from "../../../../lib/api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -83,32 +83,117 @@ export default function EditTripPage() {
     }
   }
 
+  async function handleApprove() {
+    if (!confirm("Approve this trip?")) return;
+
+    try {
+      const res = await apiFetch(`/trips/${id}/approve`, { method: "POST" });
+      if (res.ok) {
+        router.refresh();
+        return;
+      }
+      if (res.status === 403) setErrorStatus(403);
+    } catch (err) {
+      setErrorStatus(0);
+    }
+  }
+
+  async function handlePublish() {
+    if (!confirm("Publish this trip publicly?")) return;
+
+    try {
+      const res = await apiFetch(`/trips/${id}/publish`, { method: "POST" });
+      if (res.ok) {
+        router.refresh();
+        return;
+      }
+      if (res.status === 403) setErrorStatus(403);
+    } catch (err) {
+      setErrorStatus(0);
+    }
+  }
+
+  async function handleArchive() {
+    if (!confirm("Archive this trip?")) return;
+
+    try {
+      const res = await apiFetch(`/trips/${id}/archive`, { method: "POST" });
+      if (res.ok) {
+        router.push("/trips/internal");
+        return;
+      }
+      if (res.status === 403) setErrorStatus(403);
+    } catch (err) {
+      setErrorStatus(0);
+    }
+  }
+
   if (loading) return <p>Loading…</p>;
   if (errorStatus === 403)
     return <p>You don't have permission to edit this trip.</p>;
   if (errorStatus === 404) return <p>Trip not found.</p>;
   if (errorStatus) return <p>Trip not found or access denied.</p>;
   if (!trip) return <p>Trip not found or access denied.</p>;
-  if (trip?.status !== "DRAFT")
-    return <p>This trip can no longer be edited.</p>;
+
+  const perms: string[] = (user as any)?.permissions || [];
+  const canEdit = perms.includes("trip:edit");
+  const canApprove = perms.includes("trip:approve");
+  const canPublish = perms.includes("trip:publish");
+  const canArchive = perms.includes("trip:archive");
+
+  const canAccess =
+    canEdit || canApprove || canPublish || canArchive || perms.includes("trip:view:internal");
+
+  if (!canAccess) {
+    // Not authorized to view this page
+    router.replace("/dashboard");
+    return null;
+  }
 
   return (
-    <PermissionRoute permission="trip:edit">
-      <div>
-        <h1>Edit Trip</h1>
-        <TripForm
-          initialData={trip}
-          onSubmit={handleUpdate}
-          submitting={submitting}
-        />
-        {trip.status === "DRAFT" && hasPermission("trip:submit") && (
-          <div style={{ marginTop: 12 }}>
-            <button onClick={handleSubmitForReview} disabled={submittingSubmit}>
-              {submittingSubmit ? "Submitting…" : "Submit for Review"}
-            </button>
-          </div>
+    <div>
+      <h1>Edit Trip</h1>
+
+      <div style={{ marginBottom: 12 }}>
+        <TripStatusBadge status={trip.status} />
+      </div>
+
+      {canEdit && trip.status === "DRAFT" ? (
+        <>
+          <TripForm
+            initialData={trip}
+            onSubmit={handleUpdate}
+            submitting={submitting}
+          />
+          {trip.status === "DRAFT" && hasPermission("trip:submit") && (
+            <div style={{ marginTop: 12 }}>
+              <button onClick={handleSubmitForReview} disabled={submittingSubmit}>
+                {submittingSubmit ? "Submitting…" : "Submit for Review"}
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        // Not editable UI
+        <div>
+          {canEdit ? <p>This trip can no longer be edited.</p> : null}
+        </div>
+      )}
+
+      {/* Admin action buttons */}
+      <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+        {trip.status === "PENDING_REVIEW" && canApprove && (
+          <button onClick={handleApprove}>Approve</button>
+        )}
+
+        {trip.status === "APPROVED" && canPublish && (
+          <button onClick={handlePublish}>Publish</button>
+        )}
+
+        {trip.status === "PUBLISHED" && canArchive && (
+          <button onClick={handleArchive}>Archive</button>
         )}
       </div>
-    </PermissionRoute>
+    </div>
   );
 }

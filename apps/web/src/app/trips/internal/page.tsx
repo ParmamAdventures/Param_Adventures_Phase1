@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import PermissionRoute from "../../../components/PermissionRoute";
 import { apiFetch } from "../../../lib/api";
 import Link from "next/link";
+import TripStatusBadge from "../../../components/trips/TripStatusBadge";
 
 type Trip = {
   id: string;
@@ -76,7 +77,14 @@ export default function InternalTripsPage() {
                   )}
                 </td>
                 <td>{t.location}</td>
-                <td>{t.status}</td>
+                <td>
+                  <TripStatusBadge status={t.status} />
+                  {t.status !== "ARCHIVED" && (
+                    <span style={{ marginLeft: 8 }}>
+                      <Link href={`/trips/${t.id}/edit`}>View</Link>
+                    </span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
