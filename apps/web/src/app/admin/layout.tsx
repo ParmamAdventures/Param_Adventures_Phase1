@@ -4,7 +4,11 @@ import React from "react";
 import Link from "next/link";
 import PermissionRoute from "../../../components/PermissionRoute";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <PermissionRoute permission="user:list">
       <div style={{ padding: 16 }}>
