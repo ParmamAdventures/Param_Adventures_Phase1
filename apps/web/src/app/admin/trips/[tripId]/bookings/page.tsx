@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "../../../../../lib/api";
 import { useAuth } from "../../../../../context/AuthContext";
 import Button from "../../../../../components/ui/Button";
+import { useToast } from "../../../../../components/ui/ToastProvider";
 import { useParams } from "next/navigation";
 
 type User = { id: string; name?: string | null; email: string };
@@ -40,6 +41,7 @@ export default function AdminTripBookingsPage() {
   );
   const [processingIds, setProcessingIds] = useState<string[]>([]);
   const { loading: authLoading, user: currentUser } = useAuth();
+  const { showToast } = useToast();
 
   const perms: string[] =
     (currentUser as { permissions?: string[] } | null)?.permissions || [];
@@ -85,6 +87,9 @@ export default function AdminTripBookingsPage() {
     setError(null);
     setProcessing(id, true);
     try {
+      showToast("Approving booking…", "info");
+    } catch {}
+    try {
       const res = await apiFetch(`/bookings/${id}/approve`, { method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -93,14 +98,28 @@ export default function AdminTripBookingsPage() {
           code,
           message: ERROR_MESSAGES[code] || body?.error?.message,
         });
+        try {
+          showToast(
+            ERROR_MESSAGES[code] ||
+              body?.error?.message ||
+              "Failed to approve booking",
+            "error"
+          );
+        } catch {}
         return;
       }
       await fetchData();
+      try {
+        showToast("Booking approved", "success");
+      } catch {}
     } catch {
       setError({
         code: "NETWORK_ERROR",
         message: ERROR_MESSAGES.NETWORK_ERROR,
       });
+      try {
+        showToast("Network error while approving booking", "error");
+      } catch {}
     } finally {
       setProcessing(id, false);
     }
@@ -110,6 +129,9 @@ export default function AdminTripBookingsPage() {
     setError(null);
     setProcessing(id, true);
     try {
+      showToast("Rejecting booking…", "info");
+    } catch {}
+    try {
       const res = await apiFetch(`/bookings/${id}/reject`, { method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -118,14 +140,28 @@ export default function AdminTripBookingsPage() {
           code,
           message: ERROR_MESSAGES[code] || body?.error?.message,
         });
+        try {
+          showToast(
+            ERROR_MESSAGES[code] ||
+              body?.error?.message ||
+              "Failed to reject booking",
+            "error"
+          );
+        } catch {}
         return;
       }
       await fetchData();
+      try {
+        showToast("Booking rejected", "success");
+      } catch {}
     } catch {
       setError({
         code: "NETWORK_ERROR",
         message: ERROR_MESSAGES.NETWORK_ERROR,
       });
+      try {
+        showToast("Network error while rejecting booking", "error");
+      } catch {}
     } finally {
       setProcessing(id, false);
     }

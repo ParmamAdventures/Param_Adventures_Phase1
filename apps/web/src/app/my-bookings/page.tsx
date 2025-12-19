@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import Link from "next/link";
+import { useToast } from "../../components/ui/ToastProvider";
 import TripStatusBadge from "../../components/trips/TripStatusBadge";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
@@ -161,6 +162,7 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
   const { user } = useAuth();
   const router = useRouter();
   const pollRef = React.useRef<number | null>(null);
+  const { showToast } = useToast();
 
   async function handleClick() {
     setError(null);
@@ -174,9 +176,12 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(
-          body?.error?.message || body?.message || `Error ${res.status}`
-        );
+        const msg =
+          body?.error?.message || body?.message || `Error ${res.status}`;
+        setError(msg);
+        try {
+          showToast(msg, "error");
+        } catch {}
         return;
       }
 
@@ -230,8 +235,15 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
         );
       }
       // Keep UX conservative: show a transient success message (no checkout yet)
+      try {
+        showToast("Payment initiated", "info");
+      } catch {}
     } catch (e) {
-      setError(String(e));
+      const err = String(e);
+      setError(err);
+      try {
+        showToast("Payment failed to start", "error");
+      } catch {}
     } finally {
       setLoading(false);
     }
