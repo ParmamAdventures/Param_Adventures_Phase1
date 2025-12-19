@@ -5,10 +5,12 @@ Last updated: 2025-12-19
 This document captures manual and automated test cases for the repository. Use it to run QA, track execution, and link to PRs.
 
 ## Summary
+
 - Scope: UI feedback (toasts), payment flows, admin booking actions, skeleton loaders, motion primitives, and core UI primitives (Button, ErrorBlock, Input).
 - Owners: Engineering / QA
 
 ## Environment
+
 - Node: >=18
 - OS: cross-platform (Windows / macOS / Linux)
 - Browsers: Chrome, Firefox, Safari (desktop), Mobile Chrome
@@ -27,6 +29,7 @@ npm run dev       # start dev server
 ```
 
 ## Test Case Template
+
 - ID: (e.g., UI-TOAST-001)
 - Title:
 - Preconditions:
@@ -66,12 +69,15 @@ npm run dev       # start dev server
   - Priority: Medium
 
 ## Automated tests to maintain
+
 - Unit tests: `src/components/ui` (Button, ErrorBlock, ToastProvider)
 - Suggested: Add integration tests for PayNow with mocked API responses (Cypress or Playwright)
 
 ## Acceptance Criteria
+
 - All high-priority manual tests pass on staging before release.
 - Unit tests must pass in CI (`npm test`).
 
 ## Notes
+
 - Use `docs/TEST_PLAN.md` as the single source of truth. For per-app notes, add `apps/web/TEST_PLAN.md`.

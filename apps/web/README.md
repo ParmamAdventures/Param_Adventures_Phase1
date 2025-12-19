@@ -1,41 +1,49 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project using the App Router.
 
-## Getting Started
+## Getting Started (local)
 
-First, run the development server:
+Install dependencies and run the dev server:
 
 ```bash
+cd apps/web
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Important scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` — start Next dev server
+- `npm run build` — build production output
+- `npm run start` — start the built app
+- `npm test` — run unit tests (Jest)
 
-## Learn More
+## Project structure (important files)
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app` — route handlers and pages (App Router)
+- `src/components` — UI components and primitives
+	- `src/components/ui` — Button, Card, Spinner, ErrorBlock, ToastProvider, ToastViewport, Skeletons
+	- `src/components/trips` — trip listing, forms, booking card
+- `src/context` — auth and permission helpers
+- `prisma` — database schema and migrations (in `apps/api`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## UI notes and QA
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Toasts: implemented in `src/components/ui/ToastProvider.tsx` and `ToastViewport.tsx` (framer-motion, theme-aware, client-only). Use `useToast()` in client components.
+- Motion: `MotionCard` and `MotionButton` provide consistent animation presets.
+- Skeletons: client-side skeletons are used for Trips and Blogs pages to improve perceived performance.
+- Tests: UI unit tests live under `src/components/ui/__tests__`.
 
-## Deploy on Vercel
+## Manual QA and test plan
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See `../docs/TEST_PLAN.md` for the canonical manual test cases and environment notes.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy
 
-## Testing & Local QA
+Prefer deploying to Vercel. Ensure environment variables (e.g., `NEXT_PUBLIC_API_URL`) point to the correct API.
+
 
 Run unit tests and the dev server from the `apps/web` directory:
 
