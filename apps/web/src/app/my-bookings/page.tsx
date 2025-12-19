@@ -91,7 +91,7 @@ export default function MyBookingsPage() {
         </thead>
         <tbody>
           {bookings?.map((b) => (
-            <tr key={b.id} style={{ borderTop: "1px solid #eee" }}>
+            <tr key={b.id} style={{ borderTop: "1px solid var(--border)" }}>
               <td style={{ padding: "8px 4px" }}>
                 <Link href={`/trips/${b.trip.slug}`}>{b.trip.title}</Link>
               </td>
@@ -223,12 +223,20 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
         {loading ? "Preparing payment…" : "Pay Now"}
       </Button>
       {error && (
-        <div style={{ color: "#b00020", marginTop: 6, fontSize: 13 }}>
+        <div
+          style={{
+            color: "var(--semantic-danger)",
+            marginTop: 6,
+            fontSize: 13,
+          }}
+        >
           {error}
         </div>
       )}
       {intent && (
-        <div style={{ marginTop: 6, fontSize: 13, color: "#036" }}>
+        <div
+          style={{ marginTop: 6, fontSize: 13, color: "var(--semantic-info)" }}
+        >
           Payment ready — order {intent.orderId ?? intent.paymentId}
         </div>
       )}
@@ -257,7 +265,7 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
       {message && (
         <div
           className="paynow-message"
-          style={{ marginTop: 6, fontSize: 13, color: "#036" }}
+          style={{ marginTop: 6, fontSize: 13, color: "var(--semantic-info)" }}
         >
           {message}
         </div>
@@ -399,7 +407,14 @@ async function openCheckout(
       },
     },
     prefill: { name: prefill?.name, email: prefill?.email },
-    theme: { color: "#0f766e" },
+    // use CSS token for accent so theme color follows design token
+    theme: {
+      color: (
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--accent"
+        ) || "#FF6A00"
+      ).trim(),
+    },
   } as unknown;
 
   // Create instance using typed window to avoid `any`
