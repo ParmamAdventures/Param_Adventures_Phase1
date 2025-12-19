@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import Button from "../components/ui/Button";
 
 export default function Login() {
   const { login } = useAuth();
@@ -46,7 +47,9 @@ export default function Login() {
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <button disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+      <Button loading={loading} disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </Button>
     </form>
   );
 }

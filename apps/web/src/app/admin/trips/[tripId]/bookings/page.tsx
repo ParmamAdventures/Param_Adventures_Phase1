@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "../../../../../lib/api";
 import { useAuth } from "../../../../../context/AuthContext";
+import Button from "../../../../../components/ui/Button";
 import { useParams } from "next/navigation";
 
 type User = { id: string; name?: string | null; email: string };
@@ -171,18 +172,21 @@ export default function AdminTripBookingsPage() {
                   <td>
                     {showActions ? (
                       <div style={{ display: "flex", gap: 8 }}>
-                        <button
+                        <Button
                           onClick={() => approveBooking(b.id)}
+                          loading={processing}
                           disabled={processing}
                         >
                           {processing ? "Processing..." : "Approve"}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                          variant="danger"
                           onClick={() => rejectBooking(b.id)}
+                          loading={processing}
                           disabled={processing}
                         >
                           {processing ? "Processing..." : "Reject"}
-                        </button>
+                        </Button>
                       </div>
                     ) : (
                       <span />

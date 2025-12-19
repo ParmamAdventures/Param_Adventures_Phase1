@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import Link from "next/link";
 import TripStatusBadge from "../../components/trips/TripStatusBadge";
+import Button from "../../components/ui/Button";
 
 type Booking = {
   id: string;
@@ -113,9 +114,9 @@ export default function MyBookingsPage() {
                 (b.paymentStatus === "PENDING" || !b.paymentStatus) ? (
                   <PayNowButton bookingId={b.id} />
                 ) : (
-                  <button disabled style={{ opacity: 0.6 }}>
+                  <Button disabled variant="subtle" style={{ opacity: 0.6 }}>
                     {b.paymentStatus === "PAID" ? "Paid ✅" : "—"}
-                  </button>
+                  </Button>
                 )}
               </td>
             </tr>
@@ -218,9 +219,9 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
 
   return (
     <div style={{ display: "inline-block" }}>
-      <button onClick={handleClick} disabled={loading} className="btn-primary">
+      <Button onClick={handleClick} loading={loading}>
         {loading ? "Preparing payment…" : "Pay Now"}
-      </button>
+      </Button>
       {error && (
         <div style={{ color: "#b00020", marginTop: 6, fontSize: 13 }}>
           {error}
@@ -233,7 +234,8 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
       )}
       {intent && intent.orderId?.startsWith("order_test_") && (
         <div style={{ marginTop: 6 }}>
-          <button
+          <Button
+            variant="subtle"
             onClick={() => {
               // developer convenience: simulate success for dev fallback orders
               setMessage("Payment received. Verifying…");
@@ -249,7 +251,7 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
             style={{ marginTop: 6, fontSize: 13 }}
           >
             Simulate success (dev)
-          </button>
+          </Button>
         </div>
       )}
       {message && (

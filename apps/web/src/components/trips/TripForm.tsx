@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Button from "../ui/Button";
 
 export type TripFormData = {
   title: string;
@@ -116,9 +117,9 @@ export default function TripForm({
         />
       </label>
 
-      <button disabled={submitting}>
+      <Button loading={submitting} disabled={submitting}>
         {submitting ? "Saving…" : "Save Draft"}
-      </button>
+      </Button>
     </form>
   );
 }

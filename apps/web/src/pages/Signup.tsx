@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { apiFetch } from "../lib/api";
 import { useRouter } from "next/navigation";
+import Button from "../components/ui/Button";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -61,7 +62,7 @@ export default function Signup() {
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <button>Create account</button>
+      <Button>Create account</Button>
     </form>
   );
 }
