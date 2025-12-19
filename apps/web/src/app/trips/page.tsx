@@ -13,7 +13,9 @@ type Trip = {
 };
 
 export default async function PublicTripsPage() {
-  const res = await fetch(`${API_BASE}/trips/public`, { cache: "no-store" }).catch(() => null);
+  const res = await fetch(`${API_BASE}/trips/public`, {
+    cache: "no-store",
+  }).catch(() => null);
   const trips: Trip[] = res && res.ok ? await res.json() : [];
 
   return (

@@ -16,9 +16,10 @@ export async function GET() {
     // include index
     urls.unshift(`${APP_URL}/trips`);
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    const xml =
+      `<?xml version="1.0" encoding="UTF-8"?>\n` +
       `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-      urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n") +
+      urls.map((u: string) => `  <url><loc>${u}</loc></url>`).join("\n") +
       `\n</urlset>`;
 
     return new NextResponse(xml, {
