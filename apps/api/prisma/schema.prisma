@@ -139,6 +139,12 @@ enum BookingStatus {
   COMPLETED
 }
 
+enum BookingPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
 model Booking {
   id        String         @id @default(uuid())
   userId    String
@@ -151,7 +157,39 @@ model Booking {
   user User @relation(fields: [userId], references: [id])
   trip Trip @relation(fields: [tripId], references: [id])
 
+  // Payments created for this booking
+  payments Payment[]
+
+  paymentStatus BookingPaymentStatus @default(PENDING)
+
   @@unique([userId, tripId])
   @@index([tripId])
   @@index([userId])
+}
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String
+  provider          String        // "razorpay"
+  providerOrderId   String        @unique
+  providerPaymentId String?       @unique
+  rawPayload        Json?
+  amount            Int           // paise
+  currency          String        @default("INR")
+  status            PaymentStatus @default(CREATED)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  booking           Booking @relation(fields: [bookingId], references: [id])
+
+  @@index([bookingId])
 }

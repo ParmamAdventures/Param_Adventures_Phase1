@@ -11,6 +11,8 @@ import adminRoleAssignRoutes from "./routes/admin/role-assign.routes";
 import tripsRoutes from "./routes/trips.routes";
 import adminTripBookingsRoutes from "./routes/admin/trip-bookings.routes";
 import bookingsRoutes from "./routes/bookings.routes";
+import webhooksRoutes from "./routes/webhooks.routes";
+import paymentsRoutes from "./routes/payments.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 export const app = express();
@@ -26,8 +28,12 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
 app.use(cookieParser()); // ⬅ MUST be before routes
+
+// Webhooks must be registered before the JSON parser so we can access the raw body
+app.use("/webhooks", webhooksRoutes);
+
+app.use(express.json());
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
@@ -40,6 +46,7 @@ app.use("/admin/roles", adminRoleAssignRoutes);
 app.use("/trips", tripsRoutes);
 app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/bookings", bookingsRoutes);
+app.use("/payments", paymentsRoutes);
 
 // must be LAST
 app.use(errorHandler);
