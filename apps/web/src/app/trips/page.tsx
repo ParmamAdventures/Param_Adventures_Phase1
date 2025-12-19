@@ -15,7 +15,9 @@ type Trip = {
 
 async function getTrips(): Promise<Trip[]> {
   try {
-    const res = await fetch(`${API_BASE}/trips/public`, { cache: "no-store" }).catch(() => null);
+    const res = await fetch(`${API_BASE}/trips/public`, {
+      cache: "no-store",
+    }).catch(() => null);
     return res && res.ok ? await res.json() : [];
   } catch {
     return [];
