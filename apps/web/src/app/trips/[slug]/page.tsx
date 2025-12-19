@@ -18,14 +18,22 @@ type TripFull = {
   status?: string;
 };
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}) {
   try {
-    const res = await fetch(`${API_BASE}/trips/public/${params.slug}`, { cache: "no-store" });
+    const res = await fetch(`${API_BASE}/trips/public/${params.slug}`, {
+      cache: "no-store",
+    });
     if (!res.ok) return {};
     const trip = (await res.json()) as TripFull;
     return {
       title: `${trip.title} | Param Adventures`,
-      description: trip.description ? trip.description.slice(0, 160) : undefined,
+      description: trip.description
+        ? trip.description.slice(0, 160)
+        : undefined,
       openGraph: {
         title: trip.title,
         description: trip.description || "",
@@ -38,18 +46,29 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default async function TripDetailPage({ params }: { params: { slug: string } }) {
-  const slug = params.slug;
+export default async function TripDetailPage({
+  params,
+}: {
+  params: { slug: string };
+}) {
+  const resolvedParams = await params;
+  const slug = resolvedParams.slug;
 
   // Try direct slug endpoint, fallback to listing if not available
-  const res = await fetch(`${API_BASE}/trips/public/${slug}`, { cache: "no-store" }).catch(() => null);
+  const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
+    cache: "no-store",
+  }).catch(() => null);
 
   if (!res || res.status === 404) {
-    const listRes = await fetch(`${API_BASE}/trips/public`, { cache: "no-store" }).catch(() => null);
+    const listRes = await fetch(`${API_BASE}/trips/public`, {
+      cache: "no-store",
+    }).catch(() => null);
     if (!listRes || !listRes.ok) notFound();
     const trips = await listRes.json();
     type TripItem = { slug: string } & Record<string, unknown>;
-    const trip = (trips || []).find((t: TripItem) => t.slug === slug) as TripFull | undefined;
+    const trip = (trips || []).find((t: TripItem) => t.slug === slug) as
+      | TripFull
+      | undefined;
     if (!trip) notFound();
     return renderTrip(trip as TripFull);
   }
@@ -70,7 +89,9 @@ function renderTrip(trip: TripFull) {
 
           <div>
             <h2 className="text-xl font-semibold mb-2">About this trip</h2>
-            <p className="opacity-80 leading-relaxed">{trip.description || "Trip details coming soon."}</p>
+            <p className="opacity-80 leading-relaxed">
+              {trip.description || "Trip details coming soon."}
+            </p>
           </div>
         </div>
 

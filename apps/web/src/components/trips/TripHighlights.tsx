@@ -13,7 +13,9 @@ export default function TripHighlights({ trip }: { trip: any }) {
 
       <div>
         <p className="text-sm opacity-60">Duration</p>
-        <p className="font-medium">{trip.durationDays ? `${trip.durationDays} days` : "—"}</p>
+        <p className="font-medium">
+          {trip.durationDays ? `${trip.durationDays} days` : "—"}
+        </p>
       </div>
 
       <div>
