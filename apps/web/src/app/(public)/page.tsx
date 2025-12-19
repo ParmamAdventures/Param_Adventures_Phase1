@@ -1,10 +1,15 @@
+import HeroSection from "../../components/home/HeroSection";
+import FeaturedTripsSection from "../../components/home/FeaturedTripsSection";
+import LatestBlogsSection from "../../components/home/LatestBlogsSection";
+import CTASection from "../../components/home/CTASection";
+
 export default function HomePage() {
   return (
-    <section className="space-y-4">
-      <h1 className="text-3xl font-bold">Adventure starts here</h1>
-      <p className="opacity-80">
-        Discover treks, journeys, and stories curated by Param Adventures.
-      </p>
-    </section>
+    <>
+      <HeroSection />
+      <FeaturedTripsSection />
+      <LatestBlogsSection />
+      <CTASection />
+    </>
   );
 }

@@ -10,21 +10,28 @@ const ThemeContext = createContext<{
 }>({ theme: "light", toggle: () => {} });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-
-  useEffect(() => {
+  const getInitial = (): Theme => {
     try {
       const saved = (localStorage.getItem("theme") as Theme) || null;
-      const systemDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      const next = saved ?? (systemDark ? "dark" : "light");
-      setTheme(next);
-      document.documentElement.dataset.theme = next;
-    } catch (e) {
-      // ignore (SSR safety)
+      const systemDark =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+      return saved ?? (systemDark ? "dark" : "light");
+    } catch {
+      return "light";
     }
-  }, []);
+  };
+
+  const [theme, setTheme] = useState<Theme>(getInitial);
+
+  useEffect(() => {
+    // sync DOM dataset for theming; avoid setting state here to prevent cascading renders
+    try {
+      document.documentElement.dataset.theme = theme;
+    } catch {
+      // ignore
+    }
+  }, [theme]);
 
   const toggle = () => {
     const next = theme === "light" ? "dark" : "light";
