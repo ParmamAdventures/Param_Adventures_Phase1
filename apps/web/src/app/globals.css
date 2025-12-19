@@ -7,6 +7,12 @@
   --muted: #64748b;
   --border: #e5e7eb;
   --accent: #ff6a00;
+  /* Motion tokens */
+  --motion-fast: 120ms;
+  --motion-base: 180ms;
+  --motion-slow: 280ms;
+  --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ring-offset-color: #ffffff;
 }
 
 [data-theme="dark"] {
@@ -31,6 +37,7 @@
   --semantic-warning: #f59e0b;
   --semantic-danger: #dc2626;
   --semantic-info: #2563eb;
+  --ring-offset-color: #0b0b0b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -53,4 +60,19 @@ body {
 .app-surface {
   background-color: var(--surface);
   color: var(--text);
+}
+
+/* Accessible and aesthetic focus rings */
+:where(button, a, input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 8px;
+}
+
+/* Reduced motion preference respects */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 1ms;
+    --motion-base: 1ms;
+  }
 }

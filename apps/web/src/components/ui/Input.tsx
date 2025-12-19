@@ -26,7 +26,7 @@ export function Input({
       <input
         {...props}
         disabled={state === "disabled" || props.disabled}
-        className={`w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] ${stateClasses} ${className ?? ""}`}
+        className={`w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] ${stateClasses} ${className ?? ""} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ring-offset-color)] transition duration-[var(--motion-fast)] ease-[var(--motion-ease)]`}
       />
       {error ? (
         <div

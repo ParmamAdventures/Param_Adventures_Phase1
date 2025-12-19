@@ -1,6 +1,14 @@
 import BlogMeta from "../../../../components/blogs/BlogMeta";
 
-async function getBlog(slug: string) {
+type Blog = {
+  title: string;
+  content: string;
+  author: string;
+  publishedAt: string;
+  image?: string;
+};
+
+async function getBlog(slug: string): Promise<Blog> {
   // Temporary mock content
   return {
     title: "Trekking the Western Ghats",
@@ -10,6 +18,8 @@ async function getBlog(slug: string) {
     `,
     author: "Param Adventures",
     publishedAt: "2025-01-12",
+    image:
+      "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1600&auto=format&fit=crop&crop=faces",
   };
 }
 

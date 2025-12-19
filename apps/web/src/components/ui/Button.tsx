@@ -11,7 +11,7 @@ export function Button({
   ...props
 }: Props) {
   const classes = [
-    "rounded-md px-4 py-2 text-sm font-medium transition",
+    "rounded-md px-4 py-2 text-sm font-medium transition-transform",
     variant === "primary" && "bg-[var(--accent)] text-white hover:opacity-90",
     variant === "ghost" &&
       "bg-transparent text-[var(--text)] hover:bg-[var(--surface)]",
@@ -19,6 +19,7 @@ export function Button({
       "bg-[var(--semantic-danger)] text-white hover:opacity-90",
     variant === "subtle" && "bg-[var(--surface)] text-[var(--text)]",
     loading && "opacity-70 cursor-not-allowed",
+    "active:scale-[0.98] transition-transform duration-[var(--motion-fast)]",
     className,
   ]
     .filter(Boolean)
