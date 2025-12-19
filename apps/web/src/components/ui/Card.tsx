@@ -1,9 +1,18 @@
-export function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-      {children}
-    </div>
-  );
+export function Card({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const classes = [
+    "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return <div className={classes}>{children}</div>;
 }
 
 export default Card;
