@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { logWebhookReplay } from "../utils/webhookLogger";
 
 const prisma = new PrismaClient();
 
@@ -15,7 +16,16 @@ export async function handlePaymentCaptured(event: any) {
 
   if (!payment) return;
 
-  if (payment.status === "CAPTURED") return;
+  if (payment.status === "CAPTURED") {
+    // Log replayed capture event for observability
+    logWebhookReplay({
+      provider: "razorpay",
+      event: "payment.captured",
+      paymentId: payment.id,
+      providerPaymentId: razorpayPaymentId,
+    });
+    return;
+  }
 
   await prisma.$transaction([
     prisma.payment.update({
@@ -48,7 +58,16 @@ export async function handlePaymentFailed(event: any) {
 
   if (!payment) return;
 
-  if (payment.status === "FAILED") return;
+  if (payment.status === "FAILED") {
+    // Log replayed failed event for observability
+    logWebhookReplay({
+      provider: "razorpay",
+      event: "payment.failed",
+      paymentId: payment.id,
+      providerPaymentId: razorpayPaymentId,
+    });
+    return;
+  }
 
   await prisma.$transaction([
     prisma.payment.update({
