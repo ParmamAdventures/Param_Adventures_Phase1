@@ -13,6 +13,7 @@ import adminTripBookingsRoutes from "./routes/admin/trip-bookings.routes";
 import bookingsRoutes from "./routes/bookings.routes";
 import webhooksRoutes from "./routes/webhooks.routes";
 import paymentsRoutes from "./routes/payments.routes";
+import metricsRoutes from "./routes/metrics.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 export const app = express();
@@ -47,6 +48,7 @@ app.use("/trips", tripsRoutes);
 app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/bookings", bookingsRoutes);
 app.use("/payments", paymentsRoutes);
+app.use("/metrics", metricsRoutes);
 
 // must be LAST
 app.use(errorHandler);

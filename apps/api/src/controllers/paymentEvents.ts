@@ -24,6 +24,13 @@ export async function handlePaymentCaptured(event: any) {
       paymentId: payment.id,
       providerPaymentId: razorpayPaymentId,
     });
+    // increment replay metric
+    try {
+      const { incReplay } = await import("../metrics/webhookMetrics");
+      incReplay();
+    } catch (e) {
+      // non-fatal
+    }
     return;
   }
 
@@ -66,6 +73,13 @@ export async function handlePaymentFailed(event: any) {
       paymentId: payment.id,
       providerPaymentId: razorpayPaymentId,
     });
+    // increment replay metric
+    try {
+      const { incReplay } = await import("../metrics/webhookMetrics");
+      incReplay();
+    } catch (e) {
+      // non-fatal
+    }
     return;
   }
 

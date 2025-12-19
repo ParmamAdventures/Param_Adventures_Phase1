@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { verifyRazorpaySignature } from "../services/razorpay.service";
 import { handlePaymentCaptured, handlePaymentFailed } from "./paymentEvents";
 import { HttpError } from "../lib/httpError";
+import {
+  incTotal,
+  incFailed,
+  incProcessed,
+  setLatency,
+} from "../metrics/webhookMetrics";
 
 export async function razorpayWebhookHandler(req: Request, res: Response) {
   const signature = (req.headers["x-razorpay-signature"] as string) || "";
@@ -32,6 +38,9 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
     throw new HttpError(400, "INVALID_PAYLOAD", "Invalid JSON payload");
   }
 
+  const start = Date.now();
+  incTotal();
+
   try {
     switch (event.event) {
       case "payment.captured":
@@ -44,9 +53,12 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
         // ignore other events
         break;
     }
+    incProcessed();
   } catch (err) {
-    // Ensure any error is surfaced as 5xx so Razorpay can retry
+    incFailed();
     throw err;
+  } finally {
+    setLatency(Date.now() - start);
   }
 
   return res.status(200).json({ received: true });
