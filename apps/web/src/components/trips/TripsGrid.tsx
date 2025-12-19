@@ -2,6 +2,7 @@ import TripCard from "./TripCard";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import Link from "next/link";
+import MotionCard from "../ui/MotionCard";
 
 export default function TripsGrid({ trips }: { trips: any[] }) {
   if (!trips || trips.length === 0) {
@@ -23,7 +24,9 @@ export default function TripsGrid({ trips }: { trips: any[] }) {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {trips.map((trip) => (
-        <TripCard key={trip.id} trip={trip} />
+        <MotionCard key={trip.id} className="p-2">
+          <TripCard trip={trip} />
+        </MotionCard>
       ))}
     </div>
   );
