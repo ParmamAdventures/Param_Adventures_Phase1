@@ -5,6 +5,7 @@ import {
   logout,
   refresh,
   me,
+  loginPage,
 } from "../controllers/auth.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
@@ -12,6 +13,7 @@ const router = Router();
 
 router.post("/register", register);
 router.post("/login", login);
+router.get("/login", loginPage);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 router.get("/me", requireAuth, me);

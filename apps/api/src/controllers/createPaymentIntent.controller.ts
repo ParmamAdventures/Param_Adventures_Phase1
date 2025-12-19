@@ -38,18 +38,56 @@ export async function createPaymentIntent(req: Request, res: Response) {
   if (!amount || amount <= 0) {
     throw new HttpError(500, "INVALID_AMOUNT", "Trip price misconfigured");
   }
+  const razorpayConfigured =
+    !!process.env.RAZORPAY_KEY_ID && !!process.env.RAZORPAY_KEY_SECRET;
 
-  const order = await createRazorpayOrder({
-    amount,
-    currency: "INR",
-    receipt: booking.id,
-  });
+  let finalOrder: any = null;
+  try {
+    if (!razorpayConfigured) throw new Error("RazorpayNotConfigured");
+
+    const order = await createRazorpayOrder({
+      amount,
+      currency: "INR",
+      receipt: booking.id,
+    });
+    finalOrder = order;
+  } catch (e: any) {
+    // If Razorpay not configured, guard based on environment
+    if (!razorpayConfigured) {
+      if (process.env.NODE_ENV === "production") {
+        throw new HttpError(
+          500,
+          "PAYMENT_PROVIDER_NOT_CONFIGURED",
+          "Payment service is temporarily unavailable"
+        );
+      }
+
+      // DEV / TEST: log usage of dev fallback for visibility
+      console.warn("[Payments] Using dev fallback Razorpay order", {
+        bookingId,
+      });
+
+      finalOrder = {
+        id: `order_test_${Date.now()}`,
+        amount: amount,
+        currency: "INR",
+        receipt: booking.id,
+      } as any;
+    } else {
+      // Razorpay was configured but the provider call failed
+      throw new HttpError(
+        500,
+        "INTERNAL_ERROR",
+        "Failed to create provider order"
+      );
+    }
+  }
 
   const payment = await prisma.payment.create({
     data: {
       bookingId: booking.id,
       provider: "razorpay",
-      providerOrderId: order.id,
+      providerOrderId: finalOrder.id,
       amount,
       status: "CREATED",
     },
@@ -57,7 +95,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
 
   res.status(201).json({
     paymentId: payment.id,
-    razorpayOrderId: order.id,
+    orderId: finalOrder.id,
     amount,
     currency: "INR",
     key: process.env.RAZORPAY_KEY_ID,

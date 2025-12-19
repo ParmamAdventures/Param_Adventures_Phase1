@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import Link from "next/link";
@@ -10,6 +11,7 @@ type Booking = {
   id: string;
   status: string;
   createdAt: string;
+  paymentStatus?: string | null;
   trip: {
     id: string;
     title: string;
@@ -17,6 +19,13 @@ type Booking = {
     location: string;
     startDate?: string | null;
     endDate?: string | null;
+  };
+};
+
+type WindowWithPaynow = Window & {
+  __paynow_poll_id?: number | null;
+  Razorpay?: {
+    new (opts: unknown): { open: () => void };
   };
 };
 
@@ -75,6 +84,7 @@ export default function MyBookingsPage() {
             <th>Dates</th>
             <th>Location</th>
             <th>Status</th>
+            <th>Payment</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -95,11 +105,306 @@ export default function MyBookingsPage() {
               <td style={{ textAlign: "center" }}>
                 <TripStatusBadge status={b.status} />
               </td>
-              <td style={{ textAlign: "center" }}>—</td>
+              <td style={{ textAlign: "center" }}>
+                {b.paymentStatus || "PENDING"}
+              </td>
+              <td style={{ textAlign: "center" }}>
+                {b.status === "CONFIRMED" &&
+                (b.paymentStatus === "PENDING" || !b.paymentStatus) ? (
+                  <PayNowButton bookingId={b.id} />
+                ) : (
+                  <button disabled style={{ opacity: 0.6 }}>
+                    {b.paymentStatus === "PAID" ? "Paid ✅" : "—"}
+                  </button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
+}
+
+function PayNowButton({ bookingId }: { bookingId: string }) {
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+  const [intent, setIntent] = React.useState<{
+    paymentId: string;
+    orderId: string;
+    amount: number;
+    currency: string;
+    key?: string;
+  } | null>(null);
+  const [message, setMessage] = React.useState<string | null>(null);
+  const { user } = useAuth();
+  const router = useRouter();
+  const pollRef = React.useRef<number | null>(null);
+
+  async function handleClick() {
+    setError(null);
+    setLoading(true);
+    try {
+      const res = await apiFetch("/payments/intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bookingId }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        setError(
+          body?.error?.message || body?.message || `Error ${res.status}`
+        );
+        return;
+      }
+
+      const data = await res.json();
+      // store safe intent for next phase (do not store signatures)
+      setIntent({
+        paymentId: data.paymentId || data.id || "",
+        orderId: data.orderId || data.providerOrderId || "",
+        amount: data.amount,
+        currency: data.currency || "INR",
+        key: data.key,
+      });
+      // After intent created, decide whether to open checkout or show dev controls
+      const orderId = data.orderId || data.providerOrderId || "";
+      const startPolling = startPollingFactory(
+        bookingId,
+        setMessage,
+        setLoading,
+        router
+      );
+
+      // If this is a dev fallback order, DO NOT open Razorpay modal (it will block the UI).
+      // Instead show the simulate button so QA can complete the flow locally.
+      if (orderId.startsWith("order_test_")) {
+        setMessage(
+          "Dev order created — use 'Simulate success (dev)' to finish."
+        );
+        // keep intent visible (simulate button will be rendered)
+      } else {
+        openCheckout(
+          {
+            paymentId: data.paymentId || data.id || "",
+            orderId,
+            amount: data.amount,
+            currency: data.currency || "INR",
+            key: data.key,
+          },
+          {
+            onSuccess: () => {
+              setMessage("Payment received. Verifying…");
+              // disable button visually
+              setLoading(true);
+              // start polling bookings for paymentStatus update
+              startPolling();
+            },
+            onDismiss: () => setMessage("Payment cancelled"),
+            onError: () => setMessage("Payment failed to start"),
+          },
+          // prefill
+          { name: user?.name, email: user?.email }
+        );
+      }
+      // Keep UX conservative: show a transient success message (no checkout yet)
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div style={{ display: "inline-block" }}>
+      <button onClick={handleClick} disabled={loading} className="btn-primary">
+        {loading ? "Preparing payment…" : "Pay Now"}
+      </button>
+      {error && (
+        <div style={{ color: "#b00020", marginTop: 6, fontSize: 13 }}>
+          {error}
+        </div>
+      )}
+      {intent && (
+        <div style={{ marginTop: 6, fontSize: 13, color: "#036" }}>
+          Payment ready — order {intent.orderId ?? intent.paymentId}
+        </div>
+      )}
+      {intent && intent.orderId?.startsWith("order_test_") && (
+        <div style={{ marginTop: 6 }}>
+          <button
+            onClick={() => {
+              // developer convenience: simulate success for dev fallback orders
+              setMessage("Payment received. Verifying…");
+              setLoading(true);
+              const startPolling = startPollingFactory(
+                bookingId,
+                setMessage,
+                setLoading,
+                router
+              );
+              startPolling();
+            }}
+            style={{ marginTop: 6, fontSize: 13 }}
+          >
+            Simulate success (dev)
+          </button>
+        </div>
+      )}
+      {message && (
+        <div
+          className="paynow-message"
+          style={{ marginTop: 6, fontSize: 13, color: "#036" }}
+        >
+          {message}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function startPollingFactory(
+  bookingId: string,
+  setMessage: (m: string | null) => void,
+  setLoading: (v: boolean) => void,
+  router: ReturnType<typeof useRouter>
+) {
+  return function startPolling() {
+    let attempts = 0;
+    // clear any existing poll
+    if (pollHandleExists()) clearPoll();
+
+    const id = window.setInterval(async () => {
+      attempts++;
+      try {
+        const res = await apiFetch("/bookings/me");
+        if (!res.ok) {
+          // ignore and retry
+          return;
+        }
+        const bookings: Booking[] = await res.json();
+        const updated = bookings.find((b: Booking) => b.id === bookingId);
+        if (!updated) return;
+
+        if (updated.paymentStatus === "PAID") {
+          clearInterval(id);
+          setMessage("Payment successful 🎉");
+          setLoading(false);
+          try {
+            router.refresh();
+          } catch {}
+          return;
+        }
+
+        if (updated.paymentStatus === "FAILED") {
+          clearInterval(id);
+          setMessage("Payment failed. Please retry.");
+          setLoading(false);
+          return;
+        }
+
+        if (attempts >= 10) {
+          clearInterval(id);
+          setMessage("Payment pending confirmation. It may take a minute.");
+          setLoading(false);
+          return;
+        }
+      } catch (e) {
+        // ignore network errors and continue
+      }
+    }, 3000);
+
+    // store poll id on window for potential cleanup
+    (window as WindowWithPaynow).__paynow_poll_id = id;
+  };
+
+  function clearPoll() {
+    const w = window as WindowWithPaynow;
+    const existing = w.__paynow_poll_id;
+    if (existing) {
+      clearInterval(existing as number);
+      w.__paynow_poll_id = null;
+    }
+  }
+
+  function pollHandleExists() {
+    return !!(window as WindowWithPaynow).__paynow_poll_id;
+  }
+}
+
+// Load Razorpay script once
+function loadRazorpay(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") return resolve(false);
+    if ((window as WindowWithPaynow).Razorpay) return resolve(true);
+
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+async function openCheckout(
+  intent: {
+    paymentId: string;
+    orderId: string;
+    amount: number;
+    currency: string;
+    key?: string;
+  },
+  callbacks?: {
+    onSuccess?: () => void;
+    onDismiss?: () => void;
+    onError?: () => void;
+  },
+  prefill?: { name?: string; email?: string }
+) {
+  const ok = await loadRazorpay();
+  if (!ok) {
+    try {
+      callbacks?.onError?.();
+      alert("Failed to load payment gateway");
+    } catch {}
+    return;
+  }
+
+  const options = {
+    key: intent.key || "",
+    amount: intent.amount,
+    currency: intent.currency,
+    order_id: intent.orderId,
+    name: "Param Adventures",
+    description: "Trip booking payment",
+    handler: function (response: unknown) {
+      try {
+        callbacks?.onSuccess?.();
+        const el = document.querySelector(".paynow-message");
+        if (el) el.textContent = "Payment received. Verifying…";
+        else console.info("Payment received. Verifying…");
+      } catch {}
+    },
+    modal: {
+      ondismiss: function () {
+        try {
+          callbacks?.onDismiss?.();
+          const el = document.querySelector(".paynow-message");
+          if (el) el.textContent = "Payment cancelled";
+          else console.info("Payment cancelled");
+        } catch {}
+      },
+    },
+    prefill: { name: prefill?.name, email: prefill?.email },
+    theme: { color: "#0f766e" },
+  } as unknown;
+
+  // Create instance using typed window to avoid `any`
+  const RazorpayCtor = (window as WindowWithPaynow).Razorpay;
+  if (!RazorpayCtor) {
+    callbacks?.onError?.();
+    return;
+  }
+  new RazorpayCtor(options).open();
 }

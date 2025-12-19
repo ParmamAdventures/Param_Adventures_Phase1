@@ -74,6 +74,35 @@ export async function login(req: Request, res: Response) {
   res.json({ accessToken });
 }
 
+export async function loginPage(_req: Request, res: Response) {
+  const html = `<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>API Login</title>
+    <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:2rem}form{max-width:360px;margin:0 auto}label{display:block;margin-top:1rem}input{width:100%;padding:.5rem;margin-top:.25rem}</style>
+  </head>
+  <body>
+    <h1>API Login</h1>
+    <form method="post" action="/auth/login">
+      <label>email
+        <input name="email" type="email" value="admin@local.test" required />
+      </label>
+      <label>password
+        <input name="password" type="password" value="password123" required />
+      </label>
+      <div style="margin-top:1rem">
+        <button type="submit">Log in</button>
+      </div>
+    </form>
+  </body>
+</html>`;
+
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.status(200).send(html);
+}
+
 export async function refresh(req: Request, res: Response) {
   const token = req.cookies?.refresh_token;
   if (!token) {
