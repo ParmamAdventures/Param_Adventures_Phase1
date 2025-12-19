@@ -10,9 +10,9 @@ export async function GET() {
       return new NextResponse("", { status: 500 });
     }
 
-    const trips = await res.json();
+    const trips = (await res.json()) as Array<{ slug: string }>;
 
-    const urls = trips.map((t: any) => `${APP_URL}/trips/${t.slug}`);
+    const urls = trips.map((t) => `${APP_URL}/trips/${t.slug}`);
     // include index
     urls.unshift(`${APP_URL}/trips`);
 
@@ -25,7 +25,7 @@ export async function GET() {
     return new NextResponse(xml, {
       headers: { "Content-Type": "application/xml" },
     });
-  } catch (err) {
+  } catch {
     return new NextResponse("", { status: 500 });
   }
 }

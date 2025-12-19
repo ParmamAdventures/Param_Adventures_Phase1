@@ -31,7 +31,7 @@ export default function InternalTripsPage() {
         } else {
           setTrips(Array.isArray(data) ? data : []);
         }
-      } catch (e) {
+      } catch {
         if (!mounted) return;
         setError("Network error");
         setTrips([]);

@@ -2,9 +2,20 @@
 
 import { useState } from "react";
 
+export type TripFormData = {
+  title: string;
+  slug: string;
+  location: string;
+  durationDays: number;
+  difficulty: string;
+  price: number;
+  description: string;
+  itinerary: Record<string, unknown> | unknown[];
+};
+
 type TripFormProps = {
-  initialData?: any;
-  onSubmit: (data: any) => Promise<void>;
+  initialData?: Partial<TripFormData>;
+  onSubmit: (data: TripFormData) => Promise<void>;
   submitting: boolean;
 };
 
@@ -13,18 +24,21 @@ export default function TripForm({
   onSubmit,
   submitting,
 }: TripFormProps) {
-  const [form, setForm] = useState({
-    title: initialData?.title || "",
-    slug: initialData?.slug || "",
-    location: initialData?.location || "",
-    durationDays: initialData?.durationDays || 1,
-    difficulty: initialData?.difficulty || "Easy",
-    price: initialData?.price || 0,
-    description: initialData?.description || "",
-    itinerary: initialData?.itinerary || {},
+  const [form, setForm] = useState<TripFormData>({
+    title: (initialData?.title as string) || "",
+    slug: (initialData?.slug as string) || "",
+    location: (initialData?.location as string) || "",
+    durationDays: (initialData?.durationDays as number) || 1,
+    difficulty: (initialData?.difficulty as string) || "Easy",
+    price: (initialData?.price as number) || 0,
+    description: (initialData?.description as string) || "",
+    itinerary: (initialData?.itinerary as Record<string, unknown>) || {},
   });
 
-  function update<K extends keyof typeof form>(key: K, value: any) {
+  function update<K extends keyof TripFormData>(
+    key: K,
+    value: TripFormData[K]
+  ) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 

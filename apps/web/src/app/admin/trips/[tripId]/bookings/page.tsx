@@ -13,6 +13,13 @@ type Booking = {
   user: User | null;
 };
 
+type Trip = {
+  id: string;
+  title?: string | null;
+  capacity?: number;
+  confirmedCount?: number;
+};
+
 const ERROR_MESSAGES: Record<string, string> = {
   CAPACITY_FULL: "Trip capacity is full",
   INVALID_STATE: "This booking was already processed",
@@ -24,7 +31,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function AdminTripBookingsPage() {
   const { tripId } = useParams() as { tripId: string };
-  const [trip, setTrip] = useState<any | null>(null);
+  const [trip, setTrip] = useState<Trip | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ code: string; message: string } | null>(
@@ -33,7 +40,8 @@ export default function AdminTripBookingsPage() {
   const [processingIds, setProcessingIds] = useState<string[]>([]);
   const { loading: authLoading, user: currentUser } = useAuth();
 
-  const perms: string[] = (currentUser as any)?.permissions || [];
+  const perms: string[] =
+    (currentUser as { permissions?: string[] } | null)?.permissions || [];
   const canManage =
     perms.includes("booking:approve") && perms.includes("booking:reject");
 
@@ -53,7 +61,7 @@ export default function AdminTripBookingsPage() {
       }
       setTrip(data.trip);
       setBookings(data.bookings || []);
-    } catch (e) {
+    } catch {
       setError({
         code: "NETWORK_ERROR",
         message: ERROR_MESSAGES.NETWORK_ERROR,
@@ -87,7 +95,7 @@ export default function AdminTripBookingsPage() {
         return;
       }
       await fetchData();
-    } catch (e) {
+    } catch {
       setError({
         code: "NETWORK_ERROR",
         message: ERROR_MESSAGES.NETWORK_ERROR,
@@ -112,7 +120,7 @@ export default function AdminTripBookingsPage() {
         return;
       }
       await fetchData();
-    } catch (e) {
+    } catch {
       setError({
         code: "NETWORK_ERROR",
         message: ERROR_MESSAGES.NETWORK_ERROR,

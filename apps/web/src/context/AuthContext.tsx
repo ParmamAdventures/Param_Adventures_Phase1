@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const d = await r.json();
             if (d?.accessToken) setAccessToken(d.accessToken);
           }
-        } catch (err) {
+        } catch {
           // ignore refresh errors and fall through to /auth/me which will
           // return 401 if no session exists
         }
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           setUser(null);
         }
-      } catch (e) {
+      } catch {
         setUser(null);
       } finally {
         setLoading(false);

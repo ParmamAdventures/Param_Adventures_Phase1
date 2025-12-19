@@ -5,7 +5,7 @@ async function http(path, opts = {}) {
   let body = null;
   try {
     body = await res.json();
-  } catch (e) {
+  } catch {
     body = await res.text().catch(() => null);
   }
   return { status: res.status, body };

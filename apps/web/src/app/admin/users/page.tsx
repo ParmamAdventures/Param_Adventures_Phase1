@@ -35,8 +35,10 @@ export default function UsersPage() {
 
   if (loading || authLoading) return <p>Loading users...</p>;
 
-  const myRoles: string[] = (currentUser as any)?.roles || [];
-  const myPerms: string[] = (currentUser as any)?.permissions || [];
+  const myRoles: string[] =
+    (currentUser as { roles?: string[] } | null)?.roles || [];
+  const myPerms: string[] =
+    (currentUser as { permissions?: string[] } | null)?.permissions || [];
 
   return (
     <div>

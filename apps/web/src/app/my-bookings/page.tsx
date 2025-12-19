@@ -41,7 +41,7 @@ export default function MyBookingsPage() {
         }
         const data = await res.json();
         if (!cancelled) setBookings(data);
-      } catch (e) {
+      } catch {
         if (!cancelled) setError("Network error");
       }
     }

@@ -2,6 +2,16 @@ import { notFound } from "next/navigation";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
+type TripFull = {
+  title: string;
+  slug: string;
+  description?: string | null;
+  location?: string;
+  durationDays?: number;
+  difficulty?: string;
+  price?: number;
+};
+
 export async function generateMetadata({
   params,
 }: {
@@ -12,8 +22,7 @@ export async function generateMetadata({
       cache: "no-store",
     });
     if (!res.ok) return {};
-    const trip = await res.json();
-    const siteUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";
+    const trip = (await res.json()) as TripFull;
     return {
       title: `${trip.title} | Param Adventures`,
       description: trip.description
@@ -25,8 +34,8 @@ export async function generateMetadata({
         url: `https://paramadventures.com/trips/${trip.slug}`,
         type: "article",
       },
-    } as any;
-  } catch (e) {
+    };
+  } catch {
     return {};
   }
 }
@@ -39,7 +48,7 @@ export default async function TripDetailPage({
   const slug = params.slug;
 
   // Try direct slug endpoint, fallback to listing if not available
-  let res = await fetch(`${API_BASE}/trips/public/${slug}`, {
+  const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
     cache: "no-store",
   }).catch(() => null);
 
@@ -52,17 +61,20 @@ export default async function TripDetailPage({
       notFound();
     }
     const trips = await listRes.json();
-    const trip = (trips || []).find((t: any) => t.slug === slug);
+    type TripItem = { slug: string } & Record<string, unknown>;
+    const trip = (trips || []).find((t: TripItem) => t.slug === slug) as
+      | TripFull
+      | undefined;
     if (!trip) notFound();
-    return renderTrip(trip);
+    return renderTrip(trip as TripFull);
   }
 
   if (!res.ok) notFound();
-  const trip = await res.json();
+  const trip = (await res.json()) as TripFull;
   return renderTrip(trip);
 }
 
-function renderTrip(trip: any) {
+function renderTrip(trip: TripFull) {
   return (
     <main>
       <h1>{trip.title}</h1>

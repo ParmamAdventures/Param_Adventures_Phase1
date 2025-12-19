@@ -3,14 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PermissionRoute from "../../../components/PermissionRoute";
-import TripForm from "../../../components/trips/TripForm";
+import TripForm, { TripFormData } from "../../../components/trips/TripForm";
 import { apiFetch } from "../../../lib/api";
 
 export default function NewTripPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
 
-  async function handleCreate(data: any) {
+  async function handleCreate(data: TripFormData) {
     setSubmitting(true);
     const res = await apiFetch("/trips", {
       method: "POST",
