@@ -24,8 +24,8 @@ Open http://localhost:3000 in your browser.
 
 - `src/app` — route handlers and pages (App Router)
 - `src/components` — UI components and primitives
-	- `src/components/ui` — Button, Card, Spinner, ErrorBlock, ToastProvider, ToastViewport, Skeletons
-	- `src/components/trips` — trip listing, forms, booking card
+  - `src/components/ui` — Button, Card, Spinner, ErrorBlock, ToastProvider, ToastViewport, Skeletons
+  - `src/components/trips` — trip listing, forms, booking card
 - `src/context` — auth and permission helpers
 - `prisma` — database schema and migrations (in `apps/api`)
 
@@ -43,7 +43,6 @@ See `../docs/TEST_PLAN.md` for the canonical manual test cases and environment n
 ## Deploy
 
 Prefer deploying to Vercel. Ensure environment variables (e.g., `NEXT_PUBLIC_API_URL`) point to the correct API.
-
 
 Run unit tests and the dev server from the `apps/web` directory:
 
