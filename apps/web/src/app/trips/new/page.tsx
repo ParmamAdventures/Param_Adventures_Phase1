@@ -12,15 +12,27 @@ export default function NewTripPage() {
 
   async function handleCreate(data: TripFormData) {
     setSubmitting(true);
-    const res = await apiFetch("/trips", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    try {
+      const res = await apiFetch("/trips", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-    if (res.ok) {
-      router.push("/trips/internal");
+      if (res.ok) {
+        router.push("/trips/internal");
+      } else {
+        const body = await res.json().catch(() => ({}));
+        const msg =
+          body?.error?.message || body?.message || "Failed to create trip";
+        // show simple inline error via alert fallback (pages using TripForm can opt-in to show ErrorBlock)
+        // for now use console and a transient alert to ensure visibility in dev
+        console.error("Create trip failed", body);
+        alert(msg);
+      }
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (

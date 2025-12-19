@@ -143,7 +143,7 @@ export default function AdminTripBookingsPage() {
       </p>
 
       {error && (
-        <div style={{ background: "#ffe6e6", padding: 8, marginBottom: 12 }}>
+        <div style={{ marginBottom: 12 }}>
           <strong>{error.code}</strong>: {error.message}
         </div>
       )}
@@ -154,13 +154,14 @@ export default function AdminTripBookingsPage() {
             <th>Created</th>
             <th>Status</th>
             <th>User</th>
-            {canManage && <th>Actions</th>}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {bookings.map((b) => {
             const processing = processingIds.includes(b.id);
-            const showActions = canManage && b.status === "REQUESTED";
+            const needsAction = b.status === "REQUESTED";
+            const showActions = needsAction && canManage;
             return (
               <tr key={b.id}>
                 <td>{new Date(b.createdAt).toLocaleString()}</td>
@@ -168,16 +169,16 @@ export default function AdminTripBookingsPage() {
                 <td>
                   {b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}
                 </td>
-                {canManage && (
-                  <td>
-                    {showActions ? (
+                <td>
+                  {needsAction ? (
+                    showActions ? (
                       <div style={{ display: "flex", gap: 8 }}>
                         <Button
                           onClick={() => approveBooking(b.id)}
                           loading={processing}
                           disabled={processing}
                         >
-                          {processing ? "Processing..." : "Approve"}
+                          Approve
                         </Button>
                         <Button
                           variant="danger"
@@ -185,14 +186,29 @@ export default function AdminTripBookingsPage() {
                           loading={processing}
                           disabled={processing}
                         >
-                          {processing ? "Processing..." : "Reject"}
+                          Reject
                         </Button>
                       </div>
                     ) : (
-                      <span />
-                    )}
-                  </td>
-                )}
+                      <div>
+                        <Button disabled variant="subtle">
+                          Approve
+                        </Button>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            color: "var(--muted)",
+                            marginTop: 6,
+                          }}
+                        >
+                          You don’t have permission to approve this
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    <span />
+                  )}
+                </td>
               </tr>
             );
           })}

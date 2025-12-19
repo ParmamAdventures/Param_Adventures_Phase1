@@ -3,6 +3,8 @@ type Props = {
   loading?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
+import Spinner from "./Spinner";
+
 export function Button({
   variant = "primary",
   loading,
@@ -27,7 +29,7 @@ export function Button({
 
   return (
     <button {...props} disabled={loading || props.disabled} className={classes}>
-      {loading ? "Processing…" : children}
+      {loading ? <Spinner size={14} /> : children}
     </button>
   );
 }

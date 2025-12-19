@@ -55,6 +55,7 @@ export default function TripForm({
         <input
           value={form.title}
           onChange={(e) => update("title", e.target.value)}
+          disabled={submitting}
           required
         />
       </label>
@@ -64,6 +65,7 @@ export default function TripForm({
         <input
           value={form.slug}
           onChange={(e) => update("slug", e.target.value)}
+          disabled={submitting}
           required
         />
       </label>
@@ -73,6 +75,7 @@ export default function TripForm({
         <input
           value={form.location}
           onChange={(e) => update("location", e.target.value)}
+          disabled={submitting}
           required
         />
       </label>
@@ -84,6 +87,7 @@ export default function TripForm({
           min={1}
           value={form.durationDays}
           onChange={(e) => update("durationDays", Number(e.target.value))}
+          disabled={submitting}
         />
       </label>
 
@@ -92,6 +96,7 @@ export default function TripForm({
         <select
           value={form.difficulty}
           onChange={(e) => update("difficulty", e.target.value)}
+          disabled={submitting}
         >
           <option>Easy</option>
           <option>Moderate</option>
@@ -106,6 +111,7 @@ export default function TripForm({
           min={0}
           value={form.price}
           onChange={(e) => update("price", Number(e.target.value))}
+          disabled={submitting}
         />
       </label>
 
@@ -114,6 +120,7 @@ export default function TripForm({
         <textarea
           value={form.description}
           onChange={(e) => update("description", e.target.value)}
+          disabled={submitting}
         />
       </label>
 

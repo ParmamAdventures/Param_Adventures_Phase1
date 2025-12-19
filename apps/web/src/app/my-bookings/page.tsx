@@ -7,6 +7,9 @@ import { apiFetch } from "../../lib/api";
 import Link from "next/link";
 import TripStatusBadge from "../../components/trips/TripStatusBadge";
 import Button from "../../components/ui/Button";
+import Card from "../../components/ui/Card";
+import ErrorBlock from "../../components/ui/ErrorBlock";
+import Spinner from "../../components/ui/Spinner";
 
 type Booking = {
   id: string;
@@ -63,16 +66,33 @@ export default function MyBookingsPage() {
     };
   }, [loading, user]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="py-12 text-center">
+        <Spinner size={24} />
+      </div>
+    );
 
   if (!user) {
     return <div>Please sign in to view your bookings.</div>;
   }
 
-  if (error) return <div>{error}</div>;
+  if (error) return <ErrorBlock>{error}</ErrorBlock>;
 
   if (bookings && bookings.length === 0) {
-    return <div>No bookings yet — join a trip to get started.</div>;
+    return (
+      <Card className="text-center py-16">
+        <h3 className="text-lg font-semibold">No bookings yet</h3>
+        <p className="text-[var(--muted)] mt-2">
+          Explore trips and join your first adventure.
+        </p>
+        <div className="mt-4">
+          <Link href="/trips">
+            <Button>Explore Trips</Button>
+          </Link>
+        </div>
+      </Card>
+    );
   }
 
   return (
@@ -222,17 +242,7 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
       <Button onClick={handleClick} loading={loading}>
         {loading ? "Preparing payment…" : "Pay Now"}
       </Button>
-      {error && (
-        <div
-          style={{
-            color: "var(--semantic-danger)",
-            marginTop: 6,
-            fontSize: 13,
-          }}
-        >
-          {error}
-        </div>
-      )}
+      {error && <ErrorBlock>{error}</ErrorBlock>}
       {intent && (
         <div
           style={{ marginTop: 6, fontSize: 13, color: "var(--semantic-info)" }}

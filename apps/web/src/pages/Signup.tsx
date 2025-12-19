@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { apiFetch } from "../lib/api";
 import { useRouter } from "next/navigation";
 import Button from "../components/ui/Button";
+import ErrorBlock from "../components/ui/ErrorBlock";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -11,11 +12,13 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     const res = await apiFetch("/auth/register", {
       method: "POST",
@@ -25,6 +28,7 @@ export default function Signup() {
 
     if (!res.ok) {
       setError("Registration failed");
+      setLoading(false);
       return;
     }
 
@@ -45,12 +49,14 @@ export default function Signup() {
         placeholder="Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        disabled={loading}
       />
 
       <input
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        disabled={loading}
       />
 
       <input
@@ -58,11 +64,12 @@ export default function Signup() {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        disabled={loading}
       />
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <ErrorBlock>{error}</ErrorBlock>}
 
-      <Button>Create account</Button>
+      <Button loading={loading}>Create account</Button>
     </form>
   );
 }
