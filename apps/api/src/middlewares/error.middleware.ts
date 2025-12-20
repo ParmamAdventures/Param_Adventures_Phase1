@@ -1,13 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../lib/httpError";
 
+import { logger } from "../lib/logger";
+
 export function errorHandler(
   err: Error,
   _req: Request,
   res: Response,
   _next: NextFunction
 ) {
-  console.error(err);
+  logger.error(err.message, { stack: err.stack });
 
   if (err instanceof HttpError) {
     return res

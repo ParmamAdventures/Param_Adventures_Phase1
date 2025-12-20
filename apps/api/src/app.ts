@@ -16,9 +16,12 @@ import paymentsRoutes from "./routes/payments.routes";
 import metricsRoutes from "./routes/metrics.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
+import { globalLimiter } from "./config/rate-limit";
+
 export const app = express();
 
 app.use(helmet());
+app.use(globalLimiter);
 app.use(
   cors({
     // In development reflect the request origin so credentials (cookies)
@@ -35,10 +38,11 @@ app.use(cookieParser()); // ⬅ MUST be before routes
 app.use("/webhooks", webhooksRoutes);
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
+import { healthCheck } from "./controllers/health.controller";
+
+app.get("/health", healthCheck);
 
 app.use("/auth", authRoutes);
 app.use("/admin/users", adminUsersRoutes);

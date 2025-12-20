@@ -6,6 +6,7 @@ import {
   signRefreshToken,
   verifyRefreshToken,
 } from "../utils/jwt";
+import { auditService } from "../services/audit.service";
 
 const prisma = new PrismaClient();
 
@@ -27,16 +28,17 @@ export async function register(req: Request, res: Response) {
     },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      action: "USER_REGISTER",
-      targetType: "User",
-      targetId: user.id,
-    },
+  await auditService.logAudit({
+    actorId: user.id,
+    action: "USER_REGISTER",
+    targetType: "User",
+    targetId: user.id,
   });
 
-  res.status(201).json({ message: "User registered successfully" });
+  res.status(201).json({
+    message: "User registered successfully",
+    user: { id: user.id, email: user.email, name: user.name },
+  });
 }
 
 export async function login(req: Request, res: Response) {
@@ -62,13 +64,11 @@ export async function login(req: Request, res: Response) {
     path: "/auth/refresh",
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      action: "USER_LOGIN",
-      targetType: "User",
-      targetId: user.id,
-    },
+  await auditService.logAudit({
+    actorId: user.id,
+    action: "USER_LOGIN",
+    targetType: "User",
+    targetId: user.id,
   });
 
   res.json({ accessToken });

@@ -9,10 +9,14 @@ import {
 } from "../controllers/auth.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
+import { authLimiter } from "../config/rate-limit";
+import { validate } from "../middlewares/validate.middleware";
+import { loginSchema, registerSchema } from "../schemas/auth.schema";
+
 const router = Router();
 
-router.post("/register", register);
-router.post("/login", login);
+router.post("/register", authLimiter, validate(registerSchema), register);
+router.post("/login", authLimiter, validate(loginSchema), login);
 router.get("/login", loginPage);
 router.post("/refresh", refresh);
 router.post("/logout", logout);

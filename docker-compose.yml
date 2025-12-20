@@ -5,7 +5,8 @@ services:
     image: postgres:15
     container_name: param_adventures_db
     ports:
-      - "5432:5432"
+      # Host:Container — changed host port to 5433 to avoid conflicts with local Postgres
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

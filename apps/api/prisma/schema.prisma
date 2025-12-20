@@ -114,6 +114,10 @@ model Trip {
   price         Int
   status        TripStatus @default(DRAFT)
 
+  // Media
+  coverImage    String?
+  gallery       String[]
+
   createdById   String
   createdBy     User       @relation("TripCreatedBy", fields: [createdById], references: [id])
 

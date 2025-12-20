@@ -1,0 +1,11 @@
+2025-12-20T03:52:32.438Z TypeError: Cannot destructure property 'email' of 'req.body' as it is undefined.
+    at login (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\auth.controller.ts:42:11)
+    at Layer.handleRequest (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\lib\layer.js:152:17)
+    at next (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\lib\route.js:157:13)
+    at Route.dispatch (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\lib\route.js:117:3)
+    at handle (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\index.js:435:11)
+    at Layer.handleRequest (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\lib\layer.js:152:17)
+    at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\index.js:295:15
+    at processParams (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\index.js:582:12)
+    at next (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\index.js:291:5)
+    at Function.handle (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\node_modules\router\index.js:186:3)
