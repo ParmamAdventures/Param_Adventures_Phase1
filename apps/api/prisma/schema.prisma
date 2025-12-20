@@ -115,8 +115,16 @@ model Trip {
   status        TripStatus @default(DRAFT)
 
   // Media
-  coverImage    String?
-  gallery       String[]
+  coverImage    String? // Deprecated for coverMediaId logic later? detailed logic says replace.
+  // We keep legacy for now or remove? Plan says "Add coverMediaId".
+  // Let's add the relation correctly.
+  
+  coverMediaId  String?
+  coverMedia    Media?     @relation("TripCoverMedia", fields: [coverMediaId], references: [id])
+  
+  media         Media[]    @relation("TripGalleryMedia")
+
+  gallery       String[]   // Deprecated in favor of media relation
 
   createdById   String
   createdBy     User       @relation("TripCreatedBy", fields: [createdById], references: [id])
@@ -196,4 +204,30 @@ model Payment {
   booking           Booking @relation(fields: [bookingId], references: [id])
 
   @@index([bookingId])
+}
+
+model Media {
+  id          String   @id @default(uuid())
+  ownerType   String   // "trip" | "blog" | "user"
+  ownerId     String
+  type        String   // "image"
+  purpose     String   // "cover" | "gallery" | "thumbnail"
+
+  originalUrl String
+  mediumUrl   String?
+  thumbUrl    String?
+
+  mimeType    String
+  size        Int
+  width       Int?
+  height      Int?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  tripCover   Trip[]   @relation("TripCoverMedia")
+  tripGallery Trip?    @relation("TripGalleryMedia", fields: [ownerId], references: [id], map: "media_trip_fkey") 
+
+  @@index([ownerType, ownerId])
 }
