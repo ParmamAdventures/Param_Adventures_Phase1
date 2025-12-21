@@ -11,7 +11,7 @@ export default function PublicNavbar() {
   const pathname = usePathname();
 
   const isActive = (path: string) => 
-    pathname === path || (path !== "/" && pathname.startsWith(path));
+    !!pathname && (pathname === path || (path !== "/" && pathname.startsWith(path)));
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
