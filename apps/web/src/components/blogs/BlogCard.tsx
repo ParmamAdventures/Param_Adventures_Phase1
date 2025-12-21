@@ -16,16 +16,16 @@ export default function BlogCard({ blog, index = 0 }: { blog: any, index?: numbe
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: index * 0.1, ease: [0.21, 0.45, 0.32, 0.9] }}
-      className="group flex flex-col overflow-hidden rounded-3xl bg-[var(--card)]/50 backdrop-blur-xl border border-[var(--border)] shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-[var(--accent)]/10 hover:-translate-y-2 h-full"
+      className="group flex flex-col overflow-hidden rounded-[32px] bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg transaction-all duration-500 hover:shadow-2xl hover:shadow-accent/20 hover:-translate-y-2 h-full"
     >
-      {/* Image Container */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+      {/* Cinematic Image Interface */}
+      <div className="relative aspect-[16/10] overflow-hidden">
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={blog.title}
             fill
-            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110 group-hover:brightness-110"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-[var(--accent)]/5 text-[var(--accent)]/20">
@@ -34,36 +34,37 @@ export default function BlogCard({ blog, index = 0 }: { blog: any, index?: numbe
         )}
         
         {/* Category Overlay */}
-        <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 rounded-full bg-black/50 backdrop-blur-md text-[10px] font-black uppercase tracking-widest text-white border border-white/20">
+        <div className="absolute top-4 left-4 z-10">
+          <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-black uppercase tracking-widest text-white border border-white/20 shadow-lg">
             Adventure
           </span>
         </div>
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg)]/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90 group-hover:opacity-60 transition-opacity duration-500" />
       </div>
 
-      <div className="flex flex-1 flex-col p-6 space-y-4">
-        <div className="space-y-3 flex-1">
-          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
+      <div className="flex flex-1 flex-col p-8 space-y-6 relative">
+        <div className="space-y-4 flex-1">
+          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-accent">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
             <span>{readingTime} MIN READ</span>
           </div>
 
-          <Link href={`/blogs/${blog.slug}`} className="block relative">
-            <h2 className="text-2xl font-extrabold leading-tight text-foreground group-hover:text-[var(--accent)] transition-colors decoration-[var(--accent)] decoration-2 underline-offset-4 group-hover:underline">
+          <Link href={`/blogs/${blog.slug}`} className="block relative group-hover:translate-x-1 transition-transform duration-300">
+            <h2 className="text-2xl font-black italic leading-[1.1] text-white group-hover:text-accent transition-colors">
               {blog.title}
             </h2>
           </Link>
 
           {blog.excerpt && (
-            <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
+            <p className="text-white/60 text-sm line-clamp-3 leading-relaxed font-light">
               {blog.excerpt}
             </p>
           )}
         </div>
 
-        <div className="pt-4 border-t border-[var(--border)]/50">
+        <div className="pt-6 border-t border-white/10">
           <BlogMeta blog={blog} />
         </div>
       </div>

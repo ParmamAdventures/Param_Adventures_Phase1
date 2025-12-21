@@ -1,174 +1,127 @@
 @import "tailwindcss";
+@plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
 @theme {
   --color-background: var(--bg);
   --color-foreground: var(--text);
   --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
   --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-foreground: #ffffff;
-}
-
-:root {
-  --bg: #ffffff;
-  --surface: #f8f9fb;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e5e7eb;
-  --accent: #ff6a00;
   
-  /* Motion tokens */
-  --motion-fast: 120ms;
-  --motion-base: 180ms;
-  --motion-slow: 280ms;
-  --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ring-offset-color: #ffffff;
-}
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-display: "Outfit", system-ui, sans-serif; /* Recommended for futuristic hdrs */
 
-[data-theme="dark"] {
-  --bg: #0b0f14;
-  --surface: #111827;
-  --text: #e5e7eb;
-  --muted: #94a3b8;
-  --border: #1f2937;
-  --accent: #ff6a00;
-}
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-shimmer: shimmer 2s linear infinite;
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  @keyframes glow {
+    from { box-shadow: 0 0 10px -10px var(--accent); }
+    to { box-shadow: 0 0 20px 5px var(--accent); }
+  }
 
-/* Semantic tokens */
-:root {
-  --semantic-success: #16a34a;
-  --semantic-warning: #f59e0b;
-  --semantic-danger: #dc2626;
-  --semantic-info: #2563eb;
-}
-
-[data-theme="dark"] {
-  --semantic-success: #16a34a;
-  --semantic-warning: #f59e0b;
-  --semantic-danger: #dc2626;
-  --semantic-info: #2563eb;
-  --ring-offset-color: #0b0b0b;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    --bg: #0b0f14;
-    --surface: #111827;
-    --text: #e5e7eb;
-    --muted: #94a3b8;
-    --border: #1f2937;
-    --accent: #ff6a00;
+  @keyframes shimmer {
+    from { background-position: 0 0; }
+    to { background-position: -200% 0; }
   }
 }
 
+:root {
+  /* Light Mode - "Clean Tech" */
+  --bg: #ffffff;
+  --surface: #f3f4f6;
+  --surface-hover: #e5e7eb;
+  --text: #030712;
+  --muted: #6b7280;
+  --muted-foreground: #4b5563;
+  --border: #e5e7eb;
+  --accent: #f97316; /* Vibrant Orange */
+  
+  --radius: 1rem;
+}
+
+[data-theme="dark"] {
+  /* Dark Mode - "Cinematic Void" */
+  --bg: #000000;
+  --surface: #0a0a0a;
+  --surface-hover: #171717;
+  --text: #ededed;
+  --muted: #525252;
+  --muted-foreground: #a3a3a3;
+  --border: #262626;
+  --accent: #f97316;
+}
+
+/* Base Styles */
 body {
   background-color: var(--bg);
   color: var(--text);
-  font-family: Inter, system-ui, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-.app-surface {
-  background-color: var(--surface);
-  color: var(--text);
+/* Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Accessible and aesthetic focus rings */
-:where(button, a, input, textarea, select):focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 12%, transparent);
-  border-radius: 8px;
+[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Tiptap Placeholder */
-.tiptap p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  float: left;
-  color: var(--muted);
-  pointer-events: none;
-  height: 0;
-  font-style: italic;
-  font-weight: 500;
-  opacity: 0.6;
+.text-gradient {
+  background: linear-gradient(to right, #f97316, #ea580c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Tiptap Link hover */
-.tiptap a {
-  cursor: pointer !important;
+.hero-gradient {
+  background: radial-gradient(circle at center, color-mix(in srgb, var(--accent) 15%, transparent) 0%, transparent 70%);
 }
 
-/* Modern Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Animations */
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 10px;
-  border: 2px solid var(--bg);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent);
-}
-
-/* Base Motion Utilities */
-.hover-lift {
-  transition: transform var(--motion-base) var(--motion-ease), box-shadow var(--motion-base) var(--motion-ease);
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -10px color-mix(in srgb, var(--accent) 15%, transparent);
-}
-
-.glass-card {
-  background: color-mix(in srgb, var(--surface) 60%, transparent);
-  backdrop-filter: blur(12px);
-  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
-}
-
-/* Animation classes */
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
+    filter: blur(10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
   }
 }
 
-@keyframes progress-loading {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(300%); }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
 }
-
-.animate-fade-in-up {
-  animation: fade-in-up var(--motion-slow) var(--motion-ease) forwards;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-.animate-progress {
-  animation: progress-loading 1.5s infinite ease-in-out;
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
 }
-
-/* Reduced motion preference respects */
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --motion-fast: 1ms;
-    --motion-base: 1ms;
-  }
-  .animate-fade-in-up {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
 }
