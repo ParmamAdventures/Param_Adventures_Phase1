@@ -4,10 +4,23 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
 
+interface RevenueData {
+  totalRevenue: number;
+  monthly: {
+    categories: string[];
+    data: number[];
+  };
+}
+
+interface AnalyticsStats {
+  bookings: Record<string, number>;
+  payments: Record<string, number>;
+}
+
 export default function AnalyticsPage() {
-  const [revenue, setRevenue] = useState<any>(null);
+  const [revenue, setRevenue] = useState<RevenueData | null>(null);
   const [trips, setTrips] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<AnalyticsStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -102,20 +115,24 @@ export default function AnalyticsPage() {
         <div className="lg:col-span-4 p-10 rounded-[48px] bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-2xl space-y-8">
            <h3 className="text-xl font-black uppercase tracking-tight italic">Booking Status</h3>
            <div className="space-y-6">
-             {Object.entries(stats?.bookings || {}).map(([status, count]: [any, any]) => (
-               <div key={status} className="space-y-2">
-                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                   <span className="opacity-50">{status}</span>
-                   <span>{count}</span>
+            {stats?.bookings && Object.entries(stats.bookings).map(([status, count]) => {
+               const total = Object.values(stats.bookings).reduce((a, b) => a + b, 0);
+               const percentage = total > 0 ? (count / total) * 100 : 0;
+               return (
+                 <div key={status} className="space-y-2">
+                   <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                     <span className="opacity-50">{status}</span>
+                     <span>{count}</span>
+                   </div>
+                   <div className="h-2 bg-[var(--border)]/20 rounded-full overflow-hidden">
+                     <div 
+                      className="h-full bg-[var(--accent)]/60 rounded-full" 
+                      style={{ width: `${percentage}%` }}
+                     />
+                   </div>
                  </div>
-                 <div className="h-2 bg-[var(--border)]/20 rounded-full overflow-hidden">
-                   <div 
-                    className="h-full bg-[var(--accent)]/60 rounded-full" 
-                    style={{ width: `${(count / Object.values(stats.bookings).reduce((a: any, b: any) => a + b, 0) as number) * 100}%` }}
-                   />
-                 </div>
-               </div>
-             ))}
+               );
+             })}
            </div>
         </div>
       </div>

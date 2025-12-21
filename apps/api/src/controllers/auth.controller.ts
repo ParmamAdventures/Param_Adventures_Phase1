@@ -129,7 +129,7 @@ export async function logout(_req: Request, res: Response) {
 
 export async function me(req: Request, res: Response) {
   const userId = (req as any).user.id;
-  const user = await prisma.user.findUnique({
+  const user = await (prisma.user as any).findUnique({
     where: { id: userId },
     select: {
       id: true,
@@ -149,8 +149,6 @@ export async function me(req: Request, res: Response) {
           },
         },
       },
-      // collect permissions via roles -> role.permissions -> permission
-      // We'll fetch permissions separately for clarity
     },
   });
 

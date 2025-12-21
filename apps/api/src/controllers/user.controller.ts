@@ -9,7 +9,7 @@ export async function updateProfile(req: Request, res: Response) {
   const { name, bio, avatarImageId } = req.body;
 
   try {
-    const user = await prisma.user.update({
+    const user = await (prisma.user as any).update({
       where: { id: userId },
       data: {
         name,
