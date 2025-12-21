@@ -1,449 +1,149 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import Link from "next/link";
-import { useToast } from "../../components/ui/ToastProvider";
-import TripStatusBadge from "../../components/trips/TripStatusBadge";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import ErrorBlock from "../../components/ui/ErrorBlock";
 import Spinner from "../../components/ui/Spinner";
-
-type Booking = {
-  id: string;
-  status: string;
-  createdAt: string;
-  paymentStatus?: string | null;
-  trip: {
-    id: string;
-    title: string;
-    slug: string;
-    location: string;
-    startDate?: string | null;
-    endDate?: string | null;
-  };
-};
-
-type WindowWithPaynow = Window & {
-  __paynow_poll_id?: number | null;
-  Razorpay?: {
-    new (opts: unknown): { open: () => void };
-  };
-};
+import BookingList from "../../components/bookings/BookingList";
 
 export default function MyBookingsPage() {
-  const { user, loading } = useAuth();
-  const [bookings, setBookings] = useState<Booking[] | null>(null);
+  const { user, loading: authLoading } = useAuth();
+  const [bookings, setBookings] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (loading) return;
-    if (!user) return;
-
-    let cancelled = false;
+    if (authLoading) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     async function load() {
       try {
+        setLoading(true);
         const res = await apiFetch("/bookings/me");
         if (!res.ok) {
-          setError("Failed to load bookings");
-          setBookings([]);
+          setError("Failed to load your adventures");
           return;
         }
         const data = await res.json();
-        if (!cancelled) setBookings(data);
-      } catch {
-        if (!cancelled) setError("Network error");
+        setBookings(data);
+      } catch (err) {
+        setError("Network connectivity issue. Please try again.");
+      } finally {
+        setLoading(false);
       }
     }
 
     load();
+  }, [authLoading, user]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [loading, user]);
-
-  if (loading)
+  if (authLoading || (loading && !bookings)) {
     return (
-      <div className="py-12 text-center">
-        <Spinner size={24} />
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <Spinner size={32} />
+        <p className="text-muted-foreground animate-pulse font-medium">Loading your journey...</p>
       </div>
     );
-
-  if (!user) {
-    return <div>Please sign in to view your bookings.</div>;
   }
 
-  if (error) return <ErrorBlock>{error}</ErrorBlock>;
-
-  if (bookings && bookings.length === 0) {
+  if (!user) {
     return (
-      <Card className="text-center py-16">
-        <h3 className="text-lg font-semibold">No bookings yet</h3>
-        <p className="text-[var(--muted)] mt-2">
-          Explore trips and join your first adventure.
-        </p>
-        <div className="mt-4">
-          <Link href="/trips">
-            <Button>Explore Trips</Button>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-md space-y-6">
+          <div className="bg-[var(--accent)]/10 p-6 rounded-3xl inline-block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight">Personalized Dashboard</h1>
+            <p className="text-muted-foreground text-lg text-balance">Sign in to track your bookings, explore itineraries, and manage payments.</p>
+          </div>
+          <Link href="/login" className="block">
+            <Button className="w-full rounded-2xl shadow-xl shadow-[var(--accent)]/20 py-4">Sign in to Continue</Button>
           </Link>
         </div>
-      </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-4xl mx-auto py-12 px-4">
+        <ErrorBlock>{error}</ErrorBlock>
+        <div className="mt-6 text-center">
+          <Button onClick={() => window.location.reload()} variant="subtle">Try Again</Button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div>
-      <h1>My Bookings</h1>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
-        <thead>
-          <tr>
-            <th style={{ textAlign: "left" }}>Trip</th>
-            <th>Dates</th>
-            <th>Location</th>
-            <th>Status</th>
-            <th>Payment</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bookings?.map((b) => (
-            <tr key={b.id} style={{ borderTop: "1px solid var(--border)" }}>
-              <td style={{ padding: "8px 4px" }}>
-                <Link href={`/trips/${b.trip.slug}`}>{b.trip.title}</Link>
-              </td>
-              <td style={{ textAlign: "center" }}>
-                {b.trip.startDate && b.trip.endDate
-                  ? `${new Date(b.trip.startDate).toLocaleDateString()} - ${new Date(
-                      b.trip.endDate
-                    ).toLocaleDateString()}`
-                  : "—"}
-              </td>
-              <td style={{ textAlign: "center" }}>{b.trip.location}</td>
-              <td style={{ textAlign: "center" }}>
-                <TripStatusBadge status={b.status} />
-              </td>
-              <td style={{ textAlign: "center" }}>
-                {b.paymentStatus || "PENDING"}
-              </td>
-              <td style={{ textAlign: "center" }}>
-                {b.status === "CONFIRMED" &&
-                (b.paymentStatus === "PENDING" || !b.paymentStatus) ? (
-                  <PayNowButton bookingId={b.id} />
-                ) : (
-                  <Button disabled variant="subtle" style={{ opacity: 0.6 }}>
-                    {b.paymentStatus === "PAID" ? "Paid ✅" : "—"}
-                  </Button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-10">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-2">
+          <span className="text-[var(--accent)] font-bold tracking-widest uppercase text-xs">Adventure Dashboard</span>
+          <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
+            My Bookings
+          </h1>
+          <p className="text-muted-foreground text-lg font-medium">Keep track of your upcoming expeditions and stories.</p>
+        </div>
+        
+        {bookings && bookings.length > 0 && (
+          <Link href="/trips">
+            <Button variant="subtle" className="rounded-full px-6 font-semibold">
+              Find More adventures
+            </Button>
+          </Link>
+        )}
+      </div>
+
+      {/* Main Content */}
+      <div className="min-h-[400px]">
+        {bookings && bookings.length === 0 ? (
+          <Card className="flex flex-col items-center justify-center p-20 text-center space-y-8 border-dashed border-2 bg-transparent">
+            <div className="relative">
+              <div className="absolute inset-0 blur-3xl bg-[var(--accent)]/10 rounded-full animate-pulse" />
+              <div className="relative bg-[var(--card)] border p-8 rounded-full shadow-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 8v8"/></svg>
+              </div>
+            </div>
+            <div className="max-w-sm space-y-3">
+              <h3 className="text-2xl font-bold tracking-tight">No adventures found yet</h3>
+              <p className="text-muted-foreground font-medium">The world is vast and full of stories waiting for you. Start your first journey today.</p>
+            </div>
+            <Link href="/trips">
+              <Button className="rounded-full px-12 py-4 shadow-xl shadow-[var(--accent)]/20">Explore Trips</Button>
+            </Link>
+          </Card>
+        ) : (
+          <BookingList bookings={bookings || []} loading={loading} />
+        )}
+      </div>
+
+      {/* Analytics/Incentive Section (Placeholder for high-end look) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t">
+        <div className="p-6 bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 rounded-3xl border">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Global Reach</p>
+          <p className="text-3xl font-black tracking-tighter">15+</p>
+          <p className="text-sm text-muted-foreground">Countries explored by our community.</p>
+        </div>
+        <div className="p-6 bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 rounded-3xl border">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Expert Support</p>
+          <p className="text-3xl font-black tracking-tighter">24/7</p>
+          <p className="text-sm text-muted-foreground">Always there for your expedition needs.</p>
+        </div>
+        <div className="p-6 bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 rounded-3xl border">
+          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Impact Made</p>
+          <p className="text-3xl font-black tracking-tighter">1.2k</p>
+          <p className="text-sm text-muted-foreground">Stories shared by travelers like you.</p>
+        </div>
+      </div>
     </div>
   );
-}
-
-function PayNowButton({ bookingId }: { bookingId: string }) {
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
-  const [intent, setIntent] = React.useState<{
-    paymentId: string;
-    orderId: string;
-    amount: number;
-    currency: string;
-    key?: string;
-  } | null>(null);
-  const [message, setMessage] = React.useState<string | null>(null);
-  const { user } = useAuth();
-  const router = useRouter();
-  const pollRef = React.useRef<number | null>(null);
-  const { showToast } = useToast();
-
-  async function handleClick() {
-    setError(null);
-    setLoading(true);
-    try {
-      const res = await apiFetch("/payments/intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const msg =
-          body?.error?.message || body?.message || `Error ${res.status}`;
-        setError(msg);
-        try {
-          showToast(msg, "error");
-        } catch {}
-        return;
-      }
-
-      const data = await res.json();
-      // store safe intent for next phase (do not store signatures)
-      setIntent({
-        paymentId: data.paymentId || data.id || "",
-        orderId: data.orderId || data.providerOrderId || "",
-        amount: data.amount,
-        currency: data.currency || "INR",
-        key: data.key,
-      });
-      // After intent created, decide whether to open checkout or show dev controls
-      const orderId = data.orderId || data.providerOrderId || "";
-      const startPolling = startPollingFactory(
-        bookingId,
-        setMessage,
-        setLoading,
-        router
-      );
-
-      // If this is a dev fallback order, DO NOT open Razorpay modal (it will block the UI).
-      // Instead show the simulate button so QA can complete the flow locally.
-      if (orderId.startsWith("order_test_")) {
-        setMessage(
-          "Dev order created — use 'Simulate success (dev)' to finish."
-        );
-        // keep intent visible (simulate button will be rendered)
-      } else {
-        openCheckout(
-          {
-            paymentId: data.paymentId || data.id || "",
-            orderId,
-            amount: data.amount,
-            currency: data.currency || "INR",
-            key: data.key,
-          },
-          {
-            onSuccess: () => {
-              setMessage("Payment received. Verifying…");
-              // disable button visually
-              setLoading(true);
-              // start polling bookings for paymentStatus update
-              startPolling();
-            },
-            onDismiss: () => setMessage("Payment cancelled"),
-            onError: () => setMessage("Payment failed to start"),
-          },
-          // prefill
-          { name: user?.name, email: user?.email }
-        );
-      }
-      // Keep UX conservative: show a transient success message (no checkout yet)
-      try {
-        showToast("Payment initiated", "info");
-      } catch {}
-    } catch (e) {
-      const err = String(e);
-      setError(err);
-      try {
-        showToast("Payment failed to start", "error");
-      } catch {}
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div style={{ display: "inline-block" }}>
-      <Button onClick={handleClick} loading={loading}>
-        {loading ? "Preparing payment…" : "Pay Now"}
-      </Button>
-      {error && <ErrorBlock>{error}</ErrorBlock>}
-      {intent && (
-        <div
-          style={{ marginTop: 6, fontSize: 13, color: "var(--semantic-info)" }}
-        >
-          Payment ready — order {intent.orderId ?? intent.paymentId}
-        </div>
-      )}
-      {intent && intent.orderId?.startsWith("order_test_") && (
-        <div style={{ marginTop: 6 }}>
-          <Button
-            variant="subtle"
-            onClick={() => {
-              // developer convenience: simulate success for dev fallback orders
-              setMessage("Payment received. Verifying…");
-              setLoading(true);
-              const startPolling = startPollingFactory(
-                bookingId,
-                setMessage,
-                setLoading,
-                router
-              );
-              startPolling();
-            }}
-            style={{ marginTop: 6, fontSize: 13 }}
-          >
-            Simulate success (dev)
-          </Button>
-        </div>
-      )}
-      {message && (
-        <div
-          className="paynow-message"
-          style={{ marginTop: 6, fontSize: 13, color: "var(--semantic-info)" }}
-        >
-          {message}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function startPollingFactory(
-  bookingId: string,
-  setMessage: (m: string | null) => void,
-  setLoading: (v: boolean) => void,
-  router: ReturnType<typeof useRouter>
-) {
-  return function startPolling() {
-    let attempts = 0;
-    // clear any existing poll
-    if (pollHandleExists()) clearPoll();
-
-    const id = window.setInterval(async () => {
-      attempts++;
-      try {
-        const res = await apiFetch("/bookings/me");
-        if (!res.ok) {
-          // ignore and retry
-          return;
-        }
-        const bookings: Booking[] = await res.json();
-        const updated = bookings.find((b: Booking) => b.id === bookingId);
-        if (!updated) return;
-
-        if (updated.paymentStatus === "PAID") {
-          clearInterval(id);
-          setMessage("Payment successful 🎉");
-          setLoading(false);
-          try {
-            router.refresh();
-          } catch {}
-          return;
-        }
-
-        if (updated.paymentStatus === "FAILED") {
-          clearInterval(id);
-          setMessage("Payment failed. Please retry.");
-          setLoading(false);
-          return;
-        }
-
-        if (attempts >= 10) {
-          clearInterval(id);
-          setMessage("Payment pending confirmation. It may take a minute.");
-          setLoading(false);
-          return;
-        }
-      } catch (e) {
-        // ignore network errors and continue
-      }
-    }, 3000);
-
-    // store poll id on window for potential cleanup
-    (window as WindowWithPaynow).__paynow_poll_id = id;
-  };
-
-  function clearPoll() {
-    const w = window as WindowWithPaynow;
-    const existing = w.__paynow_poll_id;
-    if (existing) {
-      clearInterval(existing as number);
-      w.__paynow_poll_id = null;
-    }
-  }
-
-  function pollHandleExists() {
-    return !!(window as WindowWithPaynow).__paynow_poll_id;
-  }
-}
-
-// Load Razorpay script once
-function loadRazorpay(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined") return resolve(false);
-    if ((window as WindowWithPaynow).Razorpay) return resolve(true);
-
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
-
-async function openCheckout(
-  intent: {
-    paymentId: string;
-    orderId: string;
-    amount: number;
-    currency: string;
-    key?: string;
-  },
-  callbacks?: {
-    onSuccess?: () => void;
-    onDismiss?: () => void;
-    onError?: () => void;
-  },
-  prefill?: { name?: string; email?: string }
-) {
-  const ok = await loadRazorpay();
-  if (!ok) {
-    try {
-      callbacks?.onError?.();
-      alert("Failed to load payment gateway");
-    } catch {}
-    return;
-  }
-
-  const options = {
-    key: intent.key || "",
-    amount: intent.amount,
-    currency: intent.currency,
-    order_id: intent.orderId,
-    name: "Param Adventures",
-    description: "Trip booking payment",
-    handler: function (response: unknown) {
-      try {
-        callbacks?.onSuccess?.();
-        const el = document.querySelector(".paynow-message");
-        if (el) el.textContent = "Payment received. Verifying…";
-        else console.info("Payment received. Verifying…");
-      } catch {}
-    },
-    modal: {
-      ondismiss: function () {
-        try {
-          callbacks?.onDismiss?.();
-          const el = document.querySelector(".paynow-message");
-          if (el) el.textContent = "Payment cancelled";
-          else console.info("Payment cancelled");
-        } catch {}
-      },
-    },
-    prefill: { name: prefill?.name, email: prefill?.email },
-    // use CSS token for accent so theme color follows design token
-    theme: {
-      color: (
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--accent"
-        ) || "#FF6A00"
-      ).trim(),
-    },
-  } as unknown;
-
-  // Create instance using typed window to avoid `any`
-  const RazorpayCtor = (window as WindowWithPaynow).Razorpay;
-  if (!RazorpayCtor) {
-    callbacks?.onError?.();
-    return;
-  }
-  new RazorpayCtor(options).open();
 }

@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma";
 import { createRazorpayOrder } from "../services/razorpay.service";
 import { HttpError } from "../lib/httpError";
+import { env } from "../config/env";
 
 export async function createPaymentIntent(req: Request, res: Response) {
-  const userId = (req as any).user!.id;
+  const userId = req.user!.id; // Using non-null assertion as it's a protected route
   const { bookingId } = req.body;
 
   if (!bookingId) {
@@ -25,21 +25,27 @@ export async function createPaymentIntent(req: Request, res: Response) {
     throw new HttpError(403, "FORBIDDEN", "Not your booking");
   }
 
-  if (booking.status !== "CONFIRMED") {
+  // Support both CONFIRMED (if prepay is required after manual review) 
+  // and REQUESTED (if payment is allowed immediately)
+  const allowedStatuses = ["REQUESTED", "CONFIRMED"];
+  if (!allowedStatuses.includes(booking.status)) {
     throw new HttpError(
       403,
       "INVALID_STATE",
-      "Booking must be confirmed before payment"
+      `Booking status must be one of [${allowedStatuses.join(", ")}] to pay`
     );
   }
 
-  const amount = booking.trip.price; // paise
+  // Amount in DB is in INR, Razorpay expects paise
+  const amount = booking.trip.price * 100;
 
   if (!amount || amount <= 0) {
     throw new HttpError(500, "INVALID_AMOUNT", "Trip price misconfigured");
   }
+
   const razorpayConfigured =
-    !!process.env.RAZORPAY_KEY_ID && !!process.env.RAZORPAY_KEY_SECRET;
+    env.RAZORPAY_KEY_ID !== "rzp_test_placeholder" && 
+    env.RAZORPAY_KEY_SECRET !== "placeholder_secret";
 
   let finalOrder: any = null;
   try {
@@ -52,9 +58,8 @@ export async function createPaymentIntent(req: Request, res: Response) {
     });
     finalOrder = order;
   } catch (e: any) {
-    // If Razorpay not configured, guard based on environment
     if (!razorpayConfigured) {
-      if (process.env.NODE_ENV === "production") {
+      if (env.NODE_ENV === "production") {
         throw new HttpError(
           500,
           "PAYMENT_PROVIDER_NOT_CONFIGURED",
@@ -62,11 +67,8 @@ export async function createPaymentIntent(req: Request, res: Response) {
         );
       }
 
-      // DEV / TEST: log usage of dev fallback for visibility
-      console.warn("[Payments] Using dev fallback Razorpay order", {
-        bookingId,
-      });
-
+      // DEV / TEST fallback
+      console.warn("[Payments] Using dev fallback Razorpay order", { bookingId });
       finalOrder = {
         id: `order_test_${Date.now()}`,
         amount: amount,
@@ -74,7 +76,6 @@ export async function createPaymentIntent(req: Request, res: Response) {
         receipt: booking.id,
       } as any;
     } else {
-      // Razorpay was configured but the provider call failed
       throw new HttpError(
         500,
         "INTERNAL_ERROR",
@@ -98,6 +99,6 @@ export async function createPaymentIntent(req: Request, res: Response) {
     orderId: finalOrder.id,
     amount,
     currency: "INR",
-    key: process.env.RAZORPAY_KEY_ID,
+    key: env.RAZORPAY_KEY_ID,
   });
 }

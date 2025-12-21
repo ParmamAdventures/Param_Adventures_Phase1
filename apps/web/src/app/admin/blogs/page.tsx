@@ -1,16 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
-import { Button } from "@/components/ui/Button";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import Link from "next/link";
+import { useEffect, useState, useCallback } from "react";
+import { apiFetch } from "../../../lib/api";
+import { Button } from "../../../components/ui/Button";
+import BlogListTable from "../../../components/admin/BlogListTable";
 
 export default function AdminBlogsPage() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     try {
       const response = await apiFetch("/blogs?status=PENDING_REVIEW");
@@ -23,13 +22,15 @@ export default function AdminBlogsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
-  async function action(id: string, type: "approve" | "reject") {
+  async function handleAction(id: string, type: "approve" | "reject") {
+    if (!confirm(`Are you sure you want to ${type} this blog?`)) return;
+    
     try {
       const response = await apiFetch(`/blogs/${id}/${type}`, { method: "POST" });
       if (response.ok) {
@@ -44,63 +45,29 @@ export default function AdminBlogsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold tracking-tight">Pending Blogs</h1>
-        <Button variant="subtle" onClick={load} loading={loading}>
-          Refresh
-        </Button>
+    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground bg-clip-text">
+            Editorial Queue
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Review and approve user stories awaiting publication.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="subtle" onClick={load} loading={loading} className="rounded-full px-6">
+            Refresh Queue
+          </Button>
+        </div>
       </div>
 
-      {loading && blogs.length === 0 ? (
-        <div className="text-center py-10 text-muted-foreground">Loading pending blogs...</div>
-      ) : blogs.length === 0 ? (
-        <div className="text-center py-10 border rounded-lg border-dashed text-muted-foreground">
-          No blogs pending review.
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {blogs.map((b) => (
-            <div key={b.id} className="border rounded-lg p-5 space-y-4 bg-card shadow-sm">
-              <div className="flex justify-between items-start">
-                <div className="space-y-1">
-                  <h2 className="text-lg font-semibold">{b.title}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    By <span className="font-medium text-foreground">{b.author?.name || b.author?.email}</span> • {new Date(b.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <StatusBadge status={b.status} />
-              </div>
-
-              {b.excerpt && <p className="text-sm line-clamp-2 text-muted-foreground">{b.excerpt}</p>}
-
-              <div className="flex items-center gap-3 pt-2">
-                <Button
-                  variant="primary"
-                  onClick={() => action(b.id, "approve")}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  Approve
-                </Button>
-
-                <Button
-                  variant="danger"
-                  onClick={() => action(b.id, "reject")}
-                >
-                  Reject
-                </Button>
-
-                <Link
-                  href={`/admin/blogs/${b.id}`}
-                  className="ml-auto text-sm font-medium text-accent hover:underline"
-                >
-                  Preview Details
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <BlogListTable 
+        blogs={blogs} 
+        loading={loading} 
+        onAction={handleAction}
+        onRefresh={load}
+      />
     </div>
   );
 }

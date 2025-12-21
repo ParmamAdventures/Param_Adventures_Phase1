@@ -12,6 +12,10 @@ const envSchema = z.object({
 
   ACCESS_TOKEN_TTL: z.string().default("15m"),
   REFRESH_TOKEN_TTL: z.string().default("7d"),
+
+  RAZORPAY_KEY_ID: z.string().default("rzp_test_placeholder"),
+  RAZORPAY_KEY_SECRET: z.string().default("placeholder_secret"),
+  RAZORPAY_WEBHOOK_SECRET: z.string().default("placeholder_webhook_secret"),
 });
 
 const parsed = envSchema.safeParse(process.env);
