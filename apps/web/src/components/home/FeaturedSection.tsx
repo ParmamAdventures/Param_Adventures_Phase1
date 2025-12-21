@@ -21,7 +21,7 @@ export function FeaturedSection({ title, subtitle, children, action, className =
         {action && <div className="shrink-0">{action}</div>}
       </div>
       
-      <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+      <div className="animate-fade-in-up">
         {children}
       </div>
     </section>

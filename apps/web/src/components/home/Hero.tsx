@@ -10,7 +10,7 @@ export function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-background to-accent/5 opacity-50 dark:opacity-20" />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-accent/10 rounded-full blur-[120px] -z-10" />
 
-      <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+      <div className="max-w-3xl mx-auto space-y-8 animate-fade-in-up">
         {/* Supporting tag/eyebrow */}
         <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-sm font-semibold tracking-wide uppercase">
           The Ultimate Adventure

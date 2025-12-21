@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import BlogMeta from "./BlogMeta";
 
 export default function BlogCard({ blog, index = 0 }: { blog: any, index?: number }) {
@@ -20,9 +21,10 @@ export default function BlogCard({ blog, index = 0 }: { blog: any, index?: numbe
       {/* Image Container */}
       <div className="relative aspect-[16/10] overflow-hidden bg-muted">
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={blog.title}
+            fill
             className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
           />
         ) : (

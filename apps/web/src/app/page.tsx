@@ -5,6 +5,12 @@ import BlogCard from "@/components/blogs/BlogCard";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { Suspense } from "react";
+import { constructMetadata } from "@/lib/metadata";
+
+export const metadata = constructMetadata({
+  title: "Param Adventures | Expedition into the Unknown",
+  description: "Join premium adventure travel experiences across the globe. From Spiti Valley to the Himalayas, discover the unseen with Param Adventures.",
+});
 
 // Fallback data for visual polish if API is empty
 const MOCK_TRIPS = [

@@ -69,11 +69,14 @@ function NavLink({ href, active, children }: { href: string; active: boolean; ch
   return (
     <Link 
       href={href} 
-      className={`text-sm font-medium transition-colors hover:text-accent ${
-        active ? "text-accent" : "text-muted-foreground"
+      className={`text-sm font-bold uppercase tracking-widest transition-all relative group ${
+        active ? "text-accent" : "text-muted-foreground hover:text-accent"
       }`}
     >
       {children}
+      <span className={`absolute -bottom-1 left-0 h-0.5 bg-accent transition-all duration-300 ${
+        active ? "w-full" : "w-0 group-hover:w-full"
+      }`} />
     </Link>
   );
 }

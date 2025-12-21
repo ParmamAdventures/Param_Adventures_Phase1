@@ -1,3 +1,4 @@
+import { constructMetadata } from "../../../lib/metadata";
 import { notFound } from "next/navigation";
 import TripHero from "../../../components/trips/TripHero";
 import TripHighlights from "../../../components/trips/TripHighlights";
@@ -28,22 +29,16 @@ export async function generateMetadata({
     const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
       cache: "no-store",
     });
-    if (!res.ok) return {};
+    if (!res.ok) return constructMetadata({ title: "Adventure not found" });
     const trip = (await res.json()) as TripFull;
-    return {
-      title: `${trip.title} | Param Adventures`,
-      description: trip.description
-        ? trip.description.slice(0, 160)
-        : undefined,
-      openGraph: {
-        title: trip.title,
-        description: trip.description || "",
-        url: `https://paramadventures.com/trips/${trip.slug}`,
-        type: "article",
-      },
-    };
+    
+    return constructMetadata({
+      title: trip.title,
+      description: trip.description || undefined,
+      image: (trip as any).coverImage?.mediumUrl || "/og-image.jpg",
+    });
   } catch {
-    return {};
+    return constructMetadata({ title: "Adventure" });
   }
 }
 
@@ -81,20 +76,10 @@ export default async function TripDetailPage({
 
 function renderTrip(trip: TripFull) {
   return (
-    <div className="pb-32">
-      {/* Back Navigation */}
-      <div className="mx-auto max-w-7xl px-4 py-4 md:py-8">
-        <a href="/trips" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-accent transition-colors">
-          <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Adventures
-        </a>
-      </div>
-
+    <div className="pb-32 bg-[var(--bg)] min-h-screen text-[var(--foreground)]">
       <TripHero trip={trip} />
 
-      <main className="mx-auto max-w-7xl px-4 py-12">
+      <main className="mx-auto max-w-7xl px-4 py-20">
         <div className="grid gap-12 lg:grid-cols-[1fr_380px]">
           {/* Main Content */}
           <div className="space-y-12">
