@@ -4,4 +4,6 @@ export interface User {
   name?: string;
   status: "ACTIVE" | "SUSPENDED";
   createdAt: string;
+  roles: string[];
+  permissions: string[];
 }

@@ -31,7 +31,7 @@ export default function PublicNavbar() {
             <NavLink href="/dashboard" active={isActive("/dashboard")}>Dashboard</NavLink>
           )}
 
-          {user?.role === "SUPER_ADMIN" || user?.role === "ADMIN" ? (
+          {user?.roles?.includes("SUPER_ADMIN") || user?.roles?.includes("ADMIN") ? (
              <NavLink href="/admin" active={isActive("/admin")}>Admin</NavLink>
           ) : null}
         </nav>
