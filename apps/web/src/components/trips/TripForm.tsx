@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Button from "../ui/Button";
+import { ImageUploader } from "../media/ImageUploader";
 
 export type TripFormData = {
   title: string;
@@ -13,7 +14,7 @@ export type TripFormData = {
   description: string;
   startDate: string;
   endDate: string;
-  coverImage?: File | null;
+  coverImageId?: string | null;
   itinerary: Record<string, unknown> | unknown[];
 };
 
@@ -38,6 +39,7 @@ export default function TripForm({
     description: (initialData?.description as string) || "",
     startDate: (initialData?.startDate as string) || "",
     endDate: (initialData?.endDate as string) || "",
+    coverImageId: (initialData?.coverImageId as string) || null,
     itinerary: (initialData?.itinerary as Record<string, unknown>) || {},
   });
 
@@ -184,29 +186,19 @@ export default function TripForm({
         </label>
       </div>
 
-      <label style={labelStyle}>
-        Featured Cover Image
-        <div style={{ 
-          marginTop: 8, 
-          padding: '20px', 
-          border: '2px dashed #e2e8f0', 
-          borderRadius: 8, 
-          textAlign: 'center',
-          backgroundColor: '#f8fafc'
-        }}>
-          <input
-            style={{ display: 'none' }}
-            id="cover-upload"
-            type="file"
-            accept="image/*"
-            onChange={(e) => update("coverImage", e.target.files?.[0] || null)}
-            disabled={submitting}
-          />
-          <label htmlFor="cover-upload" style={{ cursor: 'pointer', color: '#6366f1', fontWeight: '500' }}>
-            {form.coverImage ? `Selected: ${form.coverImage.name}` : 'Click to upload or drag and drop cover photo'}
-          </label>
-        </div>
-      </label>
+      <div style={{ marginBottom: 24 }}>
+        <label style={labelStyle}>Featured Cover Image</label>
+        <ImageUploader 
+            onUpload={(image) => update("coverImageId", image.id)} 
+            label={form.coverImageId ? "Change Cover Image" : "Upload Cover Image"}
+        />
+        {form.coverImageId && (
+            <p className="text-xs text-blue-600 font-medium mt-2 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                Image ready to be attached
+            </p>
+        )}
+      </div>
 
       <label style={labelStyle}>
         Adventure Highlights / Description

@@ -42,26 +42,23 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
       const res = await apiFetch(`/trips/${tripId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          coverImage: undefined
-        }),
+        body: JSON.stringify(data),
       });
 
       if (res.ok) {
-        // 2. Upload cover if new one selected
-        if (data.coverImage) {
-          const formData = new FormData();
-          formData.append("image", data.coverImage);
-          
-          const mediaRes = await apiFetch(`/media/trips/${tripId}/cover`, {
+        // 2. Attach new cover if coverImageId changed
+        if (data.coverImageId && data.coverImageId !== initialData?.coverImageId) {
+          const mediaRes = await apiFetch(`/media/trips/${tripId}/cover/attach`, {
             method: "POST",
-            body: formData,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              imageId: data.coverImageId,
+            }),
           });
 
           if (!mediaRes.ok) {
-            console.error("Cover upload failed", await mediaRes.json().catch(() => ({})));
-            alert("Trip updated, but cover image upload failed.");
+            console.error("Cover attachment failed", await mediaRes.json().catch(() => ({})));
+            alert("Trip updated, but cover image attachment failed.");
           }
         }
         router.push("/admin/trips");

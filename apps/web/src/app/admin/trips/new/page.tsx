@@ -17,28 +17,25 @@ export default function AdminNewTripPage() {
       const res = await apiFetch("/trips", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          coverImage: undefined // Don't send file in JSON
-        }),
+        body: JSON.stringify(data), // Sending data as is (includes coverImageId)
       });
 
       const body = await res.json().catch(() => ({}));
 
       if (res.ok && body.id) {
-        // 2. Upload cover if exists
-        if (data.coverImage) {
-          const formData = new FormData();
-          formData.append("image", data.coverImage);
-          
-          const mediaRes = await apiFetch(`/media/trips/${body.id}/cover`, {
+        // 2. Attach cover image if imageId exists
+        if (data.coverImageId) {
+          const mediaRes = await apiFetch(`/media/trips/${body.id}/cover/attach`, {
             method: "POST",
-            body: formData, // apiFetch handles removing Content-Type for FormData
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              imageId: data.coverImageId,
+            }),
           });
 
           if (!mediaRes.ok) {
-            console.error("Cover upload failed", await mediaRes.json().catch(() => ({})));
-            alert("Trip created, but cover image upload failed.");
+            console.error("Cover attachment failed", await mediaRes.json().catch(() => ({})));
+            alert("Trip created, but cover image attachment failed.");
           }
         }
         router.push("/admin/trips");
