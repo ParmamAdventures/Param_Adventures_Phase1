@@ -11,15 +11,9 @@ export default function RootLoading() {
       <div className="flex flex-col items-center gap-2">
         <h2 className="text-sm font-black uppercase tracking-[0.4em] text-foreground">PARAM ADVENTURES</h2>
         <div className="h-0.5 w-32 bg-border relative overflow-hidden rounded-full">
-            <div className="absolute inset-0 bg-accent w-1/3 animate-[loading_1.5s_infinite_ease-in-out]" />
+            <div className="absolute inset-0 bg-accent w-1/3 animate-progress" />
         </div>
       </div>
-      <style jsx>{`
-        @keyframes loading {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(300%); }
-        }
-      `}</style>
     </div>
   );
 }
