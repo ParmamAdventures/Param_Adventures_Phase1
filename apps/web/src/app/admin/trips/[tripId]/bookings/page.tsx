@@ -5,7 +5,7 @@ import { apiFetch } from "../../../../../lib/api";
 import { useAuth } from "../../../../../context/AuthContext";
 import Button from "../../../../../components/ui/Button";
 import { useToast } from "../../../../../components/ui/ToastProvider";
-import { useParams } from "next/navigation";
+import { use } from "react";
 
 type User = { id: string; name?: string | null; email: string };
 type Booking = {
@@ -31,8 +31,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   UNKNOWN: "An error occurred",
 };
 
-export default function AdminTripBookingsPage() {
-  const { tripId } = useParams() as { tripId: string };
+export default function AdminTripBookingsPage({ params }: { params: Promise<{ tripId: string }> }) {
+  const { tripId } = use(params);
   const [trip, setTrip] = useState<Trip | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);

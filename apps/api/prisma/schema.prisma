@@ -139,6 +139,9 @@ model Trip {
   capacity      Int        @default(0)
   bookings      Booking[]
 
+  startDate     DateTime?
+  endDate       DateTime?
+
   @@index([status])
   @@index([slug])
 }
