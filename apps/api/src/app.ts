@@ -37,8 +37,9 @@ app.use(cookieParser()); // ⬅ MUST be before routes
 // Webhooks must be registered before the JSON parser so we can access the raw body
 app.use("/webhooks", webhooksRoutes);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "../public")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use(morgan("combined", { stream: { write: (message) => logger.info(message.trim()) } }));
 
 import { healthCheck } from "./controllers/health.controller";
 
