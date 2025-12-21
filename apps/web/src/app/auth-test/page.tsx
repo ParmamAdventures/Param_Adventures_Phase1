@@ -2,6 +2,7 @@
 
 import React from "react";
 import { apiFetch, setAccessToken } from "../../lib/api";
+import Button from "../../components/ui/Button";
 
 export default function AuthTest() {
   async function login() {
@@ -51,9 +52,11 @@ export default function AuthTest() {
     <div style={{ padding: 20 }}>
       <h2>Auth Test</h2>
       <div style={{ display: "flex", gap: 8 }}>
-        <button onClick={login}>Login</button>
-        <button onClick={me}>Call /auth/me</button>
-        <button onClick={logout}>Logout</button>
+        <Button onClick={login}>Login</Button>
+        <Button onClick={me}>Call /auth/me</Button>
+        <Button variant="ghost" onClick={logout}>
+          Logout
+        </Button>
       </div>
       <p style={{ marginTop: 12 }}>
         Open DevTools → Network and Application (Cookies) to inspect tokens.

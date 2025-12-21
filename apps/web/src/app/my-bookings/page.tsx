@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import Link from "next/link";
+import { useToast } from "../../components/ui/ToastProvider";
 import TripStatusBadge from "../../components/trips/TripStatusBadge";
+import Button from "../../components/ui/Button";
+import Card from "../../components/ui/Card";
+import ErrorBlock from "../../components/ui/ErrorBlock";
+import Spinner from "../../components/ui/Spinner";
 
 type Booking = {
   id: string;
@@ -62,16 +67,33 @@ export default function MyBookingsPage() {
     };
   }, [loading, user]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="py-12 text-center">
+        <Spinner size={24} />
+      </div>
+    );
 
   if (!user) {
     return <div>Please sign in to view your bookings.</div>;
   }
 
-  if (error) return <div>{error}</div>;
+  if (error) return <ErrorBlock>{error}</ErrorBlock>;
 
   if (bookings && bookings.length === 0) {
-    return <div>No bookings yet — join a trip to get started.</div>;
+    return (
+      <Card className="text-center py-16">
+        <h3 className="text-lg font-semibold">No bookings yet</h3>
+        <p className="text-[var(--muted)] mt-2">
+          Explore trips and join your first adventure.
+        </p>
+        <div className="mt-4">
+          <Link href="/trips">
+            <Button>Explore Trips</Button>
+          </Link>
+        </div>
+      </Card>
+    );
   }
 
   return (
@@ -90,7 +112,7 @@ export default function MyBookingsPage() {
         </thead>
         <tbody>
           {bookings?.map((b) => (
-            <tr key={b.id} style={{ borderTop: "1px solid #eee" }}>
+            <tr key={b.id} style={{ borderTop: "1px solid var(--border)" }}>
               <td style={{ padding: "8px 4px" }}>
                 <Link href={`/trips/${b.trip.slug}`}>{b.trip.title}</Link>
               </td>
@@ -113,9 +135,9 @@ export default function MyBookingsPage() {
                 (b.paymentStatus === "PENDING" || !b.paymentStatus) ? (
                   <PayNowButton bookingId={b.id} />
                 ) : (
-                  <button disabled style={{ opacity: 0.6 }}>
+                  <Button disabled variant="subtle" style={{ opacity: 0.6 }}>
                     {b.paymentStatus === "PAID" ? "Paid ✅" : "—"}
-                  </button>
+                  </Button>
                 )}
               </td>
             </tr>
@@ -140,6 +162,7 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
   const { user } = useAuth();
   const router = useRouter();
   const pollRef = React.useRef<number | null>(null);
+  const { showToast } = useToast();
 
   async function handleClick() {
     setError(null);
@@ -153,9 +176,12 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        setError(
-          body?.error?.message || body?.message || `Error ${res.status}`
-        );
+        const msg =
+          body?.error?.message || body?.message || `Error ${res.status}`;
+        setError(msg);
+        try {
+          showToast(msg, "error");
+        } catch {}
         return;
       }
 
@@ -209,8 +235,15 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
         );
       }
       // Keep UX conservative: show a transient success message (no checkout yet)
+      try {
+        showToast("Payment initiated", "info");
+      } catch {}
     } catch (e) {
-      setError(String(e));
+      const err = String(e);
+      setError(err);
+      try {
+        showToast("Payment failed to start", "error");
+      } catch {}
     } finally {
       setLoading(false);
     }
@@ -218,22 +251,21 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
 
   return (
     <div style={{ display: "inline-block" }}>
-      <button onClick={handleClick} disabled={loading} className="btn-primary">
+      <Button onClick={handleClick} loading={loading}>
         {loading ? "Preparing payment…" : "Pay Now"}
-      </button>
-      {error && (
-        <div style={{ color: "#b00020", marginTop: 6, fontSize: 13 }}>
-          {error}
-        </div>
-      )}
+      </Button>
+      {error && <ErrorBlock>{error}</ErrorBlock>}
       {intent && (
-        <div style={{ marginTop: 6, fontSize: 13, color: "#036" }}>
+        <div
+          style={{ marginTop: 6, fontSize: 13, color: "var(--semantic-info)" }}
+        >
           Payment ready — order {intent.orderId ?? intent.paymentId}
         </div>
       )}
       {intent && intent.orderId?.startsWith("order_test_") && (
         <div style={{ marginTop: 6 }}>
-          <button
+          <Button
+            variant="subtle"
             onClick={() => {
               // developer convenience: simulate success for dev fallback orders
               setMessage("Payment received. Verifying…");
@@ -249,13 +281,13 @@ function PayNowButton({ bookingId }: { bookingId: string }) {
             style={{ marginTop: 6, fontSize: 13 }}
           >
             Simulate success (dev)
-          </button>
+          </Button>
         </div>
       )}
       {message && (
         <div
           className="paynow-message"
-          style={{ marginTop: 6, fontSize: 13, color: "#036" }}
+          style={{ marginTop: 6, fontSize: 13, color: "var(--semantic-info)" }}
         >
           {message}
         </div>
@@ -397,7 +429,14 @@ async function openCheckout(
       },
     },
     prefill: { name: prefill?.name, email: prefill?.email },
-    theme: { color: "#0f766e" },
+    // use CSS token for accent so theme color follows design token
+    theme: {
+      color: (
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--accent"
+        ) || "#FF6A00"
+      ).trim(),
+    },
   } as unknown;
 
   // Create instance using typed window to avoid `any`

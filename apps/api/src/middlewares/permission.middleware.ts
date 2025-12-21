@@ -9,7 +9,7 @@ export async function attachPermissions(
   next: NextFunction
 ) {
   try {
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: "Unauthenticated" });
     }
@@ -40,11 +40,11 @@ export async function attachPermissions(
       }
     }
 
-    (req as any).user = {
-      ...(req as any).user,
-      roles: roleNames,
-      permissions: Array.from(permissionsSet),
-    };
+    if (req.user) {
+      req.user.roles = roleNames;
+      req.user.permissions = Array.from(permissionsSet);
+      req.permissions = req.user.permissions; // Also attach to req.permissions as seen in trips.routes
+    }
 
     return next();
   } catch (err) {

@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../lib/prisma";
 
 export async function createTrip(req: Request, res: Response) {
   const user = (req as any).user;
@@ -16,6 +14,8 @@ export async function createTrip(req: Request, res: Response) {
       difficulty: req.body.difficulty,
       location: req.body.location,
       price: req.body.price,
+      startDate: req.body.startDate ? new Date(req.body.startDate) : null,
+      endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       createdById: user.id,
     },
   });

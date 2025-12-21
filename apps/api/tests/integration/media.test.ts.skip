@@ -1,0 +1,84 @@
+import request from "supertest";
+import { app } from "../../src/app";
+import { PrismaClient } from "@prisma/client";
+import { signAccessToken } from "../../src/utils/jwt";
+import fs from "fs";
+import path from "path";
+
+const prisma = new PrismaClient();
+
+describe("Media Upload Integration", () => {
+  let adminToken: string;
+  let tripId: string;
+
+  beforeAll(async () => {
+    // Cleanup
+    await prisma.trip.deleteMany();
+    await prisma.user.deleteMany();
+    await prisma.role.deleteMany();
+    await prisma.permission.deleteMany();
+
+    // Setup Admin with Permissions
+    const perm = await prisma.permission.create({
+      data: { key: "trip:update", description: "Update Trips" },
+    });
+    const role = await prisma.role.create({
+      data: { name: "admin" },
+    });
+    await prisma.rolePermission.create({
+      data: { roleId: role.id, permissionId: perm.id },
+    });
+
+    const user = await prisma.user.create({
+      data: {
+        email: "admin@media.test",
+        password: "hash",
+        name: "Admin",
+      },
+    });
+    await prisma.userRole.create({
+      data: { userId: user.id, roleId: role.id },
+    });
+    adminToken = signAccessToken(user.id);
+
+    // Create Trip
+    const trip = await prisma.trip.create({
+      data: {
+        title: "Test Trip",
+        slug: "test-trip-media",
+        description: "Desc",
+        itinerary: {},
+        durationDays: 5,
+        difficulty: "Easy",
+        location: "Test Loc",
+        price: 1000,
+        createdById: user.id,
+      },
+    });
+    tripId = trip.id;
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+    // Optional: Cleanup uploads folder
+  });
+
+  it("should upload trip cover image", async () => {
+    const res = await request(app)
+      .post(`/media/trips/${tripId}/cover`)
+      .set("Authorization", `Bearer ${adminToken}`)
+      .attach("image", path.join(__dirname, "../fixtures/test.png"));
+
+    expect(res.status).toBe(201);
+    expect(res.body.image).toContain(`/uploads/trips/${tripId}/cover/`);
+
+    // Verify DB update
+    const updatedTrip = await prisma.trip.findUnique({ where: { id: tripId } });
+    expect(updatedTrip?.coverImage).toBe(res.body.image);
+
+    // Verify File Exists
+    const relativePath = res.body.image; // /uploads/...
+    const absolutePath = path.join(process.cwd(), relativePath);
+    expect(fs.existsSync(absolutePath)).toBe(true);
+  });
+});

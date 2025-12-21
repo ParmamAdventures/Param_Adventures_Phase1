@@ -3,7 +3,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { apiFetch } from "../../../../../lib/api";
 import { useAuth } from "../../../../../context/AuthContext";
-import { useParams } from "next/navigation";
+import Button from "../../../../../components/ui/Button";
+import { useToast } from "../../../../../components/ui/ToastProvider";
+import { use } from "react";
 
 type User = { id: string; name?: string | null; email: string };
 type Booking = {
@@ -29,8 +31,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   UNKNOWN: "An error occurred",
 };
 
-export default function AdminTripBookingsPage() {
-  const { tripId } = useParams() as { tripId: string };
+export default function AdminTripBookingsPage({ params }: { params: Promise<{ tripId: string }> }) {
+  const { tripId } = use(params);
   const [trip, setTrip] = useState<Trip | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +41,7 @@ export default function AdminTripBookingsPage() {
   );
   const [processingIds, setProcessingIds] = useState<string[]>([]);
   const { loading: authLoading, user: currentUser } = useAuth();
+  const { showToast } = useToast();
 
   const perms: string[] =
     (currentUser as { permissions?: string[] } | null)?.permissions || [];
@@ -84,6 +87,9 @@ export default function AdminTripBookingsPage() {
     setError(null);
     setProcessing(id, true);
     try {
+      showToast("Approving booking…", "info");
+    } catch {}
+    try {
       const res = await apiFetch(`/bookings/${id}/approve`, { method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -92,14 +98,28 @@ export default function AdminTripBookingsPage() {
           code,
           message: ERROR_MESSAGES[code] || body?.error?.message,
         });
+        try {
+          showToast(
+            ERROR_MESSAGES[code] ||
+              body?.error?.message ||
+              "Failed to approve booking",
+            "error"
+          );
+        } catch {}
         return;
       }
       await fetchData();
+      try {
+        showToast("Booking approved", "success");
+      } catch {}
     } catch {
       setError({
         code: "NETWORK_ERROR",
         message: ERROR_MESSAGES.NETWORK_ERROR,
       });
+      try {
+        showToast("Network error while approving booking", "error");
+      } catch {}
     } finally {
       setProcessing(id, false);
     }
@@ -109,6 +129,9 @@ export default function AdminTripBookingsPage() {
     setError(null);
     setProcessing(id, true);
     try {
+      showToast("Rejecting booking…", "info");
+    } catch {}
+    try {
       const res = await apiFetch(`/bookings/${id}/reject`, { method: "POST" });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -117,14 +140,28 @@ export default function AdminTripBookingsPage() {
           code,
           message: ERROR_MESSAGES[code] || body?.error?.message,
         });
+        try {
+          showToast(
+            ERROR_MESSAGES[code] ||
+              body?.error?.message ||
+              "Failed to reject booking",
+            "error"
+          );
+        } catch {}
         return;
       }
       await fetchData();
+      try {
+        showToast("Booking rejected", "success");
+      } catch {}
     } catch {
       setError({
         code: "NETWORK_ERROR",
         message: ERROR_MESSAGES.NETWORK_ERROR,
       });
+      try {
+        showToast("Network error while rejecting booking", "error");
+      } catch {}
     } finally {
       setProcessing(id, false);
     }
@@ -142,7 +179,7 @@ export default function AdminTripBookingsPage() {
       </p>
 
       {error && (
-        <div style={{ background: "#ffe6e6", padding: 8, marginBottom: 12 }}>
+        <div style={{ marginBottom: 12 }}>
           <strong>{error.code}</strong>: {error.message}
         </div>
       )}
@@ -153,13 +190,14 @@ export default function AdminTripBookingsPage() {
             <th>Created</th>
             <th>Status</th>
             <th>User</th>
-            {canManage && <th>Actions</th>}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {bookings.map((b) => {
             const processing = processingIds.includes(b.id);
-            const showActions = canManage && b.status === "REQUESTED";
+            const needsAction = b.status === "REQUESTED";
+            const showActions = needsAction && canManage;
             return (
               <tr key={b.id}>
                 <td>{new Date(b.createdAt).toLocaleString()}</td>
@@ -167,28 +205,46 @@ export default function AdminTripBookingsPage() {
                 <td>
                   {b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}
                 </td>
-                {canManage && (
-                  <td>
-                    {showActions ? (
+                <td>
+                  {needsAction ? (
+                    showActions ? (
                       <div style={{ display: "flex", gap: 8 }}>
-                        <button
+                        <Button
                           onClick={() => approveBooking(b.id)}
+                          loading={processing}
                           disabled={processing}
                         >
-                          {processing ? "Processing..." : "Approve"}
-                        </button>
-                        <button
+                          Approve
+                        </Button>
+                        <Button
+                          variant="danger"
                           onClick={() => rejectBooking(b.id)}
+                          loading={processing}
                           disabled={processing}
                         >
-                          {processing ? "Processing..." : "Reject"}
-                        </button>
+                          Reject
+                        </Button>
                       </div>
                     ) : (
-                      <span />
-                    )}
-                  </td>
-                )}
+                      <div>
+                        <Button disabled variant="subtle">
+                          Approve
+                        </Button>
+                        <div
+                          style={{
+                            fontSize: 12,
+                            color: "var(--muted)",
+                            marginTop: 6,
+                          }}
+                        >
+                          You don’t have permission to approve this
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    <span />
+                  )}
+                </td>
               </tr>
             );
           })}

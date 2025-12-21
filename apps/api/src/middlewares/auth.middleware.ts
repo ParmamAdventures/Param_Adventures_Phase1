@@ -11,7 +11,11 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
   try {
     const payload = verifyAccessToken(token);
-    (req as any).user = { id: payload.sub };
+    req.user = {
+      id: payload.sub,
+      roles: [],
+      permissions: [],
+    };
     next();
   } catch {
     return res.status(401).json({ error: "Invalid token" });

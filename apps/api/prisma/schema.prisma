@@ -35,6 +35,10 @@ model User {
   approvedTrips Trip[]  @relation("TripApprovedBy")
   // Booking relations
   bookings Booking[]
+
+  // Media relations
+  uploadedImages Image[] @relation("UserUploadedImages")
+  blogs          Blog[]  @relation("UserBlogs")
 }
 
 model Role {
@@ -114,6 +118,15 @@ model Trip {
   price         Int
   status        TripStatus @default(DRAFT)
 
+  // Media (Production-grade)
+  coverImageId  String?
+  coverImage    Image?     @relation("TripCoverImage", fields: [coverImageId], references: [id])
+  gallery       TripGalleryImage[]
+
+  // Legacy fields (Consider removing after migration)
+  coverImageLegacy String?   @map("coverImage")
+  galleryLegacy    String[]  @map("gallery")
+
   createdById   String
   createdBy     User       @relation("TripCreatedBy", fields: [createdById], references: [id])
 
@@ -127,8 +140,78 @@ model Trip {
   capacity      Int        @default(0)
   bookings      Booking[]
 
+  startDate     DateTime?
+  endDate       DateTime?
+
+  blogs         Blog[]     @relation("TripBlogs")
+
   @@index([status])
   @@index([slug])
+}
+
+model TripGalleryImage {
+  tripId  String
+  imageId String
+  order   Int
+
+  trip  Trip  @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  image Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([tripId, imageId])
+}
+
+enum BlogStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+model Blog {
+  id          String     @id @default(uuid())
+  title       String
+  slug        String     @unique
+  excerpt     String?
+  content     Json       // editor output
+  status      BlogStatus @default(DRAFT)
+
+  authorId    String
+  author      User       @relation("UserBlogs", fields: [authorId], references: [id])
+
+  coverImageId String?
+  coverImage   Image?    @relation("BlogCoverImage", fields: [coverImageId], references: [id])
+
+  tripId      String?
+  trip        Trip?      @relation("TripBlogs", fields: [tripId], references: [id])
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([status])
+  @@index([authorId])
+}
+
+model Image {
+  id          String   @id @default(uuid())
+  originalUrl String
+  mediumUrl   String
+  thumbUrl    String
+  width       Int
+  height      Int
+  size        Int
+  mimeType    String
+
+  uploadedById String
+  uploadedBy   User     @relation("UserUploadedImages", fields: [uploadedById], references: [id])
+
+  tripsCover   Trip[]   @relation("TripCoverImage")
+  tripsGallery TripGalleryImage[]
+
+  blogsCover   Blog[]   @relation("BlogCoverImage")
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 enum BookingStatus {

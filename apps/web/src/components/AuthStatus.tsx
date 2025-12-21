@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAuth } from "../context/AuthContext";
+import Button from "./ui/Button";
 
 export default function AuthStatus() {
   const { user, loading, logout } = useAuth();
@@ -12,7 +13,9 @@ export default function AuthStatus() {
   return (
     <div>
       <p>Logged in as {user.email}</p>
-      <button onClick={logout}>Logout</button>
+      <Button variant="ghost" onClick={logout}>
+        Logout
+      </Button>
     </div>
   );
 }

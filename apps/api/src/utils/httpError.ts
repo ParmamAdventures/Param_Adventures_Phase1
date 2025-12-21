@@ -1,12 +1,11 @@
-import { Response } from "express";
+export class HttpError extends Error {
+  public status: number;
+  public code: string;
 
-export function httpError(
-  res: Response,
-  status: number,
-  code: string,
-  message: string
-) {
-  return res.status(status).json({ error: { code, message } });
+  constructor(status: number, code: string, message: string) {
+    super(message);
+    this.status = status;
+    this.code = code;
+    this.name = "HttpError";
+  }
 }
-
-export default httpError;

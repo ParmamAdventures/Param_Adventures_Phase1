@@ -2,8 +2,19 @@
   try {
     const { PrismaClient } = require("@prisma/client");
     const prisma = new PrismaClient();
-    const count = await prisma.trip.count();
-    console.log("Trip table exists, count:", count);
+    const tripId = process.argv[2] || process.env.TRIP_ID;
+    if (!tripId) {
+      const count = await prisma.trip.count();
+      console.log("Trip table exists, count:", count);
+    } else {
+      const trip = await prisma.trip.findUnique({ where: { id: tripId } });
+      if (!trip) {
+        console.log("NOT_FOUND");
+      } else {
+        console.log("FOUND");
+        console.log(JSON.stringify(trip, null, 2));
+      }
+    }
     await prisma.$disconnect();
     process.exit(0);
   } catch (e) {

@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import Button from "../components/ui/Button";
+import ErrorBlock from "../components/ui/ErrorBlock";
 
 export default function Login() {
   const { login } = useAuth();
@@ -35,6 +37,7 @@ export default function Login() {
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
+        disabled={loading}
       />
 
       <input
@@ -42,11 +45,12 @@ export default function Login() {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
+        disabled={loading}
       />
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <ErrorBlock>{error}</ErrorBlock>}
 
-      <button disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+      <Button loading={loading}>Login</Button>
     </form>
   );
 }

@@ -24,8 +24,13 @@ async function main() {
     "booking:cancel",
     "booking:view",
     "booking:read:admin",
+    // blog permissions
     "blog:create",
+    "blog:update",
+    "blog:submit",
     "blog:approve",
+    "blog:reject",
+    "blog:publish",
     "audit:read",
     // Admin management permissions
     "user:list",
@@ -88,6 +93,12 @@ async function main() {
     create: { name: "ADMIN", description: "Admin role", isSystem: false },
   });
 
+  const userRole = await prisma.role.upsert({
+    where: { name: "USER" },
+    update: {},
+    create: { name: "USER", description: "Standard authenticated user", isSystem: false },
+  });
+
   const publicRole = await prisma.role.upsert({
     where: { name: "PUBLIC" },
     update: {},
@@ -130,6 +141,18 @@ async function main() {
     "booking:reject",
     "booking:cancel",
     "booking:view",
+  ]);
+
+  // Blog-related grants
+  await grantPermissionsToRole(userRole, [
+    "blog:create",
+    "blog:update",
+    "blog:submit",
+  ]);
+  await grantPermissionsToRole(adminRole, [
+    "blog:approve",
+    "blog:reject",
+    "blog:publish",
   ]);
 
   // Seed a sensible default capacity for existing trips

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
 import { useRoles } from "../../../hooks/useRoles";
+import Button from "../../../components/ui/Button";
 
 type User = {
   id: string;
@@ -72,7 +73,8 @@ export default function UsersPage() {
                           currentUser?.id !== u.id &&
                           (role !== "SUPER_ADMIN" ||
                             myRoles.includes("SUPER_ADMIN")) && (
-                            <button
+                            <Button
+                              variant="ghost"
                               style={{ marginLeft: 8 }}
                               onClick={async () => {
                                 if (
@@ -95,7 +97,7 @@ export default function UsersPage() {
                               }}
                             >
                               ❌
-                            </button>
+                            </Button>
                           )}
                       </li>
                     ))}
