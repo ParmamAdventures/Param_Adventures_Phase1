@@ -41,6 +41,7 @@ app.use(cookieParser()); // ⬅ MUST be before routes
 
 // Webhooks must be registered before the JSON parser so we can access the raw body
 app.use("/webhooks", webhooksRoutes);
+app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));

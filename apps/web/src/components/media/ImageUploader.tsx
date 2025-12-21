@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
+import { apiFetch } from "@/lib/api";
 
 type UploadedImage = {
   id: string;
@@ -48,16 +49,10 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
     form.append("file", file);
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/media/upload`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          },
-          body: form,
-        }
-      );
+      const res = await apiFetch("/media/upload", {
+        method: "POST",
+        body: form,
+      });
 
       const data = await res.json();
 

@@ -1,4 +1,16 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-foreground: #ffffff;
+}
 
 :root {
   --bg: #ffffff;
@@ -7,6 +19,7 @@
   --muted: #64748b;
   --border: #e5e7eb;
   --accent: #ff6a00;
+  
   /* Motion tokens */
   --motion-fast: 120ms;
   --motion-base: 180ms;

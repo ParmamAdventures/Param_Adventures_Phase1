@@ -19,6 +19,7 @@ export default function AdminLayout({
           <Link href="/admin/users">Users</Link>
           <Link href="/admin/roles">Roles</Link>
           <Link href="/admin/trips">Trips</Link>
+          <Link href="/admin/blogs">Blogs</Link>
         </nav>
 
         <hr />

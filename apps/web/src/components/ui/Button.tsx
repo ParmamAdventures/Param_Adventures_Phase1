@@ -13,15 +13,15 @@ export function Button({
   ...props
 }: Props) {
   const classes = [
-    "rounded-md px-4 py-2 text-sm font-medium transition-transform",
-    variant === "primary" && "bg-[var(--accent)] text-white hover:opacity-90",
+    "relative items-center justify-center inline-flex rounded-xl px-6 py-3 text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:pointer-events-none",
+    variant === "primary" && "bg-accent text-white shadow-md shadow-accent/20 hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5",
     variant === "ghost" &&
-      "bg-transparent text-[var(--text)] hover:bg-[var(--surface)]",
+      "bg-transparent text-foreground hover:bg-accent/10 hover:text-accent",
     variant === "danger" &&
-      "bg-[var(--semantic-danger)] text-white hover:opacity-90",
-    variant === "subtle" && "bg-[var(--surface)] text-[var(--text)]",
+      "bg-red-600 text-white hover:bg-red-700 shadow-sm",
+    variant === "subtle" && "bg-secondary text-secondary-foreground hover:bg-secondary/80",
     loading && "opacity-70 cursor-not-allowed",
-    "active:scale-[0.98] transition-transform duration-[var(--motion-fast)]",
+    "active:scale-[0.98] duration-200",
     className,
   ]
     .filter(Boolean)

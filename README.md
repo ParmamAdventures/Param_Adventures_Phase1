@@ -1,76 +1,80 @@
 # Param Adventures
 
-Production-grade adventure travel platform.
+A premium adventure travel platform built for scale.
 
-## Status
+## 🚀 Quick Start (Demo Mode)
 
-🚧 In active development
+### Prerequisites
 
-## Tech Stack
+- Node.js (v18+)
+- PostgreSQL (or local instance)
 
-- Frontend: Next.js (App Router), TypeScript
-- Backend: Node.js, Express, TypeScript (API server under `apps/api`)
-- Database: PostgreSQL (Prisma)
-- Infrastructure: Railway, Vercel
+### 1. Environment Setup
 
-## Repository Layout
-
-- `apps/web` — Next.js frontend (App Router). Main UI, components, pages, and client code.
-- `apps/api` — Backend API and Prisma schema/migrations.
-- `packages/shared` — Shared utilities/types used by apps.
-- `docs` — Project documentation and test plan.
-
-## Running the web app (local)
-
-From repository root:
+Copy the example configuration files and fill in any missing secrets (Database URL, JWT Secret).
 
 ```bash
-cd apps/web
+# API Config
+cp apps/api/.env.example apps/api/.env
+
+# Web Config
+cp apps/web/.env.example apps/web/.env
+```
+
+### 2. Install & Seed
+
+Install dependencies and creating the initial database state.
+
+```bash
+# Install root dependencies
 npm install
-npm run dev       # start Next dev server (http://localhost:3000)
+
+# Setup Database (run from root or apps/api)
+cd apps/api
+npx prisma generate
+npx prisma migrate dev
+node prisma/seed_users.js # Seeds demo users
 ```
 
-Build for production:
+### 3. Run Application
+
+Run both frontend and backend concurrently.
 
 ```bash
+# In Terminal 1 (API)
+cd apps/api
+npm run dev
+
+# In Terminal 2 (Web)
 cd apps/web
-npm run build
-npm run start
+npm run dev
 ```
 
-## Tests
+Visit: [http://localhost:3000](http://localhost:3000)
 
-- Unit tests: run from `apps/web`:
+---
 
-```bash
-cd apps/web
-npm test
-```
+## 🔑 Demo Credentials
 
-- Manual test plan: see `docs/TEST_PLAN.md` for manual QA cases (toasts, payments, admin flows, skeletons).
+**Super Admin**
+- Email: `admin@local.test`
+- Password: `password123`
 
-## Key UI primitives and features
+**Regular User**
+- Email: `user@local.test`
+- Password: `password123`
 
-- Toasts: `apps/web/src/components/ui/ToastProvider.tsx` + `ToastViewport.tsx` — client-only, theme-aware, framer-motion based.
-- Motion wrappers: `MotionCard`, `MotionButton` for consistent animations (framer-motion presets).
-- Skeletons: client-loaded skeletons and `TripsClient` to show placeholders while fetching.
-- Buttons, ErrorBlock, Spinner: core UI primitives used site-wide.
+---
 
-## Contributing
+## 🛠️ Architecture
 
-- Add unit tests for UI changes under `apps/web/src/components` and update `docs/TEST_PLAN.md` for manual test cases.
-- Open a branch for feature work and create PRs against `main`.
+- **Frontend**: Next.js 14, TypeScript, TailwindCSS, Framer Motion
+- **Backend**: Express, TypeScript, Prisma ORM
+- **Database**: PostgreSQL
+- **Auth**: Custom JWT (Access + Refresh tokens)
 
-## More
+## 🛡️ Security Notes
 
-- App-specific README: `apps/web/README.md`
-- Test plan: `docs/TEST_PLAN.md`
-
-## Testing & QA
-
-- Unit tests: run `npm test` in `apps/web`.
-- Manual test plan: see `docs/TEST_PLAN.md` for test cases, environment, and run steps.
-
-## Contributing
-
-- For UI changes, include unit tests under `apps/web/src/components` and update `docs/TEST_PLAN.md` with any new manual cases.
+- Staging/Production environments use HTTP-only cookies.
+- Stack traces are suppressed in production.
+- Rate limiting and CORS are configured for specific client origins.

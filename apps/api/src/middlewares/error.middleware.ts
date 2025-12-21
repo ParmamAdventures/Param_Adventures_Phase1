@@ -17,9 +17,11 @@ export function errorHandler(
       .json({ error: { code: err.code, message: err.message } });
   }
 
-  res
-    .status(500)
-    .json({
-      error: { code: "INTERNAL_ERROR", message: "Internal Server Error" },
-    });
+  res.status(500).json({
+    error: {
+      code: "INTERNAL_ERROR",
+      message: "Internal Server Error",
+      ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    },
+  });
 }

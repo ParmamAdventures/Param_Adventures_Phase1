@@ -21,10 +21,11 @@ type TripFull = {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   try {
-    const res = await fetch(`${API_BASE}/trips/public/${params.slug}`, {
+    const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
       cache: "no-store",
     });
     if (!res.ok) return {};
@@ -49,7 +50,7 @@ export async function generateMetadata({
 export default async function TripDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
@@ -80,23 +81,50 @@ export default async function TripDetailPage({
 
 function renderTrip(trip: TripFull) {
   return (
-    <section className="space-y-12">
+    <div className="pb-32">
+      {/* Back Navigation */}
+      <div className="mx-auto max-w-7xl px-4 py-4 md:py-8">
+        <a href="/trips" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-accent transition-colors">
+          <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Adventures
+        </a>
+      </div>
+
       <TripHero trip={trip} />
 
-      <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-        <div className="space-y-8">
-          <TripHighlights trip={trip} />
+      <main className="mx-auto max-w-7xl px-4 py-12">
+        <div className="grid gap-12 lg:grid-cols-[1fr_380px]">
+          {/* Main Content */}
+          <div className="space-y-12">
+            <TripHighlights trip={trip} />
 
-          <div>
-            <h2 className="text-xl font-semibold mb-2">About this trip</h2>
-            <p className="opacity-80 leading-relaxed">
-              {trip.description || "Trip details coming soon."}
-            </p>
+            <div className="prose dark:prose-invert max-w-none">
+              <h2 className="text-2xl font-bold mb-4">About this trip</h2>
+              <p className="opacity-90 leading-relaxed text-lg">
+                {trip.description || "Detailed itinerary coming soon."}
+              </p>
+            </div>
+            
+            {/* Mobile Booking CTA Placeholder (Sticky Bottom) */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-background border-t z-50">
+               <a href="#book" className="w-full block">
+                 <button className="w-full bg-accent text-white font-bold py-3 rounded-lg shadow-lg">
+                   Book Now - ${trip.price}
+                 </button>
+               </a>
+            </div>
+          </div>
+
+          {/* Sticky Sidebar */}
+          <div id="book" className="hidden lg:block">
+            <div className="sticky top-24">
+              <TripBookingCard trip={trip} />
+            </div>
           </div>
         </div>
-
-        <TripBookingCard trip={trip} />
-      </div>
-    </section>
+      </main>
+    </div>
   );
 }
