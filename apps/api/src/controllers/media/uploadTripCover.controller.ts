@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../lib/prisma";
 import { processImage } from "../../utils/imageProcessor";
 import { HttpError } from "../../utils/httpError";
-
-const prisma = new PrismaClient();
 
 export async function uploadTripCover(req: Request, res: Response) {
   if (!req.file) {
@@ -15,13 +13,9 @@ export async function uploadTripCover(req: Request, res: Response) {
   // Process image using production-grade sharp pipeline
   const result = await processImage(req.file.buffer, req.file.mimetype);
 
-  // Create Media record
-  const media = await prisma.media.create({
+  // Create Image record
+  const image = await prisma.image.create({
     data: {
-      ownerType: "trip",
-      ownerId: tripId,
-      type: "image",
-      purpose: "cover",
       originalUrl: result.originalUrl,
       mediumUrl: result.mediumUrl,
       thumbUrl: result.thumbUrl,
@@ -29,6 +23,7 @@ export async function uploadTripCover(req: Request, res: Response) {
       size: result.size,
       width: result.width,
       height: result.height,
+      uploadedById: (req as any).user.id,
     },
   });
 
@@ -36,14 +31,13 @@ export async function uploadTripCover(req: Request, res: Response) {
   await prisma.trip.update({
     where: { id: tripId },
     data: { 
-      coverImage: result.originalUrl, // Legacy
-      coverMediaId: media.id 
+      coverImageId: image.id 
     },
   });
 
   res.status(201).json({
     image: result.originalUrl,
-    mediaId: media.id,
+    imageId: image.id,
     urls: {
       original: result.originalUrl,
       medium: result.mediumUrl,

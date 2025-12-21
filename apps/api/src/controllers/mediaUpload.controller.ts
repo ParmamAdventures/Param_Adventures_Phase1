@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { prisma } from "../lib/prisma";
 import { processImage } from "../utils/imageProcessor";
 
 export async function uploadImage(req: Request, res: Response) {
@@ -9,10 +10,23 @@ export async function uploadImage(req: Request, res: Response) {
   }
 
   try {
-    const image = await processImage(
+    const imageData = await processImage(
       req.file.buffer,
       req.file.mimetype
     );
+
+    const image = await prisma.image.create({
+      data: {
+        originalUrl: imageData.originalUrl,
+        mediumUrl: imageData.mediumUrl,
+        thumbUrl: imageData.thumbUrl,
+        width: imageData.width,
+        height: imageData.height,
+        size: imageData.size,
+        mimeType: imageData.mimeType,
+        uploadedById: (req as any).user.id,
+      },
+    });
 
     res.status(201).json({
       image,
