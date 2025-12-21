@@ -20,8 +20,15 @@ export async function uploadTripGallery(req: Request, res: Response) {
     })
   );
 
+  // Calculate starting order index
+  const lastImage = await prisma.tripGalleryImage.findFirst({
+    where: { tripId },
+    orderBy: { order: "desc" },
+  });
+  let nextOrder = lastImage ? lastImage.order + 1 : 0;
+
   // Database operations
-  await Promise.all(processedResults.map(async (result) => {
+  for (const result of processedResults) {
     const image = await prisma.image.create({
       data: {
         originalUrl: result.originalUrl,
@@ -32,14 +39,16 @@ export async function uploadTripGallery(req: Request, res: Response) {
         width: result.width,
         height: result.height,
         uploadedById: (req as any).user.id,
-        // Automatically connect to gallery
         tripsGallery: {
-          connect: { id: tripId }
+          create: {
+            tripId,
+            order: nextOrder++,
+          }
         }
       },
     });
     imageRecords.push(image);
-  }));
+  }
 
   res.status(201).json({
     images: imageRecords,

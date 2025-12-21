@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "../ui/Button";
 import { ImageUploader } from "../media/ImageUploader";
+import { GalleryUploader } from "../media/GalleryUploader";
 
 export type TripFormData = {
   title: string;
@@ -15,6 +16,7 @@ export type TripFormData = {
   startDate: string;
   endDate: string;
   coverImageId?: string | null;
+  gallery?: { id: string, thumbUrl: string }[];
   itinerary: Record<string, unknown> | unknown[];
 };
 
@@ -40,6 +42,7 @@ export default function TripForm({
     startDate: (initialData?.startDate as string) || "",
     endDate: (initialData?.endDate as string) || "",
     coverImageId: (initialData?.coverImageId as string) || null,
+    gallery: (initialData?.gallery as { id: string, thumbUrl: string }[]) || [],
     itinerary: (initialData?.itinerary as Record<string, unknown>) || {},
   });
 
@@ -198,6 +201,15 @@ export default function TripForm({
                 Image ready to be attached
             </p>
         )}
+      </div>
+
+      <div style={{ marginBottom: 32 }}>
+        <label style={labelStyle}>Adventure Gallery</label>
+        <p className="text-xs text-slate-500 mb-3">Add multiple photos to showcase the journey. You can reorder them to control the display sequence.</p>
+        <GalleryUploader
+          images={form.gallery || []}
+          onChange={(imgs) => update("gallery", imgs)}
+        />
       </div>
 
       <label style={labelStyle}>

@@ -16,16 +16,29 @@ export async function addTripGalleryImage(req: Request, res: Response) {
     throw new HttpError(404, "IMAGE_NOT_FOUND", "Image not found");
   }
 
+  // Calculate next order index
+  const lastImage = await prisma.tripGalleryImage.findFirst({
+    where: { tripId },
+    orderBy: { order: "desc" },
+  });
+  const nextOrder = lastImage ? lastImage.order + 1 : 0;
+
   const trip = await prisma.trip.update({
     where: { id: tripId },
     data: {
-      galleryImages: {
-        connect: { id: imageId },
-      },
+      gallery: {
+        create: {
+          imageId: imageId,
+          order: nextOrder,
+        }
+      }
     },
     include: {
-      galleryImages: true,
-    },
+      gallery: {
+        orderBy: { order: "asc" },
+        include: { image: true }
+      }
+    }
   });
 
   res.json(trip);

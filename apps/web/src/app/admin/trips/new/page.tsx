@@ -38,6 +38,21 @@ export default function AdminNewTripPage() {
             alert("Trip created, but cover image attachment failed.");
           }
         }
+        // 3. Attach gallery images in order
+        if (data.gallery && data.gallery.length > 0) {
+          const galleryRes = await apiFetch(`/media/trips/${body.id}/gallery`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              imageIds: data.gallery.map(g => g.id),
+            }),
+          });
+
+          if (!galleryRes.ok) {
+            console.error("Gallery attachment failed", await galleryRes.json().catch(() => ({})));
+            alert("Trip created, but gallery attachment failed.");
+          }
+        }
         router.push("/admin/trips");
       } else {
         const msg = body?.error?.message || body?.message || "Failed to create trip";
