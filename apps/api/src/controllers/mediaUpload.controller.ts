@@ -24,7 +24,7 @@ export async function uploadImage(req: Request, res: Response) {
         height: imageData.height,
         size: imageData.size,
         mimeType: imageData.mimeType,
-        uploadedById: (req as any).user.id,
+        uploadedById: req.user!.id,
       },
     });
 

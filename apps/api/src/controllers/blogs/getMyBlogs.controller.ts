@@ -1,8 +1,7 @@
-import { Response } from "express";
-import { AuthRequest } from "../../middlewares/auth.middleware";
+import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
-export async function getMyBlogs(req: AuthRequest, res: Response) {
+export async function getMyBlogs(req: Request, res: Response) {
   const blogs = await prisma.blog.findMany({
     where: { authorId: req.user!.id },
     orderBy: { createdAt: "desc" },

@@ -1,11 +1,14 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import { AuthRequest } from "../../middlewares/auth.middleware";
+import { requireAuth } from "../../middlewares/auth.middleware";
 
-export async function getBlogById(req: AuthRequest, res: Response) {
+export async function getBlogById(req: Request, res: Response) {
   const { id } = req.params;
-  const user = req.user;
+  // Assuming req.user is added by a middleware like requireAuth
+  // and Request type is augmented or casted elsewhere if not using AuthRequest directly.
+  // For this change, we'll assume req.user is available on Request after middleware.
+  const user = (req as any).user;
 
   const blog = await prisma.blog.findUnique({
     where: { id },

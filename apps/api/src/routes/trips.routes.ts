@@ -14,11 +14,23 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 const router = Router();
 
-// Public list (must be defined before param routes so '/public' doesn't match '/:id')
+import { getTripBySlug } from "../controllers/trips/getTripBySlug.controller";
+
+// ... imports ...
+
+// Public list
 router.get("/public", async (_req, res) => {
-  const trips = await prisma.trip.findMany({ where: { status: "PUBLISHED" } });
+  const trips = await prisma.trip.findMany({ 
+    where: { status: "PUBLISHED" },
+    orderBy: { createdAt: "desc" },
+    include: {
+      coverImage: true,
+    }
+  });
   res.json(trips);
 });
+
+router.get("/public/:slug", getTripBySlug);
 
 // Internal list (also placed before param routes)
 router.get(
@@ -50,8 +62,8 @@ router.put(
 // Get single trip with owner-or-internal-view logic
 router.get("/:id", requireAuth, attachPermissions, async (req, res) => {
   const { id } = req.params;
-  const user = (req as any).user;
-  const permissions = (req as any).permissions || [];
+  const user = req.user!;
+  const permissions = req.permissions || [];
 
   const trip = await prisma.trip.findUnique({ where: { id } });
   if (!trip) return res.status(404).json({ error: "Trip not found" });

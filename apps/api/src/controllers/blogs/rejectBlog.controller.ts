@@ -5,7 +5,7 @@ import { auditService } from "../../services/audit.service";
 
 export async function rejectBlog(req: Request, res: Response) {
   const { id } = req.params;
-  const user = (req as any).user;
+  const user = req.user!;
   const { reason } = req.body;
 
   const blog = await prisma.blog.findUnique({ where: { id } });
