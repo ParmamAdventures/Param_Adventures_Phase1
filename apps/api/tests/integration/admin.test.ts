@@ -27,7 +27,7 @@ describe("Admin RBAC Integration", () => {
 
     // Create Admin Role & Perms
     const perm = await prisma.permission.create({
-      data: { key: "users:read", description: "Read users" },
+      data: { key: "user:list", description: "Read users" },
     });
     const adminRole = await prisma.role.create({
       data: { name: "admin" },
