@@ -1,0 +1,17 @@
+import { Router } from "express";
+import { getRevenueSummary, getTripPerformance, getBookingStats } from "../../controllers/admin/analytics.controller";
+import { requireAuth } from "../../middlewares/auth.middleware";
+import { attachPermissions } from "../../middlewares/permission.middleware";
+import { requirePermission } from "../../middlewares/require-permission.middleware";
+
+const router = Router();
+
+router.use(requireAuth);
+router.use(attachPermissions);
+router.use(requirePermission("admin:view_analytics"));
+
+router.get("/revenue", getRevenueSummary);
+router.get("/trips", getTripPerformance);
+router.get("/bookings", getBookingStats);
+
+export default router;

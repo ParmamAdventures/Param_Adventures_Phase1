@@ -25,9 +25,13 @@ model User {
   email     String     @unique
   password  String
   name      String?
+  bio       String?
   status    UserStatus @default(ACTIVE)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  avatarImageId String?
+  avatarImage   Image?     @relation("UserAvatar", fields: [avatarImageId], references: [id])
 
   roles     UserRole[]
   // Trip relations
@@ -209,6 +213,7 @@ model Image {
   tripsGallery TripGalleryImage[]
 
   blogsCover   Blog[]   @relation("BlogCoverImage")
+  userAvatar   User[]   @relation("UserAvatar")
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

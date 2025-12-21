@@ -15,6 +15,7 @@ export async function getMyBookings(req: Request, res: Response) {
           title: true,
           slug: true,
           location: true,
+          coverImage: true,
           publishedAt: true,
         },
       },

@@ -11,15 +11,19 @@ import authRoutes from "./routes/auth.routes";
 import adminUsersRoutes from "./routes/admin/users.routes";
 import adminRolesRoutes from "./routes/admin/roles.routes";
 import adminRoleAssignRoutes from "./routes/admin/role-assign.routes";
-import tripsRoutes from "./routes/trips.routes";
+import tripRoutes from "./routes/trips.routes";
 import adminTripBookingsRoutes from "./routes/admin/trip-bookings.routes";
 import adminBookingsRoutes from "./routes/admin/bookings.routes";
 import bookingsRoutes from "./routes/bookings.routes";
-import webhooksRoutes from "./routes/webhooks.routes";
+import userRoutes from "./routes/user.routes";
+import blogRoutes from "./routes/blogs.routes";
 import paymentsRoutes from "./routes/payments.routes";
+import webhooksRoutes from "./routes/webhooks.routes";
 import metricsRoutes from "./routes/metrics.routes";
 import mediaRoutes from "./routes/media.routes";
-import blogRoutes from "./routes/blogs.routes";
+import adminAnalyticsRoutes from "./routes/admin/analytics.routes";
+import adminAuditRoutes from "./routes/admin/audit.routes";
+
 import { errorHandler } from "./middlewares/error.middleware";
 
 import { globalLimiter } from "./config/rate-limit";
@@ -30,17 +34,14 @@ app.use(helmet());
 app.use(globalLimiter);
 app.use(
   cors({
-    // In development reflect the request origin so credentials (cookies)
-    // are allowed from the running frontend (Next/Vite). In production
-    // replace with a specific origin or a whitelist.
     origin:
       process.env.NODE_ENV === "production" ? "http://your.frontend.url" : true,
     credentials: true,
   })
 );
-app.use(cookieParser()); // ⬅ MUST be before routes
+app.use(cookieParser());
 
-// Webhooks must be registered before the JSON parser so we can access the raw body
+// Webhooks must be registered before the JSON parser
 app.use("/webhooks", webhooksRoutes);
 app.use(express.json());
 
@@ -52,18 +53,24 @@ import { healthCheck } from "./controllers/health.controller";
 
 app.get("/health", healthCheck);
 
+// Base routes
 app.use("/auth", authRoutes);
-app.use("/admin/users", adminUsersRoutes);
-app.use("/admin/roles", adminRolesRoutes);
-app.use("/admin/roles", adminRoleAssignRoutes);
-app.use("/trips", tripsRoutes);
-app.use("/admin/trips", adminTripBookingsRoutes);
-app.use("/admin/bookings", adminBookingsRoutes);
+app.use("/users", userRoutes);
+app.use("/trips", tripRoutes);
 app.use("/bookings", bookingsRoutes);
 app.use("/payments", paymentsRoutes);
 app.use("/media", mediaRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/metrics", metricsRoutes);
+
+// Admin routes
+app.use("/admin/users", adminUsersRoutes);
+app.use("/admin/roles", adminRolesRoutes);
+app.use("/admin/role-assign", adminRoleAssignRoutes);
+app.use("/admin/trips", adminTripBookingsRoutes);
+app.use("/admin/bookings", adminBookingsRoutes);
+app.use("/admin/analytics", adminAnalyticsRoutes);
+app.use("/admin/audit-logs", adminAuditRoutes);
 
 // must be LAST
 app.use(errorHandler);

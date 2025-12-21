@@ -82,6 +82,23 @@ body {
   border-radius: 8px;
 }
 
+/* Tiptap Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted);
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+/* Tiptap Link hover */
+.tiptap a {
+  cursor: pointer !important;
+}
+
 /* Reduced motion preference respects */
 @media (prefers-reduced-motion: reduce) {
   :root {
