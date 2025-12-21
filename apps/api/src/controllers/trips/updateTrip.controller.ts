@@ -17,7 +17,12 @@ export async function updateTrip(req: Request, res: Response) {
 
   const updated = await prisma.trip.update({
     where: { id },
-    data: req.body,
+    data: {
+      location: req.body.location,
+      price: req.body.price,
+      startDate: req.body.startDate ? new Date(req.body.startDate) : null,
+      endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+    },
   });
 
   await prisma.auditLog.create({

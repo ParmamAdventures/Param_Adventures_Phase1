@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import path from "path";
+import morgan from "morgan";
+import { logger } from "./lib/logger";
 
 import authRoutes from "./routes/auth.routes";
 import adminUsersRoutes from "./routes/admin/users.routes";
@@ -14,6 +17,7 @@ import bookingsRoutes from "./routes/bookings.routes";
 import webhooksRoutes from "./routes/webhooks.routes";
 import paymentsRoutes from "./routes/payments.routes";
 import metricsRoutes from "./routes/metrics.routes";
+import mediaRoutes from "./routes/media.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 import { globalLimiter } from "./config/rate-limit";
@@ -39,7 +43,7 @@ app.use("/webhooks", webhooksRoutes);
 
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-app.use(morgan("combined", { stream: { write: (message) => logger.info(message.trim()) } }));
+app.use(morgan("combined", { stream: { write: (message: string) => logger.info(message.trim()) } }));
 
 import { healthCheck } from "./controllers/health.controller";
 
@@ -53,6 +57,7 @@ app.use("/trips", tripsRoutes);
 app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/bookings", bookingsRoutes);
 app.use("/payments", paymentsRoutes);
+app.use("/media", mediaRoutes);
 app.use("/metrics", metricsRoutes);
 
 // must be LAST

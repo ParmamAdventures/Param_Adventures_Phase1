@@ -16,6 +16,8 @@ export async function createTrip(req: Request, res: Response) {
       difficulty: req.body.difficulty,
       location: req.body.location,
       price: req.body.price,
+      startDate: req.body.startDate ? new Date(req.body.startDate) : null,
+      endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       createdById: user.id,
     },
   });
