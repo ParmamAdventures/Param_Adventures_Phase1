@@ -38,6 +38,7 @@ model User {
 
   // Media relations
   uploadedImages Image[] @relation("UserUploadedImages")
+  blogs          Blog[]  @relation("UserBlogs")
 }
 
 model Role {
@@ -142,6 +143,8 @@ model Trip {
   startDate     DateTime?
   endDate       DateTime?
 
+  blogs         Blog[]     @relation("TripBlogs")
+
   @@index([status])
   @@index([slug])
 }
@@ -159,26 +162,34 @@ model TripGalleryImage {
 
 enum BlogStatus {
   DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
   PUBLISHED
-  ARCHIVED
 }
 
 model Blog {
-  id            String     @id @default(uuid())
-  title         String
-  slug          String     @unique
-  content       String
-  status        BlogStatus @default(DRAFT)
+  id          String     @id @default(uuid())
+  title       String
+  slug        String     @unique
+  excerpt     String?
+  content     Json       // editor output
+  status      BlogStatus @default(DRAFT)
 
-  coverImageId  String?
-  coverImage    Image?     @relation("BlogCoverImage", fields: [coverImageId], references: [id])
-  contentImages Image[]    @relation("BlogContentImages")
+  authorId    String
+  author      User       @relation("UserBlogs", fields: [authorId], references: [id])
 
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  coverImageId String?
+  coverImage   Image?    @relation("BlogCoverImage", fields: [coverImageId], references: [id])
+
+  tripId      String?
+  trip        Trip?      @relation("TripBlogs", fields: [tripId], references: [id])
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   @@index([status])
-  @@index([slug])
+  @@index([authorId])
 }
 
 model Image {
@@ -198,7 +209,6 @@ model Image {
   tripsGallery TripGalleryImage[]
 
   blogsCover   Blog[]   @relation("BlogCoverImage")
-  blogsContent Blog[]   @relation("BlogContentImages")
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
