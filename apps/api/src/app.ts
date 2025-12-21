@@ -18,6 +18,7 @@ import webhooksRoutes from "./routes/webhooks.routes";
 import paymentsRoutes from "./routes/payments.routes";
 import metricsRoutes from "./routes/metrics.routes";
 import mediaRoutes from "./routes/media.routes";
+import blogRoutes from "./routes/blogs.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 
 import { globalLimiter } from "./config/rate-limit";
@@ -58,6 +59,7 @@ app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/bookings", bookingsRoutes);
 app.use("/payments", paymentsRoutes);
 app.use("/media", mediaRoutes);
+app.use("/blogs", blogRoutes);
 app.use("/metrics", metricsRoutes);
 
 // must be LAST
