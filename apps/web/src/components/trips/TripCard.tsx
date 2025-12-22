@@ -35,8 +35,8 @@ export default function TripCard({ trip }: { trip: Trip }) {
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
         {trip.price && (
-          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-primary shadow-sm">
-            ${trip.price}
+          <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-black dark:text-white shadow-sm border border-black/10 dark:border-white/10">
+            ₹{trip.price}
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -60,7 +60,7 @@ export default function TripCard({ trip }: { trip: Trip }) {
               {trip.price && (
                 <>
                   <span className="w-1 h-1 rounded-full bg-border" />
-                  <span>From ${trip.price}</span>
+                  <span>From ₹{trip.price}</span>
                 </>
               )}
             </div>

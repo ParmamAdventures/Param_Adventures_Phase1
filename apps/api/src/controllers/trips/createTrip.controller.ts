@@ -14,6 +14,7 @@ export async function createTrip(req: Request, res: Response) {
       difficulty: req.body.difficulty,
       location: req.body.location,
       price: req.body.price,
+      isFeatured: req.body.isFeatured || false,
       startDate: req.body.startDate ? new Date(req.body.startDate) : null,
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       coverImageId: req.body.coverImageId || null,

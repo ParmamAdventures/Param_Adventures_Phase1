@@ -96,7 +96,7 @@ function renderTrip(trip: TripFull) {
             <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-background border-t z-50">
                <a href="#book" className="w-full block">
                  <button className="w-full bg-accent text-white font-bold py-3 rounded-lg shadow-lg">
-                   Book Now - ${trip.price}
+                   Book Now - ₹{trip.price}
                  </button>
                </a>
             </div>

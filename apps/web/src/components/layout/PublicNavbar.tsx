@@ -6,11 +6,14 @@ import Button from "../../components/ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Search, X, Loader2 } from "lucide-react";
+import SearchOverlay from "../search/SearchOverlay";
 
 export default function PublicNavbar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,54 +34,65 @@ export default function PublicNavbar() {
     !!pathname && (pathname === path || (path !== "/" && pathname.startsWith(path)));
 
   return (
-    <header className={navClasses}>
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        {/* Brand */}
-        <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
-          <span className={isHome && !isScrolled ? "text-white" : "text-accent"}>Param</span>
-          <span>Adventures</span>
-        </Link>
+    <>
+      <header className={navClasses}>
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
+            <span className={isHome && !isScrolled ? "text-white" : "text-accent"}>Param</span>
+            <span>Adventures</span>
+          </Link>
 
-        {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
-          <NavLink href="/trips" active={isActive("/trips")} isTransparent={isHome && !isScrolled}>Adventures</NavLink>
-          <NavLink href="/blogs" active={isActive("/blogs")} isTransparent={isHome && !isScrolled}>Journal</NavLink>
-          
-          {user && (
-            <NavLink href="/dashboard" active={isActive("/dashboard")} isTransparent={isHome && !isScrolled}>Dashboard</NavLink>
-          )}
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center gap-8">
+            <NavLink href="/trips" active={isActive("/trips")} isTransparent={isHome && !isScrolled}>Adventures</NavLink>
+            <NavLink href="/blogs" active={isActive("/blogs")} isTransparent={isHome && !isScrolled}>Journal</NavLink>
+            
+            {user && (
+              <NavLink href="/dashboard" active={isActive("/dashboard")} isTransparent={isHome && !isScrolled}>Dashboard</NavLink>
+            )}
 
-          {user?.roles?.includes("SUPER_ADMIN") || user?.roles?.includes("ADMIN") ? (
-             <NavLink href="/admin" active={isActive("/admin")} isTransparent={isHome && !isScrolled}>Admin</NavLink>
-          ) : null}
-        </nav>
+            {user?.roles?.includes("SUPER_ADMIN") || user?.roles?.includes("ADMIN") ? (
+               <NavLink href="/admin" active={isActive("/admin")} isTransparent={isHome && !isScrolled}>Admin</NavLink>
+            ) : null}
+          </nav>
 
-        {/* Actions */}
-        <div className="flex items-center gap-4">
-          <ThemeToggle />
-          
-          {user ? (
-            <div className="flex items-center gap-4">
-               <span className={`hidden md:block text-sm font-medium ${isHome && !isScrolled ? "text-white/80" : "text-muted-foreground"}`}>
-                  {user.name || user.email?.split("@")[0]}
-               </span>
-               <Button variant="ghost" onClick={logout} className={`text-sm h-9 ${isHome && !isScrolled ? "text-white hover:bg-white/10 hover:text-white" : ""}`}>
-                  Log out
-               </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link href="/login">
-                <Button variant="ghost" className={`text-sm h-9 ${isHome && !isScrolled ? "text-white hover:bg-white/10 hover:text-white" : ""}`}>Log in</Button>
-              </Link>
-              <Link href="/signup">
-                <Button variant="primary" className="text-sm h-9">Sign up</Button>
-              </Link>
-            </div>
-          )}
+           {/* Actions */}
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsSearchOpen(true)}
+              className={`p-2 rounded-xl transition-all ${isHome && !isScrolled ? "text-white/80 hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-accent hover:bg-accent/5"}`}
+              aria-label="Search"
+            >
+              <Search size={20} />
+            </button>
+            
+            <ThemeToggle />
+            
+            {user ? (
+              <div className="flex items-center gap-4">
+                 <span className={`hidden md:block text-sm font-medium ${isHome && !isScrolled ? "text-white/80" : "text-muted-foreground"}`}>
+                    {user.name || user.email?.split("@")[0]}
+                 </span>
+                 <Button variant="ghost" onClick={logout} className={`text-sm h-9 ${isHome && !isScrolled ? "text-white hover:bg-white/10 hover:text-white" : ""}`}>
+                    Log out
+                 </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Link href="/login">
+                  <Button variant="ghost" className={`text-sm h-9 ${isHome && !isScrolled ? "text-white hover:bg-white/10 hover:text-white" : ""}`}>Log in</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button variant="primary" className="text-sm h-9">Sign up</Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    </>
   );
 }
 

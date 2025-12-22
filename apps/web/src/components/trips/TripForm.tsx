@@ -18,6 +18,7 @@ export type TripFormData = {
   coverImageId?: string | null;
   gallery?: { id: string, thumbUrl: string }[];
   itinerary: Record<string, unknown> | unknown[];
+  isFeatured: boolean;
 };
 
 type TripFormProps = {
@@ -44,6 +45,7 @@ export default function TripForm({
     coverImageId: (initialData?.coverImageId as string) || null,
     gallery: (initialData?.gallery as { id: string, thumbUrl: string }[]) || [],
     itinerary: (initialData?.itinerary as Record<string, unknown>) || {},
+    isFeatured: (initialData?.isFeatured as boolean) || false,
   });
 
   function update<K extends keyof TripFormData>(
@@ -87,6 +89,20 @@ export default function TripForm({
       boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
       border: '1px solid #f1f5f9'
     }}>
+      <div className="flex items-center gap-2 mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+        <input
+          type="checkbox"
+          id="isFeatured"
+          checked={form.isFeatured}
+          onChange={(e) => update("isFeatured", e.target.checked)}
+          disabled={submitting}
+          className="w-5 h-5 text-yellow-600 rounded focus:ring-yellow-500 border-gray-300"
+        />
+        <label htmlFor="isFeatured" className="text-sm font-semibold text-yellow-800 cursor-pointer select-none">
+          Mark as Featured Adventure
+        </label>
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 8 }}>
         <label style={labelStyle}>
           Trip Title

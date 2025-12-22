@@ -1,5 +1,6 @@
 import { Hero } from "@/components/home/Hero";
 import { FeaturedSection } from "@/components/home/FeaturedSection";
+import TripCarousel from "@/components/trips/TripCarousel";
 import TripCard from "@/components/trips/TripCard";
 import BlogCard from "@/components/blogs/BlogCard";
 import { Button } from "@/components/ui/Button";
@@ -16,65 +17,6 @@ export const metadata = constructMetadata({
   title: "Param Adventures | Expedition into the Unknown",
   description: "Join premium adventure travel experiences across the globe. From Spiti Valley to the Himalayas, discover the unseen with Param Adventures.",
 });
-
-// Mock Data extended with categories for fallback/dev
-const MOCK_TRIPS = [
-  {
-    id: "1",
-    title: "Everest Base Camp Trek",
-    location: "Nepal",
-    status: "OPEN",
-    slug: "everest-base-camp",
-    price: 1400,
-    duration: "14 Days",
-    coverImage: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2601&auto=format&fit=crop",
-    category: "TREK"
-  },
-  {
-    id: "2",
-    title: "Kyoto Cherry Blossom Tour",
-    location: "Japan",
-    status: "OPEN",
-    slug: "kyoto-cherry-blossom",
-    price: 2200,
-    duration: "9 Days",
-    coverImage: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2670&auto=format&fit=crop",
-    category: "SPIRITUAL"
-  },
-  {
-    id: "3",
-    title: "Iceland Northern Lights",
-    location: "Iceland",
-    status: "OPEN",
-    slug: "iceland-northern-lights",
-    price: 1800,
-    duration: "7 Days",
-    coverImage: "https://images.unsplash.com/photo-1531366936337-7c912a4589a7?q=80&w=2670&auto=format&fit=crop",
-    category: "TREK"
-  },
-  {
-    id: "4",
-    title: "Corporate Leadership Retreat",
-    location: "Himachal Pradesh",
-    status: "OPEN",
-    slug: "corporate-leadership-retreat",
-    price: 500,
-    duration: "3 Days",
-    coverImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2670&auto=format&fit=crop",
-    category: "CORPORATE"
-  },
-  {
-    id: "5",
-    title: "Himalayan Geology Tour",
-    location: "Ladakh",
-    status: "OPEN",
-    slug: "himalayan-geology-tour",
-    price: 1200,
-    duration: "10 Days",
-    coverImage: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2670&auto=format&fit=crop",
-    category: "EDUCATIONAL"
-  }
-];
 
 async function getTrips() {
   try {
@@ -107,11 +49,21 @@ async function getHeroSlides() {
   }
 }
 
+async function getFeaturedTrips() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/trips/public?isFeatured=true`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
 export default async function Home() {
-  const [trips, blogs, heroSlides] = await Promise.all([getTrips(), getBlogs(), getHeroSlides()]);
+  const [trips, featuredTrips, blogs, heroSlides] = await Promise.all([getTrips(), getFeaturedTrips(), getBlogs(), getHeroSlides()]);
   
-  // Use mock trips if API returns empty, just for the visual showcase phase
-  const allTrips = trips.length > 0 ? trips : MOCK_TRIPS;
+  // Directly use api data
+  const allTrips = trips;
 
   // Filter Categories
   const categorySections = [
@@ -150,11 +102,7 @@ export default async function Home() {
                   </Link>
                 }
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {categoryTrips.map((trip: any) => (
-                    <TripCard key={trip.id} trip={trip} />
-                  ))}
-                </div>
+                <TripCarousel trips={categoryTrips} />
               </FeaturedSection>
             </ScrollReveal>
           </section>
@@ -172,11 +120,7 @@ export default async function Home() {
             </Link>
           }
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allTrips.map((trip: any) => (
-              <TripCard key={trip.id} trip={trip} />
-            ))}
-          </div>
+          <TripCarousel trips={featuredTrips} />
         </FeaturedSection>
       </ScrollReveal>
 

@@ -18,10 +18,37 @@ import { getTripBySlug } from "../controllers/trips/getTripBySlug.controller";
 
 // ... imports ...
 
-// Public list
-router.get("/public", async (_req, res) => {
+// Public list with search and filtering
+router.get("/public", async (req, res) => {
+  const { search, category, difficulty, maxPrice } = req.query;
+  
+  const where: any = { status: "PUBLISHED" };
+  
+  if (search) {
+    where.OR = [
+      { title: { contains: String(search), mode: "insensitive" } },
+      { description: { contains: String(search), mode: "insensitive" } },
+    ];
+  }
+  
+  if (category) {
+    where.category = category;
+  }
+  
+  if (difficulty) {
+    where.difficulty = difficulty;
+  }
+  
+  if (maxPrice) {
+    where.price = { lte: Number(maxPrice) };
+  }
+
+  if (Boolean(req.query.isFeatured) === true) {
+     where.isFeatured = true;
+  }
+
   const trips = await prisma.trip.findMany({ 
-    where: { status: "PUBLISHED" },
+    where,
     orderBy: { createdAt: "desc" },
     include: {
       coverImage: true,

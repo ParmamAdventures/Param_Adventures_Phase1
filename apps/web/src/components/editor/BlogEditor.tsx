@@ -66,7 +66,7 @@ export function BlogEditor({
     editorProps: {
       attributes: {
         class: [
-          "prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-8",
+          "prose prose-lg dark:prose-invert max-w-none focus:outline-none min-h-[400px] p-8 text-black dark:text-white",
           readOnly ? "" : "cursor-text",
         ].join(" "),
       },

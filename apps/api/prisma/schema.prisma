@@ -158,10 +158,13 @@ model Trip {
   endDate       DateTime?
 
   blogs         Blog[]     @relation("TripBlogs")
+  
+  isFeatured    Boolean    @default(false)
 
   @@index([status])
   @@index([slug])
   @@index([category])
+  @@index([isFeatured])
 }
 
 model TripGalleryImage {

@@ -67,7 +67,7 @@ export default function TripListTable({ trips, loading, onRefresh, onAction }: P
                     </span>
                     {trip.price && (
                       <span className="text-xs text-muted-foreground">
-                        From ${trip.price}
+                        From ₹{trip.price}
                       </span>
                     )}
                   </div>

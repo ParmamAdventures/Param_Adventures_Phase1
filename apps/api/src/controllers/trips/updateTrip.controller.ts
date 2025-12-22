@@ -32,6 +32,7 @@ export async function updateTrip(req: Request, res: Response) {
       price: req.body.price,
       durationDays: req.body.durationDays,
       difficulty: req.body.difficulty,
+      isFeatured: req.body.isFeatured,
       startDate: req.body.startDate ? new Date(req.body.startDate) : null,
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       coverImageId: req.body.coverImageId,
