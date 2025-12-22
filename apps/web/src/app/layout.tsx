@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../context/AuthContext";
 import ThemeProvider from "../components/theme/ThemeProvider";
-import ThemeToggle from "../components/theme/ThemeToggle";
 import ToastProvider from "../components/ui/ToastProvider";
+import PublicNavbar from "../components/layout/PublicNavbar";
 
 import { constructMetadata } from "../lib/metadata";
 
@@ -31,14 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <div
-            className="app-header"
-            style={{ display: "flex", justifyContent: "flex-end", padding: 12 }}
-          >
-            <ThemeToggle />
-          </div>
           <ToastProvider>
             <AuthProvider>
+              <PublicNavbar />
               <main className="app-surface">{children}</main>
             </AuthProvider>
           </ToastProvider>

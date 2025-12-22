@@ -25,6 +25,7 @@ model User {
   email     String     @unique
   password  String
   name      String?
+  nickname  String?
   bio       String?
   status    UserStatus @default(ACTIVE)
   createdAt DateTime   @default(now())
@@ -110,6 +111,14 @@ enum TripStatus {
   ARCHIVED
 }
 
+enum TripCategory {
+  TREK
+  CORPORATE
+  EDUCATIONAL
+  SPIRITUAL
+  CUSTOM
+}
+
 model Trip {
   id            String     @id @default(uuid())
   title         String
@@ -121,6 +130,7 @@ model Trip {
   location      String
   price         Int
   status        TripStatus @default(DRAFT)
+  category      TripCategory @default(TREK)
 
   // Media (Production-grade)
   coverImageId  String?
@@ -151,6 +161,7 @@ model Trip {
 
   @@index([status])
   @@index([slug])
+  @@index([category])
 }
 
 model TripGalleryImage {
@@ -280,4 +291,24 @@ model Payment {
   booking           Booking @relation(fields: [bookingId], references: [id])
 
   @@index([bookingId])
+}
+
+model HeroSlide {
+  id        String   @id @default(uuid())
+  title     String
+  subtitle  String?
+  videoUrl  String
+  ctaLink   String?
+  order     Int      @default(0)
+  
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}
+
+model SiteConfig {
+  key   String @id
+  value String
+  label String
 }

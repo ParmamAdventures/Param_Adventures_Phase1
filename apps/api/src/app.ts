@@ -23,6 +23,7 @@ import metricsRoutes from "./routes/metrics.routes";
 import mediaRoutes from "./routes/media.routes";
 import adminAnalyticsRoutes from "./routes/admin/analytics.routes";
 import adminAuditRoutes from "./routes/admin/audit.routes";
+import contentRoutes from "./routes/content.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
 
@@ -61,12 +62,15 @@ app.use("/bookings", bookingsRoutes);
 app.use("/payments", paymentsRoutes);
 app.use("/media", mediaRoutes);
 app.use("/blogs", blogRoutes);
+app.use("/media", mediaRoutes);
+app.use("/blogs", blogRoutes);
 app.use("/metrics", metricsRoutes);
+app.use("/content", contentRoutes);
 
 // Admin routes
 app.use("/admin/users", adminUsersRoutes);
 app.use("/admin/roles", adminRolesRoutes);
-app.use("/admin/role-assign", adminRoleAssignRoutes);
+app.use("/admin/roles", adminRoleAssignRoutes);
 app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/admin/bookings", adminBookingsRoutes);
 app.use("/admin/analytics", adminAnalyticsRoutes);

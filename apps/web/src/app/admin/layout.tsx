@@ -25,7 +25,7 @@ export default function AdminLayout({
 
   return (
     <PermissionRoute permission="user:list">
-      <div className="min-h-screen bg-[var(--background)] flex flex-col md:flex-row">
+      <div className="min-h-screen bg-[var(--background)] flex flex-col md:flex-row pt-16">
         {/* Sidebar */}
         <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl z-20">
           <div className="sticky top-0 p-6 flex flex-col h-full min-h-screen">

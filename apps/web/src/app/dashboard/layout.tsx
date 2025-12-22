@@ -21,7 +21,7 @@ export default function DashboardLayout({
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-[var(--bg)]">
-        <div className="max-w-5xl mx-auto py-10 px-6 space-y-8">
+        <div className="max-w-5xl mx-auto pt-24 pb-10 px-6 space-y-8">
           <div className="space-y-4">
             <h1 className="text-4xl font-black italic tracking-tighter uppercase italic">
                Member <span className="text-[var(--accent)]">Dashboard</span>

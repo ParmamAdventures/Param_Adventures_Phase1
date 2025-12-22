@@ -23,7 +23,7 @@ export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
     credentials: "include",
   });
 
-  if (response.status === 401) {
+  if (response.status === 401 && !url.endsWith("/auth/refresh")) {
     const refreshed = await fetch(`${baseUrl}/auth/refresh`, {
       method: "POST",
       credentials: "include",

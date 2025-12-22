@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+html {
+  scroll-behavior: smooth;
+}
+
 @theme {
   --color-background: var(--bg);
   --color-foreground: var(--text);
