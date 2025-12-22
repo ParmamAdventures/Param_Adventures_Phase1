@@ -9,16 +9,26 @@ type Trip = {
   slug: string;
   price?: number;
   duration?: string;
-  coverImage?: string;
+  durationDays?: number;
+  coverImage?: string | { mediumUrl: string };
+  coverImageLegacy?: string;
 };
 
 export default function TripCard({ trip }: { trip: Trip }) {
+  const imageUrl = typeof trip.coverImage === 'string' 
+    ? trip.coverImage 
+    : (trip.coverImage as any)?.mediumUrl || 
+      trip.coverImageLegacy || 
+      "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&q=80";
+
+  const displayDuration = trip.duration || (trip.durationDays ? `${trip.durationDays} Days` : null);
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 h-full">
       {/* Image Container - Aspect Ratio 4:3 */}
       <div className="relative aspect-[4/3] overflow-hidden">
         <Image
-          src={trip.coverImage || "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&q=80"}
+          src={imageUrl}
           alt={trip.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -44,9 +54,9 @@ export default function TripCard({ trip }: { trip: Trip }) {
               {trip.title}
             </Link>
           </h3>
-          {(trip.duration || trip.price) && (
+          {(displayDuration || trip.price) && (
             <div className="flex items-center gap-3 text-sm text-muted-foreground pt-1">
-              {trip.duration && <span>{trip.duration}</span>}
+              {displayDuration && <span>{displayDuration}</span>}
               {trip.price && (
                 <>
                   <span className="w-1 h-1 rounded-full bg-border" />

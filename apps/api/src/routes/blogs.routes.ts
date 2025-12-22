@@ -7,6 +7,7 @@ import { createBlog } from "../controllers/blogs/createBlog.controller";
 import { updateBlog } from "../controllers/blogs/updateBlog.controller";
 import { submitBlog } from "../controllers/blogs/submitBlog.controller";
 import { approveBlog } from "../controllers/blogs/approveBlog.controller";
+import { publishBlog } from "../controllers/blogs/publishBlog.controller";
 import { rejectBlog } from "../controllers/blogs/rejectBlog.controller";
 import { getPublicBlogs } from "../controllers/blogs/getPublicBlogs.controller";
 import { getBlogBySlug } from "../controllers/blogs/getBlogBySlug.controller";
@@ -29,6 +30,7 @@ router.post("/:id/submit", requireAuth, attachPermissions, requirePermission("bl
 // Admin-only moderation routes
 router.get("/", requireAuth, attachPermissions, requirePermission("blog:approve"), getBlogs);
 router.post("/:id/approve", requireAuth, attachPermissions, requirePermission("blog:approve"), approveBlog);
+router.post("/:id/publish", requireAuth, attachPermissions, requirePermission("blog:publish"), publishBlog);
 router.post("/:id/reject", requireAuth, attachPermissions, requirePermission("blog:reject"), rejectBlog);
 
 // General authenticated route (permission checked in controller)

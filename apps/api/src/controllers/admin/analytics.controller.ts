@@ -104,3 +104,21 @@ export async function getBookingStats(req: Request, res: Response) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+export async function getModerationSummary(req: Request, res: Response) {
+  try {
+    const [pendingTrips, pendingBlogs] = await Promise.all([
+      prisma.trip.count({ where: { status: "PENDING_REVIEW" } }),
+      prisma.blog.count({ where: { status: "PENDING_REVIEW" } }),
+    ]);
+
+    res.json({
+      pendingTrips,
+      pendingBlogs,
+      totalPending: pendingTrips + pendingBlogs,
+    });
+  } catch (error) {
+    console.error("Failed to fetch moderation summary", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}

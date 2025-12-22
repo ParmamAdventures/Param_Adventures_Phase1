@@ -36,6 +36,21 @@ export default function AdminTripsPage() {
     fetchTrips();
   }, [fetchTrips]);
 
+  const handleAction = async (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive") => {
+    if (!confirm(`Are you sure you want to ${action} this trip?`)) return;
+    try {
+      const res = await apiFetch(`/trips/${id}/${action}`, { method: "POST" });
+      if (res.ok) {
+        fetchTrips();
+      } else {
+        const data = await res.json();
+        alert(data?.error || `Failed to ${action} trip`);
+      }
+    } catch (err) {
+      alert(`Network error: Failed to ${action} trip`);
+    }
+  };
+
   return (
     <PermissionRoute permission="trip:view:internal">
       <div className="space-y-6">
@@ -64,6 +79,7 @@ export default function AdminTripsPage() {
             trips={trips} 
             loading={loading} 
             onRefresh={fetchTrips} 
+            onAction={handleAction}
           />
         )}
       </div>

@@ -38,8 +38,15 @@ router.get(
   requireAuth,
   attachPermissions,
   requirePermission("trip:view:internal"),
-  async (_req, res) => {
-    const trips = await prisma.trip.findMany();
+  async (req, res) => {
+    const { status } = req.query;
+    const trips = await prisma.trip.findMany({
+      where: status ? { status: status as any } : {},
+      orderBy: { createdAt: "desc" },
+      include: {
+        coverImage: true,
+      }
+    });
     res.json(trips);
   }
 );

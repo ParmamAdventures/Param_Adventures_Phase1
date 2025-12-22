@@ -78,9 +78,9 @@ export default function RoleCard({ role, allSystemPermissions, onConfigure }: Ro
         <button 
           onClick={() => onConfigure?.(role)}
           className="text-[10px] font-bold uppercase tracking-widest text-[var(--accent)] hover:underline disabled:opacity-50"
-          disabled={role.isSystem}
+          disabled={role.isSystem || !onConfigure}
         >
-          {role.isSystem ? "Read Only Access" : "Configure Access ➔"}
+          {role.isSystem || !onConfigure ? "Read Only Access" : "Configure Access ➔"}
         </button>
       </div>
     </Card>

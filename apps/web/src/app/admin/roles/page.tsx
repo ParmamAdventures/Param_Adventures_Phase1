@@ -7,6 +7,7 @@ import Spinner from "../../../components/ui/Spinner";
 import ErrorBlock from "../../../components/ui/ErrorBlock";
 import { useToast } from "../../../components/ui/ToastProvider";
 import Modal from "../../../components/ui/Modal";
+import { useAuth } from "../../../context/AuthContext";
 
 type Role = {
   id: string;
@@ -30,6 +31,9 @@ export default function RolesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
+  const { user } = useAuth();
+  
+  const isSuperAdmin = user?.roles?.includes("SUPER_ADMIN");
 
   useEffect(() => {
     let mounted = true;
@@ -145,7 +149,7 @@ export default function RolesPage() {
             key={role.id} 
             role={role} 
             allSystemPermissions={ALL_SYSTEM_PERMISSIONS}
-            onConfigure={setEditingRole} 
+            onConfigure={isSuperAdmin ? setEditingRole : undefined} 
           />
         ))}
       </div>

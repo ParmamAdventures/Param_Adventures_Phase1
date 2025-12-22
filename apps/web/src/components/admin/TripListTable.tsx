@@ -21,9 +21,10 @@ type Props = {
   trips: Trip[];
   loading: boolean;
   onRefresh?: () => void;
+  onAction?: (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive") => void;
 };
 
-export default function TripListTable({ trips, loading, onRefresh }: Props) {
+export default function TripListTable({ trips, loading, onRefresh, onAction }: Props) {
   if (loading) {
     return (
       <div className="p-8 text-center text-muted-foreground flex flex-col items-center gap-2">
@@ -95,16 +96,63 @@ export default function TripListTable({ trips, loading, onRefresh }: Props) {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <Link href={`/admin/trips/${trip.id}/edit`}>
-                      <Button variant="ghost" className="px-3 py-1.5 h-auto text-xs">
-                        Edit
+                    {trip.status === "DRAFT" && onAction && (
+                      <Button 
+                        variant="primary" 
+                        className="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 h-auto text-xs"
+                        onClick={() => onAction(trip.id, "submit")}
+                      >
+                        Submit
                       </Button>
-                    </Link>
-                    <Link href={`/trips/${trip.id}`} target="_blank">
-                      <Button variant="subtle" className="px-3 py-1.5 h-auto text-xs">
-                        Preview
+                    )}
+                    {trip.status === "PENDING_REVIEW" && onAction && (
+                        <>
+                            <Button 
+                                variant="primary" 
+                                className="bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 h-auto text-xs"
+                                onClick={() => onAction(trip.id, "approve")}
+                            >
+                                Approve
+                            </Button>
+                            <Button 
+                                variant="danger" 
+                                className="px-3 py-1.5 h-auto text-xs"
+                                onClick={() => onAction(trip.id, "reject")}
+                            >
+                                Reject
+                            </Button>
+                        </>
+                    )}
+                    {trip.status === "APPROVED" && onAction && (
+                      <Button 
+                        variant="primary" 
+                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 h-auto text-xs"
+                        onClick={() => onAction(trip.id, "publish")}
+                      >
+                        Publish
                       </Button>
-                    </Link>
+                    )}
+                    {trip.status === "PUBLISHED" && onAction && (
+                      <Button 
+                        variant="ghost" 
+                        className="text-amber-600 hover:text-amber-700 px-3 py-1.5 h-auto text-xs"
+                        onClick={() => onAction(trip.id, "archive")}
+                      >
+                        Archive
+                      </Button>
+                    )}
+                        <>
+                            <Link href={`/admin/trips/${trip.id}/edit`}>
+                            <Button variant="ghost" className="px-3 py-1.5 h-auto text-xs">
+                                Edit
+                            </Button>
+                            </Link>
+                            <Link href={`/trips/${trip.id}`} target="_blank">
+                            <Button variant="subtle" className="px-3 py-1.5 h-auto text-xs">
+                                Preview
+                            </Button>
+                            </Link>
+                        </>
                   </div>
                 </td>
               </tr>

@@ -179,7 +179,11 @@ export default function LoginPage() {
           </div>
            
            <div className="grid grid-cols-2 gap-4">
-                <button type="button" className="flex items-center justify-center h-10 w-full rounded-md border border-input bg-transparent hover:bg-accent/5 hover:border-accent/40 transition-colors">
+                <button 
+                  type="button" 
+                  className="flex items-center justify-center h-10 w-full rounded-md border border-input bg-transparent hover:bg-accent/5 hover:border-accent/40 transition-colors"
+                  suppressHydrationWarning
+                >
                     <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
@@ -188,7 +192,11 @@ export default function LoginPage() {
                     </svg>
                     Google
                 </button>
-                <button type="button" className="flex items-center justify-center h-10 w-full rounded-md border border-input bg-transparent hover:bg-accent/5 hover:border-accent/40 transition-colors">
+                <button 
+                  type="button" 
+                  className="flex items-center justify-center h-10 w-full rounded-md border border-input bg-transparent hover:bg-accent/5 hover:border-accent/40 transition-colors"
+                  suppressHydrationWarning
+                >
                      <svg className="h-5 w-5 mr-2 text-foreground" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-1.034-.012-1.924-2.783.603-3.08-1.188-3.08-1.188-1.34-1.34-3.08-1.34-3.08-1.34-1.94-.85.34-1.15.34-1.15 1.5.34 3.08 1.15 3.08 1.15 1.34.85 2.15.34 3.08.34.85-1.34 2.15-2.15 3.08-3.08-1.94-.34-3.92-1.15-3.92-3.08 0-.85.34-1.15.34-1.15-.34-.85-.34-2.15 0-3.08 0 0 1.15-.34 3.08 1.15.85-.34 2.15-.34 3.08-.34.85 0 2.15.34 3.08.34 1.94-1.5 3.08-1.15 3.08-1.15.34.85.34 2.15 0 3.08.34 1.15.34 2.15.34 3.08 0 1.94-1.94 2.74-3.92 3.08.85.85 1.62 2.53 1.62 5.11 0 3.69-.03 6.67-.03 7.58 0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12c0-5.523-4.477-10-10-10"/>
                     </svg>

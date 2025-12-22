@@ -13,11 +13,8 @@ export default function TripsClient() {
     let mounted = true;
     async function load() {
       try {
-        const res = await fetch("/api/trips/public").catch(() => null);
-        if (!res) {
-          setTrips([]);
-          return;
-        }
+        const res = await apiFetch("/trips/public");
+        
         if (!res.ok) {
           setError("Failed to load trips");
           setTrips([]);

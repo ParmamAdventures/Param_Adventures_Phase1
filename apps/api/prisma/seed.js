@@ -135,8 +135,24 @@ async function main() {
     "trip:approve",
     "trip:publish",
     "trip:archive",
+    "trip:view:internal",
     // booking admin reads
     "booking:read:admin",
+    "booking:approve",
+    "booking:reject",
+    "booking:cancel",
+    "booking:view",
+    // Base admin access
+    "user:list",
+    "user:view",
+    "role:list",
+    "media:view",
+    "media:upload",
+    "media:delete",
+    "audit:view",
+    "blog:approve",
+    "blog:reject",
+    "blog:publish",
   ]);
   await grantPermissionsToRole(publicRole, ["trip:view:public"]);
 
@@ -160,6 +176,9 @@ async function main() {
     "blog:approve",
     "blog:reject",
     "blog:publish",
+    // Media management
+    "media:view",
+    "media:upload",
   ]);
 
   // Seed a sensible default capacity for existing trips
