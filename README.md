@@ -64,6 +64,20 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 ---
 
+## 🔐 Role & Permission Matrix
+
+| Role | Description | Key Capabilities |
+| :--- | :--- | :--- |
+| **SUPER_ADMIN** | System Owner | Full access to all features, roles, and settings. |
+| **ADMIN** | Moderator | Approve/Publish Trips, Manage Bookings, Moderate Blogs. |
+| **UPLOADER** | Content Creator | Create and Edit Trip drafts, Submit for review. |
+| **USER** | Member | Write and Submit Blog posts, View personal dashboard. |
+| **PUBLIC** | Visitor | Browse trips, Create bookings (Guest flow). |
+
+---
+
+---
+
 ## 🛠️ Architecture
 
 - **Frontend**: Next.js 14, TypeScript, TailwindCSS, Framer Motion

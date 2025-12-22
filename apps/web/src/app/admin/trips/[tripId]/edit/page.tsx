@@ -46,36 +46,7 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
       });
 
       if (res.ok) {
-        // 2. Attach new cover if coverImageId changed
-        if (data.coverImageId && data.coverImageId !== initialData?.coverImageId) {
-          const mediaRes = await apiFetch(`/media/trips/${tripId}/cover/attach`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              imageId: data.coverImageId,
-            }),
-          });
-
-          if (!mediaRes.ok) {
-            console.error("Cover attachment failed", await mediaRes.json().catch(() => ({})));
-            alert("Trip updated, but cover image attachment failed.");
-          }
-        }
-        // 3. Update gallery order
-        if (data.gallery) {
-          const galleryRes = await apiFetch(`/media/trips/${tripId}/gallery`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              imageIds: data.gallery.map(g => g.id),
-            }),
-          });
-
-          if (!galleryRes.ok) {
-            console.error("Gallery attachment failed", await galleryRes.json().catch(() => ({})));
-            alert("Trip updated, but gallery attachment failed.");
-          }
-        }
+        // Success! Atomic update on backend handles metadata and media relations.
         router.push("/admin/trips");
       } else {
         const body = await res.json().catch(() => ({}));

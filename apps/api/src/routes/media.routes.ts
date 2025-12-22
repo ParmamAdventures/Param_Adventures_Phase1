@@ -27,7 +27,7 @@ router.post(
 router.post(
   "/trips/:tripId/cover",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   legacyUpload.single("image"),
   uploadTripCover
 );
@@ -35,7 +35,7 @@ router.post(
 router.post(
   "/trips/:tripId/gallery",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   legacyUpload.array("images", 6), // Max 6 images
   uploadTripGallery
 );
@@ -44,21 +44,21 @@ router.post(
 router.post(
   "/trips/:tripId/cover/attach",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   setTripCoverImage
 );
 
 router.post(
   "/trips/:tripId/gallery/attach",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   addTripGalleryImage
 );
 
 router.post(
   "/trips/:tripId/gallery",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   setTripGallery
 );
 

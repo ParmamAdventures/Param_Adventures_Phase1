@@ -16,7 +16,21 @@ export async function createTrip(req: Request, res: Response) {
       price: req.body.price,
       startDate: req.body.startDate ? new Date(req.body.startDate) : null,
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+      coverImageId: req.body.coverImageId || null,
       createdById: user.id,
+      gallery: req.body.gallery && req.body.gallery.length > 0 ? {
+        create: req.body.gallery.map((g: any, index: number) => ({
+          imageId: g.id,
+          order: index,
+        })),
+      } : undefined,
+    },
+    include: {
+      coverImage: true,
+      gallery: {
+        include: { image: true },
+        orderBy: { order: "asc" },
+      },
     },
   });
 
