@@ -10,6 +10,7 @@ interface BlogDetailViewProps {
 }
 
 export function BlogDetailView({ blog }: BlogDetailViewProps) {
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 100,
@@ -31,7 +32,7 @@ export function BlogDetailView({ blog }: BlogDetailViewProps) {
           {blog.coverImage ? (
             <div className="absolute inset-0 -z-10">
               <Image
-                src={blog.coverImage.originalUrl}
+                src={blog.coverImage.originalUrl.startsWith('/uploads') ? `${baseUrl}${blog.coverImage.originalUrl}` : blog.coverImage.originalUrl}
                 alt={blog.title}
                 fill
                 priority

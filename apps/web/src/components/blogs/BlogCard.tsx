@@ -6,7 +6,12 @@ import Image from "next/image";
 import BlogMeta from "./BlogMeta";
 
 export default function BlogCard({ blog, index = 0 }: { blog: any, index?: number }) {
-  const imageUrl = blog.coverImage?.mediumUrl || blog.image;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  let imageUrl = blog.coverImage?.mediumUrl || blog.image;
+  
+  if (imageUrl?.startsWith('/uploads')) {
+    imageUrl = `${baseUrl}${imageUrl}`;
+  }
   
   // Estimate reading time: ~200 words per minute
   const readingTime = Math.max(1, Math.ceil((JSON.stringify(blog.content || "").length / 5) / 200));

@@ -31,7 +31,9 @@ import { globalLimiter } from "./config/rate-limit";
 
 export const app = express();
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: false,
+}));
 app.use(globalLimiter);
 app.use(
   cors({

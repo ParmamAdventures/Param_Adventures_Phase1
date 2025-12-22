@@ -191,8 +191,8 @@ export default async function Home() {
             subtitle="Stories, tips, and travel guides."
             className="bg-accent/5 -mx-6 md:-mx-8 px-6 md:px-8 py-24" // Full width background trick
             action={
-            <Link href="/blogs/public">
-              <Button variant="ghost" className="text-accent hover:text-accent/80 hover:bg-accent/10">Read All Stories &rarr;</Button>
+            <Link href="/blogs">
+              <Button variant="ghost" className="text-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 font-bold">Read All Stories &rarr;</Button>
             </Link>
             }
           >

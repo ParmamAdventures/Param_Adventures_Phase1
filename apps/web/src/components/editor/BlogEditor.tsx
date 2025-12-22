@@ -17,6 +17,37 @@ interface BlogEditorProps {
   readOnly?: boolean;
 }
 
+const extensions = [
+  StarterKit.configure({
+    heading: {
+      levels: [1, 2, 3],
+    },
+  }),
+  ImageExtension.configure({
+    HTMLAttributes: {
+      class: "rounded-2xl shadow-xl my-8 mx-auto block max-w-full",
+    },
+  }),
+  Link.configure({
+    openOnClick: false,
+    HTMLAttributes: {
+      class: "text-[var(--accent)] underline font-bold hover:opacity-80 transition-opacity cursor-pointer",
+    },
+  }),
+  Underline,
+  Placeholder.configure({
+    placeholder: "Start telling your adventure...",
+    emptyEditorClass: "is-editor-empty",
+  }),
+  Youtube.configure({
+    width: 840,
+    height: 480,
+    HTMLAttributes: {
+      class: "rounded-2xl shadow-2xl my-10 aspect-video mx-auto block max-w-full",
+    },
+  }),
+];
+
 export function BlogEditor({
   value,
   onChange,
@@ -26,36 +57,7 @@ export function BlogEditor({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3],
-        },
-      }),
-      ImageExtension.configure({
-        HTMLAttributes: {
-          class: "rounded-2xl shadow-xl my-8 mx-auto block max-w-full",
-        },
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: "text-[var(--accent)] underline font-bold hover:opacity-80 transition-opacity cursor-pointer",
-        },
-      }),
-      Underline,
-      Placeholder.configure({
-        placeholder: "Start telling your adventure...",
-        emptyEditorClass: "is-editor-empty",
-      }),
-      Youtube.configure({
-        width: 840,
-        height: 480,
-        HTMLAttributes: {
-          class: "rounded-2xl shadow-2xl my-10 aspect-video mx-auto block max-w-full",
-        },
-      }),
-    ],
+    extensions,
     content: value,
     editable: !readOnly,
     onUpdate({ editor }) {
@@ -108,7 +110,12 @@ export function BlogEditor({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed");
       
-      editor.chain().focus().setImage({ src: data.image.originalUrl }).run();
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const imageUrl = data.image.originalUrl.startsWith('/uploads') 
+        ? `${baseUrl}${data.image.originalUrl}` 
+        : data.image.originalUrl;
+        
+      editor.chain().focus().setImage({ src: imageUrl }).run();
     } catch (err: any) {
       alert(err.message);
     } finally {

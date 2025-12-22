@@ -48,7 +48,7 @@ export default function AdminModerationPage() {
     fetchModerationData();
   }, [fetchModerationData]);
 
-  const handleModeration = async (id: string, type: "trips" | "blogs", action: "approve" | "reject" | "publish") => {
+  const handleModeration = async (id: string, type: "trips" | "blogs", action: "submit" | "approve" | "reject" | "publish" | "archive") => {
     try {
       const endpoint = type === "trips" 
         ? `/trips/${id}/${action}` // e.g. /trips/123/approve

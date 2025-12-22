@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import AuthStatus from "../../components/AuthStatus";
 import { Button } from "@/components/ui/Button";
@@ -13,21 +13,37 @@ export default function Page() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadBlogs() {
-      try {
-        const res = await apiFetch("/blogs/my-blogs");
-        if (res.ok) {
-          setBlogs(await res.json());
-        }
-      } catch (error) {
-        console.error("Failed to load blogs", error);
-      } finally {
-        setLoading(false);
+  const loadBlogs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await apiFetch("/blogs/my-blogs");
+      if (res.ok) {
+        setBlogs(await res.json());
       }
+    } catch (error) {
+      console.error("Failed to load blogs", error);
+    } finally {
+      setLoading(false);
     }
-    loadBlogs();
   }, []);
+
+  useEffect(() => {
+    loadBlogs();
+  }, [loadBlogs]);
+
+  const handleAction = async (id: string, action: string) => {
+    try {
+      const res = await apiFetch(`/blogs/${id}/${action}`, { method: "POST" });
+      if (res.ok) {
+        loadBlogs();
+      } else {
+        const body = await res.json();
+        alert(body.message || `Failed to ${action} blog`);
+      }
+    } catch (err) {
+      alert("Network error");
+    }
+  };
 
   return (
     <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -62,8 +78,34 @@ export default function Page() {
                       {new Date(blog.createdAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                     <StatusBadge status={blog.status} />
+                    
+                    {blog.status === "DRAFT" && (
+                      <Button 
+                        variant="primary" 
+                        onClick={() => handleAction(blog.id, "submit")}
+                      >
+                        Submit
+                      </Button>
+                    )}
+
+                    {blog.status === "APPROVED" && (
+                      <Button 
+                        variant="primary" 
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={() => handleAction(blog.id, "publish")}
+                      >
+                        Publish
+                      </Button>
+                    )}
+
+                    {blog.status === "PUBLISHED" && (
+                      <Link href={`/blogs/${blog.slug}`} target="_blank">
+                        <Button variant="subtle">View Public</Button>
+                      </Link>
+                    )}
+
                     <Link href={`/dashboard/blogs/${blog.id}/edit`}>
                       <Button variant="ghost">Edit</Button>
                     </Link>

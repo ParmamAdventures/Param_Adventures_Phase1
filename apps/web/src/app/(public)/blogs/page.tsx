@@ -1,7 +1,7 @@
 import BlogCard from "@/components/blogs/BlogCard";
 import Card from "@/components/ui/Card";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 async function getBlogs() {
   const response = await fetch(`${baseUrl}/blogs/public`, { cache: "no-store" });

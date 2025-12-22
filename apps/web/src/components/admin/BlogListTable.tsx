@@ -21,7 +21,7 @@ type Blog = {
 type Props = {
   blogs: Blog[];
   loading: boolean;
-  onAction: (id: string, type: "approve" | "reject") => void;
+  onAction: (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive") => void;
   onRefresh: () => void;
 };
 
@@ -90,20 +90,55 @@ export default function BlogListTable({ blogs, loading, onAction, onRefresh }: P
 
             {/* Actions Panel */}
             <div className="flex items-center gap-3 border-t md:border-t-0 pt-4 md:pt-0">
-              <Button
-                variant="primary"
-                onClick={() => onAction(blog.id, "approve")}
-                className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 rounded-full px-6 flex-1 md:flex-none"
-              >
-                Approve
-              </Button>
-              <Button
-                variant="danger"
-                onClick={() => onAction(blog.id, "reject")}
-                className="rounded-full px-6 flex-1 md:flex-none"
-              >
-                Reject
-              </Button>
+              {blog.status === "DRAFT" && (
+                <Button
+                  variant="primary"
+                  onClick={() => onAction(blog.id, "submit")}
+                  className="bg-indigo-500 hover:bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 rounded-full px-6 flex-1 md:flex-none"
+                >
+                  Submit
+                </Button>
+              )}
+
+              {blog.status === "PENDING_REVIEW" && (
+                <>
+                  <Button
+                    variant="primary"
+                    onClick={() => onAction(blog.id, "approve")}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 rounded-full px-6 flex-1 md:flex-none"
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => onAction(blog.id, "reject")}
+                    className="rounded-full px-6 flex-1 md:flex-none"
+                  >
+                    Reject
+                  </Button>
+                </>
+              )}
+
+              {blog.status === "APPROVED" && (
+                <Button
+                  variant="primary"
+                  onClick={() => onAction(blog.id, "publish")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/20 rounded-full px-6 flex-1 md:flex-none"
+                >
+                  Publish
+                </Button>
+              )}
+
+              {blog.status === "PUBLISHED" && (
+                <Button
+                  variant="subtle"
+                  onClick={() => onAction(blog.id, "archive")}
+                  className="text-amber-600 hover:text-amber-700 border-amber-200 bg-amber-50 hover:bg-amber-100 rounded-full px-6 flex-1 md:flex-none"
+                >
+                  Archive
+                </Button>
+              )}
+
               <Link href={`/admin/blogs/${blog.id}`} className="ml-0 md:ml-4">
                 <Button variant="ghost" className="rounded-full h-10 w-10 p-0 flex items-center justify-center" title="Full Preview">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
