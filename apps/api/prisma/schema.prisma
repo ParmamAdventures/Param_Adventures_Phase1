@@ -113,6 +113,7 @@ enum TripStatus {
 
 enum TripCategory {
   TREK
+  CAMPING
   CORPORATE
   EDUCATIONAL
   SPIRITUAL
@@ -131,6 +132,21 @@ model Trip {
   price         Int
   status        TripStatus @default(DRAFT)
   category      TripCategory @default(TREK)
+
+  // New Detailed Fields
+  startPoint    String?
+  endPoint      String?
+  altitude      String?
+  distance      String?
+  itineraryPdf  String?   // URL to uploaded PDF
+  
+  highlights    Json?     // Array of strings
+  inclusions    Json?     // Array of strings
+  exclusions    Json?     // Array of strings
+  cancellationPolicy Json? // Structured policy object
+  thingsToPack  Json?     // Array or text
+  faqs          Json?     // Array of { question, answer }
+  seasons       Json?     // Array of strings
 
   // Media (Production-grade)
   coverImageId  String?

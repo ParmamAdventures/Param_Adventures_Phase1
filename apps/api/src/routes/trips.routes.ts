@@ -9,6 +9,7 @@ import { submitTrip } from "../controllers/trips/submitTrip.controller";
 import { approveTrip } from "../controllers/trips/approveTrip.controller";
 import { publishTrip } from "../controllers/trips/publishTrip.controller";
 import { archiveTrip } from "../controllers/trips/archiveTrip.controller";
+import { getInternalTrips } from "../controllers/trips/internalTrips.controller";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -65,17 +66,7 @@ router.get(
   requireAuth,
   attachPermissions,
   requirePermission("trip:view:internal"),
-  async (req, res) => {
-    const { status } = req.query;
-    const trips = await prisma.trip.findMany({
-      where: status ? { status: status as any } : {},
-      orderBy: { createdAt: "desc" },
-      include: {
-        coverImage: true,
-      }
-    });
-    res.json(trips);
-  }
+  getInternalTrips
 );
 
 router.post(

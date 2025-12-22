@@ -11,18 +11,33 @@ export default function AdminTripsPage() {
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Pagination & Sort State
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [sortOrder, setSortOrder] = useState("desc");
 
   const fetchTrips = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch("/trips/internal");
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: "10",
+        sortBy,
+        sortOrder
+      });
+      
+      const res = await apiFetch(`/trips/internal?${queryParams.toString()}`);
       const data = await res.json();
+      
       if (!res.ok) {
         setError(data?.error || "Unable to load trips");
         setTrips([]);
       } else {
-        setTrips(Array.isArray(data) ? data : []);
+        setTrips(Array.isArray(data.data) ? data.data : []);
+        setTotalPages(data.metadata?.totalPages || 1);
       }
     } catch {
       setError("Network error: Could not reach the server.");
@@ -30,11 +45,21 @@ export default function AdminTripsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchTrips();
   }, [fetchTrips]);
+
+  const handleSort = (field: string) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc"); // Default to asc for new field
+    }
+    setPage(1); // Reset to first page on sort
+  };
 
   const handleAction = async (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive") => {
     if (!confirm(`Are you sure you want to ${action} this trip?`)) return;
@@ -80,6 +105,12 @@ export default function AdminTripsPage() {
             loading={loading} 
             onRefresh={fetchTrips} 
             onAction={handleAction}
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onSort={handleSort}
           />
         )}
       </div>
