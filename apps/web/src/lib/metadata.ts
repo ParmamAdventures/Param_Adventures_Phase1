@@ -37,11 +37,6 @@ export function constructMetadata({
       images: [image],
       creator: "@paramadventures",
     },
-    icons: {
-      icon: "/favicon.ico",
-      shortcut: "/favicon-16x16.png",
-      apple: "/apple-touch-icon.png",
-    },
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
     ...(noIndex && {
       robots: {

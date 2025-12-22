@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import PermissionRoute from "../../components/PermissionRoute";
 
@@ -31,6 +32,9 @@ export default function AdminLayout({
         <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl z-20">
           <div className="sticky top-0 p-6 flex flex-col h-full min-h-screen">
             <div className="mb-10">
+              <div className="relative w-12 h-12 mb-4 overflow-hidden rounded-full border-2 border-[var(--border)] shadow-md">
+                 <Image src="/param-logo.png" alt="Logo" fill className="object-cover" />
+              </div>
               <h2 className="text-xl font-black tracking-tighter uppercase italic bg-clip-text text-transparent bg-gradient-to-r from-[var(--accent)] to-[var(--accent)]/60">
                 Admin Center
               </h2>

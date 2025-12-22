@@ -28,7 +28,7 @@ export function Button({
     .join(" ");
 
   return (
-    <button {...props} disabled={loading || props.disabled} className={classes}>
+    <button {...props} disabled={loading || props.disabled} className={classes} suppressHydrationWarning>
       {loading ? <Spinner size={14} /> : children}
     </button>
   );

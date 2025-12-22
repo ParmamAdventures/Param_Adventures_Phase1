@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import ThemeToggle from "../../components/theme/ThemeToggle";
 import Button from "../../components/ui/Button";
 import { useAuth } from "../../context/AuthContext";
@@ -38,9 +39,20 @@ export default function PublicNavbar() {
       <header className={navClasses}>
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           {/* Brand */}
-          <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
-            <span className={isHome && !isScrolled ? "text-white" : "text-accent"}>Param</span>
-            <span>Adventures</span>
+          <Link href="/" className="flex items-center gap-3 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity">
+            <div className="relative w-10 h-10 overflow-hidden rounded-full border-2 border-white/20 shadow-sm">
+              <Image 
+                src="/param-logo.png" 
+                alt="Param Adventures Logo" 
+                fill 
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className={isHome && !isScrolled ? "text-white" : "text-accent"}>Param</span>
+              <span>Adventures</span>
+            </div>
           </Link>
 
           {/* Navigation */}
