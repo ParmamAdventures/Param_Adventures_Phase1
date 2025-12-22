@@ -68,6 +68,20 @@ npm run dev       # start dev server
   - Expected: Skeleton UI shown while data loads
   - Priority: Medium
 
+- ID: ADMIN-ROLE-001
+  - Title: Configure Role Permissions
+  - Preconditions: Super Admin signed in
+  - Steps: Go to Admin Roles → Click `Configure Access` on 'UPLOADER' → Toggle `blog:publish` → Save
+  - Expected: Success toast appears, modal closes, and permission is persisted (verify via UI or API)
+  - Priority: Medium
+
+- ID: PROFILE-AVATAR-001
+  - Title: Switch to Preset Avatar
+  - Preconditions: User signed in
+  - Steps: Go to Profile → Click `Choose Preset` → Select an icon → Save
+  - Expected: Profile image updates immediately and persists on refresh.
+  - Priority: Medium
+
 ## Automated tests to maintain
 
 - Unit tests: `src/components/ui` (Button, ErrorBlock, ToastProvider)

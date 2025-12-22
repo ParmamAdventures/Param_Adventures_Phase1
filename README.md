@@ -56,13 +56,11 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 ## 🔑 Demo Credentials
 
-**Super Admin**
-- Email: `admin@local.test`
-- Password: `password123`
-
-**Regular User**
-- Email: `user@local.test`
-- Password: `password123`
+**Test Accounts (Password: `password123`)**
+- `superadmin@local.test` (Full System Control)
+- `admin@local.test` (Standard Admin)
+- `uploader@local.test` (Trip Management)
+- `user@local.test` (Standard Member)
 
 ---
 
