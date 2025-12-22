@@ -38,6 +38,13 @@ async function main() {
     "user:assign-role",
     "user:remove-role",
     "role:list",
+    "role:assign",
+    "role:revoke",
+    "media:upload",
+    "media:view",
+    "media:delete",
+    "audit:view",
+    "audit:read",
   ];
 
   for (const key of permissions) {

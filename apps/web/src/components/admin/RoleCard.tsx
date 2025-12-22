@@ -11,9 +11,10 @@ interface RoleCardProps {
     permissions: string[];
   };
   allSystemPermissions: string[];
+  onConfigure?: (role: RoleCardProps['role']) => void;
 }
 
-export default function RoleCard({ role, allSystemPermissions }: RoleCardProps) {
+export default function RoleCard({ role, allSystemPermissions, onConfigure }: RoleCardProps) {
   return (
     <Card className="group flex flex-col overflow-hidden border-[var(--border)] bg-[var(--card)] transition-all hover:border-[var(--accent)]/30 hover:shadow-2xl hover:shadow-[var(--accent)]/5">
       <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
@@ -75,6 +76,7 @@ export default function RoleCard({ role, allSystemPermissions }: RoleCardProps) 
 
       <div className="p-4 border-t border-[var(--border)] bg-[var(--border)]/10 flex justify-end">
         <button 
+          onClick={() => onConfigure?.(role)}
           className="text-[10px] font-bold uppercase tracking-widest text-[var(--accent)] hover:underline disabled:opacity-50"
           disabled={role.isSystem}
         >

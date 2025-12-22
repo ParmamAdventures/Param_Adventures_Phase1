@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listRoles } from "../../controllers/admin/roles.controller";
+import { listRoles, updateRolePermissions } from "../../controllers/admin/roles.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";
 import { requirePermission } from "../../middlewares/require-permission.middleware";
@@ -12,6 +12,14 @@ router.get(
   attachPermissions,
   requirePermission("role:list"),
   listRoles
+);
+
+router.patch(
+  "/:id/permissions",
+  requireAuth,
+  attachPermissions,
+  requirePermission("role:assign"),
+  updateRolePermissions
 );
 
 export default router;
