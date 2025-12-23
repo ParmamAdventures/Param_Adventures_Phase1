@@ -66,6 +66,7 @@ function HeroSlidesEditor() {
     try {
       await apiFetch(`/content/hero-slides/${slide.id}`, {
         method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: slide.title,
           subtitle: slide.subtitle,
@@ -114,11 +115,13 @@ function HeroSlidesEditor() {
                         onChange={(e) => handleChange(slide.id, "subtitle", e.target.value)}
                     />
                 </div>
-                 <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium">Video URL (mp4)</label>
+                <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium">Video URL (mp4/webm)</label>
+                    <div className="text-[10px] text-muted-foreground mb-1">Copy the URL from the <a href="/admin/media" className="text-primary underline">Media Library</a> and paste it here.</div>
                      <input 
                         className="w-full p-2 rounded border bg-background"
                         value={slide.videoUrl}
+                        placeholder="https://..."
                         onChange={(e) => handleChange(slide.id, "videoUrl", e.target.value)}
                     />
                 </div>

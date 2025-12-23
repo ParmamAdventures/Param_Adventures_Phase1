@@ -69,11 +69,11 @@ export function CustomTripForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Full Name</label>
-                        <input name="name" required value={formData.name} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="John Doe" />
+                        <input name="name" required value={formData.name} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="John Doe" suppressHydrationWarning />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Email Address</label>
-                        <input name="email" type="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="john@example.com" />
+                        <input name="email" type="email" required value={formData.email} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="john@example.com" suppressHydrationWarning />
                     </div>
                 </div>
 
@@ -96,13 +96,13 @@ export function CustomTripForm() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Approximate Budget (per person)</label>
-                        <input name="budget" value={formData.budget} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="$1000 - $2000" />
+                        <input name="budget" value={formData.budget} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="$1000 - $2000" suppressHydrationWarning />
                     </div>
                 </div>
 
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Tell us more details</label>
-                    <textarea name="details" rows={4} value={formData.details} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="We are a group of 4 looking for a moderate trek..." />
+                    <textarea name="details" rows={4} value={formData.details} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="We are a group of 4 looking for a moderate trek..." suppressHydrationWarning />
                 </div>
 
                 <Button type="submit" variant="primary" className="w-full h-14 text-lg font-bold shadow-xl shadow-accent/20" loading={status === "loading"}>

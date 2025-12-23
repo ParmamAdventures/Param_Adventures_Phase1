@@ -48,6 +48,7 @@ export function Select({ value, onChange, options, placeholder = "Select...", cl
         type="button"
         disabled={disabled}
         onClick={() => !disabled && setIsOpen(!isOpen)}
+        suppressHydrationWarning
         className={`w-full flex items-center justify-between
           bg-[var(--card)]/50 backdrop-blur-md border border-[var(--border)]
           rounded-2xl text-left font-bold text-lg

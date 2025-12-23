@@ -65,8 +65,6 @@ app.use("/bookings", bookingsRoutes);
 app.use("/payments", paymentsRoutes);
 app.use("/media", mediaRoutes);
 app.use("/blogs", blogRoutes);
-app.use("/media", mediaRoutes);
-app.use("/blogs", blogRoutes);
 app.use("/metrics", metricsRoutes);
 app.use("/content", contentRoutes);
 

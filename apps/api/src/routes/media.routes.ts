@@ -62,4 +62,17 @@ router.post(
   setTripGallery
 );
 
+import { listMedia, deleteMedia } from "../controllers/media/listMedia.controller";
+
+/**
+ * GET /media
+ * Query: type (ALL | IMAGE | VIDEO), page, limit
+ */
+router.get("/", requireAuth, listMedia);
+
+/**
+ * DELETE /media/:id
+ */
+router.delete("/:id", requireAuth, requirePermission("trip:edit"), deleteMedia); // utilizing existing permission
+
 export default router;

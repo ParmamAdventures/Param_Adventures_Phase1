@@ -64,12 +64,10 @@ export function Hero({ slides = [] }: HeroProps) {
                     muted
                     loop
                     playsInline
-                    preload="auto"
                     className="w-full h-full object-cover opacity-60"
                     key={activeSlide.videoUrl} 
-                >
-                    <source src={activeSlide.videoUrl} type="video/mp4" />
-                </video>
+                    src={activeSlide.videoUrl}
+                />
             ) : (
                 <div className="w-full h-full bg-gradient-to-br from-gray-900 to-black relative">
                    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-40 mix-blend-overlay" />
