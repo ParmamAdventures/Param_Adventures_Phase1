@@ -61,10 +61,16 @@ export async function deleteMedia(req: Request, res: Response) {
         await prisma.image.delete({
             where: { id }
         });
-        // TODO: Delete actual file from disk to save space (skipped for now)
+        // TODO: Delete actual file from disk to save space
         res.json({ success: true });
-    } catch (error) {
-        console.error("Failed to delete media", error);
+    } catch (error: any) {
+        console.error("Delete media error:", error);
+        if (error.code === 'P2003') {
+            return res.status(400).json({ error: "Cannot delete media because it is being used by other records (Trips/Blogs/Users)." });
+        }
+        if (error.code === 'P2025') {
+            return res.status(404).json({ error: "Media not found." });
+        }
         res.status(500).json({ error: "Failed to delete media" });
     }
 }

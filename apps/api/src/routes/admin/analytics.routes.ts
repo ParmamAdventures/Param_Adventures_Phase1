@@ -8,7 +8,7 @@ const router = Router();
 
 router.use(requireAuth);
 router.use(attachPermissions);
-router.use(requirePermission("admin:view_analytics"));
+router.use(requirePermission("analytics:view"));
 
 router.get("/revenue", getRevenueSummary);
 router.get("/trips", getTripPerformance);

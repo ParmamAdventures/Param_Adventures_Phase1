@@ -73,6 +73,6 @@ router.get("/", requireAuth, listMedia);
 /**
  * DELETE /media/:id
  */
-router.delete("/:id", requireAuth, requirePermission("trip:edit"), deleteMedia); // utilizing existing permission
+router.delete("/:id", requireAuth, requirePermission("media:delete"), deleteMedia);
 
 export default router;

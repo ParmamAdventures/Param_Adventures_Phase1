@@ -8,7 +8,7 @@ const router = Router();
 
 router.use(requireAuth);
 router.use(attachPermissions);
-router.use(requirePermission("admin:view_audit_logs"));
+router.use(requirePermission("audit:view"));
 
 router.get("/", listAuditLogs);
 
