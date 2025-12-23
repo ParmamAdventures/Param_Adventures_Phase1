@@ -9,6 +9,7 @@ import Spinner from "../ui/Spinner";
 type Trip = {
   id: string;
   title: string;
+  slug: string;
   location: string;
   status: string;
   price?: number;
@@ -189,7 +190,7 @@ export default function TripListTable({
                                   Edit
                               </Button>
                               </Link>
-                              <Link href={`/trips/${trip.id}`} target="_blank">
+                              <Link href={`/trips/${trip.slug}`} target="_blank">
                               <Button variant="subtle" className="px-3 py-1.5 h-auto text-xs">
                                   Preview
                               </Button>

@@ -129,24 +129,26 @@ export default async function Home() {
 
       {/* Latest Stories */}
       {blogs.length > 0 && (
-        <ScrollReveal width="100%">
-          <FeaturedSection
-            title="From the Journal"
-            subtitle="Stories, tips, and travel guides."
-            className="bg-accent/5 -mx-6 md:-mx-8 px-6 md:px-8 py-24" // Full width background trick
-            action={
-            <Link href="/blogs">
-              <Button variant="ghost" className="text-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 font-bold">Read All Stories &rarr;</Button>
-            </Link>
-            }
-          >
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {blogs.map((blog: any) => (
-                <BlogCard key={blog.id} blog={blog} />
-              ))}
-            </div>
-          </FeaturedSection>
-        </ScrollReveal>
+        <section className="bg-accent/5 py-12">
+          <ScrollReveal width="100%">
+            <FeaturedSection
+              title="From the Journal"
+              subtitle="Stories, tips, and travel guides."
+              className="py-0" // Reset internal padding since wrapper handles vertical spacing if needed, or keep standard
+              action={
+              <Link href="/blogs">
+                <Button variant="ghost" className="text-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--accent)]/5 font-bold">Read All Stories &rarr;</Button>
+              </Link>
+              }
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {blogs.map((blog: any) => (
+                  <BlogCard key={blog.id} blog={blog} />
+                ))}
+              </div>
+            </FeaturedSection>
+          </ScrollReveal>
+        </section>
       )}
 
       {/* Custom Trip Form */}

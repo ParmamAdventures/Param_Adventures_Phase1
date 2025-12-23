@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "../ui/Button";
+import { Select } from "../ui/Select";
 import { motion } from "framer-motion";
 
 export function CustomTripForm() {
@@ -21,6 +22,10 @@ export function CustomTripForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.destination) {
+        alert("Please select a destination");
+        return;
+    }
     setStatus("loading");
     // Simulate API call
     setTimeout(() => {
@@ -75,13 +80,19 @@ export function CustomTripForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Preferred Destination</label>
-                        <select name="destination" required value={formData.destination} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none">
-                            <option value="">Select a region...</option>
-                            <option value="himalayas">Himalayas</option>
-                            <option value="nepal">Nepal</option>
-                            <option value="bhutan">Bhutan</option>
-                            <option value="other">Other</option>
-                        </select>
+                        <Select 
+                            name="destination"
+                            required
+                            value={formData.destination} 
+                            onChange={(val) => handleChange({ target: { name: "destination", value: val } } as any)}
+                            placeholder="Select a region..."
+                            options={[
+                                { value: "himalayas", label: "Himalayas" },
+                                { value: "nepal", label: "Nepal" },
+                                { value: "bhutan", label: "Bhutan" },
+                                { value: "other", label: "Other" },
+                            ]}
+                        />
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Approximate Budget (per person)</label>

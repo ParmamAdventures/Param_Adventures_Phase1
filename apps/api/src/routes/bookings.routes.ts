@@ -2,37 +2,39 @@ import { Router } from "express";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
+import { getBookings } from "../controllers/bookings/getBookings.controller";
+import { getBookingById } from "../controllers/bookings/getBookingById.controller";
+import { cancelBooking } from "../controllers/bookings/cancelBooking.controller";
 import { createBooking } from "../controllers/bookings/createBooking.controller";
-import { getMyBookings } from "../controllers/bookings/getMyBookings.controller";
-import { approveBooking } from "../controllers/bookings/approveBooking.controller";
-import { rejectBooking } from "../controllers/bookings/rejectBooking.controller";
 
 const router = Router();
 
+// Create a new booking
 router.post(
   "/",
   requireAuth,
-  attachPermissions,
-  requirePermission("booking:create"),
   createBooking
 );
 
-router.get("/me", requireAuth, attachPermissions, getMyBookings);
-
-router.post(
-  "/:id/approve",
+// Get user's bookings
+router.get(
+  "/my-bookings",
   requireAuth,
-  attachPermissions,
-  requirePermission("booking:approve"),
-  approveBooking
+  getBookings
 );
 
-router.post(
-  "/:id/reject",
+// Get single booking details
+router.get(
+  "/:id",
   requireAuth,
-  attachPermissions,
-  requirePermission("booking:reject"),
-  rejectBooking
+  getBookingById
+);
+
+// Cancel booking
+router.post(
+  "/:id/cancel",
+  requireAuth,
+  cancelBooking
 );
 
 export default router;

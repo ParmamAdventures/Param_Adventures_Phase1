@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import StatusBadge from "../ui/StatusBadge";
 import Button from "../ui/Button";
+import { Select } from "../ui/Select";
 import Link from "next/link";
 
 interface Booking {
@@ -76,18 +77,21 @@ export default function GlobalBookingList({ bookings, loading, onRefresh }: Glob
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <select 
-          className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-4 py-2 text-sm outline-none focus:border-[var(--accent)]/50"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="ALL">All Statuses</option>
-          <option value="REQUESTED">Requested</option>
-          <option value="CONFIRMED">Confirmed</option>
-          <option value="REJECTED">Rejected</option>
-          <option value="CANCELLED">Cancelled</option>
-          <option value="COMPLETED">Completed</option>
-        </select>
+        <div className="w-48">
+            <Select 
+            value={statusFilter}
+            onChange={(val) => setStatusFilter(val)}
+            triggerClassName="h-10 px-4 text-sm"
+            options={[
+                { value: "ALL", label: "All Statuses" },
+                { value: "REQUESTED", label: "Requested" },
+                { value: "CONFIRMED", label: "Confirmed" },
+                { value: "REJECTED", label: "Rejected" },
+                { value: "CANCELLED", label: "Cancelled" },
+                { value: "COMPLETED", label: "Completed" },
+            ]}
+            />
+        </div>
         <Button onClick={onRefresh} variant="subtle" className="rounded-xl">
           Refresh List
         </Button>

@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 export async function updateProfile(req: Request, res: Response) {
   const userId = (req as any).user.id;
-  const { name, nickname, bio, avatarImageId } = req.body;
+  const { name, nickname, bio, avatarImageId, age, gender, phoneNumber, address } = req.body;
 
   try {
     const user = await (prisma.user as any).update({
@@ -15,6 +15,10 @@ export async function updateProfile(req: Request, res: Response) {
         name,
         nickname,
         bio,
+        age: age ? Number(age) : null,
+        gender,
+        phoneNumber,
+        address,
         avatarImageId,
       },
       include: {
@@ -35,7 +39,12 @@ export async function updateProfile(req: Request, res: Response) {
         id: user.id,
         email: user.email,
         name: user.name,
+        nickname: user.nickname,
         bio: user.bio,
+        age: user.age,
+        gender: user.gender,
+        phoneNumber: user.phoneNumber,
+        address: user.address,
         avatarImage: user.avatarImage,
       },
     });

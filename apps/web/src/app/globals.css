@@ -30,6 +30,7 @@ html {
   --motion-slow: 280ms;
   --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ring-offset-color: #ffffff;
+  color-scheme: light;
 }
 
 [data-theme="dark"] {
@@ -39,6 +40,26 @@ html {
   --muted: #94a3b8;
   --border: #1f2937;
   --accent: #ff6a00;
+  color-scheme: dark;
+}
+
+/* Force select dropdowns to match theme */
+select {
+  color-scheme: light dark;
+}
+
+[data-theme="dark"] select {
+  color-scheme: dark;
+}
+
+option {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="dark"] option {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
 }
 
 /* Semantic tokens */

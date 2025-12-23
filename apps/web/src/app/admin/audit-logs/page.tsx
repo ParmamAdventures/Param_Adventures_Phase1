@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
@@ -52,17 +53,20 @@ export default function AuditLogsPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full md:w-64 bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-12"
           />
-          <select 
-            className="h-12 px-6 rounded-2xl bg-[var(--card)]/50 border border-[var(--border)] text-[10px] font-black uppercase tracking-widest focus:outline-none focus:border-[var(--accent)]/50"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="">All Actions</option>
-            <option value="LOGIN">Logins</option>
-            <option value="TRIP_CREATE">Trip Creations</option>
-            <option value="BOOKING_STATUS_CHANGE">Booking Updates</option>
-            <option value="BLOG_PUBLISH">Blog Publishing</option>
-          </select>
+          <div className="w-48">
+             <Select 
+                value={filter}
+                onChange={(val) => setFilter(val)}
+                triggerClassName="h-12 px-6 text-[10px] font-black uppercase tracking-widest"
+                options={[
+                    { value: "", label: "All Actions" },
+                    { value: "LOGIN", label: "Logins" },
+                    { value: "TRIP_CREATE", label: "Trip Creations" },
+                    { value: "BOOKING_STATUS_CHANGE", label: "Booking Updates" },
+                    { value: "BLOG_PUBLISH", label: "Blog Publishing" },
+                ]}
+             />
+          </div>
         </div>
       </header>
 

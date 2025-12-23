@@ -6,6 +6,7 @@ import { ImageUploader } from "../media/ImageUploader";
 import { GalleryUploader } from "../media/GalleryUploader";
 import DynamicList from "../ui/DynamicList";
 import ItineraryBuilder from "./ItineraryBuilder";
+import { Select } from "../ui/Select";
 
 export type TripFormData = {
   title: string;
@@ -89,12 +90,13 @@ export default function TripForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    await onSubmit(form);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    await onSubmit(form);
+    // Ensure properly formatted data for optional fields
+    const payload = {
+        ...form,
+        itineraryPdf: form.itineraryPdf || undefined, // Send undefined if empty
+        gallery: form.gallery?.map((img, index) => ({ ...img, order: index })) // Ensure structured gallery
+    };
+    await onSubmit(payload);
   }
 
   const labelClass = "block text-sm font-semibold mb-2 text-foreground";
@@ -133,23 +135,31 @@ export default function TripForm({
             <div className="grid md:grid-cols-3 gap-6">
                 <div>
                     <label className={labelClass}>Category</label>
-                    <select className={inputClass} value={form.category} onChange={(e) => update("category", e.target.value as any)}>
-                        <option value="TREK">Trekking</option>
-                        <option value="CAMPING">Camping</option>
-                        <option value="SPIRITUAL">Spiritual / Pilgrim</option>
-                        <option value="CORPORATE">Corporate Outing</option>
-                        <option value="EDUCATIONAL">Educational Trip</option>
-                        <option value="CUSTOM">Custom / Other</option>
-                    </select>
+                    <Select 
+                        value={form.category} 
+                        onChange={(val) => update("category", val as any)}
+                        options={[
+                            { value: "TREK", label: "Trekking" },
+                            { value: "CAMPING", label: "Camping" },
+                            { value: "SPIRITUAL", label: "Spiritual / Pilgrim" },
+                            { value: "CORPORATE", label: "Corporate Outing" },
+                            { value: "EDUCATIONAL", label: "Educational Trip" },
+                            { value: "CUSTOM", label: "Custom / Other" },
+                        ]}
+                    />
                 </div>
                 <div>
                     <label className={labelClass}>Difficulty</label>
-                    <select className={inputClass} value={form.difficulty} onChange={(e) => update("difficulty", e.target.value)}>
-                        <option>Easy</option>
-                        <option>Moderate</option>
-                        <option>Difficult</option>
-                        <option>Challenging</option>
-                    </select>
+                    <Select 
+                        value={form.difficulty} 
+                        onChange={(val) => update("difficulty", val)}
+                        options={[
+                            { value: "Easy", label: "Easy" },
+                            { value: "Moderate", label: "Moderate" },
+                            { value: "Difficult", label: "Difficult" },
+                            { value: "Challenging", label: "Challenging" },
+                        ]}
+                    />
                 </div>
                  <div>
                     <label className={labelClass}>Max Capacity</label>
@@ -240,18 +250,51 @@ export default function TripForm({
                     </div>
                 </div>
 
-                 <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-4 gap-6">
                     <div>
                         <label className={labelClass}>Price (₹)</label>
                          <input type="number" className={inputClass} value={form.price} onChange={(e) => update("price", Number(e.target.value))} />
                     </div>
                     <div>
                          <label className={labelClass}>Start Date</label>
-                         <input type="date" className={inputClass} value={form.startDate} onChange={(e) => update("startDate", e.target.value)} />
+                         <input type="date" className={inputClass} value={form.startDate} onChange={(e) => {
+                             const newStart = e.target.value;
+                             update("startDate", newStart);
+                             if (newStart && form.endDate) {
+                                 const start = new Date(newStart);
+                                 const end = new Date(form.endDate);
+                                 const diffTime = end.getTime() - start.getTime();
+                                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                 if (diffDays > 0) update("durationDays", diffDays);
+                             }
+                         }} />
                     </div>
                     <div>
                          <label className={labelClass}>End Date</label>
-                        <input type="date" className={inputClass} value={form.endDate} onChange={(e) => update("endDate", e.target.value)} />
+                        <input type="date" className={inputClass} value={form.endDate} onChange={(e) => {
+                            const newEnd = e.target.value;
+                            update("endDate", newEnd);
+                            if (form.startDate && newEnd) {
+                                const start = new Date(form.startDate);
+                                const end = new Date(newEnd);
+                                const diffTime = end.getTime() - start.getTime();
+                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                if (diffDays > 0) update("durationDays", diffDays);
+                            }
+                        }} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>
+                           Duration (Days)
+                           <span className="ml-1 text-[10px] text-muted-foreground font-normal">(Auto-calc)</span>
+                        </label>
+                        <input 
+                           type="number" 
+                           className={`${inputClass} bg-muted/50 cursor-not-allowed`} 
+                           value={form.durationDays} 
+                           disabled // Read-only as it's calculated
+                           readOnly
+                        />
                     </div>
                  </div>
              </div>

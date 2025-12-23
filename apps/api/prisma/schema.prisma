@@ -27,6 +27,10 @@ model User {
   name      String?
   nickname  String?
   bio       String?
+  age       Int?
+  gender    String?
+  phoneNumber String?
+  address   String?
   status    UserStatus @default(ACTIVE)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -269,6 +273,11 @@ model Booking {
   tripId    String
   status    BookingStatus  @default(REQUESTED)
   notes     String?
+  
+  startDate DateTime
+  guests    Int            @default(1)
+  totalPrice Int           // Stored at time of booking to handle price changes
+  
   createdAt DateTime       @default(now())
   updatedAt DateTime       @updatedAt
 
@@ -280,7 +289,7 @@ model Booking {
 
   paymentStatus BookingPaymentStatus @default(PENDING)
 
-  @@unique([userId, tripId])
+  // Removed unique constraint to allow multiple bookings (different dates)
   @@index([tripId])
   @@index([userId])
 }

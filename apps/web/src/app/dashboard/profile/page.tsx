@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 import { apiFetch } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
 import { ImageCropper } from "@/components/ui/ImageCropper";
@@ -28,6 +29,10 @@ export default function ProfilePage() {
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState(""); 
   const [bio, setBio] = useState("");
+  const [age, setAge] = useState<string>("");
+  const [gender, setGender] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [avatarImageId, setAvatarImageId] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   
@@ -43,8 +48,12 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setName(user.name || "");
-      setNickname(user.nickname || ""); // Sync Nickname
+      setNickname(user.nickname || "");
       setBio(user.bio || "");
+      setAge(user.age?.toString() || "");
+      setGender(user.gender || "");
+      setPhoneNumber(user.phoneNumber || "");
+      setAddress(user.address || "");
       setAvatarImageId(user.avatarImage?.id || null);
       setAvatarUrl(user.avatarImage?.mediumUrl || null);
     }
@@ -56,11 +65,19 @@ export default function ProfilePage() {
       const res = await apiFetch("/users/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, nickname, bio, avatarImageId }), // Added nickname
+        body: JSON.stringify({ 
+            name, 
+            nickname, 
+            bio, 
+            avatarImageId,
+            age: age ? Number(age) : null,
+            gender,
+            phoneNumber,
+            address
+        }), 
       });
       if (res.ok) {
         alert("Profile updated successfully!");
-        // Note: In a real app we'd refresh the auth context user
         window.location.reload(); 
       }
     } catch (e) {
@@ -114,9 +131,6 @@ export default function ProfilePage() {
     if (!avatarImageId) return;
     setAvatarImageId(null);
     setAvatarUrl(null);
-    // Note: We don't delete from DB immediately, just unlink on save. 
-    // Or we could unlink immediately if desired. 
-    // For now, let's just clear state and let "Update Profile" persist it.
   };
 
   const handlePresetSelect = async (url: string) => {
@@ -239,7 +253,7 @@ export default function ProfilePage() {
                 className="w-10 h-10 rounded-2xl bg-[var(--accent)] text-white flex items-center justify-center shadow-xl shadow-[var(--accent)]/30 hover:scale-110 transition-transform cursor-pointer"
                 title="Upload Photo"
                 >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                <ImageIcon size={18} />
                 </button>
             </div>
           </div>
@@ -291,6 +305,62 @@ export default function ProfilePage() {
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="Johnny"
+                className="bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-14 font-bold text-lg"
+                />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block">
+                Age
+                </label>
+                <Input 
+                type="number"
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                placeholder="25"
+                className="bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-14 font-bold text-lg"
+                />
+            </div>
+             <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block">
+                Gender
+                </label>
+                <Select 
+                   value={gender}
+                   onChange={(val) => setGender(val)}
+                   placeholder="Select Gender"
+                   options={[
+                       { value: "Male", label: "Male" },
+                       { value: "Female", label: "Female" },
+                       { value: "Other", label: "Other" },
+                       { value: "Prefer not to say", label: "Prefer not to say" },
+                   ]}
+                />
+            </div>
+          </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block">
+                Phone Number
+                </label>
+                <Input 
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+                placeholder="+91 98765 43210"
+                className="bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-14 font-bold text-lg"
+                />
+            </div>
+             <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block">
+                Address
+                </label>
+                <Input 
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="City, Country"
                 className="bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-14 font-bold text-lg"
                 />
             </div>

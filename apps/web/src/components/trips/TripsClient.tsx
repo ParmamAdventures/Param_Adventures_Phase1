@@ -6,6 +6,7 @@ import { TripsGridSkeleton } from "./TripsGridSkeleton";
 import { apiFetch } from "../../lib/api";
 import { useSearchParams } from "next/navigation";
 import { Filter, X, ChevronDown, SlidersHorizontal } from "lucide-react";
+import { Select } from "../ui/Select";
 
 const CATEGORIES = ["TREK", "CORPORATE", "EDUCATIONAL", "SPIRITUAL"];
 const DIFFICULTIES = ["Easy", "Moderate", "Hard"];
@@ -70,24 +71,31 @@ export default function TripsClient() {
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Category Filter */}
-          <select 
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-[var(--accent)] transition-all cursor-pointer"
-          >
-            <option value="">All Categories</option>
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          {/* Category Filter */}
+          <div className="w-40">
+            <Select 
+                value={category}
+                onChange={(val) => setCategory(val)}
+                triggerClassName="bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm font-medium h-10"
+                options={[
+                    { value: "", label: "All Categories" },
+                    ...CATEGORIES.map(c => ({ value: c, label: c }))
+                ]}
+            />
+          </div>
 
           {/* Difficulty Filter */}
-          <select 
-            value={difficulty}
-            onChange={(e) => setDifficulty(e.target.value)}
-            className="bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm font-medium outline-none focus:border-[var(--accent)] transition-all cursor-pointer"
-          >
-            <option value="">Any Difficulty</option>
-            {DIFFICULTIES.map(d => <option key={d} value={d}>{d}</option>)}
-          </select>
+          <div className="w-40">
+             <Select 
+                value={difficulty}
+                onChange={(val) => setDifficulty(val)}
+                triggerClassName="bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-2 text-sm font-medium h-10"
+                options={[
+                    { value: "", label: "Any Difficulty" },
+                    ...DIFFICULTIES.map(d => ({ value: d, label: d }))
+                ]}
+             />
+          </div>
 
           {/* Price Range */}
           <div className="flex items-center gap-3 bg-[var(--input)] border border-[var(--border)] rounded-xl px-4 py-2">

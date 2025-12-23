@@ -1,100 +1,153 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { EmptyState } from "@/components/ui/EmptyState";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
+import { apiFetch } from "../../../lib/api";
+import { Button } from "../../../components/ui/Button";
+import StatusBadge from "../../../components/ui/StatusBadge";
+import Spinner from "../../../components/ui/Spinner";
+import Card from "../../../components/ui/Card";
+import { useAuth } from "../../../context/AuthContext";
 
-export default function BookingsPage() {
+export default function MyBookingsPage() {
+  const { user } = useAuth();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadBookings() {
-      try {
-        const res = await apiFetch("/bookings/me");
-        if (res.ok) {
-          setBookings(await res.json());
-        }
-      } catch (e) {
-        console.error("Failed to load bookings", e);
-      } finally {
-        setLoading(false);
+  const fetchBookings = async () => {
+    try {
+      const res = await apiFetch("/bookings/my-bookings");
+      if (res.ok) {
+        const data = await res.json();
+        setBookings(data);
       }
+    } catch (error) {
+      console.error("Failed to load bookings", error);
+    } finally {
+      setLoading(false);
     }
-    loadBookings();
+  };
+
+  useEffect(() => {
+    fetchBookings();
   }, []);
 
+  const handleCancel = async (id: string, currentlyLoading: boolean) => {
+    if (currentlyLoading) return;
+    if (!confirm("Are you sure you want to cancel this booking?")) return;
+
+    try {
+      const res = await apiFetch(`/bookings/${id}/cancel`, { method: "POST" });
+      if (res.ok) {
+        fetchBookings();
+      } else {
+        alert("Failed to cancel booking");
+      }
+    } catch (e) {
+      alert("Network error");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spinner size={32} />
+      </div>
+    );
+  }
+
   return (
-    <section className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black italic uppercase tracking-tighter">My Adventures</h2>
+    <div className="max-w-4xl mx-auto py-12 px-6">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">My Adventures</h1>
         <Link href="/trips">
-          <Button variant="ghost" className="gap-2">
-            Explore More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-          </Button>
+          <Button variant="subtle">Explore More</Button>
         </Link>
       </div>
 
-      {loading ? (
-        <div className="grid gap-4">
-          {[1, 2].map((i) => (
-            <div key={i} className="h-32 bg-[var(--border)]/10 animate-pulse rounded-[32px] border border-[var(--border)]" />
-          ))}
+      {bookings.length === 0 ? (
+        <div className="text-center py-16 border-2 border-dashed rounded-2xl bg-muted/20">
+          <h3 className="text-xl font-medium text-muted-foreground mb-4">You haven't booked any trips yet.</h3>
+          <Link href="/trips">
+            <Button variant="primary" className="py-2.5 px-6">Find Your Next Adventure</Button>
+          </Link>
         </div>
-      ) : bookings.length === 0 ? (
-        <EmptyState
-          title="No adventures yet"
-          description="You haven't booked any expeditions with us. The wild is calling."
-          actionLabel="View Trips"
-          actionLink="/trips"
-          icon={
-            <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          }
-        />
       ) : (
-        <div className="grid gap-6">
+        <div className="space-y-6">
           {bookings.map((booking) => (
-            <div 
-              key={booking.id} 
-              className="group flex flex-col md:flex-row items-center gap-6 p-6 rounded-[40px] bg-[var(--card)]/50 backdrop-blur-xl border border-[var(--border)] hover:border-[var(--accent)]/30 transition-all hover:shadow-2xl hover:shadow-[var(--accent)]/5"
-            >
-              <div className="w-full md:w-32 h-24 rounded-[24px] bg-[var(--border)]/20 overflow-hidden shrink-0">
-                {booking.trip.coverImage ? (
-                  <img src={booking.trip.coverImage.thumbUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
-                ) : (
-                   <div className="w-full h-full flex items-center justify-center text-[var(--accent)]/20 font-black italic">PARAM</div>
-                )}
-              </div>
-              
-              <div className="flex-1 space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--accent)]">
-                  {booking.trip.location}
-                </p>
-                <h3 className="text-xl font-black italic tracking-tight uppercase leading-none">
-                  {booking.trip.title}
-                </h3>
-                <p className="text-xs text-muted-foreground font-medium">
-                  Booked on {new Date(booking.createdAt).toLocaleDateString()}
-                </p>
+            <Card key={booking.id} className="p-6 md:p-8 flex flex-col md:flex-row gap-6 hover:shadow-lg transition-shadow">
+              {/* Image */}
+              <div className="w-full md:w-48 h-32 bg-muted rounded-xl overflow-hidden shrink-0 relative">
+                 {booking.trip.coverImage?.mediumUrl ? (
+                   <img 
+                     src={booking.trip.coverImage.mediumUrl} 
+                     alt={booking.trip.title} 
+                     className="w-full h-full object-cover"
+                   />
+                 ) : (
+                   <div className="w-full h-full flex items-center justify-center bg-accent/10 text-accent font-bold">
+                     PARAM
+                   </div>
+                 )}
               </div>
 
-              <div className="flex flex-col items-end gap-3 w-full md:w-auto">
-                <StatusBadge status={booking.status} />
-                <Link href={`/trips/${booking.trip.slug}`}>
-                  <Button variant="ghost" className="font-bold uppercase tracking-widest text-[10px] px-4 py-1.5 h-auto">
-                    Trip Details
-                  </Button>
-                </Link>
+              {/* Details */}
+              <div className="flex-1 space-y-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-xl font-bold">{booking.trip.title}</h3>
+                    <p className="text-muted-foreground flex items-center gap-1 text-sm mt-1">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+                      {booking.trip.location}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <span className="block text-2xl font-bold">₹{booking.totalPrice.toLocaleString()}</span>
+                    <span className="text-xs text-muted-foreground">{booking.guests} Guests</span>
+                  </div>
+                </div>
+
+                <div className="flex flax-wrap gap-4 text-sm border-t pt-4">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted-foreground uppercase">Start Date</span>
+                    <span className="font-medium">{new Date(booking.startDate).toLocaleDateString()}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-muted-foreground uppercase">Booking ID</span>
+                    <span className="font-mono text-xs text-muted-foreground">{booking.id.slice(0,8)}...</span>
+                  </div>
+                  <div className="flex flex-col ml-auto items-end">
+                    <span className="text-xs text-muted-foreground uppercase mb-1">Status</span>
+                    <StatusBadge status={booking.status} />
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-3 pt-2">
+                   {["REQUESTED", "CONFIRMED"].includes(booking.status) && (
+                      <Button 
+                        variant="ghost" 
+                        className="text-red-500 hover:text-red-600 hover:bg-red-500/10 h-auto py-2 text-sm"
+                        onClick={() => handleCancel(booking.id, false)}
+                      >
+                        Cancel Booking
+                      </Button>
+                   )}
+                   {booking.paymentStatus === "PENDING" && booking.status !== "CANCELLED" && (
+                     <Button 
+                       variant="primary" 
+                       className="h-auto py-2 text-sm"
+                       onClick={() => alert("Payment flow integration pending")}
+                     >
+                       Pay Now
+                     </Button>
+                   )}
+                </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
 }

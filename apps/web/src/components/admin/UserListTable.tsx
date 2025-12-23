@@ -8,6 +8,7 @@ import { useRoles } from "../../hooks/useRoles";
 import Button from "../ui/Button";
 import StatusBadge from "../ui/StatusBadge";
 import Spinner from "../ui/Spinner";
+import { Select } from "../ui/Select";
 
 type Props = {
   users: User[];
