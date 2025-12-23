@@ -28,7 +28,7 @@ export default function AdminBlogsPage() {
     load();
   }, [load]);
 
-  async function handleAction(id: string, type: "approve" | "reject") {
+  async function handleAction(id: string, type: "submit" | "approve" | "reject" | "publish" | "archive") {
     if (!confirm(`Are you sure you want to ${type} this blog?`)) return;
     
     try {

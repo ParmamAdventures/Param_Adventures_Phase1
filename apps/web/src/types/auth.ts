@@ -4,6 +4,10 @@ export interface User {
   name?: string;
   nickname?: string;
   bio?: string;
+  age?: number;
+  gender?: string;
+  phoneNumber?: string;
+  address?: string;
   status: "ACTIVE" | "SUSPENDED";
   createdAt: string;
   roles: string[];

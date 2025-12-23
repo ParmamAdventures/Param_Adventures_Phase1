@@ -23,6 +23,7 @@ import metricsRoutes from "./routes/metrics.routes";
 import mediaRoutes from "./routes/media.routes";
 import adminAnalyticsRoutes from "./routes/admin/analytics.routes";
 import adminAuditRoutes from "./routes/admin/audit.routes";
+import dashboardRoutes from "./routes/admin/dashboard.routes";
 import contentRoutes from "./routes/content.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
@@ -77,6 +78,7 @@ app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/admin/bookings", adminBookingsRoutes);
 app.use("/admin/analytics", adminAnalyticsRoutes);
 app.use("/admin/audit-logs", adminAuditRoutes);
+app.use("/admin/dashboard", dashboardRoutes);
 
 // must be LAST
 app.use(errorHandler);
