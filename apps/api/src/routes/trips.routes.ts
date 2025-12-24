@@ -19,9 +19,25 @@ import { getTripBySlug } from "../controllers/trips/getTripBySlug.controller";
 
 // ... imports ...
 
+// Public metadata for filters (Must be before /public route)
+router.get("/public/meta", async (req, res) => {
+  const aggs = await prisma.trip.aggregate({
+    _min: { price: true, durationDays: true },
+    _max: { price: true, durationDays: true },
+    where: { status: "PUBLISHED" }
+  });
+  
+  res.json({
+    minPrice: aggs._min.price || 0,
+    maxPrice: aggs._max.price || 100000,
+    minDuration: aggs._min.durationDays || 1,
+    maxDuration: aggs._max.durationDays || 30
+  });
+});
+
 // Public list with search and filtering
 router.get("/public", async (req, res) => {
-  const { search, category, difficulty, maxPrice } = req.query;
+  const { search, category, difficulty, maxPrice, minPrice, minDays, maxDays, startDate, endDate } = req.query;
   
   const where: any = { status: "PUBLISHED" };
   
@@ -40,8 +56,27 @@ router.get("/public", async (req, res) => {
     where.difficulty = difficulty;
   }
   
-  if (maxPrice) {
-    where.price = { lte: Number(maxPrice) };
+  // Price Range
+  if (maxPrice || minPrice) {
+    where.price = {};
+    if (maxPrice) where.price.lte = Number(maxPrice);
+    if (minPrice) where.price.gte = Number(minPrice);
+  }
+
+  // Duration Range
+  if (minDays || maxDays) {
+    where.durationDays = {};
+    if (minDays) where.durationDays.gte = Number(minDays);
+    if (maxDays) where.durationDays.lte = Number(maxDays);
+  }
+
+  // Date Range (Overlapping check)
+  // Trip must start after filter StartDate AND end before filter EndDate? 
+  // Or just start date availability? Usually "Trips starting between X and Y"
+  if (startDate || endDate) {
+    where.startDate = {};
+    if (startDate) where.startDate.gte = new Date(String(startDate));
+    if (endDate) where.startDate.lte = new Date(String(endDate));
   }
 
   if (Boolean(req.query.isFeatured) === true) {

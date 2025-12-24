@@ -96,7 +96,7 @@ export function CustomTripForm() {
                     </div>
                     <div className="space-y-2">
                         <label className="text-sm font-medium">Approximate Budget (per person)</label>
-                        <input name="budget" value={formData.budget} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="$1000 - $2000" suppressHydrationWarning />
+                        <input name="budget" value={formData.budget} onChange={handleChange} className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-accent/50 outline-none" placeholder="₹10,000 - ₹50,000" suppressHydrationWarning />
                     </div>
                 </div>
 
