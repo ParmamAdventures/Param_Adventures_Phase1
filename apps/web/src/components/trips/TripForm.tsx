@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Button from "../ui/Button";
 import { ImageUploader } from "../media/ImageUploader";
+import { DocumentUploader } from "../media/DocumentUploader";
 import { GalleryUploader } from "../media/GalleryUploader";
 import DynamicList from "../ui/DynamicList";
 import ItineraryBuilder from "./ItineraryBuilder";
@@ -201,8 +202,18 @@ export default function TripForm({
           <div className="space-y-8 animate-in fade-in duration-300">
             <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                     <label className={labelClass}>Or Upload PDF Itinerary (URL)</label>
-                     <input className={inputClass} value={form.itineraryPdf || ""} onChange={(e) => update("itineraryPdf", e.target.value)} placeholder="https://..." />
+                     <label className={labelClass}>
+                        Itinerary PDF
+                        <span className="text-muted-foreground font-normal ml-2 text-xs">(Optional)</span>
+                     </label>
+                     <DocumentUploader 
+                        label="Upload Detailed Itinerary (PDF)"
+                        existingUrl={form.itineraryPdf || undefined} 
+                        onUpload={(url) => update("itineraryPdf", url)} 
+                     />
+                     <p className="text-xs text-muted-foreground mt-2">
+                        Upload the full day-by-day itinerary PDF for users to download.
+                     </p>
                 </div>
             </div>
             

@@ -130,6 +130,22 @@ function renderTrip(trip: TripFull) {
             {/* Itinerary */}
             <section id="itinerary" className="scroll-mt-24">
                  <TripItinerary itinerary={trip.itinerary} />
+                 
+                 {/* Download Button (Visible on all devices now) */}
+                 {trip.itineraryPdf && (
+                    <div className="mt-8">
+                        <a 
+                            href={trip.itineraryPdf} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            download
+                            className="flex items-center justify-center gap-2 w-full py-4 border-2 border-[var(--accent)]/20 bg-[var(--accent)]/5 text-[var(--accent)] rounded-xl font-bold active:scale-95 transition-all hover:bg-[var(--accent)]/10"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
+                            Download Detailed Itinerary
+                        </a>
+                    </div>
+                 )}
             </section>
             
             {/* Inclusions & Policies */}
@@ -169,13 +185,7 @@ function renderTrip(trip: TripFull) {
           <div id="book" className="hidden lg:block space-y-6">
             <div className="sticky top-24 space-y-6">
                <TripBookingCard trip={trip} />
-               
-               {trip.itineraryPdf && (
-                    <a href={trip.itineraryPdf} target="_blank" rel="noopener noreferrer" className="block w-full text-center py-3 border border-border rounded-lg hover:bg-muted transition-colors font-medium text-sm flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>
-                        Download Itinerary PDF
-                    </a>
-               )}
+               {/* PDF Button moved to main content to avoid overlap */}
             </div>
           </div>
         </div>

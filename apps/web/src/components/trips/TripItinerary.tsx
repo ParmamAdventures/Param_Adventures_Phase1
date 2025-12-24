@@ -29,8 +29,10 @@ export default function TripItinerary({ itinerary }: { itinerary: any }) {
               onClick={() => setOpenDay(openDay === day.day ? null : day.day)}
               className="w-full flex items-start text-left gap-4 p-4 md:p-6"
             >
-              <div className={`flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg font-bold text-lg transition-colors ${
-                  openDay === day.day ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+              <div className={`flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-lg font-bold text-lg transition-colors border ${
+                  openDay === day.day 
+                    ? "bg-primary text-primary-foreground border-primary" 
+                    : "bg-secondary/50 text-foreground border-border hover:bg-secondary"
               }`}>
                 {day.day}
               </div>

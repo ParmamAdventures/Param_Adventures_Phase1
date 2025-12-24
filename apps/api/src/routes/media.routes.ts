@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { upload as legacyUpload } from "../utils/multer.config";
-import { upload } from "../middlewares/upload.middleware";
+import { upload, uploadDocument } from "../middlewares/upload.middleware";
 import { uploadTripCover } from "../controllers/media/uploadTripCover.controller";
 import { uploadTripGallery } from "../controllers/media/uploadTripGallery.controller";
 import { setTripCoverImage } from "../controllers/media/setTripCoverImage.controller";
 import { addTripGalleryImage } from "../controllers/media/addTripGalleryImage.controller";
 import { setTripGallery } from "../controllers/media/setTripGallery.controller";
 import { uploadImage } from "../controllers/mediaUpload.controller";
+import { uploadDocument as uploadDocController } from "../controllers/media/uploadDocument.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
 
@@ -22,6 +23,18 @@ router.post(
   requireAuth,
   upload.single("file"),
   uploadImage
+);
+
+/**
+ * POST /media/upload-doc
+ * multipart/form-data
+ * field: file (PDF)
+ */
+router.post(
+  "/upload-doc",
+  requireAuth,
+  uploadDocument.single("file"),
+  uploadDocController
 );
 
 router.post(

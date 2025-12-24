@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "../middlewares/auth.middleware";
+import { requireAuth, optionalAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
 
@@ -93,7 +93,7 @@ router.get("/public", async (req, res) => {
   res.json(trips);
 });
 
-router.get("/public/:slug", getTripBySlug);
+router.get("/public/:slug", optionalAuth, getTripBySlug);
 
 // Internal list (also placed before param routes)
 router.get(
