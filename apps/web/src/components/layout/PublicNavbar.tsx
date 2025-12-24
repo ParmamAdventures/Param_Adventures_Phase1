@@ -64,7 +64,7 @@ export default function PublicNavbar() {
               <NavLink href="/dashboard" active={isActive("/dashboard")} isTransparent={isHome && !isScrolled}>Dashboard</NavLink>
             )}
 
-            {user?.roles?.includes("SUPER_ADMIN") || user?.roles?.includes("ADMIN") ? (
+            {user?.permissions?.includes("trip:view:internal") ? (
                <NavLink href="/admin" active={isActive("/admin")} isTransparent={isHome && !isScrolled}>Admin</NavLink>
             ) : null}
           </nav>
@@ -75,6 +75,7 @@ export default function PublicNavbar() {
               onClick={() => setIsSearchOpen(true)}
               className={`p-2 rounded-xl transition-all ${isHome && !isScrolled ? "text-white/80 hover:text-white hover:bg-white/10" : "text-muted-foreground hover:text-accent hover:bg-accent/5"}`}
               aria-label="Search"
+              suppressHydrationWarning
             >
               <Search size={20} />
             </button>
