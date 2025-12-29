@@ -10,6 +10,8 @@ export function StatusBadge({ status }: Props) {
     PENDING_REVIEW: "bg-[var(--accent)]/15 text-[var(--accent)]",
     APPROVED: "bg-emerald-500/10 text-emerald-500",
     PUBLISHED: "bg-[var(--accent)]/10 text-[var(--accent)]",
+    IN_PROGRESS: "bg-indigo-500/10 text-indigo-500",
+    COMPLETED: "bg-blue-500/10 text-blue-500",
     ARCHIVED: "bg-[color:var(--border)] text-[var(--muted)]",
     
     // Booking Statuses
@@ -17,7 +19,6 @@ export function StatusBadge({ status }: Props) {
     CONFIRMED: "bg-emerald-500/10 text-emerald-500",
     REJECTED: "bg-rose-500/10 text-rose-500",
     CANCELLED: "bg-[color:var(--border)] text-[var(--muted)]",
-    COMPLETED: "bg-blue-500/10 text-blue-500",
 
     // Payment Statuses
     PENDING: "bg-amber-500/10 text-amber-500",

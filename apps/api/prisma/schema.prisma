@@ -53,6 +53,10 @@ model User {
   // Media relations
   uploadedImages Image[] @relation("UserUploadedImages")
   blogs          Blog[]  @relation("UserBlogs")
+
+  // Trip Management roles
+  managedTrips Trip[]          @relation("TripManagedBy")
+  guidedTrips  TripsOnGuides[]
 }
 
 model Role {
@@ -117,6 +121,8 @@ enum TripStatus {
   PENDING_REVIEW
   APPROVED
   PUBLISHED
+  IN_PROGRESS
+  COMPLETED
   ARCHIVED
 }
 
@@ -182,6 +188,10 @@ model Trip {
   startDate DateTime?
   endDate   DateTime?
 
+  managerId String?
+  manager   User?   @relation("TripManagedBy", fields: [managerId], references: [id])
+  guides    TripsOnGuides[]
+
   blogs Blog[] @relation("TripBlogs")
 
   isFeatured Boolean @default(false)
@@ -201,6 +211,17 @@ model TripGalleryImage {
   image Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
 
   @@id([tripId, imageId])
+}
+
+model TripsOnGuides {
+  tripId  String
+  guideId String
+  assignedAt DateTime @default(now())
+
+  trip  Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  guide User @relation(fields: [guideId], references: [id], onDelete: Cascade)
+
+  @@id([tripId, guideId])
 }
 
 enum BlogStatus {

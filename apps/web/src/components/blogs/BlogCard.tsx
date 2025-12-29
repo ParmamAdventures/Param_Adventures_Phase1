@@ -31,6 +31,7 @@ export default function BlogCard({ blog, index = 0 }: { blog: any, index?: numbe
             alt={blog.title}
             fill
             className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
           <div className="flex h-full items-center justify-center bg-[var(--accent)]/5 text-[var(--accent)]/20">

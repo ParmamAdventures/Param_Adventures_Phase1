@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { HttpError } from "../../lib/httpError";
+import { HttpError } from "../../utils/httpError";
 
 export async function getTripBySlug(req: Request, res: Response) {
   const { slug } = req.params;
@@ -21,7 +21,7 @@ export async function getTripBySlug(req: Request, res: Response) {
   });
 
   if (!trip) {
-    throw new HttpError(404, "Trip not found");
+    throw new HttpError(404, "NOT_FOUND", "Trip not found");
   }
 
   if (trip.status === "PUBLISHED") {
@@ -66,5 +66,5 @@ export async function getTripBySlug(req: Request, res: Response) {
   }
 
   // Fallback to hiding existence
-  throw new HttpError(404, "Trip not found");
+  throw new HttpError(404, "NOT_FOUND", "Trip not found");
 }

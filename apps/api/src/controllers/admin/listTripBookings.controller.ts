@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-import { HttpError } from "../../lib/httpError";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../lib/prisma";
+import { HttpError } from "../../utils/httpError";
 
 export async function listTripBookings(req: Request, res: Response) {
   const { tripId } = req.params;

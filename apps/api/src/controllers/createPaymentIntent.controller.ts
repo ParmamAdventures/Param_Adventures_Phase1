@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { createRazorpayOrder } from "../services/razorpay.service";
-import { HttpError } from "../lib/httpError";
+import { HttpError } from "../utils/httpError";
 import { env } from "../config/env";
 
 export async function createPaymentIntent(req: Request, res: Response) {

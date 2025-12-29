@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { apiFetch } from "@/lib/api";
 import { useRouter } from "next/navigation";
+import { ImageUploader } from "@/components/media/ImageUploader";
 
 export default function NewBlogPage() {
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
+  const [coverImage, setCoverImage] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -26,6 +28,7 @@ export default function NewBlogPage() {
           title,
           excerpt,
           content,
+          coverImageId: coverImage?.id,
         }),
       });
 
@@ -61,6 +64,24 @@ export default function NewBlogPage() {
       </div>
 
       <div className="space-y-6">
+        <div className="space-y-2">
+           <label className="text-sm font-semibold uppercase tracking-wider opacity-70">Cover Image</label>
+           <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4">
+             {coverImage ? (
+                <div className="relative aspect-video rounded-xl overflow-hidden group">
+                  <img src={coverImage.mediumUrl} alt="Cover" className="w-full h-full object-cover" />
+                  <button 
+                    onClick={() => setCoverImage(null)}
+                    className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                  </button>
+                </div>
+             ) : (
+                <ImageUploader onUpload={setCoverImage} label="Upload Cover Image" />
+             )}
+           </div>
+        </div>
         <div className="space-y-2">
           <label className="text-sm font-semibold uppercase tracking-wider opacity-70">Title</label>
           <Input

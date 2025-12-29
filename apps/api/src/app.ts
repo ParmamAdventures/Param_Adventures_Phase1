@@ -10,7 +10,6 @@ import { logger } from "./lib/logger";
 import authRoutes from "./routes/auth.routes";
 import adminUsersRoutes from "./routes/admin/users.routes";
 import adminRolesRoutes from "./routes/admin/roles.routes";
-import adminRoleAssignRoutes from "./routes/admin/role-assign.routes";
 import tripRoutes from "./routes/trips.routes";
 import adminTripBookingsRoutes from "./routes/admin/trip-bookings.routes";
 import adminBookingsRoutes from "./routes/admin/bookings.routes";
@@ -25,6 +24,7 @@ import adminAnalyticsRoutes from "./routes/admin/analytics.routes";
 import adminAuditRoutes from "./routes/admin/audit.routes";
 import dashboardRoutes from "./routes/admin/dashboard.routes";
 import contentRoutes from "./routes/content.routes";
+import tripAssignmentRoutes from "./routes/admin/trip-assignment.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
 
@@ -71,12 +71,12 @@ app.use("/content", contentRoutes);
 // Admin routes
 app.use("/admin/users", adminUsersRoutes);
 app.use("/admin/roles", adminRolesRoutes);
-app.use("/admin/roles", adminRoleAssignRoutes);
 app.use("/admin/trips", adminTripBookingsRoutes);
 app.use("/admin/bookings", adminBookingsRoutes);
 app.use("/admin/analytics", adminAnalyticsRoutes);
 app.use("/admin/audit-logs", adminAuditRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
+app.use("/admin/trip-assignments", tripAssignmentRoutes);
 
 // must be LAST
 app.use(errorHandler);

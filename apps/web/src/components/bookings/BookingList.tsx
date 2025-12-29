@@ -122,6 +122,10 @@ export default function BookingList({ bookings, loading }: Props) {
                             name: user?.name || "", 
                             email: user?.email || "" 
                           });
+                          if (result?.orderId) {
+                            // Temporary store for simulation button
+                            (window as any)[`order_${booking.id}`] = result.orderId;
+                          }
                         }} 
                         loading={paymentLoading}
                         className="bg-[var(--accent)] hover:bg-[var(--accent)]/90 text-white shadow-lg shadow-[var(--accent)]/20 rounded-full px-8"
@@ -143,7 +147,7 @@ export default function BookingList({ bookings, loading }: Props) {
                   {message?.includes("Dev order created") && (
                     <Button 
                       variant="subtle" 
-                      onClick={() => simulateDevSuccess(booking.id)}
+                      onClick={() => simulateDevSuccess(booking.id, (window as any)[`order_${booking.id}`])}
                       className="rounded-full px-6"
                     >
                       Simulate Success

@@ -140,10 +140,32 @@ export function useRazorpay() {
         theme: {
           color: accentColor,
         },
-        handler: () => {
+        handler: async (response: any) => {
           setMessage("Payment received. Verifying...");
           setLoading(true);
-          startPolling(bookingId);
+          try {
+            const verifyRes = await apiFetch("/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: response.razorpay_order_id,
+                paymentId: response.razorpay_payment_id,
+                signature: response.razorpay_signature,
+              }),
+            });
+            
+            if (verifyRes.ok) {
+              setMessage("Payment successful! 🎉");
+              setLoading(false);
+              showToast("Payment verified successfully", "success");
+              router.refresh();
+            } else {
+              startPolling(bookingId);
+            }
+          } catch (error) {
+            console.error("Verification error:", error);
+            startPolling(bookingId);
+          }
         },
         modal: {
           ondismiss: () => {
@@ -164,11 +186,32 @@ export function useRazorpay() {
     return { isDev: false };
   }, [loadScript, showToast, startPolling]);
 
-  const simulateDevSuccess = useCallback((bookingId: string) => {
+  const simulateDevSuccess = useCallback(async (bookingId: string, orderId?: string) => {
     setMessage("Simulating success. Verifying...");
     setLoading(true);
+
+    if (orderId) {
+      try {
+        const verifyRes = await apiFetch("/payments/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId }),
+        });
+        
+        if (verifyRes.ok) {
+          setMessage("Payment successful! 🎉");
+          setLoading(false);
+          showToast("Payment verified successfully", "success");
+          router.refresh();
+          return;
+        }
+      } catch (error) {
+        console.error("Simulation verification error:", error);
+      }
+    }
+    
     startPolling(bookingId);
-  }, [startPolling]);
+  }, [startPolling, router, showToast]);
 
   return {
     initiatePayment,

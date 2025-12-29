@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import { logWebhookReplay } from "../utils/webhookLogger";
-
-const prisma = new PrismaClient();
 
 export async function handlePaymentCaptured(event: any) {
   const paymentEntity = event.payload?.payment?.entity;
@@ -47,6 +45,7 @@ export async function handlePaymentCaptured(event: any) {
       where: { id: payment.bookingId },
       data: {
         paymentStatus: "PAID",
+        status: "CONFIRMED",
       },
     }),
   ]);
@@ -96,6 +95,35 @@ export async function handlePaymentFailed(event: any) {
       where: { id: payment.bookingId },
       data: {
         paymentStatus: "FAILED",
+      },
+    }),
+  ]);
+}
+
+export async function handleRefundProcessed(event: any) {
+  const refundEntity = event.payload?.refund?.entity;
+  const razorpayPaymentId = refundEntity?.payment_id;
+
+  if (!razorpayPaymentId) return;
+
+  const payment = await prisma.payment.findUnique({
+    where: { providerPaymentId: razorpayPaymentId },
+  });
+
+  if (!payment) return;
+
+  await prisma.$transaction([
+    prisma.payment.update({
+      where: { id: payment.id },
+      data: {
+        status: "REFUNDED",
+        rawPayload: event,
+      },
+    }),
+    prisma.booking.update({
+      where: { id: payment.bookingId },
+      data: {
+        status: "CANCELLED",
       },
     }),
   ]);

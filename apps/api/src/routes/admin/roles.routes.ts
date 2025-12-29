@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listRoles, updateRolePermissions } from "../../controllers/admin/roles.controller";
+import { listRoles, updateRolePermissions, assignRole, revokeRole } from "../../controllers/admin/roles.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";
 import { requirePermission } from "../../middlewares/require-permission.middleware";
@@ -20,6 +20,22 @@ router.patch(
   attachPermissions,
   requirePermission("role:assign"),
   updateRolePermissions
+);
+
+router.post(
+  "/assign",
+  requireAuth,
+  attachPermissions,
+  requirePermission("user:assign-role"),
+  assignRole
+);
+
+router.post(
+  "/revoke",
+  requireAuth,
+  attachPermissions,
+  requirePermission("user:remove-role"),
+  revokeRole
 );
 
 export default router;

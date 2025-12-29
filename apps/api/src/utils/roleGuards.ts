@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma";
 
 export async function isLastSuperAdmin(userId: string) {
   const superAdminRole = await prisma.role.findUnique({

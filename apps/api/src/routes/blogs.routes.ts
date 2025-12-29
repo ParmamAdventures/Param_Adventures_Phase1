@@ -24,7 +24,7 @@ router.get("/public/:slug", getBlogBySlug);
 // Protected routes
 router.get("/my-blogs", requireAuth, attachPermissions, getMyBlogs);
 router.post("/", requireAuth, attachPermissions, requirePermission("blog:create"), createBlog);
-router.put("/:id", requireAuth, attachPermissions, requirePermission("blog:update"), updateBlog);
+router.put("/:id", requireAuth, attachPermissions, updateBlog);
 router.post("/:id/submit", requireAuth, attachPermissions, requirePermission("blog:submit"), submitBlog);
 
 // Admin-only moderation routes

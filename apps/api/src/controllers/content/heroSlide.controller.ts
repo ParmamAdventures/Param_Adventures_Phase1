@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../lib/prisma";
 import { z } from "zod";
-
-const prisma = new PrismaClient();
 
 // Get all hero slides (Public)
 export async function getHeroSlides(req: Request, res: Response) {

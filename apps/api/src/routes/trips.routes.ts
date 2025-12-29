@@ -10,9 +10,7 @@ import { approveTrip } from "../controllers/trips/approveTrip.controller";
 import { publishTrip } from "../controllers/trips/publishTrip.controller";
 import { archiveTrip } from "../controllers/trips/archiveTrip.controller";
 import { getInternalTrips } from "../controllers/trips/internalTrips.controller";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../lib/prisma";
 const router = Router();
 
 import { getTripBySlug } from "../controllers/trips/getTripBySlug.controller";
@@ -125,7 +123,16 @@ router.get("/:id", requireAuth, attachPermissions, async (req, res) => {
   const user = req.user!;
   const permissions = req.permissions || [];
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
+  const trip = await prisma.trip.findUnique({ 
+    where: { id },
+    include: {
+      manager: { select: { id: true, name: true, email: true } },
+      guides: { include: { guide: { select: { id: true, name: true, email: true } } } },
+      coverImage: true,
+      gallery: { include: { image: true }, orderBy: { order: "asc" } }
+    }
+  });
+
   if (!trip) return res.status(404).json({ error: "Trip not found" });
 
   if (

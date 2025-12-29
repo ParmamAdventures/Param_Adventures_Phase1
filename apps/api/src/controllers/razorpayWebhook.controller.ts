@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { verifyRazorpaySignature } from "../services/razorpay.service";
-import { handlePaymentCaptured, handlePaymentFailed } from "./paymentEvents";
-import { HttpError } from "../lib/httpError";
+import { handlePaymentCaptured, handlePaymentFailed, handleRefundProcessed } from "./paymentEvents";
+import { HttpError } from "../utils/httpError";
 import { env } from "../config/env";
 import {
   incTotal,
@@ -53,6 +53,9 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
         break;
       case "payment.failed":
         await handlePaymentFailed(event);
+        break;
+      case "refund.processed":
+        await handleRefundProcessed(event);
         break;
       default:
         logger.info(`Ignoring Razorpay webhook event: ${event.event}`);

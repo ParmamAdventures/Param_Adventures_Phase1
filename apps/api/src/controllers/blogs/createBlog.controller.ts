@@ -4,7 +4,7 @@ import { slugify } from "../../utils/slugify";
 import { auditService } from "../../services/audit.service";
 
 export async function createBlog(req: Request, res: Response) {
-  const { title, content, excerpt, tripId } = req.body;
+  const { title, content, excerpt, tripId, coverImageId } = req.body;
   const user = (req as any).user;
 
   const slug = slugify(title);
@@ -16,6 +16,7 @@ export async function createBlog(req: Request, res: Response) {
       content,
       excerpt,
       tripId,
+      coverImageId,
       authorId: user.id,
     },
   });

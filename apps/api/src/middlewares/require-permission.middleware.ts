@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { HttpError } from "../lib/httpError";
+import { HttpError } from "../utils/httpError";
 import { prisma } from "../lib/prisma";
 
 export function requirePermission(permission: string) {

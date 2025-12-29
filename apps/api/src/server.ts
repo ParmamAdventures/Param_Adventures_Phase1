@@ -6,8 +6,7 @@ const server = app.listen(Number(env.PORT), () => {
   logger.info(`API running on port ${env.PORT}`);
 });
 
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "./lib/prisma";
 
 async function gracefulShutdown(signal: string) {
   logger.info(`${signal} received. Shutting down gracefully...`);

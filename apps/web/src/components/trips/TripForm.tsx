@@ -37,6 +37,8 @@ export type TripFormData = {
   altitude: string;
   distance: string;
   isFeatured: boolean;
+  managerId?: string | null;
+  guides?: { guide: { id: string; name: string; email: string } }[];
 };
 
 type TripFormProps = {
@@ -83,6 +85,8 @@ export default function TripForm({
     altitude: initialData?.altitude || "",
     distance: initialData?.distance || "",
     isFeatured: initialData?.isFeatured || false,
+    managerId: initialData?.managerId || null,
+    guides: initialData?.guides || [],
   });
 
   function update<K extends keyof TripFormData>(key: K, value: TripFormData[K]) {

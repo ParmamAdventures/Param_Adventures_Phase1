@@ -45,6 +45,9 @@ async function main() {
     "media:delete",
     "audit:view",
     "audit:read",
+    "trip:assign-guide",
+    "trip:update-status",
+    "trip:view:guests",
   ];
 
   for (const key of permissions) {
@@ -110,6 +113,18 @@ async function main() {
     where: { name: "PUBLIC" },
     update: {},
     create: { name: "PUBLIC", description: "Public visitors", isSystem: false },
+  });
+  
+  const tripManagerRole = await prisma.role.upsert({
+    where: { name: "TRIP_MANAGER" },
+    update: {},
+    create: { name: "TRIP_MANAGER", description: "Manages specific trip logistics and guides", isSystem: false },
+  });
+
+  const tripGuideRole = await prisma.role.upsert({
+    where: { name: "TRIP_GUIDE" },
+    update: {},
+    create: { name: "TRIP_GUIDE", description: "On-site trip guide", isSystem: false },
   });
 
   // helper to grant permission keys to a role
@@ -177,6 +192,30 @@ async function main() {
     "blog:reject",
     "blog:publish",
     // Media management
+    "media:view",
+    "media:upload",
+    // Assignment permissions
+    "trip:assign-guide",
+    "trip:update-status",
+    "trip:view:guests",
+  ]);
+
+  // Trip Manager grants
+  await grantPermissionsToRole(tripManagerRole, [
+    "trip:view:internal",
+    "trip:assign-guide",
+    "trip:view:guests",
+    "trip:update-status",
+    "booking:view",
+    "media:view",
+    "media:upload",
+  ]);
+
+  // Trip Guide grants
+  await grantPermissionsToRole(tripGuideRole, [
+    "trip:view:internal",
+    "trip:view:guests",
+    "trip:update-status",
     "media:view",
     "media:upload",
   ]);

@@ -42,6 +42,19 @@ export const razorpayService = {
       .digest("hex");
     
     return expectedSignature === signature;
+  },
+
+  /**
+   * Verify checkout payment signature
+   */
+  verifyPaymentSignature(orderId: string, paymentId: string, signature: string) {
+    const text = orderId + "|" + paymentId;
+    const expectedSignature = crypto
+      .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
+      .update(text)
+      .digest("hex");
+    
+    return expectedSignature === signature;
   }
 };
 

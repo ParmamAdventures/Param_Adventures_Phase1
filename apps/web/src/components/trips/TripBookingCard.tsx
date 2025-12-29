@@ -21,6 +21,7 @@ export default function TripBookingCard({ trip }: Props) {
   
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [paymentInitiated, setPaymentInitiated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,6 +47,9 @@ export default function TripBookingCard({ trip }: Props) {
       name: user?.name || "", 
       email: user?.email || "" 
     });
+    if (result?.orderId) {
+      setOrderId(result.orderId);
+    }
   };
 
   return (
@@ -96,7 +100,7 @@ export default function TripBookingCard({ trip }: Props) {
               {message?.includes("Dev order created") && (
                 <Button 
                   variant="subtle" 
-                  onClick={() => simulateDevSuccess(bookingId)}
+                  onClick={() => simulateDevSuccess(bookingId, orderId || undefined)}
                   className="w-full rounded-2xl"
                 >
                   Simulate Dev Success

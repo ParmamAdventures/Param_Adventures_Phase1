@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../lib/prisma";
 
 export async function listAuditLogs(req: Request, res: Response) {
   const { action, actorId, targetType, page = 1, limit = 50 } = req.query;

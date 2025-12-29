@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import { auditService } from "../services/audit.service";
-
-const prisma = new PrismaClient();
 
 export async function updateProfile(req: Request, res: Response) {
   const userId = (req as any).user.id;

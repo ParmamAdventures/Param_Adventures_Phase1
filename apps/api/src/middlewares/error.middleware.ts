@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { HttpError } from "../lib/httpError";
+import { HttpError } from "../utils/httpError";
 
 import { logger } from "../lib/logger";
 
@@ -13,10 +13,13 @@ export function errorHandler(
 
   console.error("Global Error Handler Caught:", err); // Force console log
 
-  if (err instanceof HttpError) {
+  if (err instanceof HttpError || err.name === "HttpError") {
+    const status = (err as any).status || 500;
+    const code = (err as any).code || "INTERNAL_ERROR";
+    const message = err.message || "Internal Server Error";
     return res
-      .status(err.status)
-      .json({ error: { code: err.code, message: err.message } });
+      .status(status)
+      .json({ error: { code, message } });
   }
 
   // Handle Multer errors
