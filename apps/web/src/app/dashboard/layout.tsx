@@ -18,6 +18,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   const { user } = useAuth();
 
   const filteredTabs = tabs.filter(tab => !tab.role || user?.roles?.includes(tab.role));
