@@ -8,6 +8,7 @@ import Link from "next/link";
 import { ArrowLeft, Loader2, Mail, Lock, User, PartyPopper } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
+import Image from "next/image";
 
 export default function SignupPage() {
   const { config } = useSiteConfig();
@@ -87,10 +88,13 @@ export default function SignupPage() {
       {/* Right Side - Hero Image (Swapped position for variety) */}
       <div className="hidden lg:flex w-1/2 relative bg-black overflow-hidden order-2">
         <div className="absolute inset-0 z-0">
-           <img 
+           <Image 
             src={config.auth_signup_image || "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2670&auto=format&fit=crop"}
             alt="Starry Night Camping"
-            className="w-full h-full object-cover opacity-60"
+            fill
+            className="object-cover opacity-60"
+            unoptimized
+            priority
            />
         </div>
         <div className="absolute inset-0 bg-gradient-to-l from-black/80 to-transparent z-10" />
@@ -112,10 +116,13 @@ export default function SignupPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative order-1 overflow-hidden">
         {/* Mobile Background Image with Overlay */}
         <div className="absolute inset-0 lg:hidden z-0">
-            <img 
+            <Image 
                 src={config.auth_signup_image || "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2670&auto=format&fit=crop"}
                 alt="Background"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                unoptimized
+                priority
             />
             <div className="absolute inset-0 bg-background/90 backdrop-blur-sm" />
         </div>

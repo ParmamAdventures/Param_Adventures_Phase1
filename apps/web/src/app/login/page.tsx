@@ -8,6 +8,7 @@ import Link from "next/link";
 import { ArrowLeft, Loader2, Mail, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
+import Image from "next/image";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -38,10 +39,13 @@ export default function LoginPage() {
       {/* Left Side - Hero Image */}
       <div className="hidden lg:flex w-1/2 relative bg-black overflow-hidden">
         <div className="absolute inset-0 z-0">
-           <img 
+           <Image 
             src={config.auth_login_image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2601&auto=format&fit=crop"}
             alt="Adventure Background"
-            className="w-full h-full object-cover opacity-60"
+            fill
+            className="object-cover opacity-60"
+            priority
+            unoptimized
            />
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent z-10" />
@@ -69,10 +73,13 @@ export default function LoginPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative overflow-hidden">
         {/* Mobile Background Image with Overlay */}
         <div className="absolute inset-0 lg:hidden z-0">
-            <img 
+            <Image 
                 src={config.auth_login_image || "https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=2601&auto=format&fit=crop"}
                 alt="Background"
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
+                priority
+                unoptimized
             />
             {/* Gradient overlay for readability */}
             <div className="absolute inset-0 bg-background/90 backdrop-blur-sm" />

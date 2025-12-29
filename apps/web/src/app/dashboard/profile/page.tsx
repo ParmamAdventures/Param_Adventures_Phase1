@@ -499,7 +499,7 @@ export default function ProfilePage() {
                   </div>
                   <div className="pt-2 flex justify-end">
                       <Button 
-                        variant="secondary"
+                        variant="subtle"
                         onClick={handleChangePassword}
                         loading={loading}
                         disabled={!currentPassword || !newPassword || !confirmPassword}
