@@ -1,23 +1,33 @@
-"use client";
-
 import { EditorContent, useEditor } from "@tiptap/react";
+import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import ImageExtension from "@tiptap/extension-image";
 import Link from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import Youtube from "@tiptap/extension-youtube";
+import TaskList from "@tiptap/extension-task-list";
+import TaskItem from "@tiptap/extension-task-item";
+import TextAlign from "@tiptap/extension-text-align";
+import Highlight from "@tiptap/extension-highlight";
+import BubbleMenuExtension from "@tiptap/extension-bubble-menu";
+import FloatingMenuExtension from "@tiptap/extension-floating-menu";
 import { useEffect, useRef, useState } from "react";
 import { apiFetch } from "../../lib/api";
 import Spinner from "../ui/Spinner";
+import { 
+  Bold, Italic, Underline as UnderlineIcon, Link as LinkIcon, 
+  Image as ImageIcon, Youtube as YoutubeIcon, Heading1, Heading2, 
+  Heading3, AlignLeft, AlignCenter, AlignRight, List, ListOrdered, 
+  Quote, Code, Minus, Undo, Redo, Highlighter, Type, CheckSquare,
+  Strikethrough, Eraser
+} from "lucide-react";
 
 interface BlogEditorProps {
   value: any;
   onChange?: (v: any) => void;
   readOnly?: boolean;
 }
-
-
 
 export function BlogEditor({
   value,
@@ -32,22 +42,23 @@ export function BlogEditor({
       heading: {
         levels: [1, 2, 3],
       },
+      codeBlock: false, // Using lowlight later maybe, but keep starter kit default or disable if needed
     }),
-    ImageExtension.configure({
-      HTMLAttributes: {
-        class: "rounded-2xl shadow-xl my-8 mx-auto block max-w-full",
-      },
-    }),
+    Underline,
     Link.configure({
       openOnClick: false,
       HTMLAttributes: {
         class: "text-[var(--accent)] underline font-bold hover:opacity-80 transition-opacity cursor-pointer",
       },
     }),
-    Underline,
     Placeholder.configure({
       placeholder: "Start telling your adventure...",
       emptyEditorClass: "is-editor-empty",
+    }),
+    ImageExtension.configure({
+      HTMLAttributes: {
+        class: "rounded-2xl shadow-xl my-8 mx-auto block max-w-full",
+      },
     }),
     Youtube.configure({
       width: 840,
@@ -56,6 +67,16 @@ export function BlogEditor({
         class: "rounded-2xl shadow-2xl my-10 aspect-video mx-auto block max-w-full",
       },
     }),
+    TaskList,
+    TaskItem.configure({
+      nested: true,
+    }),
+    TextAlign.configure({
+      types: ['heading', 'paragraph'],
+    }),
+    Highlight.configure({ multicolor: true }),
+    BubbleMenuExtension,
+    FloatingMenuExtension,
   ];
 
   const editor = useEditor({
@@ -82,18 +103,16 @@ export function BlogEditor({
     }
   }, [value, editor]);
 
+  if (!editor) return null;
+
   const addLink = () => {
     const url = window.prompt("Enter URL");
-    if (url) {
-      editor?.chain().focus().setLink({ href: url }).run();
-    }
+    if (url) editor.chain().focus().setLink({ href: url }).run();
   };
 
   const addYoutube = () => {
     const url = window.prompt("Enter YouTube URL");
-    if (url) {
-      editor?.chain().focus().setYoutubeVideo({ src: url }).run();
-    }
+    if (url) editor.chain().focus().setYoutubeVideo({ src: url }).run();
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,10 +124,7 @@ export function BlogEditor({
     formData.append("file", file);
 
     try {
-      const res = await apiFetch("/media/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await apiFetch("/media/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed");
       
@@ -126,80 +142,185 @@ export function BlogEditor({
     }
   };
 
-  if (!editor) return null;
-
   return (
     <div className={`w-full group ${readOnly ? "" : "space-y-4"}`}>
       {!readOnly && (
-        <div className="flex flex-wrap gap-2 p-2 bg-[var(--card)]/80 backdrop-blur-xl border border-[var(--border)] rounded-2xl items-center sticky top-4 z-30 shadow-2xl shadow-[var(--accent)]/5">
-          <div className="flex bg-[var(--border)]/30 rounded-xl p-1 gap-1">
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              active={editor.isActive("bold")}
-              icon={<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>}
-              title="Bold"
-            />
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              active={editor.isActive("italic")}
-              icon={<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg>}
-              title="Italic"
-            />
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleUnderline().run()}
-              active={editor.isActive("underline")}
-              icon={<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg>}
-              title="Underline"
-            />
+        <>
+          {/* Main Toolbar */}
+          <div className="flex flex-wrap gap-2 p-2 bg-[var(--card)] border border-[var(--border)] rounded-2xl items-center sticky top-4 z-30 shadow-2xl shadow-[var(--accent)]/5 shadow-white/5 backdrop-blur-md">
+            <div className="flex bg-[var(--border)]/10 rounded-xl p-1 gap-1">
+              <ToolbarButton onClick={() => editor.chain().focus().undo().run()} icon={<Undo size={16} />} title="Undo" />
+              <ToolbarButton onClick={() => editor.chain().focus().redo().run()} icon={<Redo size={16} />} title="Redo" />
+            </div>
+
+            <div className="h-6 w-px bg-[var(--border)] mx-1" />
+
+            <div className="flex bg-[var(--border)]/10 rounded-xl p-1 gap-1">
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleBold().run()} 
+                active={editor.isActive("bold")} 
+                icon={<Bold size={16} />} 
+                title="Bold" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleItalic().run()} 
+                active={editor.isActive("italic")} 
+                icon={<Italic size={16} />} 
+                title="Italic" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleUnderline().run()} 
+                active={editor.isActive("underline")} 
+                icon={<UnderlineIcon size={16} />} 
+                title="Underline" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleStrike().run()} 
+                active={editor.isActive("strike")} 
+                icon={<Strikethrough size={16} />} 
+                title="Strikethrough" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleHighlight().run()} 
+                active={editor.isActive("highlight")} 
+                icon={<Highlighter size={16} />} 
+                title="Highlight" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()} 
+                icon={<Eraser size={16} />} 
+                title="Clear Formatting" 
+              />
+            </div>
+
+            <div className="h-6 w-px bg-[var(--border)] mx-1" />
+
+            <div className="flex bg-[var(--border)]/10 rounded-xl p-1 gap-1">
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} 
+                active={editor.isActive("heading", { level: 1 })} 
+                icon={<Heading1 size={16} />} 
+                title="Heading 1" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} 
+                active={editor.isActive("heading", { level: 2 })} 
+                icon={<Heading2 size={16} />} 
+                title="Heading 2" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} 
+                active={editor.isActive("heading", { level: 3 })} 
+                icon={<Heading3 size={16} />} 
+                title="Heading 3" 
+              />
+            </div>
+
+            <div className="h-6 w-px bg-[var(--border)] mx-1" />
+
+            <div className="flex bg-[var(--border)]/10 rounded-xl p-1 gap-1">
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().setTextAlign('left').run()} 
+                active={editor.isActive({ textAlign: 'left' })} 
+                icon={<AlignLeft size={16} />} 
+                title="Align Left" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().setTextAlign('center').run()} 
+                active={editor.isActive({ textAlign: 'center' })} 
+                icon={<AlignCenter size={16} />} 
+                title="Align Center" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().setTextAlign('right').run()} 
+                active={editor.isActive({ textAlign: 'right' })} 
+                icon={<AlignRight size={16} />} 
+                title="Align Right" 
+              />
+            </div>
+
+            <div className="h-6 w-px bg-[var(--border)] mx-1" />
+
+            <div className="flex bg-[var(--border)]/10 rounded-xl p-1 gap-1">
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleBulletList().run()} 
+                active={editor.isActive("bulletList")} 
+                icon={<List size={16} />} 
+                title="Bullet List" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleOrderedList().run()} 
+                active={editor.isActive("orderedList")} 
+                icon={<ListOrdered size={16} />} 
+                title="Ordered List" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleTaskList().run()} 
+                active={editor.isActive("taskList")} 
+                icon={<CheckSquare size={16} />} 
+                title="Task List" 
+              />
+            </div>
+
+            <div className="h-6 w-px bg-[var(--border)] mx-1" />
+
+            <div className="flex bg-[var(--border)]/10 rounded-xl p-1 gap-1">
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleBlockquote().run()} 
+                active={editor.isActive("blockquote")} 
+                icon={<Quote size={16} />} 
+                title="Quote" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().toggleCodeBlock().run()} 
+                active={editor.isActive("codeBlock")} 
+                icon={<Code size={16} />} 
+                title="Code Block" 
+              />
+              <ToolbarButton 
+                onClick={() => editor.chain().focus().setHorizontalRule().run()} 
+                icon={<Minus size={16} />} 
+                title="Horizontal Rule" 
+              />
+            </div>
+
+            <div className="h-6 w-px bg-[var(--border)] mx-1" />
+
+            <div className="flex bg-[var(--border)]/10 rounded-xl p-1 gap-1">
+              <ToolbarButton 
+                onClick={addLink} 
+                active={editor.isActive("link")} 
+                icon={<LinkIcon size={16} />} 
+                title="Link" 
+              />
+              <ToolbarButton 
+                onClick={() => fileInputRef.current?.click()} 
+                loading={uploading} 
+                icon={<ImageIcon size={16} />} 
+                title="Image" 
+              />
+              <ToolbarButton 
+                onClick={addYoutube} 
+                icon={<YoutubeIcon size={16} />} 
+                title="YouTube" 
+              />
+            </div>
           </div>
 
-          <div className="h-6 w-px bg-[var(--border)] mx-1" />
+          <BubbleMenu editor={editor} className="bubble-menu">
+            <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} icon={<Bold size={14} />} title="Bold" />
+            <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} icon={<Italic size={14} />} title="Italic" />
+            <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")} icon={<UnderlineIcon size={14} />} title="Underline" />
+            <ToolbarButton onClick={addLink} active={editor.isActive("link")} icon={<LinkIcon size={14} />} title="Link" />
+          </BubbleMenu>
 
-          <div className="flex bg-[var(--border)]/30 rounded-xl p-1 gap-1">
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-              active={editor.isActive("heading", { level: 1 })}
-              label="H1"
-              title="Heading 1"
-            />
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              active={editor.isActive("heading", { level: 2 })}
-              label="H2"
-              title="Heading 2"
-            />
-          </div>
-
-          <div className="h-6 w-px bg-[var(--border)] mx-1" />
-
-          <div className="flex bg-[var(--border)]/30 rounded-xl p-1 gap-1">
-            <ToolbarButton
-              onClick={addLink}
-              active={editor.isActive("link")}
-              icon={<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>}
-              title="Link"
-            />
-            <ToolbarButton
-              onClick={() => fileInputRef.current?.click()}
-              loading={uploading}
-              icon={<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>}
-              title="Upload Image"
-            />
-            <ToolbarButton
-              onClick={addYoutube}
-              icon={<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 2-2 10 10 0 0 1 15 0 2 2 0 0 1 2 2 24.12 24.12 0 0 1 0 10 2 2 0 0 1-2 2 10 10 0 0 1-15 0 2 2 0 0 1-2-2Z"/><path d="m10 15 5-3-5-3z"/></svg>}
-              title="Embed Video"
-            />
-          </div>
-
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            hidden 
-            accept="image/*" 
-            onChange={handleImageUpload} 
-          />
-        </div>
+          <FloatingMenu editor={editor} className="floating-menu">
+            <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} icon={<Heading1 size={14} />} title="H1" />
+            <ToolbarButton onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} icon={<Heading2 size={14} />} title="H2" />
+            <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} icon={<List size={14} />} title="List" />
+            <ToolbarButton onClick={() => fileInputRef.current?.click()} icon={<ImageIcon size={14} />} title="Image" />
+          </FloatingMenu>
+        </>
       )}
 
       <div className={`
@@ -216,6 +337,8 @@ export function BlogEditor({
           </div>
         )}
       </div>
+
+       <input type="file" ref={fileInputRef} hidden accept="image/*" onChange={handleImageUpload} />
     </div>
   );
 }
@@ -240,7 +363,10 @@ function ToolbarButton({
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
       disabled={loading}
       title={title}
       className={`
@@ -259,3 +385,4 @@ function ToolbarButton({
 }
 
 export default BlogEditor;
+
