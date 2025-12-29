@@ -52,6 +52,31 @@ npm run dev
 
 Visit: [http://localhost:3000](http://localhost:3000)
 
+### 4. 🧪 E2E Testing
+
+We use Playwright for End-to-End testing.
+
+#### Setup
+
+```bash
+cd apps/e2e
+npm install
+npx playwright install --with-deps
+```
+
+#### Run Tests
+
+```bash
+# Run all tests
+npx playwright test
+
+# Run specific test file
+npx playwright test tests/auth.spec.ts
+
+# Run in UI mode
+npx playwright test --ui
+```
+
 ---
 
 ## 🔑 Demo Credentials

@@ -17,7 +17,46 @@ export async function register(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
-    const { accessToken, refreshToken, user } = await authService.login(email, password);
+    const { accessToken, refreshToken, user: authUser } = await authService.login(email, password);
+
+    // Fetch full user details with roles and permissions
+    const { prisma } = await import("../lib/prisma");
+
+    const user = await (prisma.user as any).findUnique({
+      where: { id: authUser.id },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        nickname: true,
+        bio: true,
+        status: true,
+        createdAt: true,
+        avatarImage: true,
+        preferences: true,
+        roles: {
+          select: {
+            role: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const userRoles = (user?.roles ?? []).map((r: any) => r.role.name);
+
+    const rolePermissions = await prisma.rolePermission.findMany({
+      where: { role: { name: { in: userRoles } } },
+      include: { permission: true },
+    });
+
+    const permissions = Array.from(
+      new Set(rolePermissions.map((rp) => rp.permission.key))
+    );
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
@@ -26,7 +65,7 @@ export async function login(req: Request, res: Response) {
       path: "/",
     });
 
-    res.json({ accessToken, user });
+    res.json({ accessToken, user: { ...user, roles: userRoles, permissions } });
   } catch (error: any) {
     if (error.message.includes("Invalid credentials")) {
         return res.status(401).json({ error: error.message });

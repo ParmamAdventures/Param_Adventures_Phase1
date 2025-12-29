@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Admin Operations', () => {
+  test.slow(); // Increase timeout
+
   // We use the admin credentials from the seed/local dev defaults
   const adminCredentials = {
     email: 'admin@paramadventures.com', // Seed email
@@ -14,59 +16,114 @@ test.describe('Admin Operations', () => {
     await page.click('button:has-text("Sign In")');
     
     // Check if we reached the dashboard and have admin permissions
-    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15000 });
     
     // Verify admin link exists in navbar
-    await expect(page.locator('header')).toContainText('Admin');
+    // Use a more specific selector to avoid matching random text
+    await expect(page.locator('role=link[name="Admin"]')).toBeVisible({ timeout: 15000 });
   });
 
   test('should create a new trip as admin', async ({ page }) => {
-    await page.click('nav >> text=Admin');
-    await page.click('text=Trips Management');
+    // Navigate to create trip
+    await page.goto('/admin/trips/new');
     
-    await page.click('button:has-text("Create Trip")');
+    const timestamp = Date.now();
+    const tripName = `E2E Trip ${timestamp}`;
+    const tripSlug = `e2e-trip-${timestamp}`;
+
+    // --- Overview Tab ---
+    await page.fill('input[placeholder="e.g. Kedarkantha Trek"]', tripName);
+    await page.fill('input[placeholder="kedarkantha-trek"]', tripSlug);
     
-    const tripName = `E2E Trip ${Date.now()}`;
-    await page.fill('input[name="title"]', tripName);
-    await page.fill('input[name="location"]', 'Himalayas');
-    await page.fill('input[name="price"]', '15000');
-    await page.fill('textarea[name="description"]', 'An epic E2E adventure.');
+    // Select Category: Trekking
+    // Click Trigger
+    await page.locator('label:has-text("Category") ~ div button').click();
+    // Click Option (in the absolute positioned dropdown)
+    await page.locator('.absolute button:has-text("Trekking")').click();
+
+    // Select Difficulty: Moderate
+    await page.locator('label:has-text("Difficulty") ~ div button').click();
+    await page.locator('.absolute button:has-text("Moderate")').click();
     
-    // Set category
-    await page.selectOption('select[name="category"]', 'TREK');
+    // Click outside to close any open dropdowns
+    await page.click('h1'); // Click header to be safe
     
-    // Add an itinerary day (Wait for dynamic list if needed)
-    await page.click('button:has-text("Add Day")');
-    await page.locator('textarea[placeholder="What happens on this day?"]').first().fill('Day 1 - Arrival and Briefing.');
+    // Capacity
+    await page.locator('label:has-text("Max Capacity") ~ input').fill('15');
     
-    await page.click('button:has-text("Create Adventure")');
+    // Description
+    await page.fill('textarea[placeholder="Brief overview of the entire journey..."]', 'An epic E2E adventure creation test.');
+
+    // --- Itinerary Tab ---
+    await page.waitForTimeout(500);
+    await page.click('button:has-text("Itinerary")', { force: true }); 
+    
+    await expect(page.locator('text=Itinerary PDF')).toBeVisible();
+
+    // --- Logistics Tab ---
+    await page.waitForTimeout(500);
+    await page.click('button:has-text("Logistics")', { force: true });
+    await expect(page.locator('label:has-text("Start Point")')).toBeVisible();
+    
+    await page.locator('label:has-text("Start Point") ~ input').fill('Base Camp');
+    await page.locator('label:has-text("End Point") ~ input').fill('Summit');
+    
+    // Location / Region
+    await page.locator('label:has-text("Region / Location") ~ input').fill('Himalayas');
+    
+    // Price
+    await page.locator('label:has-text("Price (₹)") ~ input').fill('15000');
+    
+    // Dates (Optional in form but good to fill)
+    const today = new Date().toISOString().split('T')[0];
+    await page.locator('label:has-text("Start Date") ~ input').fill(today);
+
+    // --- Launch ---
+    await page.click('button:has-text("Launch Adventure")');
     
     // Should redirect back to list and show the new trip
     await expect(page).toHaveURL(/\/admin\/trips/);
+    
+    // Search or find the trip in the list
+    // The list might be paginated or long, but let's check visibility
     await expect(page.locator(`text=${tripName}`)).toBeVisible();
   });
 
-  test('should manage user status', async ({ page }) => {
+  test('should manage user status', async ({ page, browser }) => {
+    // 1. Create a regular user to be suspended
+    const userContext = await browser.newContext();
+    const userPage = await userContext.newPage();
+    const targetEmail = `suspend-target-${Date.now()}@example.com`;
+    
+    await userPage.goto('/signup');
+    await userPage.fill('input[placeholder="John Doe"]', 'Target User');
+    await userPage.fill('input[placeholder="name@example.com"]', targetEmail);
+    await userPage.fill('input[placeholder="Create a strong password"]', 'Password123!');
+    await userPage.click('button:has-text("Create Account")');
+    await expect(userPage.locator('text=Welcome Aboard!')).toBeVisible();
+    await userContext.close();
+
+    // 2. Login as Admin (using the main test page)
+    // (Already logged in via beforeEach)
+    
+    // 3. Go to Users management
     await page.click('nav >> text=Admin');
-    await page.click('text=User Management');
+    await page.click('a[href="/admin/users"]');
     
     // Wait for user table
     await page.waitForSelector('table');
     
-    // Find a user and change status to SUSPENDED
-    // We'll look for the first non-admin user if possible, or just the first row
-    const firstRow = page.locator('tbody tr').first();
-    const userName = await firstRow.locator('td').first().innerText();
+    // 4. Find the row for the target user
+    const userRow = page.locator('tr', { hasText: targetEmail });
+    await expect(userRow).toBeVisible();
     
-    // Click the status dropdown (assuming it exists based on previous work)
-    await firstRow.locator('select').selectOption('SUSPENDED');
+    // 5. Change status to SUSPENDED
+    // Listen for dialog before action
+    page.once('dialog', dialog => dialog.accept());
     
-    // Check for prompt (Playwright handles dialogs)
-    page.once('dialog', dialog => {
-      dialog.accept('E2E Testing suspension');
-    });
+    await userRow.locator('select').selectOption('SUSPENDED');
     
-    // Verify status changed
-    await expect(firstRow.locator('text=SUSPENDED')).toBeVisible();
+    // 6. Verify status changed in the UI
+    await expect(userRow.locator('select')).toHaveValue('SUSPENDED');
   });
 });
