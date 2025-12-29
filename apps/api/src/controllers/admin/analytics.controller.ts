@@ -1,35 +1,10 @@
 import { Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
+import { analyticsService } from "../../services/analytics.service";
 
 export async function getRevenueSummary(req: Request, res: Response) {
   try {
-    const payments = await prisma.payment.findMany({
-      where: { status: "CAPTURED" },
-      select: {
-        amount: true,
-        createdAt: true,
-      },
-    });
-
-    // Group by month
-    const monthlyData: Record<string, number> = {};
-    payments.forEach((p) => {
-      const month = p.createdAt.toISOString().substring(0, 7); // YYYY-MM
-      monthlyData[month] = (monthlyData[month] || 0) + p.amount / 100; // Convert to INR
-    });
-
-    const categories = Object.keys(monthlyData).sort();
-    const data = categories.map((month) => monthlyData[month]);
-
-    const totalRevenue = payments.reduce((acc, p) => acc + p.amount / 100, 0);
-
-    res.json({
-      totalRevenue,
-      monthly: {
-        categories,
-        data,
-      },
-    });
+    const stats = await analyticsService.getRevenueStats();
+    res.json(stats);
   } catch (error) {
     console.error("Failed to fetch revenue summary", error);
     res.status(500).json({ error: "Internal server error" });
@@ -38,32 +13,7 @@ export async function getRevenueSummary(req: Request, res: Response) {
 
 export async function getTripPerformance(req: Request, res: Response) {
   try {
-    const trips = await prisma.trip.findMany({
-      include: {
-        bookings: {
-          include: {
-            payments: {
-              where: { status: "CAPTURED" }
-            }
-          }
-        }
-      }
-    });
-
-    const performance = trips.map((trip) => {
-      const bookingCount = trip.bookings.length;
-      const revenue = trip.bookings.reduce((sum, booking) => {
-        return sum + booking.payments.reduce((pSum, p) => pSum + p.amount / 100, 0);
-      }, 0);
-
-      return {
-        id: trip.id,
-        title: trip.title,
-        bookingCount,
-        revenue,
-      };
-    }).sort((a, b) => b.revenue - a.revenue);
-
+    const performance = await analyticsService.getTripPerformance();
     res.json(performance);
   } catch (error) {
     console.error("Failed to fetch trip performance", error);
@@ -73,30 +23,8 @@ export async function getTripPerformance(req: Request, res: Response) {
 
 export async function getBookingStats(req: Request, res: Response) {
   try {
-    const stats = await prisma.booking.groupBy({
-      by: ["status"],
-      _count: {
-        _all: true,
-      },
-    });
-
-    const paymentStats = await prisma.payment.groupBy({
-      by: ["status"],
-      _count: {
-        _all: true,
-      },
-    });
-
-    res.json({
-      bookings: stats.reduce((acc: any, s) => {
-        acc[s.status] = s._count._all;
-        return acc;
-      }, {}),
-      payments: paymentStats.reduce((acc: any, s) => {
-        acc[s.status] = s._count._all;
-        return acc;
-      }, {}),
-    });
+    const stats = await analyticsService.getBookingStats();
+    res.json(stats);
   } catch (error) {
     console.error("Failed to fetch booking stats", error);
     res.status(500).json({ error: "Internal server error" });
@@ -104,10 +32,11 @@ export async function getBookingStats(req: Request, res: Response) {
 }
 
 export async function getModerationSummary(req: Request, res: Response) {
+  // Keeping this simple/direct as it's just counts
   try {
     const [pendingTrips, pendingBlogs] = await Promise.all([
-      prisma.trip.count({ where: { status: "PENDING_REVIEW" } }),
-      prisma.blog.count({ where: { status: "PENDING_REVIEW" } }),
+      import("../../lib/prisma").then(m => m.prisma.trip.count({ where: { status: "PENDING_REVIEW" } })),
+      import("../../lib/prisma").then(m => m.prisma.blog.count({ where: { status: "PENDING_REVIEW" } })),
     ]);
 
     res.json({
@@ -120,3 +49,4 @@ export async function getModerationSummary(req: Request, res: Response) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
+

@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { analyticsService } from "../../services/analytics.service";
 
 export async function getDashboardStats(req: Request, res: Response) {
   try {
@@ -7,7 +8,8 @@ export async function getDashboardStats(req: Request, res: Response) {
       pendingBlogs,
       totalUsers,
       activeTrips,
-      recentActivity
+      recentActivity,
+      revenueStats
     ] = await prisma.$transaction([
       // 1. Pending Blogs
       prisma.blog.count({
@@ -29,18 +31,21 @@ export async function getDashboardStats(req: Request, res: Response) {
         select: {
             id: true,
             action: true,
-            // actorName: true, // Not in schema, removing to fix lint
             createdAt: true,
             targetType: true
         }
       })
-    ]);
+    ]).then(async (results) => {
+       const rev = await analyticsService.getRevenueStats();
+       return [...results, rev];
+    });
 
     res.json({
       counts: {
         pendingBlogs,
         totalUsers,
-        activeTrips
+        activeTrips,
+        monthlyRevenue: (revenueStats as any).currentMonthRevenue
       },
       recentActivity
     });

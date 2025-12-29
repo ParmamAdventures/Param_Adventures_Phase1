@@ -5,16 +5,19 @@ import { apiFetch } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
 
 interface RevenueData {
-  totalRevenue: number;
-  monthly: {
-    categories: string[];
-    data: number[];
-  };
+  currentMonthRevenue: number;
+  previousMonthRevenue: number;
+  growthPercentage: number;
+  potentialRevenue: number;
+  monthlyChart: Array<{ month: string, revenue: number }>;
 }
 
 interface AnalyticsStats {
-  bookings: Record<string, number>;
-  payments: Record<string, number>;
+  total: number;
+  confirmed: number;
+  cancelled: number;
+  currentMonthCount: number;
+  successRate: number;
 }
 
 export default function AnalyticsPage() {
@@ -56,24 +59,26 @@ export default function AnalyticsPage() {
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="p-8 rounded-[40px] bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-xl">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Total Revenue</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Current Month Revenue</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black tracking-tighter">₹{(revenue?.totalRevenue || 0).toLocaleString()}</span>
-            <span className="text-xs font-bold text-[var(--accent)]">+12%</span>
+            <span className="text-4xl font-black tracking-tighter">₹{(revenue?.currentMonthRevenue || 0).toLocaleString()}</span>
+            <span className={`text-xs font-bold ${revenue?.growthPercentage && revenue.growthPercentage >= 0 ? 'text-[var(--accent)]' : 'text-red-500'}`}>
+              {revenue?.growthPercentage && revenue.growthPercentage >= 0 ? '+' : ''}{revenue?.growthPercentage || 0}%
+            </span>
           </div>
         </div>
         <div className="p-8 rounded-[40px] bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-xl">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Confirmed Bookings</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black tracking-tighter">{stats?.bookings?.CONFIRMED || 0}</span>
-            <span className="text-xs font-bold text-[var(--accent)]">Active</span>
+            <span className="text-4xl font-black tracking-tighter">{stats?.confirmed || 0}</span>
+            <span className="text-xs font-bold text-[var(--accent)]">+{stats?.currentMonthCount || 0} new</span>
           </div>
         </div>
         <div className="p-8 rounded-[40px] bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-xl">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Success Rate</p>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black tracking-tighter">94%</span>
-            <span className="text-xs font-bold text-[var(--accent)]">High</span>
+            <span className="text-4xl font-black tracking-tighter">{stats?.successRate || 0}%</span>
+            <span className="text-xs font-bold text-[var(--accent)]">{stats?.successRate && stats.successRate > 90 ? 'High' : 'Optimal'}</span>
           </div>
         </div>
       </div>
@@ -90,9 +95,9 @@ export default function AnalyticsPage() {
           </div>
           
           <div className="h-64 flex items-end gap-4 px-2">
-            {revenue?.monthly?.data.map((val: number, i: number) => {
-              const max = Math.max(...revenue.monthly.data, 1);
-              const height = (val / max) * 100;
+            {revenue?.monthlyChart?.map((item: any, i: number) => {
+              const max = Math.max(...revenue.monthlyChart.map(m => m.revenue), 1);
+              const height = (item.revenue / max) * 100;
               return (
                 <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
                   <div className="relative w-full">
@@ -101,10 +106,10 @@ export default function AnalyticsPage() {
                       style={{ height: `${height}%` }}
                     />
                     <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-[var(--card)] border border-[var(--border)] px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-2xl">
-                        <span className="text-[10px] font-black italic">₹{val.toLocaleString()}</span>
+                        <span className="text-[10px] font-black italic">₹{item.revenue.toLocaleString()}</span>
                     </div>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-tighter opacity-40">{revenue.monthly.categories[i]}</span>
+                  <span className="text-[10px] font-black uppercase tracking-tighter opacity-40">{item.month}</span>
                 </div>
               );
             })}
@@ -113,26 +118,30 @@ export default function AnalyticsPage() {
 
         {/* Status Breakdown */}
         <div className="lg:col-span-4 p-10 rounded-[48px] bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-2xl space-y-8">
-           <h3 className="text-xl font-black uppercase tracking-tight italic">Booking Status</h3>
+           <h3 className="text-xl font-black uppercase tracking-tight italic">Financial Health</h3>
            <div className="space-y-6">
-            {stats?.bookings && Object.entries(stats.bookings).map(([status, count]) => {
-               const total = Object.values(stats.bookings).reduce((a, b) => a + b, 0);
-               const percentage = total > 0 ? (count / total) * 100 : 0;
-               return (
-                 <div key={status} className="space-y-2">
-                   <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                     <span className="opacity-50">{status}</span>
-                     <span>{count}</span>
-                   </div>
-                   <div className="h-2 bg-[var(--border)]/20 rounded-full overflow-hidden">
-                     <div 
-                      className="h-full bg-[var(--accent)]/60 rounded-full" 
-                      style={{ width: `${percentage}%` }}
-                     />
-                   </div>
-                 </div>
-               );
-             })}
+              <div className="p-6 rounded-3xl bg-[var(--accent)]/5 border border-[var(--accent)]/20">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Potential Revenue</p>
+                <p className="text-2xl font-black tracking-tighter">₹{(revenue?.potentialRevenue || 0).toLocaleString()}</p>
+                <div className="mt-4 h-1.5 bg-[var(--border)] rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-[var(--accent)]" 
+                    style={{ width: `${revenue?.potentialRevenue ? ((revenue.currentMonthRevenue / (revenue.potentialRevenue / 12)) * 100) : 0}%` }}
+                  />
+                </div>
+                <p className="text-[8px] font-bold uppercase mt-2 opacity-40">Target Realization Rate</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-[var(--card)] border border-[var(--border)] text-center">
+                   <p className="text-[8px] font-black uppercase opacity-40">Confirmed</p>
+                   <p className="text-lg font-black">{stats?.confirmed || 0}</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-[var(--card)] border border-[var(--border)] text-center">
+                   <p className="text-[8px] font-black uppercase opacity-40">Cancelled</p>
+                   <p className="text-lg font-black text-red-500">{stats?.cancelled || 0}</p>
+                </div>
+              </div>
            </div>
         </div>
       </div>
@@ -163,8 +172,12 @@ export default function AnalyticsPage() {
                     <span className="text-sm font-black text-[var(--accent)]">₹{trip.revenue.toLocaleString()}</span>
                   </td>
                   <td className="py-6 px-4 text-right">
-                    <div className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-[var(--accent)]/10 text-[var(--accent)] px-4 py-1.5 rounded-full">
-                       High Impact
+                    <div className={`inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${
+                      trip.impact === 'High' ? 'bg-[var(--accent)]/10 text-[var(--accent)]' :
+                      trip.impact === 'Medium' ? 'bg-blue-500/10 text-blue-500' :
+                      'bg-gray-500/10 text-gray-400'
+                    }`}>
+                       {trip.impact} Impact
                     </div>
                   </td>
                 </tr>
@@ -176,3 +189,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+

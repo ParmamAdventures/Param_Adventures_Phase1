@@ -12,6 +12,7 @@ interface DashboardStats {
     pendingBlogs: number;
     totalUsers: number;
     activeTrips: number;
+    monthlyRevenue: number;
   };
   recentActivity: Array<{
     id: string;
@@ -58,7 +59,7 @@ export default function DashboardOverview() {
       </header>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
         <div className="p-6 rounded-3xl bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-xl flex flex-col justify-between h-40 group hover:border-[var(--accent)]/50 transition-colors">
           <div className="flex justify-between items-start">
              <div className="p-3 rounded-2xl bg-orange-500/10 text-orange-500">
@@ -74,6 +75,18 @@ export default function DashboardOverview() {
           <div>
             <div className="text-3xl font-black tracking-tighter">{stats?.counts.pendingBlogs}</div>
             <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Pending Blogs</div>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-3xl bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-xl flex flex-col justify-between h-40 group hover:border-[var(--accent)]/50 transition-colors">
+          <div className="flex justify-between items-start">
+             <div className="p-3 rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)]">
+                <Activity size={24} />
+             </div>
+          </div>
+          <div>
+            <div className="text-3xl font-black tracking-tighter">₹{(stats?.counts.monthlyRevenue || 0).toLocaleString()}</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Monthly Revenue</div>
           </div>
         </div>
 
