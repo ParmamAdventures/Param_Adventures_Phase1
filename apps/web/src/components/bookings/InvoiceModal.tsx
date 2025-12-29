@@ -5,7 +5,6 @@ import React, { useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { Printer, Download } from "lucide-react";
-import { useReactToPrint } from "react-to-print"; // Note: Might need to install this or use window.print()
 
 interface InvoiceModalProps {
     isOpen: boolean;

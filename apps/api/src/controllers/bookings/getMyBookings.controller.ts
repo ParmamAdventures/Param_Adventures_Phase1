@@ -1,39 +1,12 @@
 import { Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
+import { bookingService } from "../../services/booking.service";
 
 export async function getMyBookings(req: Request, res: Response) {
-  const user = (req as any).user;
-
-  const bookings = await prisma.booking.findMany({
-    where: { userId: user.id },
-    include: {
-      trip: {
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          location: true,
-          coverImage: true,
-          publishedAt: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-  });
-
-  const payload = bookings.map((b) => ({
-    id: b.id,
-    status: b.status,
-    createdAt: b.createdAt,
-    trip: {
-      id: b.trip.id,
-      title: b.trip.title,
-      slug: b.trip.slug,
-      location: b.trip.location,
-      startDate: null,
-      endDate: null,
-    },
-  }));
-
-  return res.json(payload);
+  try {
+    const userId = (req as any).user.id;
+    const bookings = await bookingService.getMyBookings(userId);
+    res.json(bookings);
+  } catch (error: any) {
+    res.status(500).json({ error: "Failed to load bookings" });
+  }
 }

@@ -1,61 +1,25 @@
 import { Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
-import { notificationQueue } from "../../lib/queue";
+import { bookingService } from "../../services/booking.service";
 
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const { tripId, startDate, guests } = req.body;
-    const userId = req.user!.id; // Assumes requireAuth middleware
+    const userId = req.user!.id;
 
     if (!tripId || !startDate || !guests) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
-    if (!trip) {
-      return res.status(404).json({ error: "Trip not found" });
-    }
-
-    if (trip.status !== "PUBLISHED") {
-      return res.status(400).json({ error: "Trip is not available for booking" });
-    }
-
-    const totalPrice = trip.price * guests;
-
-    const booking = await prisma.booking.create({
-      data: {
+    const booking = await bookingService.createBooking({
         userId,
         tripId,
-        startDate: new Date(startDate),
-        guests: Number(guests),
-        totalPrice,
-        status: "REQUESTED",
-        paymentStatus: "PENDING",
-      },
-      include: {
-        trip: {
-          select: {
-            title: true,
-            slug: true,
-          }
-        }
-      }
-    });
-
-    // Send Notification (Async)
-    await notificationQueue.add("SEND_BOOKING_EMAIL", {
-      userId: req.user!.id,
-      details: {
-        tripTitle: booking.trip.title,
-        bookingId: booking.id,
-        startDate: booking.startDate,
-        status: booking.status,
-      }
+        startDate,
+        guests: Number(guests)
     });
 
     res.status(201).json(booking);
-  } catch (error) {
-    console.error("Create Booking Error:", error);
-    res.status(500).json({ error: "Failed to create booking" });
+  } catch (error: any) {
+    const status = error.message.includes("not found") ? 404 : 400;
+    res.status(status).json({ error: error.message });
   }
 };

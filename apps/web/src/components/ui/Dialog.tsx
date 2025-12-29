@@ -36,24 +36,24 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
 export function DialogContent({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={`bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-2xl w-full max-w-lg p-6 ${className}`}>
+    <div className={`bg-[var(--card)] border border-[var(--border)] rounded-xl shadow-2xl w-full max-w-lg p-6 ${className || ""}`}>
       {children}
     </div>
   );
 }
 
-export function DialogHeader({ children }: { children: React.ReactNode }) {
-  return <div className="space-y-1.5 text-center sm:text-left mb-4">{children}</div>;
+export function DialogHeader({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={`space-y-1.5 text-center sm:text-left mb-4 ${className || ""}`}>{children}</div>;
 }
 
-export function DialogTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-lg font-semibold leading-none tracking-tight">{children}</h2>;
+export function DialogTitle({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <h2 className={`text-lg font-semibold leading-none tracking-tight ${className || ""}`}>{children}</h2>;
 }
 
-export function DialogDescription({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm text-muted-foreground">{children}</p>;
+export function DialogDescription({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <p className={`text-sm text-muted-foreground ${className || ""}`}>{children}</p>;
 }
 
-export function DialogFooter({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-4">{children}</div>;
+export function DialogFooter({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <div className={`flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-4 ${className || ""}`}>{children}</div>;
 }

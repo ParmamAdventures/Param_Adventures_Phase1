@@ -1,75 +1,35 @@
 import { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
-import { hashPassword, verifyPassword } from "../utils/password";
-import {
-  signAccessToken,
-  signRefreshToken,
-  verifyRefreshToken,
-} from "../utils/jwt";
-import { auditService } from "../services/audit.service";
+import { authService } from "../services/auth.service";
 
 export async function register(req: Request, res: Response) {
-  const { email, password, name } = req.body;
-
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return res.status(409).json({ error: "Email already registered" });
+  try {
+    const { email, password, name } = req.body;
+    const user = await authService.register({ email, password, name });
+    res.status(201).json({
+      message: "User registered successfully",
+      user,
+    });
+  } catch (error: any) {
+    res.status(error.message === "Email already registered" ? 409 : 500).json({ error: error.message });
   }
-
-  const hashed = await hashPassword(password);
-
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: hashed,
-      name,
-    },
-  });
-
-  await auditService.logAudit({
-    actorId: user.id,
-    action: "USER_REGISTER",
-    targetType: "User",
-    targetId: user.id,
-  });
-
-  res.status(201).json({
-    message: "User registered successfully",
-    user: { id: user.id, email: user.email, name: user.name },
-  });
 }
 
 export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
+    const { accessToken, refreshToken } = await authService.login(email, password);
 
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      path: "/auth/refresh",
+    });
+
+    res.json({ accessToken });
+  } catch (error: any) {
+    res.status(401).json({ error: error.message });
   }
-
-  const valid = await verifyPassword(password, user.password);
-  if (!valid) {
-    return res.status(401).json({ error: "Invalid credentials" });
-  }
-
-  const accessToken = signAccessToken(user.id);
-  const refreshToken = signRefreshToken(user.id);
-
-  res.cookie("refresh_token", refreshToken, {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    path: "/auth/refresh",
-  });
-
-  await auditService.logAudit({
-    actorId: user.id,
-    action: "USER_LOGIN",
-    targetType: "User",
-    targetId: user.id,
-  });
-
-  res.json({ accessToken });
 }
 
 export async function loginPage(_req: Request, res: Response) {
@@ -108,12 +68,10 @@ export async function refresh(req: Request, res: Response) {
   }
 
   try {
-    const payload = verifyRefreshToken(token);
-    const newAccessToken = signAccessToken(payload.sub);
-
-    res.json({ accessToken: newAccessToken });
-  } catch {
-    return res.status(401).json({ error: "Invalid refresh token" });
+    const { accessToken } = await authService.refresh(token);
+    res.json({ accessToken });
+  } catch (error: any) {
+    return res.status(401).json({ error: error.message });
   }
 }
 
@@ -121,12 +79,13 @@ export async function logout(_req: Request, res: Response) {
   res.clearCookie("refresh_token", {
     path: "/auth/refresh",
   });
-
   res.json({ message: "Logged out successfully" });
 }
 
 export async function me(req: Request, res: Response) {
   const userId = (req as any).user.id;
+  const { prisma } = await import("../lib/prisma");
+
   const user = await (prisma.user as any).findUnique({
     where: { id: userId },
     select: {
@@ -163,45 +122,23 @@ export async function me(req: Request, res: Response) {
     new Set(rolePermissions.map((rp) => rp.permission.key))
   );
 
-  // Prevent browsers from returning cached (304) responses for auth state.
   res.set("Cache-Control", "no-store");
   res.json({ ...user, roles: userRoles, permissions });
 }
 
 export async function forgotPassword(req: Request, res: Response) {
   const { email } = req.body;
-
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    // Return OK even if user not found to prevent enumeration
-    return res.json({ message: "If an account exists, a reset link has been sent." });
-  }
-
-  const token = (await import("../utils/jwt")).signResetToken(user.id);
-  const resetLink = `${process.env.WEB_URL || "http://localhost:3000"}/auth/reset-password?token=${token}`;
-
-  await import("../services/notification.service").then(m => 
-    m.notificationService.sendPasswordResetEmail(user.email, resetLink)
-  );
-
+  await authService.forgotPassword(email);
   res.json({ message: "If an account exists, a reset link has been sent." });
 }
 
 export async function resetPassword(req: Request, res: Response) {
   const { token, password } = req.body;
-
   try {
-    const payload = (await import("../utils/jwt")).verifyResetToken(token);
-    const hashedPassword = await hashPassword(password);
-
-    await prisma.user.update({
-      where: { id: payload.sub },
-      data: { password: hashedPassword }
-    });
-
+    await authService.resetPassword(token, password);
     res.json({ message: "Password updated successfully" });
-  } catch (error) {
-    return res.status(400).json({ error: "Invalid or expired reset token" });
+  } catch (error: any) {
+    res.status(400).json({ error: error.message });
   }
 }
 
@@ -209,30 +146,12 @@ export async function changePassword(req: Request, res: Response) {
   const { currentPassword, newPassword } = req.body;
   const userId = (req as any).user.id;
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
+  try {
+    await authService.changePassword(userId, currentPassword, newPassword);
+    res.json({ message: "Password changed successfully" });
+  } catch (error: any) {
+    const status = error.message.includes("not found") ? 404 : 400;
+    res.status(status).json({ error: error.message });
   }
-
-  // Verify current password
-  const valid = await verifyPassword(currentPassword, user.password);
-  if (!valid) {
-    return res.status(400).json({ error: "Incorrect current password" });
-  }
-
-  const hashedPassword = await hashPassword(newPassword);
-
-  await prisma.user.update({
-    where: { id: userId },
-    data: { password: hashedPassword }
-  });
-
-  await auditService.logAudit({
-    actorId: user.id,
-    action: "USER_CHANGE_PASSWORD",
-    targetType: "User",
-    targetId: user.id,
-  });
-
-  res.json({ message: "Password changed successfully" });
 }
+
