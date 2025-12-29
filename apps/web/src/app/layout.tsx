@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../context/AuthContext";
+import { SocketProvider } from "../context/SocketContext";
 import ThemeProvider from "../components/theme/ThemeProvider";
 import ToastProvider from "../components/ui/ToastProvider";
 import PublicNavbar from "../components/layout/PublicNavbar";
@@ -33,8 +34,10 @@ export default function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <AuthProvider>
-              <PublicNavbar />
-              <main className="app-surface">{children}</main>
+              <SocketProvider>
+                <PublicNavbar />
+                <main className="app-surface">{children}</main>
+              </SocketProvider>
             </AuthProvider>
           </ToastProvider>
         </ThemeProvider>

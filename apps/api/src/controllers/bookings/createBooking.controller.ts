@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { notificationQueue } from "../../lib/queue";
 
 export const createBooking = async (req: Request, res: Response) => {
   try {
@@ -38,6 +39,17 @@ export const createBooking = async (req: Request, res: Response) => {
             slug: true,
           }
         }
+      }
+    });
+
+    // Send Notification (Async)
+    await notificationQueue.add("SEND_BOOKING_EMAIL", {
+      userId: req.user!.id,
+      details: {
+        tripTitle: booking.trip.title,
+        bookingId: booking.id,
+        startDate: booking.startDate,
+        status: booking.status,
       }
     });
 

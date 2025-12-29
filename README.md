@@ -86,8 +86,10 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 - **Frontend**: Next.js 14, TypeScript, TailwindCSS, Framer Motion
 - **Backend**: Express, TypeScript, Prisma ORM
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL & Redis (for queues/real-time)
 - **Auth**: Custom JWT (Access + Refresh tokens)
+- **Background Jobs**: BullMQ (with automatic retries)
+- **Real-time**: Socket.io (with Redis Pub/Sub adapter)
 - **Payments**: Razorpay Integration (with server-side HMAC verification)
 - **Media**: Local storage with Sharp optimization (S3 compliant future-readiness)
 

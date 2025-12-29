@@ -110,6 +110,20 @@ npm run dev       # start dev server
   - Expected: Only assigned trips are visible (or highlighted), Guest list is accessible.
   - Priority: Medium
 
+- ID: NOTIF-EMAIL-001
+  - Title: Background Email Delivery
+  - Preconditions: Redis running, API in dev mode
+  - Steps: Create a booking → Check API console logs
+  - Expected: "Ethereal Mail" preview URL is printed; opening it shows the themed confirmation email.
+  - Priority: High
+
+- ID: NOTIF-REALTIME-001
+  - Title: Live Socket Alerts
+  - Preconditions: User signed in to Web app, connection established
+  - Steps: Trigger a payment simulation via API/Admin → Observe browser
+  - Expected: "💳 Payment Successful" toast appears instantly without page reload.
+  - Priority: High
+
 ## Automated tests to maintain
 
 - Unit tests: `src/components/ui` (Button, ErrorBlock, ToastProvider)

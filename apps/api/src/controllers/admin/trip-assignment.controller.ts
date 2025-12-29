@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
+import { notificationQueue } from "../../lib/queue";
 
 export async function assignManager(req: Request, res: Response) {
   const { tripId } = req.params;
@@ -34,6 +35,16 @@ export async function assignManager(req: Request, res: Response) {
   });
 
   logger.info("Manager assigned to trip", { tripId, managerId });
+
+  // Send Notification (Async)
+  await notificationQueue.add("SEND_ASSIGNMENT_EMAIL", {
+    userId: managerId,
+    role: "TRIP_MANAGER",
+    details: {
+      tripTitle: trip.title,
+    }
+  });
+
   res.json({ success: true, trip: updatedTrip });
 }
 
@@ -80,6 +91,16 @@ export async function assignGuide(req: Request, res: Response) {
   });
 
   logger.info("Guide assigned to trip", { tripId, guideId, assignedBy: userId });
+
+  // Send Notification (Async)
+  await notificationQueue.add("SEND_ASSIGNMENT_EMAIL", {
+    userId: guideId,
+    role: "TRIP_GUIDE",
+    details: {
+      tripTitle: trip.title,
+    }
+  });
+
   res.json({ success: true, message: "Guide assigned successfully" });
 }
 

@@ -16,6 +16,16 @@ const envSchema = z.object({
   RAZORPAY_KEY_ID: z.string().default("rzp_test_placeholder"),
   RAZORPAY_KEY_SECRET: z.string().default("placeholder_secret"),
   RAZORPAY_WEBHOOK_SECRET: z.string().default("placeholder_webhook_secret"),
+
+  // Redis
+  REDIS_URL: z.string().default("redis://localhost:6379"),
+
+  // SMTP (Email)
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.string().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().default("Param Adventures <noreply@paramadventures.com>"),
 });
 
 const parsed = envSchema.safeParse(process.env);

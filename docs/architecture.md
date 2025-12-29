@@ -133,3 +133,21 @@ Notes:
 ✔ Standardized `PrismaClient` usage (shared instance in `lib/prisma.ts`)  
 ✔ Consolidated role management routes and controllers  
 ✔ Removed redundant build artifacts from source tree
+
+## Phase 2 — Background Jobs & Notifications
+
+### Background Infrastructure
+✔ **BullMQ & Redis**: Reliable asynchronous processing for heavy tasks.  
+✔ **Nodemailer**: Standardized email service with Ethereal fallback for dev.  
+✔ **Workers**: Decoupled notification processing with automatic retries and backoff.
+
+### Real-time Infrastructure
+✔ **Socket.io**: Instant server-to-client event broadcasting.  
+✔ **Redis Adapter**: Production-grade scalability for socket sessions.  
+✔ **JWT Auth**: Secure socket connections tied to user identity.  
+✔ **Rooms**: Private per-user rooms (`user:{id}`) for targeted alerts.
+
+### Integration Points
+- **Bookings**: Immediate email confirmation + live toast alert.
+- **Payments**: Verified success email + instant "Payment Confirmed" popup.
+- **Assignments**: Operational staff (Managers/Guides) receive both email and app alerts on new duties.

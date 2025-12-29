@@ -3,6 +3,7 @@ import { prisma } from "../lib/prisma";
 import { razorpayService } from "../services/razorpay.service";
 import { HttpError } from "../utils/httpError";
 import { logger } from "../lib/logger";
+import { notificationQueue } from "../lib/queue";
 
 export async function verifyPayment(req: Request, res: Response) {
   const { orderId, paymentId, signature } = req.body;
@@ -23,7 +24,11 @@ export async function verifyPayment(req: Request, res: Response) {
 
   const payment = await prisma.payment.findUnique({
     where: { providerOrderId: orderId },
-    include: { booking: true },
+    include: {
+      booking: {
+        include: { trip: true }
+      }
+    },
   });
 
   if (!payment) {
@@ -50,6 +55,16 @@ export async function verifyPayment(req: Request, res: Response) {
 
   logger.info("Payment verified successfully", { orderId, bookingId: payment.bookingId });
 
+  // Send Notification (Async)
+  await notificationQueue.add("SEND_PAYMENT_EMAIL", {
+    userId: payment.booking.userId,
+    details: {
+      tripTitle: payment.booking.trip.title,
+      amount: payment.amount,
+      bookingId: payment.bookingId,
+    }
+  });
+
   res.json({ success: true, message: "Payment verified and booking confirmed" });
 }
 
@@ -58,7 +73,11 @@ async function handleDevSimulation(orderId: string, res: Response) {
   
   const payment = await prisma.payment.findUnique({
     where: { providerOrderId: orderId },
-    include: { booking: true },
+    include: {
+      booking: {
+        include: { trip: true }
+      }
+    },
   });
 
   if (!payment) {
@@ -81,6 +100,16 @@ async function handleDevSimulation(orderId: string, res: Response) {
       },
     }),
   ]);
+
+  // Send Notification (Async)
+  await notificationQueue.add("SEND_PAYMENT_EMAIL", {
+    userId: payment.booking.userId,
+    details: {
+      tripTitle: payment.booking.trip.title,
+      amount: payment.amount,
+      bookingId: payment.bookingId,
+    }
+  });
 
   return res.json({ success: true, message: "Dev simulation successful" });
 }
