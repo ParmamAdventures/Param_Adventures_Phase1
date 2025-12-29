@@ -5,6 +5,8 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import path from "path";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
 import { logger } from "./lib/logger";
 
 import authRoutes from "./routes/auth.routes";
@@ -71,6 +73,9 @@ app.use(morgan("combined", { stream: { write: (message: string) => logger.info(m
 import { healthCheck } from "./controllers/health.controller";
 
 app.get("/health", healthCheck);
+
+// API Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Base routes
 app.use("/auth", authLimiter, authRoutes);

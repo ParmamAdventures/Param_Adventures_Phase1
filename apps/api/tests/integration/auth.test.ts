@@ -73,4 +73,69 @@ describe("Auth Integration", () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toBe("Validation failed");
   });
+
+  describe("Session & Refresh", () => {
+    const credentials = {
+      email: "session@example.com",
+      password: "password123",
+      name: "Session User",
+    };
+
+    beforeAll(async () => {
+      await request(app).post("/auth/register").send(credentials);
+    });
+
+    it("should login successfully and return access token + user", async () => {
+      const res = await request(app).post("/auth/login").send({
+        email: credentials.email,
+        password: credentials.password,
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("accessToken");
+      expect(res.body).toHaveProperty("user");
+      expect(res.body.user.email).toBe(credentials.email);
+      expect(res.headers["set-cookie"]).toBeDefined();
+    });
+
+    it("should fail login with wrong password", async () => {
+      const res = await request(app).post("/auth/login").send({
+        email: credentials.email,
+        password: "wrongpassword",
+      });
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toContain("Invalid credentials");
+    });
+
+    it("should get current user profile with valid token", async () => {
+      const loginRes = await request(app).post("/auth/login").send({
+        email: credentials.email,
+        password: credentials.password,
+      });
+      const token = loginRes.body.accessToken;
+
+      const res = await request(app)
+        .get("/auth/me")
+        .set("Authorization", `Bearer ${token}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.email).toBe(credentials.email);
+    });
+
+    it("should refresh access token using cookie", async () => {
+      const loginRes = await request(app).post("/auth/login").send({
+        email: credentials.email,
+        password: credentials.password,
+      });
+      const cookies = loginRes.headers["set-cookie"];
+
+      const res = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", cookies);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("accessToken");
+    });
+  });
 });
