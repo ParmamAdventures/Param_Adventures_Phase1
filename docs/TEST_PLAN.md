@@ -124,6 +124,18 @@ npm run dev       # start dev server
   - Expected: "💳 Payment Successful" toast appears instantly without page reload.
   - Priority: High
 
+- ID: SEC-RATELIMIT-001
+  - Title: Auth Rate Limiting (Brute force protection)
+  - Steps: Attempt login with wrong credentials 6 times in rapid succession.
+  - Expected: 6th attempt returns 429 status and "too many requests" message.
+  - Priority: High
+
+- ID: SEC-CSP-001
+  - Title: CSP Header Verification
+  - Steps: Inspect API /health response headers via browser console or curl.
+  - Expected: `Content-Security-Policy` header is present and contains strict directives.
+  - Priority: Medium
+
 ## Automated tests to maintain
 
 - Unit tests: `src/components/ui` (Button, ErrorBlock, ToastProvider)

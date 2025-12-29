@@ -34,3 +34,35 @@ export const authLimiter = rateLimit({
     });
   },
 });
+
+export const paymentLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // Max 10 attempts per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    logger.warn(`Payment rate limit exceeded for IP ${req.ip}`);
+    res.status(options.statusCode).json({
+      error: {
+        code: "PAYMENT_RATE_LIMIT_EXCEEDED",
+        message: "Too many payment attempts, please contact support.",
+      },
+    });
+  },
+});
+
+export const mediaLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // Max 50 uploads per 15 mins
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    logger.warn(`Media upload rate limit exceeded for IP ${req.ip}`);
+    res.status(options.statusCode).json({
+      error: {
+        code: "MEDIA_RATE_LIMIT_EXCEEDED",
+        message: "Too many uploads, please slow down.",
+      },
+    });
+  },
+});

@@ -28,18 +28,31 @@ import tripAssignmentRoutes from "./routes/admin/trip-assignment.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
 
-import { globalLimiter } from "./config/rate-limit";
+import { globalLimiter, authLimiter, paymentLimiter, mediaLimiter } from "./config/rate-limit";
 
 export const app = express();
 
 app.use(helmet({
-  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline often needed for dev/some analytics
+      styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+      fontSrc: ["'self'", "fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "blob:"],
+      connectSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow images to be loaded by frontend
 }));
+
 app.use(globalLimiter);
 app.use(
   cors({
     origin:
-      process.env.NODE_ENV === "production" ? "http://your.frontend.url" : true,
+      process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : true,
     credentials: true,
   })
 );
@@ -58,12 +71,12 @@ import { healthCheck } from "./controllers/health.controller";
 app.get("/health", healthCheck);
 
 // Base routes
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
+app.use("/auth", authLimiter, authRoutes);
+app.use("/users", authLimiter, userRoutes);
 app.use("/trips", tripRoutes);
 app.use("/bookings", bookingsRoutes);
-app.use("/payments", paymentsRoutes);
-app.use("/media", mediaRoutes);
+app.use("/payments", paymentLimiter, paymentsRoutes);
+app.use("/media", mediaLimiter, mediaRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/metrics", metricsRoutes);
 app.use("/content", contentRoutes);

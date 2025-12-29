@@ -151,3 +151,11 @@ Notes:
 - **Bookings**: Immediate email confirmation + live toast alert.
 - **Payments**: Verified success email + instant "Payment Confirmed" popup.
 - **Assignments**: Operational staff (Managers/Guides) receive both email and app alerts on new duties.
+
+## Phase 2 — Security Hardening
+
+### Defenses
+✔ **Granular Rate Limiting**: Per-route throttling for Auth (5/15m), Payments (10/h), and Media (50/15m).  
+✔ **Strict CSP**: Content Security Policy optimized for travel platform needs (Google Fonts, local uploads).  
+✔ **Security Headers**: Standardized HTTP headers via Helmet (HSTS, NoSniff, FrameGuard).  
+✔ **Secure CORS**: Dynamic origin validation for production frontend environments.
