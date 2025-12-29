@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "../middlewares/auth.middleware";
+import { requireAuth, optionalAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
 
@@ -9,28 +9,35 @@ import { submitTrip } from "../controllers/trips/submitTrip.controller";
 import { approveTrip } from "../controllers/trips/approveTrip.controller";
 import { publishTrip } from "../controllers/trips/publishTrip.controller";
 import { archiveTrip } from "../controllers/trips/archiveTrip.controller";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { getInternalTrips } from "../controllers/trips/internalTrips.controller";
+import { getPublicTrips } from "../controllers/trips/getPublicTrips.controller";
+import { prisma } from "../lib/prisma";
 const router = Router();
 
 import { getTripBySlug } from "../controllers/trips/getTripBySlug.controller";
 
 // ... imports ...
 
-// Public list
-router.get("/public", async (_req, res) => {
-  const trips = await prisma.trip.findMany({ 
-    where: { status: "PUBLISHED" },
-    orderBy: { createdAt: "desc" },
-    include: {
-      coverImage: true,
-    }
+// Public metadata for filters (Must be before /public route)
+router.get("/public/meta", async (req, res) => {
+  const aggs = await prisma.trip.aggregate({
+    _min: { price: true, durationDays: true },
+    _max: { price: true, durationDays: true },
+    where: { status: "PUBLISHED" }
   });
-  res.json(trips);
+  
+  res.json({
+    minPrice: aggs._min.price || 0,
+    maxPrice: aggs._max.price || 100000,
+    minDuration: aggs._min.durationDays || 1,
+    maxDuration: aggs._max.durationDays || 30
+  });
 });
 
-router.get("/public/:slug", getTripBySlug);
+// Public list with search and filtering
+router.get("/public", getPublicTrips);
+
+router.get("/public/:slug", optionalAuth, getTripBySlug);
 
 // Internal list (also placed before param routes)
 router.get(
@@ -38,10 +45,7 @@ router.get(
   requireAuth,
   attachPermissions,
   requirePermission("trip:view:internal"),
-  async (_req, res) => {
-    const trips = await prisma.trip.findMany();
-    res.json(trips);
-  }
+  getInternalTrips
 );
 
 router.post(
@@ -65,7 +69,16 @@ router.get("/:id", requireAuth, attachPermissions, async (req, res) => {
   const user = req.user!;
   const permissions = req.permissions || [];
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
+  const trip = await prisma.trip.findUnique({ 
+    where: { id },
+    include: {
+      manager: { select: { id: true, name: true, email: true } },
+      guides: { include: { guide: { select: { id: true, name: true, email: true } } } },
+      coverImage: true,
+      gallery: { include: { image: true }, orderBy: { order: "asc" } }
+    }
+  });
+
   if (!trip) return res.status(404).json({ error: "Trip not found" });
 
   if (

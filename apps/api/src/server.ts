@@ -1,13 +1,19 @@
+import { createServer } from "http";
 import { app } from "./app";
 import { env } from "./config/env";
 import { logger } from "./lib/logger";
+import { notificationWorker } from "./lib/queue";
+import { redisConnection } from "./lib/redis";
+import { initSocket } from "./lib/socket";
 
-const server = app.listen(Number(env.PORT), () => {
+const httpServer = createServer(app);
+initSocket(httpServer);
+
+const server = httpServer.listen(Number(env.PORT), () => {
   logger.info(`API running on port ${env.PORT}`);
 });
 
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "./lib/prisma";
 
 async function gracefulShutdown(signal: string) {
   logger.info(`${signal} received. Shutting down gracefully...`);
@@ -18,6 +24,11 @@ async function gracefulShutdown(signal: string) {
   try {
     await prisma.$disconnect();
     logger.info("Database disconnected.");
+    
+    await notificationWorker.close();
+    await redisConnection.quit();
+    logger.info("Background systems stopped.");
+    
     process.exit(0);
   } catch (err) {
     logger.error("Error during shutdown", { error: err });

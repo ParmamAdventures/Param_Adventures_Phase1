@@ -62,10 +62,78 @@ npm run dev       # start dev server
   - Expected: Booking `paymentStatus` updates to `PAID` and user sees success message
   - Priority: Medium
 
+- ID: UI-PAYMENT-002
+  - Title: Server-side Verification (Razorpay signature)
+  - Preconditions: Real Razorpay order or Dev simulation trigger
+  - Steps: Complete checkout or trigger dev simulation → API receives callback/webhook
+  - Expected: Backend validates HMAC signature, updates booking to `CONFIRMED`
+  - Priority: High
+
 - ID: UI-SKELETON-001
   - Title: Trips skeleton shows during client-side fetch
   - Steps: Navigate to Trips page in dev mode with network slow throttling → Observe skeleton placeholders
   - Expected: Skeleton UI shown while data loads
+  - Priority: Medium
+
+- ID: ADMIN-ROLE-001
+  - Title: Configure Role Permissions
+  - Preconditions: Super Admin signed in
+  - Steps: Go to Admin Roles → Click `Configure Access` on 'UPLOADER' → Toggle `blog:publish` → Save
+  - Expected: Success toast appears, modal closes, and permission is persisted (verify via UI or API)
+  - Priority: Medium
+
+- ID: PROFILE-AVATAR-001
+  - Title: Switch to Preset Avatar
+  - Preconditions: User signed in
+  - Steps: Go to Profile → Click `Choose Preset` → Select an icon → Save
+  - Expected: Profile image updates immediately and persists on refresh.
+  - Priority: Medium
+
+- ID: ADMIN-TRIP-001
+  - Title: Assign Manager to Trip
+  - Preconditions: Admin signed in, trip exists
+  - Steps: Go to Admin Trips → Edit Trip → Use Assignments panel → Select Manager → Save
+  - Expected: Manager is assigned and UI reflects the change.
+  - Priority: High
+
+- ID: ADMIN-TRIP-002
+  - Title: Assign multiple Guides to Trip
+  - Preconditions: Admin signed in, users with GUIDE role exist
+  - Steps: Go to Admin Trips → Edit Trip → Use Assignments panel → Add multiple Guides
+  - Expected: Multiple guides are linked to the trip and displayed as a list.
+  - Priority: High
+
+- ID: GUIDE-TRIP-001
+  - Title: Operational view for Guides
+  - Preconditions: User with TRIP_GUIDE role signed in, assigned to a trip
+  - Steps: Sign in as Guide → View internal trip list/details
+  - Expected: Only assigned trips are visible (or highlighted), Guest list is accessible.
+  - Priority: Medium
+
+- ID: NOTIF-EMAIL-001
+  - Title: Background Email Delivery
+  - Preconditions: Redis running, API in dev mode
+  - Steps: Create a booking → Check API console logs
+  - Expected: "Ethereal Mail" preview URL is printed; opening it shows the themed confirmation email.
+  - Priority: High
+
+- ID: NOTIF-REALTIME-001
+  - Title: Live Socket Alerts
+  - Preconditions: User signed in to Web app, connection established
+  - Steps: Trigger a payment simulation via API/Admin → Observe browser
+  - Expected: "💳 Payment Successful" toast appears instantly without page reload.
+  - Priority: High
+
+- ID: SEC-RATELIMIT-001
+  - Title: Auth Rate Limiting (Brute force protection)
+  - Steps: Attempt login with wrong credentials 6 times in rapid succession.
+  - Expected: 6th attempt returns 429 status and "too many requests" message.
+  - Priority: High
+
+- ID: SEC-CSP-001
+  - Title: CSP Header Verification
+  - Steps: Inspect API /health response headers via browser console or curl.
+  - Expected: `Content-Security-Policy` header is present and contains strict directives.
   - Priority: Medium
 
 ## Automated tests to maintain

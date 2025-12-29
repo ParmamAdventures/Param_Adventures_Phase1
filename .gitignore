@@ -5,3 +5,12 @@ dist
 build
 .next
 coverage
+uploads/
+*.log
+*.txt
+*.json
+!package.json
+!tsconfig.json
+!next.config.ts
+!jest.config.js
+!test-results.json

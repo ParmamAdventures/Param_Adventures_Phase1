@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import PermissionRoute from "../../../../../components/PermissionRoute";
 import TripForm, { TripFormData } from "../../../../../components/trips/TripForm";
 import { apiFetch } from "../../../../../lib/api";
+import TripAssignmentManager from "../../../../../components/admin/TripAssignmentManager";
 
 export default function AdminEditTripPage({ params }: { params: Promise<{ tripId: string }> }) {
   const router = useRouter();
@@ -46,36 +47,7 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
       });
 
       if (res.ok) {
-        // 2. Attach new cover if coverImageId changed
-        if (data.coverImageId && data.coverImageId !== initialData?.coverImageId) {
-          const mediaRes = await apiFetch(`/media/trips/${tripId}/cover/attach`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              imageId: data.coverImageId,
-            }),
-          });
-
-          if (!mediaRes.ok) {
-            console.error("Cover attachment failed", await mediaRes.json().catch(() => ({})));
-            alert("Trip updated, but cover image attachment failed.");
-          }
-        }
-        // 3. Update gallery order
-        if (data.gallery) {
-          const galleryRes = await apiFetch(`/media/trips/${tripId}/gallery`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              imageIds: data.gallery.map(g => g.id),
-            }),
-          });
-
-          if (!galleryRes.ok) {
-            console.error("Gallery attachment failed", await galleryRes.json().catch(() => ({})));
-            alert("Trip updated, but gallery attachment failed.");
-          }
-        }
+        // Success! Atomic update on backend handles metadata and media relations.
         router.push("/admin/trips");
       } else {
         const body = await res.json().catch(() => ({}));
@@ -90,19 +62,48 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
     }
   }
 
+  const refreshData = async () => {
+    try {
+      const res = await apiFetch(`/trips/${tripId}`);
+      const data = await res.json();
+      if (res.ok) {
+        setInitialData(data);
+      }
+    } catch (err) {
+      console.error("Refresh error", err);
+    }
+  };
+
   if (loading) return <p>Loading trip details…</p>;
   if (error) return <p style={{ color: 'red' }}>{error}</p>;
 
   return (
     <PermissionRoute permission="trip:edit">
-      <div style={{ maxWidth: 800, margin: '0 auto' }}>
-        <h1>Edit Trip</h1>
-        <p style={{ color: '#666', marginBottom: 24 }}>Update the details for this adventure.</p>
-        <TripForm 
-          initialData={initialData || undefined} 
-          onSubmit={handleUpdate} 
-          submitting={submitting} 
-        />
+      <div className="max-w-4xl mx-auto space-y-8 py-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Trip</h1>
+          <p className="text-muted-foreground pt-1">Update the details for this adventure.</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <TripForm 
+              initialData={initialData || undefined} 
+              onSubmit={handleUpdate} 
+              submitting={submitting} 
+            />
+          </div>
+          
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-foreground">Assignments</h2>
+            <TripAssignmentManager 
+              tripId={tripId}
+              currentManagerId={initialData?.managerId}
+              currentGuides={initialData?.guides}
+              onUpdate={refreshData}
+            />
+          </div>
+        </div>
       </div>
     </PermissionRoute>
   );

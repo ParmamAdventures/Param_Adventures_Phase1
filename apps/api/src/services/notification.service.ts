@@ -1,0 +1,120 @@
+import nodemailer from "nodemailer";
+import { env } from "../config/env";
+
+export interface EmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+}
+
+class NotificationService {
+  private transporter: nodemailer.Transporter | null = null;
+
+  private async getTransporter() {
+    if (this.transporter) return this.transporter;
+
+    if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) {
+      // Use configured SMTP
+      this.transporter = nodemailer.createTransport({
+        host: env.SMTP_HOST,
+        port: parseInt(env.SMTP_PORT || "587"),
+        secure: env.SMTP_PORT === "465",
+        auth: {
+          user: env.SMTP_USER,
+          pass: env.SMTP_PASS,
+        },
+      });
+    } else {
+      // Fallback to Ethereal Mail (Real emails, but trapped in a dev mailbox)
+      console.log("⚠️ No SMTP config found. Generating Ethereal testing account...");
+      const testAccount = await nodemailer.createTestAccount();
+      this.transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+    }
+
+    return this.transporter;
+  }
+
+  async sendEmail(options: EmailOptions) {
+    try {
+      const transporter = await this.getTransporter();
+      const info = await transporter.sendMail({
+        from: env.SMTP_FROM,
+        ...options,
+      });
+
+      console.log(`✉️ Notification sent: ${info.messageId}`);
+      if (!env.SMTP_HOST) {
+        console.log(`🔗 Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
+      }
+      return info;
+    } catch (error) {
+      console.error("❌ Failed to send email notification:", error);
+      throw error;
+    }
+  }
+
+  // Pre-defined templates
+  async sendBookingConfirmation(email: string, bookingDetails: any) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+        <h2 style="color: #f97316;">Adventure Awaits! 🏔️</h2>
+        <p>Hi <strong>${bookingDetails.userName}</strong>,</p>
+        <p>Your booking for <strong>${bookingDetails.tripTitle}</strong> has been received and is currently <strong>${bookingDetails.status}</strong>.</p>
+        <div style="background: #fdf2f8; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0;"><strong>Order ID:</strong> #${bookingDetails.bookingId.substring(0, 8)}</p>
+          <p style="margin: 5px 0 0 0;"><strong>Date:</strong> ${new Date(bookingDetails.startDate).toLocaleDateString()}</p>
+        </div>
+        <p>Once your payment is verified, we'll send you a confirmation with more details.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
+      </div>
+    `;
+    return this.sendEmail({ to: email, subject: `Booking Received: ${bookingDetails.tripTitle}`, html });
+  }
+
+  async sendPaymentSuccess(email: string, paymentDetails: any) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+        <h2 style="color: #22c55e;">Payment Confirmed! ✅</h2>
+        <p>Hi <strong>${paymentDetails.userName}</strong>,</p>
+        <p>We've successfully processed your payment for <strong>${paymentDetails.tripTitle}</strong>.</p>
+        <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0;"><strong>Booking Status:</strong> CONFIRMED</p>
+          <p style="margin: 5px 0 0 0;"><strong>Amount Paid:</strong> ₹${paymentDetails.amount}</p>
+        </div>
+        <p>Get ready for an unforgettable journey! You can view your booking details in your dashboard.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
+      </div>
+    `;
+    return this.sendEmail({ to: email, subject: `Payment Confirmed: ${paymentDetails.tripTitle}`, html });
+  }
+
+  async sendAssignmentNotification(email: string, assignmentDetails: any) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+        <h2 style="color: #6366f1;">New Assignment! 📋</h2>
+        <p>Hi <strong>${assignmentDetails.userName}</strong>,</p>
+        <p>You have been assigned as a <strong>${assignmentDetails.role}</strong> for the upcoming trip: <strong>${assignmentDetails.tripTitle}</strong>.</p>
+        <div style="background: #eef2ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0;"><strong>Trip:</strong> ${assignmentDetails.tripTitle}</p>
+          <p style="margin: 5px 0 0 0;"><strong>Role:</strong> ${assignmentDetails.role}</p>
+        </div>
+        <p>Please log in to your dashboard to view the trip logistics and guest list.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
+      </div>
+    `;
+    return this.sendEmail({ to: email, subject: `New Assignment: ${assignmentDetails.tripTitle}`, html });
+  }
+}
+
+export const notificationService = new NotificationService();

@@ -114,3 +114,48 @@ Notes:
 - Controllers implemented under `apps/api/src/controllers/trips/` with strict state checks (no skipping allowed).
 - Routes registered at `/trips` in `apps/api/src/routes/trips.routes.ts` and wired in `apps/api/src/app.ts`.
 - Next: add frontend Uploader UI and Admin approval UI (Phase 4.3) and extend E2E tests to exercise lifecycle transitions.
+
+## Phase 1.5 — Billing & Operational Roles
+
+### Billing System
+✔ Razorpay direct integration  
+✔ Server-side HMAC signature verification (`/payments/verify`)  
+✔ Webhook support for `payment.captured`, `payment.failed`, `refund.processed`  
+✔ Immediate post-checkout status confirmation
+
+### Operational Roles
+✔ `TRIP_MANAGER` role for logistics oversight  
+✔ `TRIP_GUIDE` role for on-site execution  
+✔ Multi-guide support per trip via `TripsOnGuides` join table  
+✔ `IN_PROGRESS` and `COMPLETED` operational trip statuses
+
+### Codebase Cleanup
+✔ Standardized `PrismaClient` usage (shared instance in `lib/prisma.ts`)  
+✔ Consolidated role management routes and controllers  
+✔ Removed redundant build artifacts from source tree
+
+## Phase 2 — Background Jobs & Notifications
+
+### Background Infrastructure
+✔ **BullMQ & Redis**: Reliable asynchronous processing for heavy tasks.  
+✔ **Nodemailer**: Standardized email service with Ethereal fallback for dev.  
+✔ **Workers**: Decoupled notification processing with automatic retries and backoff.
+
+### Real-time Infrastructure
+✔ **Socket.io**: Instant server-to-client event broadcasting.  
+✔ **Redis Adapter**: Production-grade scalability for socket sessions.  
+✔ **JWT Auth**: Secure socket connections tied to user identity.  
+✔ **Rooms**: Private per-user rooms (`user:{id}`) for targeted alerts.
+
+### Integration Points
+- **Bookings**: Immediate email confirmation + live toast alert.
+- **Payments**: Verified success email + instant "Payment Confirmed" popup.
+- **Assignments**: Operational staff (Managers/Guides) receive both email and app alerts on new duties.
+
+## Phase 2 — Security Hardening
+
+### Defenses
+✔ **Granular Rate Limiting**: Per-route throttling for Auth (5/15m), Payments (10/h), and Media (50/15m).  
+✔ **Strict CSP**: Content Security Policy optimized for travel platform needs (Google Fonts, local uploads).  
+✔ **Security Headers**: Standardized HTTP headers via Helmet (HSTS, NoSniff, FrameGuard).  
+✔ **Secure CORS**: Dynamic origin validation for production frontend environments.

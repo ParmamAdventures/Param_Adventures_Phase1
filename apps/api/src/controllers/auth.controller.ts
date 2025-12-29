@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import { hashPassword, verifyPassword } from "../utils/password";
 import {
   signAccessToken,
@@ -7,8 +7,6 @@ import {
   verifyRefreshToken,
 } from "../utils/jwt";
 import { auditService } from "../services/audit.service";
-
-const prisma = new PrismaClient();
 
 export async function register(req: Request, res: Response) {
   const { email, password, name } = req.body;
@@ -129,14 +127,18 @@ export async function logout(_req: Request, res: Response) {
 
 export async function me(req: Request, res: Response) {
   const userId = (req as any).user.id;
-  const user = await prisma.user.findUnique({
+  const user = await (prisma.user as any).findUnique({
     where: { id: userId },
     select: {
       id: true,
       email: true,
       name: true,
+      nickname: true,
+      bio: true,
       status: true,
       createdAt: true,
+      avatarImage: true,
+      preferences: true,
       roles: {
         select: {
           role: {
@@ -147,8 +149,6 @@ export async function me(req: Request, res: Response) {
           },
         },
       },
-      // collect permissions via roles -> role.permissions -> permission
-      // We'll fetch permissions separately for clarity
     },
   });
 

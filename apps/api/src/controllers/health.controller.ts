@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../lib/prisma";
 import { logger } from "../lib/logger";
-
-const prisma = new PrismaClient();
 
 export async function healthCheck(_req: Request, res: Response) {
   try {

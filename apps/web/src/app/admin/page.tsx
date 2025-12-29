@@ -1,7 +1,5 @@
+import DashboardOverview from "../../components/admin/DashboardOverview";
+
 export default function AdminIndex() {
-  return (
-    <div>
-      <p>Select a section from the admin navigation.</p>
-    </div>
-  );
+  return <DashboardOverview />;
 }

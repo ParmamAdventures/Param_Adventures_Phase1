@@ -55,31 +55,31 @@ export function GalleryUploader({
                     <div className="flex items-center gap-1">
                         <Button 
                             variant="subtle"
-                            className="w-8 h-8 p-0 rounded-full bg-white hover:bg-slate-100 text-slate-700 shadow-sm"
+                            className="w-8 h-8 p-0 rounded-full bg-white hover:bg-slate-100 text-slate-700 shadow-md ring-1 ring-slate-900/5 group/btn"
                             onClick={() => move(i, -1)}
                             disabled={i === 0}
                             title="Move Up"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-700 group-hover/btn:text-slate-900"><path d="m18 15-6-6-6 6"/></svg>
                         </Button>
                         <Button 
                             variant="subtle"
-                            className="w-8 h-8 p-0 rounded-full bg-white hover:bg-slate-100 text-slate-700 shadow-sm"
+                            className="w-8 h-8 p-0 rounded-full bg-white hover:bg-slate-100 text-slate-700 shadow-md ring-1 ring-slate-900/5 group/btn"
                             onClick={() => move(i, 1)}
                             disabled={i === images.length - 1}
                             title="Move Down"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-slate-700 group-hover/btn:text-slate-900"><path d="m6 9 6 6 6-6"/></svg>
                         </Button>
                     </div>
                   
                     <Button
                         variant="danger"
-                        className="w-8 h-8 p-0 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-sm"
+                        className="w-8 h-8 p-0 rounded-full bg-red-500 hover:bg-red-600 text-white shadow-md ring-1 ring-red-700/10 group/btn"
                         onClick={() => remove(i)}
                         title="Remove Image"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                     </Button>
                 </div>
                 

@@ -19,7 +19,7 @@ export async function approveBlog(req: Request, res: Response) {
 
   const updated = await prisma.blog.update({
     where: { id },
-    data: { status: "PUBLISHED" },
+    data: { status: "APPROVED" },
   });
 
   await auditService.logAudit({

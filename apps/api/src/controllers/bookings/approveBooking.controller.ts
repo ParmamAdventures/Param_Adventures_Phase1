@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../lib/prisma";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
-import { HttpError } from "../../lib/httpError";
-
-const prisma = new PrismaClient();
+import { HttpError } from "../../utils/httpError";
 
 export async function approveBooking(req: Request, res: Response) {
   const admin = (req as any).user;

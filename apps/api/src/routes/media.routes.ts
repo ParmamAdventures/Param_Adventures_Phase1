@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { upload as legacyUpload } from "../utils/multer.config";
-import { upload } from "../middlewares/upload.middleware";
+import { upload, uploadDocument } from "../middlewares/upload.middleware";
 import { uploadTripCover } from "../controllers/media/uploadTripCover.controller";
 import { uploadTripGallery } from "../controllers/media/uploadTripGallery.controller";
 import { setTripCoverImage } from "../controllers/media/setTripCoverImage.controller";
 import { addTripGalleryImage } from "../controllers/media/addTripGalleryImage.controller";
 import { setTripGallery } from "../controllers/media/setTripGallery.controller";
 import { uploadImage } from "../controllers/mediaUpload.controller";
+import { uploadDocument as uploadDocController } from "../controllers/media/uploadDocument.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
 
@@ -24,10 +25,22 @@ router.post(
   uploadImage
 );
 
+/**
+ * POST /media/upload-doc
+ * multipart/form-data
+ * field: file (PDF)
+ */
+router.post(
+  "/upload-doc",
+  requireAuth,
+  uploadDocument.single("file"),
+  uploadDocController
+);
+
 router.post(
   "/trips/:tripId/cover",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   legacyUpload.single("image"),
   uploadTripCover
 );
@@ -35,7 +48,7 @@ router.post(
 router.post(
   "/trips/:tripId/gallery",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   legacyUpload.array("images", 6), // Max 6 images
   uploadTripGallery
 );
@@ -44,22 +57,35 @@ router.post(
 router.post(
   "/trips/:tripId/cover/attach",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   setTripCoverImage
 );
 
 router.post(
   "/trips/:tripId/gallery/attach",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   addTripGalleryImage
 );
 
 router.post(
   "/trips/:tripId/gallery",
   requireAuth,
-  requirePermission("trip:update"),
+  requirePermission("trip:edit"),
   setTripGallery
 );
+
+import { listMedia, deleteMedia } from "../controllers/media/listMedia.controller";
+
+/**
+ * GET /media
+ * Query: type (ALL | IMAGE | VIDEO), page, limit
+ */
+router.get("/", requireAuth, listMedia);
+
+/**
+ * DELETE /media/:id
+ */
+router.delete("/:id", requireAuth, requirePermission("media:delete"), deleteMedia);
 
 export default router;

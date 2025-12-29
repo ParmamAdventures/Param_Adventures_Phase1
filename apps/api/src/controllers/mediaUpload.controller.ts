@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
-import { processImage } from "../utils/imageProcessor";
+import { processMedia } from "../utils/mediaProcessor";
 
 export async function uploadImage(req: Request, res: Response) {
   if (!req.file) {
@@ -10,20 +10,22 @@ export async function uploadImage(req: Request, res: Response) {
   }
 
   try {
-    const imageData = await processImage(
+    const mediaData = await processMedia(
       req.file.buffer,
       req.file.mimetype
     );
 
     const image = await prisma.image.create({
       data: {
-        originalUrl: imageData.originalUrl,
-        mediumUrl: imageData.mediumUrl,
-        thumbUrl: imageData.thumbUrl,
-        width: imageData.width,
-        height: imageData.height,
-        size: imageData.size,
-        mimeType: imageData.mimeType,
+        originalUrl: mediaData.originalUrl,
+        mediumUrl: mediaData.mediumUrl,
+        thumbUrl: mediaData.thumbUrl,
+        width: mediaData.width,
+        height: mediaData.height,
+        size: mediaData.size,
+        mimeType: mediaData.mimeType,
+        type: mediaData.type as any, // Cast to avoid build error until client regeneration
+        duration: mediaData.duration,
         uploadedById: req.user!.id,
       },
     });
@@ -32,8 +34,10 @@ export async function uploadImage(req: Request, res: Response) {
       image,
     });
   } catch (err: any) {
-    res.status(400).json({
+    console.error("Upload Error Details:", err);
+    res.status(500).json({ // Changed to 500 to match symptom if we want to be explicit, but mostly to log
       error: err.message || "IMAGE_PROCESSING_FAILED",
+      details: err.toString()
     });
   }
 }

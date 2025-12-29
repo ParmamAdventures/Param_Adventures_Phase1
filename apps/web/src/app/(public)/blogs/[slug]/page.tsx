@@ -1,40 +1,39 @@
-import { BlogClientContent } from "@/components/blogs/BlogClientContent";
-import { Metadata } from "next";
+import { BlogDetailView } from "@/components/blogs/BlogDetailView";
+import { constructMetadata } from "@/lib/metadata";
+import { notFound } from "next/navigation";
+import Link from "next/link";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 async function fetchBlog(slug: string) {
-  const response = await fetch(`${baseUrl}/blogs/public/${slug}`, { 
-    cache: "no-store", // Or use revalidate for production
-  });
-  if (!response.ok) return null;
-  return response.json();
+  try {
+    const response = await fetch(`${baseUrl}/blogs/public/${slug}`, { 
+      cache: "no-store",
+    });
+    if (!response.ok) return null;
+    return response.json();
+  } catch (error) {
+    console.error("Fetch blog error:", error);
+    return null;
+  }
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const blog = await fetchBlog(slug);
-  
-  if (!blog) return { title: "Blog Not Found" };
 
-  return {
-    title: `${blog.title} | Param Adventures`,
-    description: blog.excerpt || `Read about ${blog.title} on Param Adventures.`,
-    openGraph: {
-      title: blog.title,
-      description: blog.excerpt,
-      images: blog.coverImage ? [blog.coverImage.originalUrl] : [],
-      type: "article",
-      publishedTime: blog.createdAt,
-      authors: [blog.author?.name || "Param Adventures"],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: blog.title,
-      description: blog.excerpt,
-      images: blog.coverImage ? [blog.coverImage.originalUrl] : [],
-    }
-  };
+  if (!blog) {
+    return constructMetadata({
+      title: "Blog Not Found",
+      description: "The requested blog story could not be found.",
+    });
+  }
+
+  return constructMetadata({
+    title: blog.title,
+    description: blog.excerpt || undefined,
+    image: blog.coverImage?.originalUrl || "/og-image.jpg",
+  });
 }
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -43,41 +42,18 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
   if (!blog) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
-        <h1 className="text-2xl font-bold">Blog not found</h1>
-        <p className="text-muted-foreground">The story you're looking for doesn't exist.</p>
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-6 px-6 text-center text-[var(--foreground)]">
+        <div className="w-24 h-24 rounded-3xl bg-[var(--accent)]/5 flex items-center justify-center text-[var(--accent)]">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <h1 className="text-3xl font-black italic uppercase tracking-tighter">Blog not found</h1>
+        <p className="text-muted-foreground font-medium max-w-xs">The story you're looking for doesn't exist.</p>
+        <Link href="/blogs" className="px-8 py-3 rounded-2xl bg-[var(--accent)] text-white font-bold shadow-lg shadow-[var(--accent)]/20 hover:scale-105 transition-transform">
+          Back to Stories
+        </Link>
       </div>
     );
   }
 
-  return (
-    <article className="max-w-4xl mx-auto py-12 px-6 space-y-8 animate-in fade-in duration-700">
-      <header className="space-y-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">{blog.title}</h1>
-        <div className="flex items-center justify-center gap-3 text-muted-foreground font-medium">
-          <span>By {blog.author?.name || "Param Adventures"}</span>
-          <span>•</span>
-          <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
-        </div>
-      </header>
-
-      {blog.coverImage && (
-        <div className="aspect-[21/9] relative rounded-2xl overflow-hidden shadow-2xl">
-          <img
-            src={blog.coverImage.originalUrl}
-            alt={blog.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
-      {blog.excerpt && (
-        <p className="text-xl text-muted-foreground italic border-l-4 border-accent pl-6 py-4 bg-muted/20 rounded-r-lg">
-          {blog.excerpt}
-        </p>
-      )}
-
-      <BlogClientContent content={blog.content} />
-    </article>
-  );
+  return <BlogDetailView blog={blog} />;
 }

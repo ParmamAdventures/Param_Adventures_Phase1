@@ -56,13 +56,29 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 ## 🔑 Demo Credentials
 
-**Super Admin**
-- Email: `admin@local.test`
-- Password: `password123`
+**Test Accounts (Password: `password123`)**
+- `superadmin@local.test` (Full System Control)
+- `admin@local.test` (Standard Admin)
+- `uploader@local.test` (Trip Management)
+- `manager@local.test` (Operational Manager)
+- `guide@local.test` (On-site Guide)
+- `user@local.test` (Standard Member)
 
-**Regular User**
-- Email: `user@local.test`
-- Password: `password123`
+---
+
+## 🔐 Role & Permission Matrix
+
+| Role | Description | Key Capabilities |
+| :--- | :--- | :--- |
+| **SUPER_ADMIN** | System Owner | Full access to all features, roles, and settings. |
+| **ADMIN** | Moderator | Approve/Publish Trips, Manage Bookings, Moderate Blogs. |
+| **TRIP_MANAGER** | Logistics | Assign Guides to Trips, View Guests, Update Trip Status. |
+| **TRIP_GUIDE** | On-site | View assigned Trip guests, Update Trip status. |
+| **UPLOADER** | Content Creator | Create and Edit Trip drafts, Submit for review. |
+| **USER** | Member | Write and Submit Blog posts, View personal dashboard. |
+| **PUBLIC** | Visitor | Browse trips, Create bookings (Guest flow). |
+
+---
 
 ---
 
@@ -70,8 +86,12 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 - **Frontend**: Next.js 14, TypeScript, TailwindCSS, Framer Motion
 - **Backend**: Express, TypeScript, Prisma ORM
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL & Redis (for queues/real-time)
 - **Auth**: Custom JWT (Access + Refresh tokens)
+- **Background Jobs**: BullMQ (with automatic retries)
+- **Real-time**: Socket.io (with Redis Pub/Sub adapter)
+- **Payments**: Razorpay Integration (with server-side HMAC verification)
+- **Media**: Local storage with Sharp optimization (S3 compliant future-readiness)
 
 ## 🛡️ Security Notes
 

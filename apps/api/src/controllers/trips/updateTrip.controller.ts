@@ -8,19 +8,65 @@ export async function updateTrip(req: Request, res: Response) {
   const trip = await prisma.trip.findUnique({ where: { id } });
 
   if (!trip) return res.status(404).json({ error: "Trip not found" });
-  if (trip.status !== "DRAFT")
-    return res.status(403).json({ error: "Only drafts can be edited" });
-  if (trip.createdById !== user.id)
-    return res.status(403).json({ error: "Not owner" });
+  // Check permissions: Owner OR Admin (trip:edit)
+  const isOwner = trip.createdById === user.id;
+  const canEditAny = user.permissions?.includes("trip:edit");
+  
+  if (!isOwner && !canEditAny) {
+    return res.status(403).json({ error: "Insufficient permissions to edit this trip" });
+  }
+
+  // Allow editing even if not DRAFT if user is Admin
+  if (trip.status !== "DRAFT" && !canEditAny) {
+    return res.status(403).json({ error: "Only drafts can be edited by owners" });
+  }
 
   const updated = await prisma.trip.update({
     where: { id },
     data: {
+      title: req.body.title,
+      slug: req.body.slug,
+      description: req.body.description,
+      itinerary: req.body.itinerary,
       location: req.body.location,
       price: req.body.price,
+      // Expanded fields
+      category: req.body.category,
+      capacity: req.body.capacity,
+      startPoint: req.body.startPoint,
+      endPoint: req.body.endPoint,
+      altitude: req.body.altitude,
+      distance: req.body.distance,
+      itineraryPdf: req.body.itineraryPdf,
+      highlights: req.body.highlights,
+      inclusions: req.body.inclusions,
+      exclusions: req.body.exclusions,
+      cancellationPolicy: req.body.cancellationPolicy,
+      thingsToPack: req.body.thingsToPack,
+      faqs: req.body.faqs,
+      seasons: req.body.seasons,
+      durationDays: req.body.durationDays,
+      difficulty: req.body.difficulty,
+      isFeatured: req.body.isFeatured,
       startDate: req.body.startDate ? new Date(req.body.startDate) : null,
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+      coverImageId: req.body.coverImageId,
+      // Update gallery
+      gallery: req.body.gallery ? {
+        deleteMany: {},
+        create: req.body.gallery.map((g: any, index: number) => ({
+          imageId: g.id,
+          order: index,
+        })),
+      } : undefined,
     },
+    include: {
+        coverImage: true,
+        gallery: {
+            include: { image: true },
+            orderBy: { order: "asc" }
+        }
+    }
   });
 
   await prisma.auditLog.create({

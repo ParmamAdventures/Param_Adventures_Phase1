@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+html {
+  scroll-behavior: smooth;
+}
+
 @theme {
   --color-background: var(--bg);
   --color-foreground: var(--text);
@@ -26,6 +30,7 @@
   --motion-slow: 280ms;
   --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
   --ring-offset-color: #ffffff;
+  color-scheme: light;
 }
 
 [data-theme="dark"] {
@@ -35,6 +40,26 @@
   --muted: #94a3b8;
   --border: #1f2937;
   --accent: #ff6a00;
+  color-scheme: dark;
+}
+
+/* Force select dropdowns to match theme */
+select {
+  color-scheme: light dark;
+}
+
+[data-theme="dark"] select {
+  color-scheme: dark;
+}
+
+option {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+[data-theme="dark"] option {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
 }
 
 /* Semantic tokens */
@@ -82,10 +107,93 @@ body {
   border-radius: 8px;
 }
 
+/* Tiptap Placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted);
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+  font-weight: 500;
+  opacity: 0.6;
+}
+
+/* Tiptap Link hover */
+.tiptap a {
+  cursor: pointer !important;
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Base Motion Utilities */
+.hover-lift {
+  transition: transform var(--motion-base) var(--motion-ease), box-shadow var(--motion-base) var(--motion-ease);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -10px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.glass-card {
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent);
+}
+
+/* Animation classes */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes progress-loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up var(--motion-slow) var(--motion-ease) forwards;
+}
+
+.animate-progress {
+  animation: progress-loading 1.5s infinite ease-in-out;
+}
+
 /* Reduced motion preference respects */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-fast: 1ms;
     --motion-base: 1ms;
+  }
+  .animate-fade-in-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }

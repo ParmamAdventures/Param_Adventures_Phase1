@@ -3,21 +3,42 @@
 import { useState } from "react";
 import Button from "../ui/Button";
 import { ImageUploader } from "../media/ImageUploader";
+import { DocumentUploader } from "../media/DocumentUploader";
 import { GalleryUploader } from "../media/GalleryUploader";
+import DynamicList from "../ui/DynamicList";
+import ItineraryBuilder from "./ItineraryBuilder";
+import { Select } from "../ui/Select";
 
 export type TripFormData = {
   title: string;
   slug: string;
   location: string;
+  startPoint: string;
+  endPoint: string;
   durationDays: number;
   difficulty: string;
+  category: "TREK" | "CAMPING" | "CORPORATE" | "EDUCATIONAL" | "SPIRITUAL" | "CUSTOM";
   price: number;
+  capacity: number;
   description: string;
   startDate: string;
   endDate: string;
   coverImageId?: string | null;
   gallery?: { id: string, thumbUrl: string }[];
-  itinerary: Record<string, unknown> | unknown[];
+  itinerary: any[];
+  itineraryPdf?: string;
+  highlights: string[];
+  inclusions: string[];
+  exclusions: string[];
+  cancellationPolicy: any; // Simplified for now
+  thingsToPack: string[];
+  faqs: { question: string; answer: string }[];
+  seasons: string[];
+  altitude: string;
+  distance: string;
+  isFeatured: boolean;
+  managerId?: string | null;
+  guides?: { guide: { id: string; name: string; email: string } }[];
 };
 
 type TripFormProps = {
@@ -26,218 +47,366 @@ type TripFormProps = {
   submitting: boolean;
 };
 
+const TABS = ["Overview", "Itinerary", "Logistics", "Inclusions & Policies", "Extras"];
+
 export default function TripForm({
   initialData,
   onSubmit,
   submitting,
 }: TripFormProps) {
+  const [activeTab, setActiveTab] = useState("Overview");
+
+  // Initialize all fields safely
   const [form, setForm] = useState<TripFormData>({
-    title: (initialData?.title as string) || "",
-    slug: (initialData?.slug as string) || "",
-    location: (initialData?.location as string) || "",
-    durationDays: (initialData?.durationDays as number) || 1,
-    difficulty: (initialData?.difficulty as string) || "Easy",
-    price: (initialData?.price as number) || 0,
-    description: (initialData?.description as string) || "",
-    startDate: (initialData?.startDate as string) || "",
-    endDate: (initialData?.endDate as string) || "",
-    coverImageId: (initialData?.coverImageId as string) || null,
-    gallery: (initialData?.gallery as { id: string, thumbUrl: string }[]) || [],
-    itinerary: (initialData?.itinerary as Record<string, unknown>) || {},
+    title: initialData?.title || "",
+    slug: initialData?.slug || "",
+    location: initialData?.location || "",
+    startPoint: initialData?.startPoint || "",
+    endPoint: initialData?.endPoint || "",
+    durationDays: initialData?.durationDays || 1,
+    difficulty: initialData?.difficulty || "Easy",
+    category: (initialData?.category as any) || "TREK",
+    price: initialData?.price || 0,
+    capacity: initialData?.capacity || 10,
+    description: initialData?.description || "",
+    startDate: initialData?.startDate || "",
+    endDate: initialData?.endDate || "",
+    coverImageId: initialData?.coverImageId || null,
+    gallery: initialData?.gallery || [],
+    itinerary: Array.isArray(initialData?.itinerary) ? initialData.itinerary : [],
+    itineraryPdf: initialData?.itineraryPdf || "",
+    highlights: (initialData?.highlights as string[]) || [],
+    inclusions: (initialData?.inclusions as string[]) || [],
+    exclusions: (initialData?.exclusions as string[]) || [],
+    cancellationPolicy: initialData?.cancellationPolicy || {},
+    thingsToPack: (initialData?.thingsToPack as string[]) || [],
+    faqs: (initialData?.faqs as any[]) || [],
+    seasons: (initialData?.seasons as string[]) || [],
+    altitude: initialData?.altitude || "",
+    distance: initialData?.distance || "",
+    isFeatured: initialData?.isFeatured || false,
+    managerId: initialData?.managerId || null,
+    guides: initialData?.guides || [],
   });
 
-  function update<K extends keyof TripFormData>(
-    key: K,
-    value: TripFormData[K]
-  ) {
+  function update<K extends keyof TripFormData>(key: K, value: TripFormData[K]) {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    await onSubmit(form);
+    // Ensure properly formatted data for optional fields
+    const payload = {
+        ...form,
+        itineraryPdf: form.itineraryPdf || undefined, // Send undefined if empty
+        gallery: form.gallery?.map((img, index) => ({ ...img, order: index })) // Ensure structured gallery
+    };
+    await onSubmit(payload);
   }
 
-  const labelStyle = { 
-    display: 'block', 
-    marginBottom: 16, 
-    fontWeight: '600', 
-    color: '#334155', // Slate 700
-    fontSize: '14px',
-    letterSpacing: '0.025em'
-  };
-  const inputStyle = { 
-    display: 'block', 
-    width: '100%', 
-    padding: '12px 14px', 
-    marginTop: 8, 
-    borderRadius: 8, 
-    border: '1px solid #e2e8f0', // Slate 200
-    fontSize: '16px',
-    backgroundColor: '#ffffff',
-    transition: 'border-color 0.2s, box-shadow 0.2s',
-    outline: 'none',
+  const labelClass = "block text-sm font-semibold mb-2 text-foreground";
+  const inputClass = "w-full px-4 py-3 rounded-lg border border-input bg-background text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-muted-foreground";
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case "Overview":
+        return (
+          <div className="space-y-6 animate-in fade-in duration-300">
+            <div className="flex items-center gap-4 bg-muted/50 p-4 rounded-xl border border-border">
+                <input
+                  type="checkbox"
+                  id="isFeatured"
+                  checked={form.isFeatured}
+                  onChange={(e) => update("isFeatured", e.target.checked)}
+                  className="w-5 h-5 text-primary rounded border-input bg-background"
+                />
+                <div>
+                    <label htmlFor="isFeatured" className="font-bold text-foreground cursor-pointer">Mark as Featured Adventure</label>
+                    <p className="text-xs text-muted-foreground">Featured trips appear on the homepage hero section.</p>
+                </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div>
+                <label className={labelClass}>Trip Title</label>
+                <input className={inputClass} value={form.title} onChange={(e) => update("title", e.target.value)} required placeholder="e.g. Kedarkantha Trek" />
+              </div>
+              <div>
+                <label className={labelClass}>URL Slug</label>
+                <input className={inputClass} value={form.slug} onChange={(e) => update("slug", e.target.value)} required placeholder="kedarkantha-trek" />
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label className={labelClass}>Category</label>
+                    <Select 
+                        value={form.category} 
+                        onChange={(val) => update("category", val as any)}
+                        options={[
+                            { value: "TREK", label: "Trekking" },
+                            { value: "CAMPING", label: "Camping" },
+                            { value: "SPIRITUAL", label: "Spiritual / Pilgrim" },
+                            { value: "CORPORATE", label: "Corporate Outing" },
+                            { value: "EDUCATIONAL", label: "Educational Trip" },
+                            { value: "CUSTOM", label: "Custom / Other" },
+                        ]}
+                    />
+                </div>
+                <div>
+                    <label className={labelClass}>Difficulty</label>
+                    <Select 
+                        value={form.difficulty} 
+                        onChange={(val) => update("difficulty", val)}
+                        options={[
+                            { value: "Easy", label: "Easy" },
+                            { value: "Moderate", label: "Moderate" },
+                            { value: "Difficult", label: "Difficult" },
+                            { value: "Challenging", label: "Challenging" },
+                        ]}
+                    />
+                </div>
+                 <div>
+                    <label className={labelClass}>Max Capacity</label>
+                    <input type="number" className={inputClass} value={form.capacity} onChange={(e) => update("capacity", Number(e.target.value))} min={1} />
+                </div>
+            </div>
+
+            <div>
+                <label className={labelClass}>Description / Overview</label>
+                <textarea 
+                    className={`${inputClass} min-h-[120px]`}
+                    value={form.description} 
+                    onChange={(e) => update("description", e.target.value)} 
+                    placeholder="Brief overview of the entire journey..."
+                />
+            </div>
+
+            <div>
+                 <label className={labelClass}>Highlights</label>
+                 <DynamicList 
+                    items={form.highlights} 
+                    onChange={(items) => update("highlights", items)} 
+                    placeholder="Add a highlight (e.g. 'Summit at 12,500ft')"
+                 />
+            </div>
+            
+            <div className="pt-4 border-t border-border">
+                <label className={labelClass}>Cover Image</label>
+                <ImageUploader 
+                    onUpload={(img) => update("coverImageId", img.id)} 
+                    label={form.coverImageId ? "Replace Cover Image" : "Upload Cover"}
+                />
+            </div>
+          </div>
+        );
+
+      case "Itinerary":
+        return (
+          <div className="space-y-8 animate-in fade-in duration-300">
+            <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                     <label className={labelClass}>
+                        Itinerary PDF
+                        <span className="text-muted-foreground font-normal ml-2 text-xs">(Optional)</span>
+                     </label>
+                     <DocumentUploader 
+                        label="Upload Detailed Itinerary (PDF)"
+                        existingUrl={form.itineraryPdf || undefined} 
+                        onUpload={(url) => update("itineraryPdf", url)} 
+                     />
+                     <p className="text-xs text-muted-foreground mt-2">
+                        Upload the full day-by-day itinerary PDF for users to download.
+                     </p>
+                </div>
+            </div>
+            
+            <div className="border-t border-border pt-6">
+                <ItineraryBuilder 
+                    days={form.itinerary} 
+                    onChange={(days) => update("itinerary", days)} 
+                    disabled={submitting} 
+                />
+            </div>
+            
+             <div className="pt-4 border-t border-border">
+                <label className={labelClass}>Gallery Photos</label>
+                <GalleryUploader images={form.gallery || []} onChange={(imgs) => update("gallery", imgs)} />
+            </div>
+          </div>
+        );
+
+      case "Logistics":
+        return (
+             <div className="space-y-6 animate-in fade-in duration-300">
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label className={labelClass}>Start Point</label>
+                        <input className={inputClass} value={form.startPoint} onChange={(e) => update("startPoint", e.target.value)} placeholder="e.g. Dehradun / Bangalore" />
+                    </div>
+                    <div>
+                        <label className={labelClass}>End Point</label>
+                        <input className={inputClass} value={form.endPoint} onChange={(e) => update("endPoint", e.target.value)} placeholder="e.g. Sankri / Bangalore" />
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                        <label className={labelClass}>Region / Location</label>
+                        <input className={inputClass} value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="e.g. Karnataka" />
+                    </div>
+                     <div>
+                        <label className={labelClass}>Max Altitude</label>
+                        <input className={inputClass} value={form.altitude} onChange={(e) => update("altitude", e.target.value)} placeholder="e.g. 12,500 ft" />
+                    </div>
+                     <div>
+                        <label className={labelClass}>Total Distance</label>
+                        <input className={inputClass} value={form.distance} onChange={(e) => update("distance", e.target.value)} placeholder="e.g. 24 km" />
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-4 gap-6">
+                    <div>
+                        <label className={labelClass}>Price (₹)</label>
+                         <input type="number" className={inputClass} value={form.price} onChange={(e) => update("price", Number(e.target.value))} />
+                    </div>
+                    <div>
+                         <label className={labelClass}>Start Date</label>
+                         <input type="date" className={inputClass} value={form.startDate} onChange={(e) => {
+                             const newStart = e.target.value;
+                             update("startDate", newStart);
+                             if (newStart && form.endDate) {
+                                 const start = new Date(newStart);
+                                 const end = new Date(form.endDate);
+                                 const diffTime = end.getTime() - start.getTime();
+                                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                 if (diffDays > 0) update("durationDays", diffDays);
+                             }
+                         }} />
+                    </div>
+                    <div>
+                         <label className={labelClass}>End Date</label>
+                        <input type="date" className={inputClass} value={form.endDate} onChange={(e) => {
+                            const newEnd = e.target.value;
+                            update("endDate", newEnd);
+                            if (form.startDate && newEnd) {
+                                const start = new Date(form.startDate);
+                                const end = new Date(newEnd);
+                                const diffTime = end.getTime() - start.getTime();
+                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                if (diffDays > 0) update("durationDays", diffDays);
+                            }
+                        }} />
+                    </div>
+                    <div>
+                        <label className={labelClass}>
+                           Duration (Days)
+                           <span className="ml-1 text-[10px] text-muted-foreground font-normal">(Auto-calc)</span>
+                        </label>
+                        <input 
+                           type="number" 
+                           className={`${inputClass} bg-muted/50 cursor-not-allowed`} 
+                           value={form.durationDays} 
+                           disabled // Read-only as it's calculated
+                           readOnly
+                        />
+                    </div>
+                 </div>
+             </div>
+        );
+
+      case "Inclusions & Policies":
+        return (
+             <div className="grid md:grid-cols-2 gap-8 animate-in fade-in duration-300">
+                <div>
+                     <h3 className="font-bold text-lg mb-4 text-emerald-600 dark:text-emerald-400">Inclusions</h3>
+                     <DynamicList items={form.inclusions} onChange={(i) => update("inclusions", i)} placeholder="Add inclusion..." />
+                </div>
+                 <div>
+                     <h3 className="font-bold text-lg mb-4 text-red-600 dark:text-red-400">Exclusions</h3>
+                     <DynamicList items={form.exclusions} onChange={(i) => update("exclusions", i)} placeholder="Add exclusion..." />
+                </div>
+                 <div className="md:col-span-2 pt-6 border-t border-border">
+                      <h3 className="font-bold text-lg mb-4 text-foreground">Cancellation Policy</h3>
+                      <p className="text-sm text-muted-foreground mb-2">Detailed text about cancellation terms.</p>
+                       <textarea 
+                        className={`${inputClass} min-h-[150px]`}
+                        value={typeof form.cancellationPolicy === 'string' ? form.cancellationPolicy : JSON.stringify(form.cancellationPolicy, null, 2)} 
+                        onChange={(e) => update("cancellationPolicy", e.target.value)} 
+                        placeholder="Paste policy text here..."
+                    />
+                 </div>
+             </div>
+        );
+
+        case "Extras":
+            return (
+                 <div className="space-y-8 animate-in fade-in duration-300">
+                    <div>
+                        <label className={labelClass}>Things to Pack</label>
+                        <DynamicList items={form.thingsToPack} onChange={(i) => update("thingsToPack", i)} placeholder="e.g. Warm jacket, Sunscreen..." />
+                    </div>
+                    
+                    <div>
+                        <label className={labelClass}>Best Seasons</label>
+                        <DynamicList items={form.seasons} onChange={(i) => update("seasons", i)} placeholder="e.g. Winter, Spring" />
+                    </div>
+                 </div>
+            )
+
+      default:
+        return null;
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ 
-      background: '#ffffff', 
-      padding: '32px', 
-      borderRadius: '16px', 
-      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
-      border: '1px solid #f1f5f9'
-    }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 8 }}>
-        <label style={labelStyle}>
-          Trip Title
-          <input
-            style={inputStyle}
-            value={form.title}
-            onChange={(e) => update("title", e.target.value)}
-            disabled={submitting}
-            required
-            placeholder="e.g. Magical Spiti Valley"
-          />
-        </label>
-
-        <label style={labelStyle}>
-          URL Slug
-          <input
-            style={inputStyle}
-            value={form.slug}
-            onChange={(e) => update("slug", e.target.value)}
-            disabled={submitting}
-            required
-            placeholder="magical-spiti-valley"
-          />
-        </label>
-      </div>
-
-      <label style={labelStyle}>
-        Destinations / Location
-        <input
-          style={inputStyle}
-          value={form.location}
-          onChange={(e) => update("location", e.target.value)}
-          disabled={submitting}
-          required
-          placeholder="e.g. Kaza, Himachal Pradesh"
-        />
-      </label>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 24, marginBottom: 8 }}>
-        <label style={labelStyle}>
-          Duration (days)
-          <input
-            style={inputStyle}
-            type="number"
-            min={1}
-            value={form.durationDays}
-            onChange={(e) => update("durationDays", Number(e.target.value))}
-            disabled={submitting}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          Difficulty Level
-          <select
-            style={inputStyle}
-            value={form.difficulty}
-            onChange={(e) => update("difficulty", e.target.value)}
-            disabled={submitting}
+    <form onSubmit={handleSubmit} className="bg-card rounded-2xl shadow-xl overflow-hidden border border-border">
+      {/* Tabs Header */}
+      <div className="flex border-b border-border bg-muted/20 overflow-x-auto">
+        {TABS.map((tab) => (
+          <button
+            key={tab}
+            type="button"
+            onClick={() => setActiveTab(tab)}
+            className={`px-6 py-4 text-sm font-bold whitespace-nowrap transition-colors border-b-2 ${
+              activeTab === tab 
+                ? "border-primary text-primary bg-primary/5" 
+                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            }`}
           >
-            <option>Easy</option>
-            <option>Moderate</option>
-            <option>Hard</option>
-          </select>
-        </label>
-
-        <label style={labelStyle}>
-          Price (₹)
-          <input
-            style={inputStyle}
-            type="number"
-            min={0}
-            value={form.price}
-            onChange={(e) => update("price", Number(e.target.value))}
-            disabled={submitting}
-          />
-        </label>
+            {tab}
+          </button>
+        ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 8 }}>
-        <label style={labelStyle}>
-          Departure Date
-          <input
-            style={inputStyle}
-            type="date"
-            value={form.startDate}
-            onChange={(e) => update("startDate", e.target.value)}
-            disabled={submitting}
-          />
-        </label>
-
-        <label style={labelStyle}>
-          Return Date
-          <input
-            style={inputStyle}
-            type="date"
-            value={form.endDate}
-            onChange={(e) => update("endDate", e.target.value)}
-            disabled={submitting}
-          />
-        </label>
+      {/* Content Area */}
+      <div className="p-8 min-h-[400px]">
+        {renderTabContent()}
       </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <label style={labelStyle}>Featured Cover Image</label>
-        <ImageUploader 
-            onUpload={(image) => update("coverImageId", image.id)} 
-            label={form.coverImageId ? "Change Cover Image" : "Upload Cover Image"}
-        />
-        {form.coverImageId && (
-            <p className="text-xs text-blue-600 font-medium mt-2 flex items-center gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                Image ready to be attached
-            </p>
-        )}
-      </div>
-
-      <div style={{ marginBottom: 32 }}>
-        <label style={labelStyle}>Adventure Gallery</label>
-        <p className="text-xs text-slate-500 mb-3">Add multiple photos to showcase the journey. You can reorder them to control the display sequence.</p>
-        <GalleryUploader
-          images={form.gallery || []}
-          onChange={(imgs) => update("gallery", imgs)}
-        />
-      </div>
-
-      <label style={labelStyle}>
-        Adventure Highlights / Description
-        <textarea
-          style={{ ...inputStyle, minHeight: 160, lineHeight: '1.6' }}
-          value={form.description}
-          onChange={(e) => update("description", e.target.value)}
-          disabled={submitting}
-          placeholder="Tell the story of this journey..."
-        />
-      </label>
-
-      <div style={{ marginTop: 32 }}>
-        <Button loading={submitting} disabled={submitting} style={{ 
-          width: '100%', 
-          padding: '16px', 
-          fontSize: '18px', 
-          borderRadius: '12px',
-          fontWeight: '700',
-          background: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
-          boxShadow: '0 4px 14px 0 rgba(99, 102, 241, 0.4)',
-          color: 'white',
-          border: 'none',
-          cursor: 'pointer'
-        }}>
-          {submitting ? "Publishing Adventure…" : (initialData?.title ? "Update Adventure" : "Launch New Trip")}
-        </Button>
+      {/* Footer Actions */}
+      <div className="p-6 bg-muted/20 border-t border-border flex items-center justify-between sticky bottom-0 z-10 backdrop-blur-sm">
+        <div className="text-sm text-muted-foreground font-medium hidden md:block">
+            {activeTab !== "Overview" && <button type="button" onClick={() => setActiveTab(TABS[TABS.indexOf(activeTab) - 1])} className="hover:underline hover:text-foreground transition-colors">← Back</button>}
+        </div>
+        <div className="flex gap-4 w-full md:w-auto">
+            {activeTab !== "Extras" ? (
+                 <Button type="button" onClick={() => setActiveTab(TABS[TABS.indexOf(activeTab) + 1])} variant="subtle" className="flex-1 md:flex-none">
+                    Next Step → 
+                 </Button>
+            ) : (
+                <span />
+            )}
+            
+            <Button 
+                loading={submitting} 
+                disabled={submitting} 
+                variant="primary"
+                className="flex-1 md:flex-none shadow-lg shadow-indigo-200 md:min-w-[200px]"
+            >
+                {submitting ? "Saving..." : (initialData?.title ? "Update Adventure" : "Launch Adventure")}
+            </Button>
+        </div>
       </div>
     </form>
   );
