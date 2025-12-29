@@ -15,6 +15,9 @@ export default function StarRating({
   onRatingChange,
   size = 18 
 }: StarRatingProps) {
+  // Simplification: StarRating should just display stars. The interactivity can be managed here or by parent.
+  // To avoid nested button issues (illegal HTML), we'll change these to spans/divs with onClick.
+  // If "editable" is true, we make them interactive.
   const stars = [];
 
   for (let i = 1; i <= 5; i++) {
@@ -22,12 +25,11 @@ export default function StarRating({
     const isHalf = !isFull && i - 0.5 <= rating;
 
     stars.push(
-      <button
+      <div
         key={i}
-        type="button"
-        disabled={!editable}
+        role={editable ? "button" : "presentation"}
         onClick={() => editable && onRatingChange && onRatingChange(i)}
-        onMouseEnter={() => editable && onRatingChange && onRatingChange(i)} // Optional hover effect logic could go here
+        onMouseEnter={() => editable && onRatingChange && onRatingChange(i)}
         className={`${editable ? 'cursor-pointer hover:scale-110 transition-transform' : 'cursor-default'} focus:outline-none`}
       >
         {isFull ? (
@@ -37,7 +39,7 @@ export default function StarRating({
         ) : (
           <Star size={size} className="text-gray-300 dark:text-gray-600" />
         )}
-      </button>
+      </div>
     );
   }
 
