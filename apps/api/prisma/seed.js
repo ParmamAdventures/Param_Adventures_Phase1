@@ -1,10 +1,12 @@
 require("dotenv").config();
 
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient({});
 
 async function main() {
+  const adminPassword = await bcrypt.hash("password123", 12);
   const permissions = [
     "user:read",
     "user:assign-role",
@@ -269,7 +271,7 @@ async function main() {
     create: {
       email: "admin@paramadventures.com",
       name: "System Admin",
-      password: "hashed_password_placeholder", // In real app, hash this
+      password: adminPassword,
       roles: {
         create: [
           { role: { connect: { name: "SUPER_ADMIN" } } },

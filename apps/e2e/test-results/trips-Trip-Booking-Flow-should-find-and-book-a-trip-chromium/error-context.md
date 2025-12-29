@@ -1,0 +1,139 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Param Adventures Logo Param Adventures" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "Param Adventures Logo" [ref=e6]
+        - generic [ref=e7]:
+          - generic [ref=e8]: Param
+          - generic [ref=e9]: Adventures
+      - navigation [ref=e10]:
+        - link "Adventures" [ref=e11] [cursor=pointer]:
+          - /url: /trips
+          - text: Adventures
+        - link "Journal" [ref=e13] [cursor=pointer]:
+          - /url: /blogs
+          - text: Journal
+        - link "Dashboard" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - text: Dashboard
+      - generic [ref=e15]:
+        - button "Search" [ref=e16]:
+          - img [ref=e17]
+        - button "Toggle theme" [ref=e21]:
+          - generic [ref=e22]: ☀️
+          - generic [ref=e23]: Dark
+        - generic [ref=e24]:
+          - generic [ref=e25]: E2E Booker
+          - button "Log out" [ref=e26]
+  - main [ref=e27]:
+    - generic [ref=e28]:
+      - heading "Upcoming Trips" [level=1] [ref=e29]
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e33]:
+            - img [ref=e35]
+            - generic [ref=e36]:
+              - heading "Refine Adventures" [level=2] [ref=e37]
+              - paragraph [ref=e38]: Found 0 Experiences
+          - generic [ref=e40]:
+            - generic [ref=e41]:
+              - generic [ref=e42]:
+                - img [ref=e43]
+                - text: Search Term
+              - textbox "Search peaks, trails, or locations..." [ref=e46]
+            - generic [ref=e47]:
+              - text: Category & Level
+              - generic [ref=e48]:
+                - button "All Types" [ref=e50]:
+                  - generic [ref=e51]: All Types
+                  - img [ref=e52]
+                - button "Any Level" [ref=e55]:
+                  - generic [ref=e56]: Any Level
+                  - img [ref=e57]
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - generic [ref=e61]: Max Price
+                - generic [ref=e62]:
+                  - generic [ref=e63]: ₹
+                  - generic [ref=e64]: 100,000
+              - generic [ref=e65]:
+                - slider [ref=e66] [cursor=pointer]: "100000"
+                - spinbutton [ref=e68]: "100000"
+            - generic [ref=e69]:
+              - text: Guests & View
+              - generic [ref=e70]:
+                - spinbutton [ref=e72]
+                - button "Newly Added" [ref=e74]:
+                  - generic [ref=e75]: Newly Added
+                  - img [ref=e76]
+            - generic [ref=e78]:
+              - generic [ref=e79]:
+                - img [ref=e80]
+                - text: Duration (Days)
+              - generic [ref=e83]:
+                - spinbutton [ref=e84]
+                - generic [ref=e85]: "|"
+                - spinbutton [ref=e86]
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - img [ref=e89]
+                - text: Travel Window
+              - generic [ref=e91]:
+                - textbox "Start" [ref=e93]
+                - textbox "End" [ref=e95]
+        - generic [ref=e97]:
+          - img [ref=e99]
+          - heading "No Adventures Found" [level=3] [ref=e101]
+          - paragraph [ref=e102]: Try adjusting your filters to find your next great escape.
+          - button "Clear all filters" [ref=e103]
+  - contentinfo [ref=e104]:
+    - generic [ref=e105]:
+      - generic [ref=e106]:
+        - link "Logo Param Adventures" [ref=e107] [cursor=pointer]:
+          - /url: /
+          - img "Logo" [ref=e109]
+          - generic [ref=e110]: Param Adventures
+        - paragraph [ref=e111]: Curated adventure experiences for the modern explorer. Discover the world's most breathtaking destinations.
+      - generic [ref=e116]:
+        - heading "Explore" [level=3] [ref=e117]
+        - list [ref=e118]:
+          - listitem [ref=e119]:
+            - link "Adventures" [ref=e120] [cursor=pointer]:
+              - /url: /trips
+          - listitem [ref=e121]:
+            - link "Journal" [ref=e122] [cursor=pointer]:
+              - /url: /blogs
+          - listitem [ref=e123]:
+            - link "About Us" [ref=e124] [cursor=pointer]:
+              - /url: /about
+          - listitem [ref=e125]:
+            - link "Contact" [ref=e126] [cursor=pointer]:
+              - /url: /contact
+      - generic [ref=e127]:
+        - heading "Project" [level=3] [ref=e128]
+        - list [ref=e129]:
+          - listitem [ref=e130]:
+            - link "Project Showcase" [ref=e131] [cursor=pointer]:
+              - /url: /project
+              - text: Project Showcase
+          - listitem [ref=e133]:
+            - link "Admin Login" [ref=e134] [cursor=pointer]:
+              - /url: /login
+          - listitem [ref=e135]:
+            - link "Design System" [ref=e136] [cursor=pointer]:
+              - /url: /style-guide
+    - generic [ref=e137]:
+      - paragraph [ref=e138]: © 2025 Param Adventures. All rights reserved.
+      - generic [ref=e139]:
+        - link "Terms" [ref=e140] [cursor=pointer]:
+          - /url: /terms
+        - link "Privacy" [ref=e141] [cursor=pointer]:
+          - /url: /privacy
+  - button "Open Next.js Dev Tools" [ref=e147] [cursor=pointer]:
+    - img [ref=e148]
+  - alert [ref=e151]
+```
