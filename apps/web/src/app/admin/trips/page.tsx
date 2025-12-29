@@ -6,11 +6,13 @@ import { apiFetch } from "../../../lib/api";
 import Link from "next/link";
 import { Button } from "../../../components/ui/Button";
 import TripListTable from "../../../components/admin/TripListTable";
+import AssignGuideModal from "../../../components/admin/trips/AssignGuideModal";
 
 export default function AdminTripsPage() {
   const [trips, setTrips] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [assignTripId, setAssignTripId] = useState<string | null>(null);
   
   // Pagination & Sort State
   const [page, setPage] = useState(1);
@@ -105,6 +107,7 @@ export default function AdminTripsPage() {
             loading={loading} 
             onRefresh={fetchTrips} 
             onAction={handleAction}
+            onAssignGuide={setAssignTripId}
             currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}
@@ -113,6 +116,15 @@ export default function AdminTripsPage() {
             onSort={handleSort}
           />
         )}
+
+        <AssignGuideModal 
+          tripId={assignTripId} 
+          onClose={() => setAssignTripId(null)}
+          onSuccess={() => {
+            alert("Guide assigned successfully!");
+            fetchTrips();
+          }}
+        />
       </div>
     </PermissionRoute>
   );

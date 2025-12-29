@@ -29,6 +29,7 @@ type Props = {
   sortBy?: string;
   sortOrder?: string;
   onSort?: (field: string) => void;
+  onAssignGuide?: (id: string) => void;
 };
 
 export default function TripListTable({ 
@@ -41,7 +42,8 @@ export default function TripListTable({
   onPageChange,
   sortBy,
   sortOrder,
-  onSort
+  onSort,
+  onAssignGuide
 }: Props) {
   if (loading) {
     return (
@@ -182,6 +184,15 @@ export default function TripListTable({
                           onClick={() => onAction(trip.id, "archive")}
                         >
                           Archive
+                        </Button>
+                      )}
+                      {(trip.status === "APPROVED" || trip.status === "PUBLISHED") && onAssignGuide && (
+                        <Button
+                          variant="subtle"
+                          className="px-3 py-1.5 h-auto text-xs"
+                          onClick={() => onAssignGuide(trip.id)}
+                        >
+                          Assign Guide
                         </Button>
                       )}
                           <>

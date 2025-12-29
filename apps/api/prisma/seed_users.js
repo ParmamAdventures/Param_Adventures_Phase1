@@ -37,6 +37,8 @@ async function main() {
   }
 
   // user@local.test (Standard User)
+  const userRole = await prisma.role.findFirst({ where: { name: "USER" } });
+  
   const user = await prisma.user.upsert({
     where: { email: "user@local.test" },
     update: {

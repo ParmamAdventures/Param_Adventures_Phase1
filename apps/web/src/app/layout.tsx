@@ -6,6 +6,7 @@ import { SocketProvider } from "../context/SocketContext";
 import ThemeProvider from "../components/theme/ThemeProvider";
 import ToastProvider from "../components/ui/ToastProvider";
 import PublicNavbar from "../components/layout/PublicNavbar";
+import Footer from "../components/layout/Footer";
 
 import { constructMetadata } from "../lib/metadata";
 
@@ -37,6 +38,7 @@ export default function RootLayout({
               <SocketProvider>
                 <PublicNavbar />
                 <main className="app-surface">{children}</main>
+                <Footer />
               </SocketProvider>
             </AuthProvider>
           </ToastProvider>

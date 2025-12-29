@@ -28,6 +28,8 @@ async function main() {
       category: "TREK",
       coverImageLegacy: "https://images.unsplash.com/photo-1544735716-392fe2489ffa",
       capacity: 12,
+      startDate: new Date("2026-04-01"), // Future date
+      endDate: new Date("2026-04-18"),
       createdById: admin.id
     },
     {
