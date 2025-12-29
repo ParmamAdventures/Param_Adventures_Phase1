@@ -57,8 +57,12 @@ model User {
   blogs          Blog[]  @relation("UserBlogs")
 
   // Trip Management roles
+
   managedTrips Trip[]          @relation("TripManagedBy")
   guidedTrips  TripsOnGuides[]
+  
+  reviews      Review[]
+  savedTrips   SavedTrip[]
 }
 
 model Role {
@@ -197,6 +201,9 @@ model Trip {
   blogs Blog[] @relation("TripBlogs")
 
   isFeatured Boolean @default(false)
+
+  reviews    Review[]
+  savedTrips SavedTrip[]
 
   @@index([status])
   @@index([slug])
@@ -363,6 +370,34 @@ model HeroSlide {
   createdAt DateTime @default(now())
 
   @@index([order])
+}
+
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  userId    String
+  tripId    String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  trip      Trip     @relation(fields: [tripId], references: [id])
+  
+  @@unique([userId, tripId]) // One review per trip per user
+  @@index([tripId])
+}
+
+model SavedTrip {
+  userId    String
+  tripId    String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  @@id([userId, tripId])
+  @@index([userId])
 }
 
 model SiteConfig {

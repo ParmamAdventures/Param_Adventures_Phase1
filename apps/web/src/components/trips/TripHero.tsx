@@ -1,5 +1,6 @@
 import Image from "next/image";
 import StatusBadge from "../ui/StatusBadge";
+import HeartButton from "./HeartButton";
 
 export default function TripHero({ trip }: { trip: any }) {
   const coverImage = trip.coverImage?.originalUrl || trip.image;
@@ -30,9 +31,15 @@ export default function TripHero({ trip }: { trip: any }) {
           </span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black italic tracking-tighter uppercase leading-[0.8]">
-          {trip.title}
-        </h1>
+
+        <div className="flex justify-between items-start">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black italic tracking-tighter uppercase leading-[0.8]">
+              {trip.title}
+            </h1>
+            <div className="hidden md:block pt-4">
+                <HeartButton tripId={trip.id} size={32} checkStatus className="bg-white/10 hover:bg-white/20" />
+            </div>
+        </div>
 
         <div className="flex flex-wrap items-center gap-8 pt-4 border-t border-white/20 w-fit">
           <div className="space-y-1">

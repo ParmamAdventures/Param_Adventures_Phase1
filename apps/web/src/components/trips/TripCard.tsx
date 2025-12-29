@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "../ui/Button";
 import Image from "next/image";
+import HeartButton from "./HeartButton";
 
 type Trip = {
   id: string;
@@ -14,7 +15,13 @@ type Trip = {
   coverImageLegacy?: string;
 };
 
-export default function TripCard({ trip }: { trip: Trip }) {
+interface TripCardProps {
+  trip: Trip;
+  initialSaved?: boolean;
+  onToggle?: (isSaved: boolean) => void;
+}
+
+export default function TripCard({ trip, initialSaved = false, onToggle }: TripCardProps) {
   const imageUrl = typeof trip.coverImage === 'string' 
     ? trip.coverImage 
     : (trip.coverImage as any)?.mediumUrl || 
@@ -40,6 +47,11 @@ export default function TripCard({ trip }: { trip: Trip }) {
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        
+        {/* Wishlist Button */}
+        <div className="absolute top-4 right-4 z-20">
+           <HeartButton tripId={trip.id} initialSaved={initialSaved} onToggle={onToggle} />
+        </div>
       </div>
 
       {/* Content */}

@@ -25,6 +25,8 @@ import adminAuditRoutes from "./routes/admin/audit.routes";
 import dashboardRoutes from "./routes/admin/dashboard.routes";
 import contentRoutes from "./routes/content.routes";
 import tripAssignmentRoutes from "./routes/admin/trip-assignment.routes";
+import reviewRoutes from "./routes/review.routes";
+import wishlistRoutes from "./routes/wishlist.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
 
@@ -80,6 +82,8 @@ app.use("/media", mediaLimiter, mediaRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/metrics", metricsRoutes);
 app.use("/content", contentRoutes);
+app.use("/reviews", reviewRoutes);
+app.use("/wishlist", wishlistRoutes);
 
 // Admin routes
 app.use("/admin/users", adminUsersRoutes);

@@ -6,6 +6,8 @@ import TripBookingCard from "../../../components/trips/TripBookingCard";
 import TripItinerary from "../../../components/trips/TripItinerary";
 import TripQuickStats from "../../../components/trips/TripQuickStats";
 import TripInclusions from "../../../components/trips/TripInclusions";
+import ReviewList from "../../../components/reviews/ReviewList";
+import ReviewForm from "../../../components/reviews/ReviewForm";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -170,6 +172,25 @@ function renderTrip(trip: TripFull) {
                     </div>
                 </section>
             )}
+            
+            {/* Reviews Section */}
+            <section id="reviews" className="scroll-mt-24 pt-8 border-t border-border">
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-2xl font-bold">Traveler Reviews</h2>
+                    {/* Add average rating here if available in trip calculation later */}
+                </div>
+                
+                <div className="grid gap-8 lg:grid-cols-2">
+                    <div>
+                        <ReviewList tripId={trip.id!} />
+                    </div>
+                    <div>
+                         {/* Ideally check if user has booking here, but backend validates it. 
+                             We'll show the form, and it will error if unauthorized. */}
+                        <ReviewForm tripId={trip.id!} />
+                    </div>
+                </div>
+            </section>
 
             {/* Mobile Booking CTA (Fixed Bottom) */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t z-50">
