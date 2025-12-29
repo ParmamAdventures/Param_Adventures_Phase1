@@ -17,6 +17,14 @@ export async function listAuditLogs(req: Request, res: Response) {
         orderBy: { createdAt: "desc" },
         skip,
         take: Number(limit),
+        include: {
+          actor: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
       }),
       prisma.auditLog.count({ where }),
     ]);

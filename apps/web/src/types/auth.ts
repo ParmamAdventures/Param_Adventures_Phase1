@@ -8,7 +8,8 @@ export interface User {
   gender?: string;
   phoneNumber?: string;
   address?: string;
-  status: "ACTIVE" | "SUSPENDED";
+  status: "ACTIVE" | "SUSPENDED" | "BANNED";
+  statusReason?: string;
   createdAt: string;
   roles: string[];
   permissions: string[];

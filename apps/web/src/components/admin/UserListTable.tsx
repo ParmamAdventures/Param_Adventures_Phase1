@@ -63,6 +63,33 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
     }
   };
 
+  const handleUpdateStatus = async (userId: string, status: string) => {
+    let reason = "";
+    if (status !== "ACTIVE") {
+      reason = prompt("Provide a reason for this action:") || "";
+      if (!reason && status === "BANNED") {
+        alert("A reason is required for banning.");
+        return;
+      }
+    }
+
+    setActionLoading(userId);
+    try {
+      const res = await apiFetch(`/admin/users/${userId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status, reason }),
+      });
+      if (res.ok) onRefresh();
+      else alert("Failed to update status");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to update status");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-8 text-center text-muted-foreground flex flex-col items-center gap-2">
@@ -110,10 +137,18 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <StatusBadge status={u.status} />
+                    <div className="flex flex-col gap-1">
+                      <StatusBadge status={u.status} />
+                      {u.statusReason && (
+                        <span className="text-[10px] text-muted-foreground truncate max-w-[120px]" title={u.statusReason}>
+                          Reason: {u.statusReason}
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-2">
+                      {/* ... roles ... */}
                       {u.roles.length > 0 ? (
                         u.roles.map((role) => (
                           <span
@@ -144,35 +179,52 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    {myPerms.includes("user:assign-role") && !isMe && (
-                      <div className="flex items-center gap-2">
-                        <select
-                          className="h-8 max-w-[140px] rounded border border-input bg-transparent px-2 text-xs focus:ring-1 focus:ring-accent"
-                          onChange={(e) => {
-                            handleAssignRole(u.id, e.target.value);
-                            e.target.value = ""; // Reset
-                          }}
-                          disabled={isProcessing}
-                          defaultValue=""
-                        >
-                          <option value="" disabled>
-                            + Add Role
-                          </option>
-                          {roles
-                            .filter(
-                              (r) =>
-                                !u.roles.includes(r.name) &&
-                                (!r.isSystem || myRoles.includes("SUPER_ADMIN"))
-                            )
-                            .map((r) => (
-                              <option key={r.id} value={r.name}>
-                                {r.name}
-                              </option>
-                            ))}
-                        </select>
-                        {isProcessing && <Spinner size={12} />}
-                      </div>
-                    )}
+                    <div className="flex flex-col gap-2">
+                      {myPerms.includes("user:assign-role") && !isMe && (
+                        <div className="flex items-center gap-2">
+                          <select
+                            className="h-8 w-full rounded border border-input bg-transparent px-2 text-xs focus:ring-1 focus:ring-accent"
+                            onChange={(e) => {
+                              handleAssignRole(u.id, e.target.value);
+                              e.target.value = ""; // Reset
+                            }}
+                            disabled={isProcessing}
+                            defaultValue=""
+                          >
+                            <option value="" disabled>
+                              + Add Role
+                            </option>
+                            {roles
+                              .filter(
+                                (r) =>
+                                  !u.roles.includes(r.name) &&
+                                  (!r.isSystem || myRoles.includes("SUPER_ADMIN"))
+                              )
+                              .map((r) => (
+                                <option key={r.id} value={r.name}>
+                                  {r.name}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      )}
+                      
+                      {myPerms.includes("user:edit") && !isMe && (
+                         <div className="flex items-center gap-2">
+                            <select
+                              className="h-8 w-full rounded border border-input bg-transparent px-2 text-xs focus:ring-1 focus:ring-accent"
+                              value={u.status}
+                              onChange={(e) => handleUpdateStatus(u.id, e.target.value)}
+                              disabled={isProcessing}
+                            >
+                              <option value="ACTIVE">Set Active</option>
+                              <option value="SUSPENDED">Suspend</option>
+                              <option value="BANNED">Ban Account</option>
+                            </select>
+                            {isProcessing && <Spinner size={12} />}
+                         </div>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

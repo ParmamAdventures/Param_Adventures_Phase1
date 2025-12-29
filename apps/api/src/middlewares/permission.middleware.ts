@@ -12,18 +12,36 @@ export async function attachPermissions(
       return res.status(401).json({ error: "Unauthenticated" });
     }
 
-    const roles: any[] = await prisma.userRole.findMany({
-      where: { userId },
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
       include: {
-        role: {
+        roles: {
           include: {
-            permissions: {
-              include: { permission: true },
+            role: {
+              include: {
+                permissions: {
+                  include: { permission: true },
+                },
+              },
             },
           },
         },
       },
     });
+
+    if (!user) {
+      return res.status(401).json({ error: "User not found" });
+    }
+
+    if (user.status !== "ACTIVE") {
+      return res.status(403).json({ 
+        error: `Your account status is ${user.status}.`,
+        status: user.status,
+        reason: user.statusReason
+      });
+    }
+
+    const roles = user.roles;
 
     const roleNames = roles
       .map((r) => r.role?.name)

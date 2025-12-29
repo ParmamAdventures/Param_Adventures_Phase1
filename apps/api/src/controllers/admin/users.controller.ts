@@ -28,3 +28,36 @@ export async function listUsers(req: Request, res: Response) {
     }))
   );
 }
+export async function updateUserStatus(req: Request, res: Response) {
+  const { id } = req.params;
+  const { status, reason } = req.body;
+
+  if (!["ACTIVE", "SUSPENDED", "BANNED"].includes(status)) {
+    return res.status(400).json({ error: "Invalid status" });
+  }
+
+  const user = await prisma.user.update({
+    where: { id },
+    data: {
+      status,
+      statusReason: reason,
+    },
+    select: {
+      id: true,
+      email: true,
+      status: true,
+    },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: (req as any).user.id,
+      action: "USER_STATUS_UPDATED",
+      targetType: "USER",
+      targetId: user.id,
+      metadata: { status, reason },
+    },
+  });
+
+  res.json(user);
+}

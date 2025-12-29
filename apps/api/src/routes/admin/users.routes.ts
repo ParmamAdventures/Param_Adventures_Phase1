@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listUsers } from "../../controllers/admin/users.controller";
+import { listUsers, updateUserStatus } from "../../controllers/admin/users.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";
 import { requirePermission } from "../../middlewares/require-permission.middleware";
@@ -14,6 +14,15 @@ router.get(
   requirePermission("user:list"),
   autoLog({ action: "USER_LIST_VIEW", targetType: "User" }),
   listUsers
+);
+
+router.patch(
+  "/:id/status",
+  requireAuth,
+  attachPermissions,
+  requirePermission("user:edit"),
+  autoLog({ action: "USER_STATUS_CHANGE", targetType: "User" }),
+  updateUserStatus
 );
 
 export default router;
