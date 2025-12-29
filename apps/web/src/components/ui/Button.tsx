@@ -1,5 +1,5 @@
 type Props = {
-  variant?: "primary" | "ghost" | "danger" | "subtle";
+  variant?: "primary" | "ghost" | "danger" | "subtle" | "outline";
   loading?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -20,6 +20,7 @@ export function Button({
     variant === "danger" &&
       "bg-red-600 text-white hover:bg-red-700 shadow-sm",
     variant === "subtle" && "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+    variant === "outline" && "bg-transparent border-2 border-input hover:bg-accent/5 hover:border-accent/20 text-foreground",
     loading && "opacity-70 cursor-not-allowed",
     "active:scale-[0.98] duration-200",
     className,

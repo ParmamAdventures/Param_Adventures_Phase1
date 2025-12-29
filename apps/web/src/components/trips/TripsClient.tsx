@@ -1,18 +1,15 @@
+
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import TripsGrid from "./TripsGrid";
 import { TripsGridSkeleton } from "./TripsGridSkeleton";
 import { apiFetch } from "../../lib/api";
-import { useSearchParams } from "next/navigation";
-import { Filter, X, SlidersHorizontal, Calendar as CalendarIcon, Clock, ChevronDown } from "lucide-react";
-import { Select } from "../ui/Select";
-
-const CATEGORIES = ["TREK", "CORPORATE", "EDUCATIONAL", "SPIRITUAL"];
-const DIFFICULTIES = ["Easy", "Moderate", "Hard"];
+import { Filter, X } from "lucide-react";
+import TripFilters from "./TripFilters";
+import { useTripFilters } from "@/hooks/useTripFilters";
 
 export default function TripsClient() {
-  const searchParams = useSearchParams();
   const [trips, setTrips] = useState<any[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   
@@ -24,64 +21,42 @@ export default function TripsClient() {
     maxDuration: 30
   });
 
-  // Filter States
-  const [search, setSearch] = useState<string>(searchParams?.get("search") || "");
-  const [category, setCategory] = useState<string>(searchParams?.get("category")?.toUpperCase() || "");
-  const [difficulty, setDifficulty] = useState<string>(searchParams?.get("difficulty") || "");
-  
-  // Price
-  const [priceRange, setPriceRange] = useState<number>(Number(searchParams?.get("maxPrice")) || 100000);
-  
-  // Capacity & Sorting
-  const [capacity, setCapacity] = useState<string>(searchParams?.get("capacity") || "");
-  const [sortBy, setSortBy] = useState<string>(searchParams?.get("sortBy") || "createdAt");
-  const [sortOrder, setSortOrder] = useState<string>(searchParams?.get("sortOrder") || "desc");
-
-  // Duration
-  const [minDays, setMinDays] = useState<string>(searchParams?.get("minDays") || "");
-  const [maxDays, setMaxDays] = useState<string>(searchParams?.get("maxDays") || "");
-
-  // Dates
-  const [startDate, setStartDate] = useState<string>(searchParams?.get("startDate") || "");
-  const [endDate, setEndDate] = useState<string>(searchParams?.get("endDate") || "");
-
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-
   // Load Metadata
   useEffect(() => {
     apiFetch("/trips/public/meta")
       .then(res => res.json())
       .then(data => {
         setMeta(data);
-        // Only override if not already set by URL
-        if (!searchParams?.get("maxPrice")) setPriceRange(data.maxPrice);
       })
       .catch(console.error);
-  }, [searchParams]);
+  }, []);
+
+  // Use Custom Hook for Filter State
+  const { filters, setFilter, clearFilters, activeFilterCount } = useTripFilters(meta.maxPrice);
 
   const loadTrips = useCallback(async () => {
     setTrips(null);
     try {
       const params = new URLSearchParams();
-      if (search) params.append("search", search);
-      if (category) params.append("category", category);
-      if (difficulty) params.append("difficulty", difficulty);
-      if (capacity) params.append("capacity", capacity);
+      if (filters.search) params.append("search", filters.search);
+      if (filters.category) params.append("category", filters.category);
+      if (filters.difficulty) params.append("difficulty", filters.difficulty);
+      if (filters.capacity) params.append("capacity", filters.capacity);
       
       // Sorting
-      params.append("sortBy", sortBy);
-      params.append("sortOrder", sortOrder);
+      params.append("sortBy", filters.sortBy);
+      params.append("sortOrder", filters.sortOrder);
       
       // Price
-      if (priceRange < meta.maxPrice) params.append("maxPrice", priceRange.toString());
+      if (filters.priceRange < meta.maxPrice) params.append("maxPrice", filters.priceRange.toString());
 
       // Duration
-      if (minDays) params.append("minDays", minDays);
-      if (maxDays) params.append("maxDays", maxDays);
+      if (filters.minDays) params.append("minDays", filters.minDays);
+      if (filters.maxDays) params.append("maxDays", filters.maxDays);
 
       // Dates
-      if (startDate) params.append("startDate", startDate);
-      if (endDate) params.append("endDate", endDate);
+      if (filters.startDate) params.append("startDate", filters.startDate);
+      if (filters.endDate) params.append("endDate", filters.endDate);
 
       const res = await apiFetch(`/trips/public?${params.toString()}`);
       
@@ -93,248 +68,30 @@ export default function TripsClient() {
       const data = await res.json();
       setTrips(data);
     } catch (e) {
+      console.error(e);
       setError("Network error");
       setTrips([]);
     }
-  }, [search, category, difficulty, capacity, sortBy, sortOrder, priceRange, minDays, maxDays, startDate, endDate, meta.maxPrice]);
+  }, [filters, meta.maxPrice]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       loadTrips();
-    }, 500); 
+    }, 300); 
     return () => clearTimeout(timer);
   }, [loadTrips]);
-
-  const clearFilters = () => {
-    setSearch("");
-    setCategory("");
-    setDifficulty("");
-    setPriceRange(meta.maxPrice);
-    setCapacity("");
-    setSortBy("createdAt");
-    setSortOrder("desc");
-    setMinDays("");
-    setMaxDays("");
-    setStartDate("");
-    setEndDate("");
-  };
-
-  const hasActiveFilters = search || category || difficulty || priceRange < meta.maxPrice || capacity || sortBy !== "createdAt" || minDays || maxDays || startDate || endDate;
 
   return (
     <div className="flex flex-col gap-8">
       {/* Filter Bar */}
-      {/* Filter Bar */}
-      <div className="sticky top-20 z-40 flex flex-col gap-4 bg-[var(--card)]/90 backdrop-blur-xl p-4 rounded-2xl border border-[var(--border)] shadow-2xl shadow-black/10 transition-all duration-300">
-        
-        {/* Header & Toggle */}
-        <div className="flex items-center justify-between">
-           <div className="flex items-center gap-3">
-               <div className="bg-gradient-to-br from-[var(--accent)] to-purple-600 text-white p-2 rounded-lg shadow-md shadow-[var(--accent)]/20">
-                 <SlidersHorizontal size={16} />
-               </div>
-               <div>
-                 <h2 className="text-xs font-black uppercase tracking-widest">Refine Adventures</h2>
-                 <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-medium leading-none mt-0.5">
-                   {trips ? `Found ${trips.length} Experiences` : "Loading..."}
-                 </p>
-               </div>
-           </div>
-           
-           <div className="flex items-center gap-2">
-             {hasActiveFilters && (
-                <button 
-                    onClick={clearFilters}
-                    className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all"
-                >
-                    <X size={12} /> Clear
-                </button>
-             )}
-             <button 
-               onClick={() => setIsFilterOpen(!isFilterOpen)}
-               className="md:hidden p-2 bg-[var(--input)] hover:bg-[var(--accent)] hover:text-white rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all"
-             >
-               {isFilterOpen ? "Hide" : "Filter"}
-             </button>
-           </div>
-        </div>
-
-        <div className={`flex flex-col gap-4 ${isFilterOpen ? 'flex' : 'hidden md:flex'}`}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end">
-                
-                {/* 1. Search Bar */}
-                <div className="space-y-2 group xl:col-span-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors flex gap-2 items-center">
-                        <Filter size={10}/> Search Term
-                    </label>
-                    <div className="relative">
-                        <input 
-                            type="text" 
-                            placeholder="Search peaks, trails, or locations..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            className="w-full h-10 bg-[var(--background)] border border-transparent rounded-lg px-4 text-xs font-bold shadow-sm outline-none focus:border-[var(--accent)] transition-all placeholder:text-muted-foreground/30"
-                        />
-                        {search && (
-                            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-red-500 transition-colors">
-                                <X size={14} />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* 2. Category & Level */}
-                <div className="space-y-2 group">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors">Category & Level</label>
-                    <div className="grid grid-cols-2 gap-2">
-                         <Select 
-                            value={category}
-                            onChange={setCategory}
-                            triggerClassName="w-full h-10 text-xs bg-[var(--background)] border-transparent hover:border-[var(--border)] focus:border-[var(--accent)] transition-all shadow-sm"
-                            options={[{ value: "", label: "All Types" }, ...CATEGORIES.map(c => ({ value: c, label: c }))]}
-                        />
-                         <Select 
-                            value={difficulty}
-                            onChange={setDifficulty}
-                            triggerClassName="w-full h-10 text-xs bg-[var(--background)] border-transparent hover:border-[var(--border)] focus:border-[var(--accent)] transition-all shadow-sm"
-                            options={[{ value: "", label: "Any Level" }, ...DIFFICULTIES.map(d => ({ value: d, label: d }))]}
-                        />
-                    </div>
-                </div>
-
-                {/* 3. Price Range */}
-                <div className="space-y-2 group">
-                    <div className="flex justify-between items-end">
-                         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors">Max Price</label>
-                         <div className="flex items-baseline gap-1">
-                            <span className="text-[10px] font-bold text-muted-foreground">₹</span>
-                            <span className="text-sm font-black text-[var(--foreground)]">{priceRange.toLocaleString()}</span>
-                         </div>
-                    </div>
-                    <div className="relative h-10 bg-[var(--background)] rounded-lg border border-transparent px-3 flex items-center gap-3 shadow-sm group-hover:border-[var(--border)] transition-all">
-                        <input 
-                          type="range" 
-                          min={meta.minPrice} 
-                          max={meta.maxPrice} 
-                          step="1000"
-                          value={priceRange}
-                          onChange={(e) => setPriceRange(Number(e.target.value))}
-                          className="flex-1 h-1 bg-[var(--border)] rounded-full appearance-none cursor-pointer accent-[var(--accent)] hover:accent-[var(--accent)]/80 transition-all"
-                        />
-                        <div className="w-px h-4 bg-[var(--border)]" />
-                        <input 
-                            type="number" 
-                            value={priceRange} 
-                            onChange={(e) => setPriceRange(Number(e.target.value))}
-                            className="w-14 bg-transparent text-right text-[10px] font-bold outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                        />
-                    </div>
-                </div>
-
-                {/* 4. Guests & Sort */}
-                <div className="space-y-2 group col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors">Guests & View</label>
-                    <div className="flex gap-2">
-                        <div className="relative flex-1">
-                            <input 
-                                type="number" 
-                                placeholder="Guests"
-                                value={capacity}
-                                onChange={(e) => setCapacity(e.target.value)}
-                                className="w-full h-10 bg-[var(--background)] border border-transparent rounded-lg px-3 text-xs font-bold shadow-sm outline-none focus:border-[var(--accent)] transition-all placeholder:text-muted-foreground/30"
-                            />
-                        </div>
-                        <Select 
-                            value={sortBy}
-                            onChange={(val) => {
-                                if (val === sortBy) {
-                                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                                } else {
-                                    setSortBy(val);
-                                    setSortOrder("desc");
-                                }
-                            }}
-                            triggerClassName="flex-[1.5] h-10 text-xs bg-[var(--background)] border-transparent hover:border-[var(--border)] focus:border-[var(--accent)] transition-all shadow-sm"
-                            options={[
-                                { value: "createdAt", label: "Newly Added" },
-                                { value: "price", label: "Price" },
-                                { value: "startDate", label: "Soonest" },
-                                { value: "title", label: "A-Z" }
-                            ]}
-                        />
-                    </div>
-                </div>
-                
-                {/* 5. Duration */}
-                <div className="space-y-2 group">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors flex gap-2 items-center">
-                        <Clock size={10}/> Duration (Days)
-                    </label>
-                    <div className="flex items-center gap-2 bg-[var(--background)] p-1 rounded-lg shadow-sm border border-transparent group-hover:border-[var(--border)] transition-all h-10">
-                        <input 
-                            type="number" 
-                            placeholder="Min"
-                            value={minDays}
-                            onChange={(e) => setMinDays(e.target.value)}
-                            className="w-full h-full bg-transparent text-center text-xs font-bold outline-none placeholder:text-muted-foreground/30"
-                        />
-                        <span className="text-muted-foreground/30 font-light text-[10px]">|</span>
-                        <input 
-                            type="number" 
-                            placeholder="Max"
-                            value={maxDays}
-                            onChange={(e) => setMaxDays(e.target.value)}
-                            className="w-full h-full bg-transparent text-center text-xs font-bold outline-none placeholder:text-muted-foreground/30"
-                        />
-                    </div>
-                </div>
-
-                {/* 6. Dates */}
-                <div className="space-y-2 group xl:col-span-1">
-                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors flex gap-2 items-center">
-                        <CalendarIcon size={10}/> Travel Window
-                    </label>
-                    <div className="flex gap-2">
-                        <div className="relative flex-1">
-                            <input 
-                                type="text" 
-                                placeholder="Start"
-                                onFocus={(e) => e.target.type = "date"}
-                                onBlur={(e) => { if(!e.target.value) e.target.type = "text"; }}
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full h-10 bg-[var(--background)] border border-transparent rounded-lg px-2 py-1 text-[10px] font-bold uppercase shadow-sm outline-none focus:border-[var(--accent)] transition-all min-w-0 placeholder:text-muted-foreground/50"
-                            />
-                        </div>
-                        <div className="relative flex-1">
-                            <input 
-                                type="text"
-                                placeholder="End" 
-                                onFocus={(e) => e.target.type = "date"}
-                                onBlur={(e) => { if(!e.target.value) e.target.type = "text"; }}
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full h-10 bg-[var(--background)] border border-transparent rounded-lg px-2 py-1 text-[10px] font-bold uppercase shadow-sm outline-none focus:border-[var(--accent)] transition-all min-w-0 placeholder:text-muted-foreground/50"
-                            />
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            
-            {/* Mobile-only Clear button */}
-            {hasActiveFilters && (
-                <div className="md:hidden pt-2 border-t border-[var(--border)]/50">
-                    <button 
-                        onClick={clearFilters}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-lg text-xs font-black uppercase tracking-wider transition-all"
-                    >
-                        <X size={14} /> Clear Active Filters
-                    </button>
-                </div>
-            )}
-        </div>
-      </div>
+      <TripFilters 
+        filters={filters}
+        setFilter={setFilter}
+        clearFilters={clearFilters}
+        activeFilterCount={activeFilterCount}
+        meta={meta}
+        totalTrips={trips?.length}
+      />
 
       {/* Main Grid */}
       <div className="min-h-[400px]">

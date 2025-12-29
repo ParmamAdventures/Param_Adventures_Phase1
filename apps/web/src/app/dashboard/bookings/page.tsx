@@ -8,11 +8,21 @@ import StatusBadge from "../../../components/ui/StatusBadge";
 import Spinner from "../../../components/ui/Spinner";
 import Card from "../../../components/ui/Card";
 import { useAuth } from "../../../context/AuthContext";
+import CancelBookingDialog from "@/components/bookings/CancelBookingDialog";
+import InvoiceModal from "@/components/bookings/InvoiceModal";
+import { FileText } from "lucide-react";
 
 export default function MyBookingsPage() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal States
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [invoiceBooking, setInvoiceBooking] = useState<any>(null);
 
   const fetchBookings = async () => {
     try {
@@ -32,16 +42,25 @@ export default function MyBookingsPage() {
     fetchBookings();
   }, []);
 
-  const handleCancel = async (id: string, currentlyLoading: boolean) => {
-    if (currentlyLoading) return;
-    if (!confirm("Are you sure you want to cancel this booking?")) return;
+  const openCancelModal = (booking: any) => {
+    setSelectedBooking(booking);
+    setCancelModalOpen(true);
+  };
 
+  const openInvoiceModal = (booking: any) => {
+    setInvoiceBooking(booking);
+    setInvoiceModalOpen(true);
+  };
+
+  const handleConfirmCancel = async () => {
+    if (!selectedBooking) return;
     try {
-      const res = await apiFetch(`/bookings/${id}/cancel`, { method: "POST" });
+      const res = await apiFetch(`/bookings/${selectedBooking.id}/cancel`, { method: "POST" });
       if (res.ok) {
-        fetchBookings();
+        // Optimistic Update
+        setBookings(bookings.map(b => b.id === selectedBooking.id ? { ...b, status: "CANCELLED" } : b));
       } else {
-        alert("Failed to cancel booking");
+        alert("Failed to cancel booking"); // Could use Toast but focusing on task
       }
     } catch (e) {
       alert("Network error");
@@ -124,16 +143,28 @@ export default function MyBookingsPage() {
 
                 {/* Actions */}
                 <div className="flex justify-end gap-3 pt-2">
+                   {/* Invoice Button */}
+                   {booking.status === "CONFIRMED" && (
+                       <Button 
+                            variant="outline" 
+                            className="h-auto py-2 text-sm gap-2"
+                            onClick={() => openInvoiceModal(booking)}
+                        >
+                            <FileText size={14} /> Invoice
+                        </Button>
+                   )}
+
+                   {/* Cancel Button */}
                    {["REQUESTED", "CONFIRMED"].includes(booking.status) && (
                       <Button 
                         variant="ghost" 
                         className="text-red-500 hover:text-red-600 hover:bg-red-500/10 h-auto py-2 text-sm"
-                        onClick={() => handleCancel(booking.id, false)}
+                        onClick={() => openCancelModal(booking)}
                       >
                         Cancel Booking
                       </Button>
                    )}
-                   {booking.paymentStatus === "PENDING" && booking.status !== "CANCELLED" && (
+                   {booking.paymentStatus === "PENDING" && booking.status !== "CANCELLED" && booking.status !== "REJECTED" && (
                      <Button 
                        variant="primary" 
                        className="h-auto py-2 text-sm"
@@ -148,6 +179,20 @@ export default function MyBookingsPage() {
           ))}
         </div>
       )}
+
+      {/* Dialogs */}
+      <CancelBookingDialog 
+        isOpen={cancelModalOpen} 
+        onClose={() => setCancelModalOpen(false)}
+        onConfirm={handleConfirmCancel}
+        bookingTitle={selectedBooking?.trip.title || ""}
+      />
+
+      <InvoiceModal 
+        isOpen={invoiceModalOpen}
+        onClose={() => setInvoiceModalOpen(false)}
+        booking={invoiceBooking}
+      />
     </div>
   );
 }
