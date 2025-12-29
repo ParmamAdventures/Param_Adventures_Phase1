@@ -30,3 +30,15 @@ export function verifyAccessToken(token: string) {
 export function verifyRefreshToken(token: string) {
   return jwt.verify(token, env.JWT_REFRESH_SECRET) as JwtPayload;
 }
+
+export function signResetToken(userId: string) {
+  return jwt.sign(
+    { sub: userId },
+    env.JWT_ACCESS_SECRET as unknown as jwt.Secret, // Resusing access secret for now, ideally dedicated secret
+    { expiresIn: "15m" }
+  );
+}
+
+export function verifyResetToken(token: string) {
+  return jwt.verify(token, env.JWT_ACCESS_SECRET) as JwtPayload;
+}

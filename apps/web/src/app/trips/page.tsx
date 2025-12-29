@@ -1,5 +1,6 @@
 import TripsClient from "../../components/trips/TripsClient";
 
+// Force rebuild
 export default function PublicTripsPage() {
   return (
     <section className="space-y-6">

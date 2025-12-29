@@ -167,3 +167,72 @@ export async function me(req: Request, res: Response) {
   res.set("Cache-Control", "no-store");
   res.json({ ...user, roles: userRoles, permissions });
 }
+
+export async function forgotPassword(req: Request, res: Response) {
+  const { email } = req.body;
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    // Return OK even if user not found to prevent enumeration
+    return res.json({ message: "If an account exists, a reset link has been sent." });
+  }
+
+  const token = (await import("../utils/jwt")).signResetToken(user.id);
+  const resetLink = `${process.env.WEB_URL || "http://localhost:3000"}/auth/reset-password?token=${token}`;
+
+  await import("../services/notification.service").then(m => 
+    m.notificationService.sendPasswordResetEmail(user.email, resetLink)
+  );
+
+  res.json({ message: "If an account exists, a reset link has been sent." });
+}
+
+export async function resetPassword(req: Request, res: Response) {
+  const { token, password } = req.body;
+
+  try {
+    const payload = (await import("../utils/jwt")).verifyResetToken(token);
+    const hashedPassword = await hashPassword(password);
+
+    await prisma.user.update({
+      where: { id: payload.sub },
+      data: { password: hashedPassword }
+    });
+
+    res.json({ message: "Password updated successfully" });
+  } catch (error) {
+    return res.status(400).json({ error: "Invalid or expired reset token" });
+  }
+}
+
+export async function changePassword(req: Request, res: Response) {
+  const { currentPassword, newPassword } = req.body;
+  const userId = (req as any).user.id;
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  // Verify current password
+  const valid = await verifyPassword(currentPassword, user.password);
+  if (!valid) {
+    return res.status(400).json({ error: "Incorrect current password" });
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword }
+  });
+
+  await auditService.logAudit({
+    actorId: user.id,
+    action: "USER_CHANGE_PASSWORD",
+    targetType: "User",
+    targetId: user.id,
+  });
+
+  res.json({ message: "Password changed successfully" });
+}

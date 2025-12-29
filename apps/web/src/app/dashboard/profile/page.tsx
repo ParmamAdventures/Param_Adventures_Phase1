@@ -41,6 +41,11 @@ export default function ProfilePage() {
   const [showCropper, setShowCropper] = useState(false);
   const [showPresets, setShowPresets] = useState(false); // Presets Modal
   const [tempImageSrc, setTempImageSrc] = useState<string | null>(null);
+
+  // Password Change State
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -164,6 +169,39 @@ export default function ProfilePage() {
         setUploading(false);
     }
   };
+
+  async function handleChangePassword() {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      alert("Please fill in all password fields");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert("New passwords do not match");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await apiFetch("/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("Password changed successfully");
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        alert(data.error || "Failed to change password");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="max-w-3xl space-y-12 pb-20">
@@ -414,6 +452,62 @@ export default function ProfilePage() {
                           />
                       </div>
                   ))}
+              </div>
+          </div>
+
+          {/* Change Password Section */}
+          <div className="pt-8 border-t border-[var(--border)]">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-3 italic uppercase tracking-tighter">
+                <div className="w-8 h-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center">
+                    <Shield size={18} />
+                </div>
+                Security
+              </h3>
+              
+              <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block">Current Password</label>
+                    <Input 
+                        type="password"
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-12"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block">New Password</label>
+                        <Input 
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            placeholder="••••••••"
+                            className="bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-12"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground block">Confirm New Password</label>
+                        <Input 
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="••••••••"
+                            className="bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-12"
+                        />
+                      </div>
+                  </div>
+                  <div className="pt-2 flex justify-end">
+                      <Button 
+                        variant="secondary"
+                        onClick={handleChangePassword}
+                        loading={loading}
+                        disabled={!currentPassword || !newPassword || !confirmPassword}
+                        className="h-10 text-xs uppercase font-bold tracking-wider"
+                      >
+                        Update Password
+                      </Button>
+                  </div>
               </div>
           </div>
 

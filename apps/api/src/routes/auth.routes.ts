@@ -6,6 +6,9 @@ import {
   refresh,
   me,
   loginPage,
+  forgotPassword,
+  resetPassword,
+  changePassword
 } from "../controllers/auth.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
@@ -21,5 +24,8 @@ router.get("/login", loginPage);
 router.post("/refresh", refresh);
 router.post("/logout", logout);
 router.get("/me", requireAuth, me);
+router.post("/forgot-password", authLimiter, forgotPassword);
+router.post("/reset-password", authLimiter, resetPassword);
+router.post("/change-password", requireAuth, changePassword);
 
 export default router;
