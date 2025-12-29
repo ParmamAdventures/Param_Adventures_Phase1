@@ -62,6 +62,13 @@ npm run dev       # start dev server
   - Expected: Booking `paymentStatus` updates to `PAID` and user sees success message
   - Priority: Medium
 
+- ID: UI-PAYMENT-002
+  - Title: Server-side Verification (Razorpay signature)
+  - Preconditions: Real Razorpay order or Dev simulation trigger
+  - Steps: Complete checkout or trigger dev simulation → API receives callback/webhook
+  - Expected: Backend validates HMAC signature, updates booking to `CONFIRMED`
+  - Priority: High
+
 - ID: UI-SKELETON-001
   - Title: Trips skeleton shows during client-side fetch
   - Steps: Navigate to Trips page in dev mode with network slow throttling → Observe skeleton placeholders
@@ -80,6 +87,27 @@ npm run dev       # start dev server
   - Preconditions: User signed in
   - Steps: Go to Profile → Click `Choose Preset` → Select an icon → Save
   - Expected: Profile image updates immediately and persists on refresh.
+  - Priority: Medium
+
+- ID: ADMIN-TRIP-001
+  - Title: Assign Manager to Trip
+  - Preconditions: Admin signed in, trip exists
+  - Steps: Go to Admin Trips → Edit Trip → Use Assignments panel → Select Manager → Save
+  - Expected: Manager is assigned and UI reflects the change.
+  - Priority: High
+
+- ID: ADMIN-TRIP-002
+  - Title: Assign multiple Guides to Trip
+  - Preconditions: Admin signed in, users with GUIDE role exist
+  - Steps: Go to Admin Trips → Edit Trip → Use Assignments panel → Add multiple Guides
+  - Expected: Multiple guides are linked to the trip and displayed as a list.
+  - Priority: High
+
+- ID: GUIDE-TRIP-001
+  - Title: Operational view for Guides
+  - Preconditions: User with TRIP_GUIDE role signed in, assigned to a trip
+  - Steps: Sign in as Guide → View internal trip list/details
+  - Expected: Only assigned trips are visible (or highlighted), Guest list is accessible.
   - Priority: Medium
 
 ## Automated tests to maintain

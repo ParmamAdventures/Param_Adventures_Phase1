@@ -60,6 +60,8 @@ Visit: [http://localhost:3000](http://localhost:3000)
 - `superadmin@local.test` (Full System Control)
 - `admin@local.test` (Standard Admin)
 - `uploader@local.test` (Trip Management)
+- `manager@local.test` (Operational Manager)
+- `guide@local.test` (On-site Guide)
 - `user@local.test` (Standard Member)
 
 ---
@@ -70,6 +72,8 @@ Visit: [http://localhost:3000](http://localhost:3000)
 | :--- | :--- | :--- |
 | **SUPER_ADMIN** | System Owner | Full access to all features, roles, and settings. |
 | **ADMIN** | Moderator | Approve/Publish Trips, Manage Bookings, Moderate Blogs. |
+| **TRIP_MANAGER** | Logistics | Assign Guides to Trips, View Guests, Update Trip Status. |
+| **TRIP_GUIDE** | On-site | View assigned Trip guests, Update Trip status. |
 | **UPLOADER** | Content Creator | Create and Edit Trip drafts, Submit for review. |
 | **USER** | Member | Write and Submit Blog posts, View personal dashboard. |
 | **PUBLIC** | Visitor | Browse trips, Create bookings (Guest flow). |
@@ -84,6 +88,8 @@ Visit: [http://localhost:3000](http://localhost:3000)
 - **Backend**: Express, TypeScript, Prisma ORM
 - **Database**: PostgreSQL
 - **Auth**: Custom JWT (Access + Refresh tokens)
+- **Payments**: Razorpay Integration (with server-side HMAC verification)
+- **Media**: Local storage with Sharp optimization (S3 compliant future-readiness)
 
 ## 🛡️ Security Notes
 

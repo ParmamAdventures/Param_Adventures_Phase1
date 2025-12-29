@@ -114,3 +114,22 @@ Notes:
 - Controllers implemented under `apps/api/src/controllers/trips/` with strict state checks (no skipping allowed).
 - Routes registered at `/trips` in `apps/api/src/routes/trips.routes.ts` and wired in `apps/api/src/app.ts`.
 - Next: add frontend Uploader UI and Admin approval UI (Phase 4.3) and extend E2E tests to exercise lifecycle transitions.
+
+## Phase 1.5 — Billing & Operational Roles
+
+### Billing System
+✔ Razorpay direct integration  
+✔ Server-side HMAC signature verification (`/payments/verify`)  
+✔ Webhook support for `payment.captured`, `payment.failed`, `refund.processed`  
+✔ Immediate post-checkout status confirmation
+
+### Operational Roles
+✔ `TRIP_MANAGER` role for logistics oversight  
+✔ `TRIP_GUIDE` role for on-site execution  
+✔ Multi-guide support per trip via `TripsOnGuides` join table  
+✔ `IN_PROGRESS` and `COMPLETED` operational trip statuses
+
+### Codebase Cleanup
+✔ Standardized `PrismaClient` usage (shared instance in `lib/prisma.ts`)  
+✔ Consolidated role management routes and controllers  
+✔ Removed redundant build artifacts from source tree
