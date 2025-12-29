@@ -10,6 +10,7 @@ import { approveTrip } from "../controllers/trips/approveTrip.controller";
 import { publishTrip } from "../controllers/trips/publishTrip.controller";
 import { archiveTrip } from "../controllers/trips/archiveTrip.controller";
 import { getInternalTrips } from "../controllers/trips/internalTrips.controller";
+import { getPublicTrips } from "../controllers/trips/getPublicTrips.controller";
 import { prisma } from "../lib/prisma";
 const router = Router();
 
@@ -34,62 +35,7 @@ router.get("/public/meta", async (req, res) => {
 });
 
 // Public list with search and filtering
-router.get("/public", async (req, res) => {
-  const { search, category, difficulty, maxPrice, minPrice, minDays, maxDays, startDate, endDate } = req.query;
-  
-  const where: any = { status: "PUBLISHED" };
-  
-  if (search) {
-    where.OR = [
-      { title: { contains: String(search), mode: "insensitive" } },
-      { description: { contains: String(search), mode: "insensitive" } },
-    ];
-  }
-  
-  if (category) {
-    where.category = category;
-  }
-  
-  if (difficulty) {
-    where.difficulty = difficulty;
-  }
-  
-  // Price Range
-  if (maxPrice || minPrice) {
-    where.price = {};
-    if (maxPrice) where.price.lte = Number(maxPrice);
-    if (minPrice) where.price.gte = Number(minPrice);
-  }
-
-  // Duration Range
-  if (minDays || maxDays) {
-    where.durationDays = {};
-    if (minDays) where.durationDays.gte = Number(minDays);
-    if (maxDays) where.durationDays.lte = Number(maxDays);
-  }
-
-  // Date Range (Overlapping check)
-  // Trip must start after filter StartDate AND end before filter EndDate? 
-  // Or just start date availability? Usually "Trips starting between X and Y"
-  if (startDate || endDate) {
-    where.startDate = {};
-    if (startDate) where.startDate.gte = new Date(String(startDate));
-    if (endDate) where.startDate.lte = new Date(String(endDate));
-  }
-
-  if (Boolean(req.query.isFeatured) === true) {
-     where.isFeatured = true;
-  }
-
-  const trips = await prisma.trip.findMany({ 
-    where,
-    orderBy: { createdAt: "desc" },
-    include: {
-      coverImage: true,
-    }
-  });
-  res.json(trips);
-});
+router.get("/public", getPublicTrips);
 
 router.get("/public/:slug", optionalAuth, getTripBySlug);
 

@@ -25,12 +25,18 @@ export default function TripsClient() {
   });
 
   // Filter States
+  const [search, setSearch] = useState<string>(searchParams?.get("search") || "");
   const [category, setCategory] = useState<string>(searchParams?.get("category")?.toUpperCase() || "");
   const [difficulty, setDifficulty] = useState<string>(searchParams?.get("difficulty") || "");
   
   // Price
   const [priceRange, setPriceRange] = useState<number>(Number(searchParams?.get("maxPrice")) || 100000);
   
+  // Capacity & Sorting
+  const [capacity, setCapacity] = useState<string>(searchParams?.get("capacity") || "");
+  const [sortBy, setSortBy] = useState<string>(searchParams?.get("sortBy") || "createdAt");
+  const [sortOrder, setSortOrder] = useState<string>(searchParams?.get("sortOrder") || "desc");
+
   // Duration
   const [minDays, setMinDays] = useState<string>(searchParams?.get("minDays") || "");
   const [maxDays, setMaxDays] = useState<string>(searchParams?.get("maxDays") || "");
@@ -57,8 +63,14 @@ export default function TripsClient() {
     setTrips(null);
     try {
       const params = new URLSearchParams();
+      if (search) params.append("search", search);
       if (category) params.append("category", category);
       if (difficulty) params.append("difficulty", difficulty);
+      if (capacity) params.append("capacity", capacity);
+      
+      // Sorting
+      params.append("sortBy", sortBy);
+      params.append("sortOrder", sortOrder);
       
       // Price
       if (priceRange < meta.maxPrice) params.append("maxPrice", priceRange.toString());
@@ -84,7 +96,7 @@ export default function TripsClient() {
       setError("Network error");
       setTrips([]);
     }
-  }, [category, difficulty, priceRange, minDays, maxDays, startDate, endDate, meta.maxPrice]);
+  }, [search, category, difficulty, capacity, sortBy, sortOrder, priceRange, minDays, maxDays, startDate, endDate, meta.maxPrice]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -94,16 +106,20 @@ export default function TripsClient() {
   }, [loadTrips]);
 
   const clearFilters = () => {
+    setSearch("");
     setCategory("");
     setDifficulty("");
     setPriceRange(meta.maxPrice);
+    setCapacity("");
+    setSortBy("createdAt");
+    setSortOrder("desc");
     setMinDays("");
     setMaxDays("");
     setStartDate("");
     setEndDate("");
   };
 
-  const hasActiveFilters = category || difficulty || priceRange < meta.maxPrice || minDays || maxDays || startDate || endDate;
+  const hasActiveFilters = search || category || difficulty || priceRange < meta.maxPrice || capacity || sortBy !== "createdAt" || minDays || maxDays || startDate || endDate;
 
   return (
     <div className="flex flex-col gap-8">
@@ -144,9 +160,30 @@ export default function TripsClient() {
         </div>
 
         <div className={`flex flex-col gap-4 ${isFilterOpen ? 'flex' : 'hidden md:flex'}`}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end">
                 
-                {/* 1. Category & Level */}
+                {/* 1. Search Bar */}
+                <div className="space-y-2 group xl:col-span-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors flex gap-2 items-center">
+                        <Filter size={10}/> Search Term
+                    </label>
+                    <div className="relative">
+                        <input 
+                            type="text" 
+                            placeholder="Search peaks, trails, or locations..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full h-10 bg-[var(--background)] border border-transparent rounded-lg px-4 text-xs font-bold shadow-sm outline-none focus:border-[var(--accent)] transition-all placeholder:text-muted-foreground/30"
+                        />
+                        {search && (
+                            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-red-500 transition-colors">
+                                <X size={14} />
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* 2. Category & Level */}
                 <div className="space-y-2 group">
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors">Category & Level</label>
                     <div className="grid grid-cols-2 gap-2">
@@ -165,7 +202,7 @@ export default function TripsClient() {
                     </div>
                 </div>
 
-                {/* 2. Price Range */}
+                {/* 3. Price Range */}
                 <div className="space-y-2 group">
                     <div className="flex justify-between items-end">
                          <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors">Max Price</label>
@@ -193,11 +230,45 @@ export default function TripsClient() {
                         />
                     </div>
                 </div>
+
+                {/* 4. Guests & Sort */}
+                <div className="space-y-2 group col-span-1 md:col-span-2 lg:col-span-1 xl:col-span-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors">Guests & View</label>
+                    <div className="flex gap-2">
+                        <div className="relative flex-1">
+                            <input 
+                                type="number" 
+                                placeholder="Guests"
+                                value={capacity}
+                                onChange={(e) => setCapacity(e.target.value)}
+                                className="w-full h-10 bg-[var(--background)] border border-transparent rounded-lg px-3 text-xs font-bold shadow-sm outline-none focus:border-[var(--accent)] transition-all placeholder:text-muted-foreground/30"
+                            />
+                        </div>
+                        <Select 
+                            value={sortBy}
+                            onChange={(val) => {
+                                if (val === sortBy) {
+                                    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                                } else {
+                                    setSortBy(val);
+                                    setSortOrder("desc");
+                                }
+                            }}
+                            triggerClassName="flex-[1.5] h-10 text-xs bg-[var(--background)] border-transparent hover:border-[var(--border)] focus:border-[var(--accent)] transition-all shadow-sm"
+                            options={[
+                                { value: "createdAt", label: "Newly Added" },
+                                { value: "price", label: "Price" },
+                                { value: "startDate", label: "Soonest" },
+                                { value: "title", label: "A-Z" }
+                            ]}
+                        />
+                    </div>
+                </div>
                 
-                {/* 3. Duration */}
+                {/* 5. Duration */}
                 <div className="space-y-2 group">
                     <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors flex gap-2 items-center">
-                        <Clock size={10}/> Duration
+                        <Clock size={10}/> Duration (Days)
                     </label>
                     <div className="flex items-center gap-2 bg-[var(--background)] p-1 rounded-lg shadow-sm border border-transparent group-hover:border-[var(--border)] transition-all h-10">
                         <input 
@@ -218,16 +289,16 @@ export default function TripsClient() {
                     </div>
                 </div>
 
-                {/* 4. Dates */}
-                <div className="space-y-2 group">
+                {/* 6. Dates */}
+                <div className="space-y-2 group xl:col-span-1">
                      <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground group-hover:text-[var(--accent)] transition-colors flex gap-2 items-center">
-                        <CalendarIcon size={10}/> Dates
+                        <CalendarIcon size={10}/> Travel Window
                     </label>
                     <div className="flex gap-2">
                         <div className="relative flex-1">
                             <input 
                                 type="text" 
-                                placeholder="DD/MM/YYYY"
+                                placeholder="Start"
                                 onFocus={(e) => e.target.type = "date"}
                                 onBlur={(e) => { if(!e.target.value) e.target.type = "text"; }}
                                 value={startDate}
@@ -238,7 +309,7 @@ export default function TripsClient() {
                         <div className="relative flex-1">
                             <input 
                                 type="text"
-                                placeholder="DD/MM/YYYY" 
+                                placeholder="End" 
                                 onFocus={(e) => e.target.type = "date"}
                                 onBlur={(e) => { if(!e.target.value) e.target.type = "text"; }}
                                 value={endDate}

@@ -8,8 +8,8 @@ export async function getPublicBlogs(req: Request, res: Response) {
   
   if (search) {
     where.OR = [
-      { title: { contains: String(search), mode: "insensitive" } },
-      { excerpt: { contains: String(search), mode: "insensitive" } },
+      { title: { search: String(search).split(" ").join(" & ") } },
+      { excerpt: { search: String(search).split(" ").join(" & ") } },
     ];
   }
 
