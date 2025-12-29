@@ -4,7 +4,7 @@ import { auditService } from "../services/audit.service";
 
 export async function updateProfile(req: Request, res: Response) {
   const userId = (req as any).user.id;
-  const { name, nickname, bio, avatarImageId, age, gender, phoneNumber, address } = req.body;
+  const { name, nickname, bio, avatarImageId, age, gender, phoneNumber, address, preferences } = req.body;
 
   try {
     const user = await (prisma.user as any).update({
@@ -18,6 +18,7 @@ export async function updateProfile(req: Request, res: Response) {
         phoneNumber,
         address,
         avatarImageId,
+        preferences,
       },
       include: {
         avatarImage: true,
@@ -44,6 +45,7 @@ export async function updateProfile(req: Request, res: Response) {
         phoneNumber: user.phoneNumber,
         address: user.address,
         avatarImage: user.avatarImage,
+        preferences: user.preferences,
       },
     });
   } catch (error) {

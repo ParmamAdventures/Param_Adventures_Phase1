@@ -18,4 +18,5 @@ export interface User {
     mediumUrl: string;
     thumbUrl: string;
   };
+  preferences: any;
 }

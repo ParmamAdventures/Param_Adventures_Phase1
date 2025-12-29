@@ -35,6 +35,7 @@ export default function ProfilePage() {
   const [address, setAddress] = useState("");
   const [avatarImageId, setAvatarImageId] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [preferences, setPreferences] = useState<any>({});
   
   // Cropper State
   const [showCropper, setShowCropper] = useState(false);
@@ -56,6 +57,7 @@ export default function ProfilePage() {
       setAddress(user.address || "");
       setAvatarImageId(user.avatarImage?.id || null);
       setAvatarUrl(user.avatarImage?.mediumUrl || null);
+      setPreferences(user.preferences || {});
     }
   }, [user]);
 
@@ -73,7 +75,8 @@ export default function ProfilePage() {
             age: age ? Number(age) : null,
             gender,
             phoneNumber,
-            address
+            address,
+            preferences
         }), 
       });
       if (res.ok) {
@@ -381,14 +384,67 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="pt-4">
+          {/* Notification Preferences */}
+          <div className="pt-8 border-t border-[var(--border)]">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-3 italic uppercase tracking-tighter">
+                <div className="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-500 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                </div>
+                Notification Preferences
+              </h3>
+              
+              <div className="grid gap-4">
+                  {[
+                      { key: "email_notifications", label: "Email Alerts", desc: "Get updates about bookings and payments via email." },
+                      { key: "realtime_notifs", label: "Live Alerts", desc: "Real-time toast notifications while using the platform." },
+                      { key: "marketing_emails", label: "Marketing", desc: "Occasional updates about new treks and offers." }
+                  ].map((pref) => (
+                      <div key={pref.key} className="flex items-center justify-between p-4 bg-[var(--card)]/30 rounded-2xl border border-[var(--border)] transition-all hover:border-[var(--accent)]/30">
+                          <div>
+                              <p className="font-bold text-sm tracking-tight">{pref.label}</p>
+                              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{pref.desc}</p>
+                          </div>
+                   <input 
+                              type="checkbox" 
+                              checked={!!preferences[pref.key]}
+                              onChange={(e) => {
+                                  setPreferences({ ...preferences, [pref.key]: e.target.checked });
+                              }}
+                              className="w-5 h-5 accent-[var(--accent)] cursor-pointer" 
+                          />
+                      </div>
+                  ))}
+              </div>
+          </div>
+
+          {/* Account Privacy */}
+          <div className="pt-8 border-t border-[var(--border)]">
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-3 italic uppercase tracking-tighter">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                    <Shield size={18} />
+                </div>
+                Privacy & Data
+              </h3>
+              <div className="p-6 bg-blue-500/5 rounded-3xl border border-blue-500/10">
+                  <p className="text-sm font-medium leading-relaxed">
+                      Your data is encrypted and used only to facilitate your bookings. 
+                      You can request a data export or account deactivation at any time.
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                      <Button variant="subtle" className="text-[10px] h-8 px-4 font-black uppercase tracking-widest bg-blue-500/10 text-blue-500 border-blue-500/20">Download My Data</Button>
+                      <Button variant="ghost" className="text-[10px] h-8 px-4 font-black uppercase tracking-widest text-red-400 hover:text-red-500">Deactivate Account</Button>
+                  </div>
+              </div>
+          </div>
+
+          <div className="pt-8 border-t border-[var(--border)]">
             <Button 
               variant="primary" 
               onClick={handleSave} 
               loading={loading}
               className="px-12 h-14 rounded-2xl shadow-2xl shadow-[var(--accent)]/20"
             >
-              Update Profile
+              Update Preferences & Profile
             </Button>
           </div>
         </div>

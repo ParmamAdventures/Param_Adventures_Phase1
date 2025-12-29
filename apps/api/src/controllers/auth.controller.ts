@@ -138,6 +138,7 @@ export async function me(req: Request, res: Response) {
       status: true,
       createdAt: true,
       avatarImage: true,
+      preferences: true,
       roles: {
         select: {
           role: {
