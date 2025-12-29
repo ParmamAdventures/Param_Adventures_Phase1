@@ -17,18 +17,22 @@ export async function register(req: Request, res: Response) {
 export async function login(req: Request, res: Response) {
   try {
     const { email, password } = req.body;
-    const { accessToken, refreshToken } = await authService.login(email, password);
+    const { accessToken, refreshToken, user } = await authService.login(email, password);
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
-      path: "/auth/refresh",
+      path: "/",
     });
 
-    res.json({ accessToken });
+    res.json({ accessToken, user });
   } catch (error: any) {
-    res.status(401).json({ error: error.message });
+    if (error.message.includes("Invalid credentials")) {
+        return res.status(401).json({ error: error.message });
+    }
+    console.error("Login Error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -77,7 +81,7 @@ export async function refresh(req: Request, res: Response) {
 
 export async function logout(_req: Request, res: Response) {
   res.clearCookie("refresh_token", {
-    path: "/auth/refresh",
+    path: "/",
   });
   res.json({ message: "Logged out successfully" });
 }

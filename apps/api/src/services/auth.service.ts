@@ -7,10 +7,13 @@ import { notificationService } from "./notification.service";
 
 export class AuthService {
   async register(data: { email: string; password: string; name: string }) {
-    const { email, password, name } = data;
+    console.log(`[AuthService] Attempting registration for: ${data.email}`);
+    const normalizedEmail = data.email.toLowerCase().trim();
+    const { password, name } = data;
 
-    const existing = await prisma.user.findUnique({ where: { email } });
+    const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
+      console.warn(`[AuthService] Registration failed: Email ${normalizedEmail} already registered`);
       throw new Error("Email already registered");
     }
 
@@ -18,12 +21,13 @@ export class AuthService {
 
     const user = await prisma.user.create({
       data: {
-        email,
+        email: normalizedEmail,
         password: hashed,
         name,
       },
     });
 
+    console.log(`[AuthService] Registration successful for: ${normalizedEmail}`);
     await auditService.logAudit({
       actorId: user.id,
       action: "USER_REGISTER",
@@ -35,21 +39,23 @@ export class AuthService {
   }
 
   async login(email: string, password?: string) {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user) {
-      throw new Error("Invalid credentials");
+      throw new Error("Invalid credentials: User not found");
     }
 
     if (password) {
       const valid = await verifyPassword(password, user.password!);
       if (!valid) {
-        throw new Error("Invalid credentials");
+        throw new Error("Invalid credentials: Password mismatch");
       }
     }
 
     const accessToken = signAccessToken(user.id);
     const refreshToken = signRefreshToken(user.id);
 
+    console.log(`[AuthService] Login successful for: ${email}`);
     await auditService.logAudit({
       actorId: user.id,
       action: "USER_LOGIN",
@@ -57,15 +63,18 @@ export class AuthService {
       targetId: user.id,
     });
 
-    return { user, accessToken, refreshToken };
+    const { password: _, ...cleanUser } = user;
+    return { user: cleanUser, accessToken, refreshToken };
   }
 
   async refresh(token: string) {
     try {
       const payload = verifyRefreshToken(token);
       const newAccessToken = signAccessToken(payload.sub);
+      console.log(`[AuthService] Token refreshed for user: ${payload.sub}`);
       return { accessToken: newAccessToken };
-    } catch {
+    } catch (error) {
+      console.error(`[AuthService] Refresh failed:`, error);
       throw new Error("Invalid refresh token");
     }
   }

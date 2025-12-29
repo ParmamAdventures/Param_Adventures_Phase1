@@ -64,14 +64,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (!res.ok) {
-      throw new Error("Login failed");
+      const data = await res.json();
+      throw new Error(data.error || "Login failed");
     }
 
     const data = await res.json();
     setAccessToken(data.accessToken);
-
-    const me = await apiFetch("/auth/me");
-    if (me.ok) setUser(await me.json());
+    setUser(data.user);
   }
 
   async function logout() {

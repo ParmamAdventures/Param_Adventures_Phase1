@@ -35,7 +35,14 @@ export default function SignupPage() {
 
         if (!res.ok) {
             const data = await res.json();
-            throw new Error(data.message || "Registration failed");
+            let errorMessage = data.error || data.message || "Registration failed";
+            if (data.details) {
+                const details = Object.entries(data.details)
+                    .map(([field, msgs]: any) => `${field}: ${msgs.join(", ")}`)
+                    .join(" | ");
+                errorMessage = `${errorMessage} (${details})`;
+            }
+            throw new Error(errorMessage);
         }
 
         setSuccess(true);
@@ -200,6 +207,7 @@ export default function SignupPage() {
                             disabled={loading}
                              className="flex h-12 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent md:pl-10 pl-10"
                             required
+                            suppressHydrationWarning
                         />
                     </div>
                 </div>
