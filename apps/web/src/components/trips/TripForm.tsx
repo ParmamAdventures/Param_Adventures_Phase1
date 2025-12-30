@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import Button from "../ui/Button";
-import { ImageUploader } from "../media/ImageUploader";
+import CroppedImageUploader from "../media/CroppedImageUploader";
 import { DocumentUploader } from "../media/DocumentUploader";
 import { GalleryUploader } from "../media/GalleryUploader";
 import DynamicList from "../ui/DynamicList";
 import ItineraryBuilder from "./ItineraryBuilder";
 import { Select } from "../ui/Select";
+import FormattedDateInput from "../ui/FormattedDateInput";
 
 export type TripFormData = {
   title: string;
@@ -24,6 +25,7 @@ export type TripFormData = {
   startDate: string;
   endDate: string;
   coverImageId?: string | null;
+  heroImageId?: string | null;
   gallery?: { id: string, thumbUrl: string }[];
   itinerary: any[];
   itineraryPdf?: string;
@@ -71,7 +73,8 @@ export default function TripForm({
     description: initialData?.description || "",
     startDate: initialData?.startDate || "",
     endDate: initialData?.endDate || "",
-    coverImageId: initialData?.coverImageId || null,
+  coverImageId: initialData?.coverImageId || null,
+    heroImageId: initialData?.heroImageId || null,
     gallery: initialData?.gallery || [],
     itinerary: Array.isArray(initialData?.itinerary) ? initialData.itinerary : [],
     itineraryPdf: initialData?.itineraryPdf || "",
@@ -191,12 +194,31 @@ export default function TripForm({
                  />
             </div>
             
-            <div className="pt-4 border-t border-border">
-                <label className={labelClass}>Cover Image</label>
-                <ImageUploader 
-                    onUpload={(img) => update("coverImageId", img.id)} 
-                    label={form.coverImageId ? "Replace Cover Image" : "Upload Cover"}
-                />
+            <div className="pt-4 border-t border-border grid md:grid-cols-2 gap-6">
+                <div>
+                    <label className={labelClass}>
+                        Cover Image (Card)
+                        <span className="text-xs font-normal text-muted-foreground ml-2">Ratio 16:9</span>
+                    </label>
+                    <CroppedImageUploader 
+                        id="cover-upload"
+                        onUpload={(img) => update("coverImageId", img.id)} 
+                        label={form.coverImageId ? "Replace Cover Image" : "Upload Cover"}
+                        aspectRatio={16/9}
+                    />
+                </div>
+                <div>
+                    <label className={labelClass}>
+                        Hero Banner (Header)
+                        <span className="text-xs font-normal text-muted-foreground ml-2">Wide 21:9</span>
+                    </label>
+                    <CroppedImageUploader 
+                        id="hero-upload"
+                        onUpload={(img) => update("heroImageId", img.id)} 
+                        label={form.heroImageId ? "Replace Hero Banner" : "Upload Hero Banner"}
+                        aspectRatio={21/9}
+                    />
+                </div>
             </div>
           </div>
         );
@@ -272,8 +294,8 @@ export default function TripForm({
                     </div>
                     <div>
                          <label className={labelClass}>Start Date</label>
-                         <input type="date" className={inputClass} value={form.startDate} onChange={(e) => {
-                             const newStart = e.target.value;
+                         <FormattedDateInput className={inputClass} value={form.startDate} onChange={(val) => {
+                             const newStart = val;
                              update("startDate", newStart);
                              if (newStart && form.endDate) {
                                  const start = new Date(newStart);
@@ -286,8 +308,8 @@ export default function TripForm({
                     </div>
                     <div>
                          <label className={labelClass}>End Date</label>
-                        <input type="date" className={inputClass} value={form.endDate} onChange={(e) => {
-                            const newEnd = e.target.value;
+                        <FormattedDateInput className={inputClass} value={form.endDate} onChange={(val) => {
+                            const newEnd = val;
                             update("endDate", newEnd);
                             if (form.startDate && newEnd) {
                                 const start = new Date(form.startDate);
