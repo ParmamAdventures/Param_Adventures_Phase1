@@ -61,3 +61,45 @@ export async function updateUserStatus(req: Request, res: Response) {
 
   res.json(user);
 }
+
+export async function deleteUser(req: Request, res: Response) {
+  const { id } = req.params;
+
+  // Soft delete via status (Using BANNED as proxy for DELETE to avoid schema lock issues)
+  const user = await prisma.user.update({
+    where: { id },
+    data: { status: "BANNED", statusReason: "DELETED_BY_ADMIN" },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: (req as any).user.id,
+      action: "USER_DELETED",
+      targetType: "USER",
+      targetId: user.id,
+      metadata: { deletedAt: new Date().toISOString() },
+    },
+  });
+
+  res.json({ message: "User deleted successfully" });
+}
+
+export async function unsuspendUser(req: Request, res: Response) {
+    const { id } = req.params;
+  
+    const user = await prisma.user.update({
+      where: { id },
+      data: { status: "ACTIVE", statusReason: null },
+    });
+  
+    await prisma.auditLog.create({
+      data: {
+        actorId: (req as any).user.id,
+        action: "USER_UNSUSPENDED",
+        targetType: "USER",
+        targetId: user.id,
+      },
+    });
+  
+    res.json(user);
+}

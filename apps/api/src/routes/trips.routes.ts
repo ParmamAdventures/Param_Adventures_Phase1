@@ -39,7 +39,17 @@ router.get("/public", getPublicTrips);
 
 router.get("/public/:slug", optionalAuth, getTripBySlug);
 
+import { getManagerTrips } from "../controllers/trips/getManagerTrips.controller";
+
 // Internal list (also placed before param routes)
+router.get(
+  "/manager",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:view:internal"),
+  getManagerTrips
+);
+
 router.get(
   "/internal",
   requireAuth,
@@ -117,6 +127,24 @@ router.post(
   attachPermissions,
   requirePermission("trip:archive"),
   archiveTrip
+);
+
+import { uploadTripDocs } from "../controllers/trips/uploadTripDocs.controller";
+import { completeTrip } from "../controllers/trips/completeTrip.controller";
+
+router.post(
+  "/:id/docs",
+  requireAuth,
+  attachPermissions,
+  uploadTripDocs
+);
+
+router.post(
+  "/:id/complete",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:edit"),
+  completeTrip
 );
 
 // Public list

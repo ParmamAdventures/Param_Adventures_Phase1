@@ -10,7 +10,8 @@ import Card from "../../../components/ui/Card";
 import { useAuth } from "../../../context/AuthContext";
 import CancelBookingDialog from "@/components/bookings/CancelBookingDialog";
 import InvoiceModal from "@/components/bookings/InvoiceModal";
-import { FileText } from "lucide-react";
+import { FileText, Star } from "lucide-react";
+import ReviewBookingModal from "@/components/reviews/ReviewBookingModal";
 
 export default function MyBookingsPage() {
   const { user } = useAuth();
@@ -23,6 +24,9 @@ export default function MyBookingsPage() {
   
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
   const [invoiceBooking, setInvoiceBooking] = useState<any>(null);
+
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [reviewBooking, setReviewBooking] = useState<any>(null);
 
   const fetchBookings = async () => {
     try {
@@ -50,6 +54,11 @@ export default function MyBookingsPage() {
   const openInvoiceModal = (booking: any) => {
     setInvoiceBooking(booking);
     setInvoiceModalOpen(true);
+  };
+
+  const openReviewModal = (booking: any) => {
+      setReviewBooking(booking);
+      setReviewModalOpen(true);
   };
 
   const handleConfirmCancel = async () => {
@@ -143,6 +152,17 @@ export default function MyBookingsPage() {
 
                 {/* Actions */}
                 <div className="flex justify-end gap-3 pt-2">
+                   {/* Leave Review Button */}
+                   {booking.status === "COMPLETED" && (
+                        <Button 
+                            variant="primary" 
+                            className="h-auto py-2 text-sm gap-2"
+                            onClick={() => openReviewModal(booking)}
+                        >
+                             <Star size={14} /> Leave Review
+                        </Button>
+                   )}
+
                    {/* Invoice Button */}
                    {booking.status === "CONFIRMED" && (
                        <Button 
@@ -193,6 +213,14 @@ export default function MyBookingsPage() {
         onClose={() => setInvoiceModalOpen(false)}
         booking={invoiceBooking}
       />
+
+      <ReviewBookingModal 
+        isOpen={reviewModalOpen}
+        onClose={() => setReviewModalOpen(false)}
+        booking={reviewBooking}
+        onSuccess={() => {/* Maybe refetch bookings if we want to hide button? Optional */}}
+      />
     </div>
   );
 }
+

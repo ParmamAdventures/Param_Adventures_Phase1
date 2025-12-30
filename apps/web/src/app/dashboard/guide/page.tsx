@@ -11,6 +11,8 @@ export default function GuideViewPage() {
   const [assignments, setAssignments] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const loadAssignments = useCallback(async () => {
     try {
@@ -60,12 +62,12 @@ export default function GuideViewPage() {
               {/* Header */}
               <div className="p-6 md:p-8 flex flex-col md:flex-row gap-6">
                 {/* Image */}
-                <div className="w-full md:w-32 h-32 rounded-2xl overflow-hidden flex-shrink-0 bg-muted">
-                    {trip.coverImage ? (
-                        <img src={trip.coverImage.mediumUrl} alt={trip.title} className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-muted-foreground/20 italic font-black uppercase tracking-tighter text-[10px]">No Photo</div>
-                    )}
+                <div className="w-full md:w-32 h-32 rounded-2xl overflow-hidden flex-shrink-0 bg-muted relative">
+                    <img 
+                        src={trip.coverImage?.mediumUrl || trip.coverImageLegacy || "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&q=80"} 
+                        alt={trip.title} 
+                        className="w-full h-full object-cover" 
+                    />
                 </div>
 
                 <div className="flex-1 space-y-4">
@@ -131,7 +133,19 @@ export default function GuideViewPage() {
               </div>
               
               {/* Footer Actions */}
-              <div className="px-6 py-4 bg-[var(--card)] border-t border-[var(--border)] flex justify-end">
+              <div className="px-6 py-4 bg-[var(--card)] border-t border-[var(--border)] flex justify-between items-center">
+                  <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2 text-xs h-8"
+                      onClick={() => {
+                          setSelectedTripId(trip.id);
+                          setIsUploadModalOpen(true);
+                      }}
+                  >
+                      <FileText size={14} /> Upload Proofs
+                  </Button>
+
                   <Link href={`/trips/${trip.slug}`} target="_blank" className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[var(--accent)] hover:underline">
                     View Trip Details <ChevronRight size={14} />
                   </Link>
@@ -140,6 +154,22 @@ export default function GuideViewPage() {
           ))}
         </div>
       )}
+      
+      {selectedTripId && (
+          <UploadDocsModal 
+              isOpen={isUploadModalOpen} 
+              onClose={() => setIsUploadModalOpen(false)} 
+              tripId={selectedTripId}
+              onSuccess={() => {
+                  // Optional: Refresh list or show toast
+                  loadAssignments();
+              }}
+          />
+      )}
     </div>
   );
 }
+
+import { Button } from "@/components/ui/Button";
+import UploadDocsModal from "@/components/guide/UploadDocsModal";
+import { FileText } from "lucide-react";

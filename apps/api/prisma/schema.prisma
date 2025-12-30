@@ -202,6 +202,8 @@ model Trip {
   managerId String?
   manager   User?   @relation("TripManagedBy", fields: [managerId], references: [id])
   guides    TripsOnGuides[]
+  
+  documentation Json? // Post-trip proofs (photos, reports)
 
   blogs Blog[] @relation("TripBlogs")
 

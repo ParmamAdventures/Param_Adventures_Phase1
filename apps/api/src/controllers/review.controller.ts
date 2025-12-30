@@ -17,17 +17,17 @@ export const createReview = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Rating must be between 1 and 5' });
     }
 
-    // Check if user has a confirmed/completed booking for this trip
+    // Check if user has a completed booking for this trip
     const booking = await prisma.booking.findFirst({
       where: {
         userId,
         tripId,
-        status: { in: ['CONFIRMED', 'COMPLETED'] },
+        status: 'COMPLETED',
       },
     });
 
     if (!booking) {
-      return res.status(403).json({ message: 'You can only review trips you have booked and confirmed.' });
+      return res.status(403).json({ message: 'You can only review trips you have completed.' });
     }
 
     // Check if review already exists

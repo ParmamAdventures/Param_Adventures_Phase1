@@ -37,6 +37,8 @@ async function main() {
     // Admin management permissions
     "user:list",
     "user:view",
+    "user:edit",
+    "user:delete",
     "user:assign-role",
     "user:remove-role",
     "role:list",
@@ -111,11 +113,7 @@ async function main() {
     create: { name: "USER", description: "Standard authenticated user", isSystem: false },
   });
 
-  const publicRole = await prisma.role.upsert({
-    where: { name: "PUBLIC" },
-    update: {},
-    create: { name: "PUBLIC", description: "Public visitors", isSystem: true }, // Mark as system to hide from assignment UI
-  });
+
   
   const tripManagerRole = await prisma.role.upsert({
     where: { name: "TRIP_MANAGER" },
@@ -184,8 +182,7 @@ async function main() {
     "media:view", "media:upload",
   ]);
 
-  // 6. PUBLIC - Minimal
-  await grantPermissionsToRole(publicRole, ["trip:view:public", "booking:create"]);
+
 
   // Seed a sensible default capacity for existing trips
   await prisma.trip.updateMany({ data: { capacity: 10 } });

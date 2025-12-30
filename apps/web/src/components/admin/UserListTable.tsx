@@ -90,6 +90,55 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
     }
   };
 
+  const handleDelete = async (userId: string) => {
+    if (!confirm("Are you sure you want to DELETE this user? They will be banned and marked as deleted.")) return;
+
+    setActionLoading(userId);
+    try {
+        const res = await apiFetch(`/admin/users/${userId}`, { method: "DELETE" });
+        if (res.ok) onRefresh();
+        else alert("Failed to delete user");
+    } catch (e) {
+        console.error(e);
+        alert("Error deleting user");
+    } finally {
+        setActionLoading(null);
+    }
+  };
+
+  const handleSuspend = async (userId: string) => {
+    const reason = prompt("Reason for suspension (optional):");
+    if (reason === null) return; // Cancelled
+
+    setActionLoading(userId);
+    try {
+        const res = await apiFetch(`/admin/users/${userId}/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "SUSPENDED", reason })
+        });
+        if (res.ok) onRefresh();
+        else alert("Failed to suspend user");
+    } catch (e) {
+        console.error(e);
+        alert("Error suspending user");
+    } finally {
+        setActionLoading(null);
+    }
+  };
+
+  const handleRestore = async (userId: string) => {
+      setActionLoading(userId);
+      try {
+          const res = await apiFetch(`/admin/users/${userId}/unsuspend`, { method: "PATCH" });
+          if (res.ok) onRefresh();
+      } catch (e) {
+          console.error(e);
+      } finally {
+          setActionLoading(null);
+      }
+  };
+
   if (loading) {
     return (
       <div className="p-8 text-center text-muted-foreground flex flex-col items-center gap-2">
@@ -123,13 +172,16 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
             {users.map((u) => {
               const isMe = currentUser?.id === u.id;
               const isProcessing = actionLoading === u.id;
+              const isSuspendedOrBanned = u.status === "SUSPENDED" || u.status === "BANNED";
+              const isDeleted = u.status === "BANNED" && u.statusReason === "DELETED_BY_ADMIN";
 
               return (
-                <tr key={u.id} className="hover:bg-muted/5 transition-colors">
+                <tr key={u.id} className={`hover:bg-muted/5 transition-colors ${isDeleted ? "opacity-50 grayscale" : ""}`}>
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
-                      <span className="font-medium text-foreground">
+                      <span className="font-medium text-foreground flex items-center gap-2">
                         {u.name || "Unnamed"}
+                        {isDeleted && <span className="text-[10px] bg-red-100 text-red-800 px-1 rounded border border-red-200">DELETED</span>}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {u.email}
@@ -141,7 +193,7 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
                       <StatusBadge status={u.status} />
                       {u.statusReason && (
                         <span className="text-[10px] text-muted-foreground truncate max-w-[120px]" title={u.statusReason}>
-                          Reason: {u.statusReason}
+                          {u.statusReason}
                         </span>
                       )}
                     </div>
@@ -180,7 +232,8 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-2">
-                      {myPerms.includes("user:assign-role") && !isMe && (
+                      {/* Role Assignment */}
+                      {myPerms.includes("user:assign-role") && !isMe && !isDeleted && (
                         <div className="flex items-center gap-2">
                           <select
                             className="h-8 w-full rounded border border-input bg-transparent px-2 text-xs focus:ring-1 focus:ring-accent"
@@ -209,21 +262,51 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
                         </div>
                       )}
                       
-                      {myPerms.includes("user:edit") && !isMe && (
-                         <div className="flex items-center gap-2">
-                            <select
-                              className="h-8 w-full rounded border border-input bg-transparent px-2 text-xs focus:ring-1 focus:ring-accent"
-                              value={u.status}
-                              onChange={(e) => handleUpdateStatus(u.id, e.target.value)}
-                              disabled={isProcessing}
-                            >
-                              <option value="ACTIVE">Set Active</option>
-                              <option value="SUSPENDED">Suspend</option>
-                              <option value="BANNED">Ban Account</option>
-                            </select>
-                            {isProcessing && <Spinner size={12} />}
-                         </div>
-                      )}
+                      {/* Status Actions */}
+                      <div className="flex items-center gap-2">
+                          {/* Suspend / Restore (user:edit) */}
+                          {myPerms.includes("user:edit") && !isMe && !isDeleted && (
+                             <>
+                                {isSuspendedOrBanned ? (
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="h-7 text-xs px-2 text-green-600 border-green-200 hover:bg-green-50 hover:border-green-300"
+                                        onClick={() => handleRestore(u.id)}
+                                        disabled={isProcessing}
+                                        title="Restore Access"
+                                    >
+                                        Restore
+                                    </Button>
+                                ) : (
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        className="h-7 text-xs px-2 text-amber-600 border-amber-200 hover:bg-amber-50 hover:border-amber-300"
+                                        onClick={() => handleSuspend(u.id)}
+                                        disabled={isProcessing}
+                                        title="Suspend User"
+                                    >
+                                        Suspend
+                                    </Button>
+                                )}
+                             </>
+                          )}
+
+                          {/* Delete (user:delete) */}
+                          {myPerms.includes("user:delete") && !isMe && !isDeleted && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-7 text-xs px-2 text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300"
+                                onClick={() => handleDelete(u.id)}
+                                disabled={isProcessing}
+                                title="Delete User"
+                              >
+                                  Delete
+                              </Button>
+                          )}
+                      </div>
                     </div>
                   </td>
                 </tr>

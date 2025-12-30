@@ -218,7 +218,7 @@ function UserMenu({ user, logout, isHome, isScrolled }: { user: any, logout: () 
                     Profile
                 </Link>
 
-                {user?.permissions?.includes("trip:view:internal") && (
+                {user?.permissions?.includes("trip:approve") && (
                     <Link 
                         href="/admin" 
                         onClick={() => setIsOpen(false)}
@@ -226,6 +226,28 @@ function UserMenu({ user, logout, isHome, isScrolled }: { user: any, logout: () 
                     >
                         <Shield size={16} />
                         Admin Panel
+                    </Link>
+                )}
+
+                {user?.permissions?.includes("trip:view:internal") && (
+                    <Link 
+                        href="/dashboard/manager" 
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-purple-600 hover:text-purple-700 hover:bg-purple-500/10 rounded-xl transition-colors"
+                    >
+                        <Briefcase size={16} />
+                        Manager Portal
+                    </Link>
+                )}
+
+                {user?.permissions?.includes("trip:view:guests") && !user?.permissions?.includes("trip:approve") && !user?.permissions?.includes("trip:view:internal") && (
+                     <Link 
+                        href="/dashboard/guide" 
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-500/10 rounded-xl transition-colors"
+                    >
+                        <Compass size={16} />
+                        Guide Portal
                     </Link>
                 )}
             </div>
