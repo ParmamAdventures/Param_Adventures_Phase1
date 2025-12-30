@@ -2,6 +2,15 @@
 
 A premium adventure travel platform built for scale.
 
+## ✨ Recent Polish & Features (UX Dashboard Scope)
+- **Enhanced Trip Hero Reference**: Fixed z-index layering and API path resolution for hero images.
+- **Interactive Itinerary Builder**:
+  - Added "Snacks" meal option.
+  - Replaced subtle click zones with explicit checkbox controls.
+  - Fixed data flow for day-by-day itinerary updates.
+- **Theming Fixes**: Improved dark/light mode consistency on public trip pages.
+
+
 ## 🚀 Quick Start (Demo Mode)
 
 ### Prerequisites
