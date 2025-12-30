@@ -9,6 +9,8 @@ export async function getTripBySlug(req: Request, res: Response) {
     where: { slug },
     include: {
       coverImage: true,
+      // @ts-ignore
+      heroImage: true,
       gallery: {
         include: {
           image: true,

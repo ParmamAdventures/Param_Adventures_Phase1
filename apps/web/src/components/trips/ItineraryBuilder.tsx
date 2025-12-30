@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Button from "../ui/Button";
 import DynamicList from "../ui/DynamicList";
-import { Coffee, Utensils, Moon, Truck, MapPin, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { Coffee, Utensils, Moon, Truck, MapPin, ChevronDown, ChevronUp, Trash2, Cookie } from "lucide-react";
 
 type ItineraryDay = {
   day: number;
@@ -12,6 +12,7 @@ type ItineraryDay = {
     breakfast: boolean;
     lunch: boolean;
     dinner: boolean;
+    snacks: boolean;
   };
   accommodation?: string;
   distance?: string;
@@ -34,7 +35,7 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
       title: "",
       description: "",
       activities: [],
-      meals: { breakfast: true, lunch: true, dinner: true },
+      meals: { breakfast: true, lunch: true, dinner: true, snacks: false },
       accommodation: "",
       distance: "",
       travelTime: "",
@@ -50,8 +51,9 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
   };
 
   const updateMeals = (index: number, meal: keyof NonNullable<ItineraryDay["meals"]>, value: boolean) => {
+    console.log(`[ItineraryBuilder] Updating meal day ${index + 1}: ${meal} = ${value}`);
     const newDays = [...days];
-    const currentMeals = newDays[index].meals || { breakfast: false, lunch: false, dinner: false };
+    const currentMeals = newDays[index].meals || { breakfast: false, lunch: false, dinner: false, snacks: false };
     newDays[index] = { 
       ...newDays[index], 
       meals: { ...currentMeals, [meal]: value } 
@@ -191,51 +193,58 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
 
                       <div className="p-4 bg-muted/30 rounded-xl border border-border/50">
                         <label className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-3 block">Meals Included</label>
-                        <div className="flex flex-wrap gap-4">
-                          <label className="flex items-center gap-2 cursor-pointer group">
-                             <div className="relative">
-                              <input 
-                                type="checkbox" 
-                                className="peer sr-only"
-                                checked={day.meals?.breakfast || false}
-                                onChange={(e) => updateMeals(index, "breakfast", e.target.checked)}
-                              />
-                              <div className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary transition-all">
-                                <Coffee size={18} />
-                              </div>
-                             </div>
-                             <span className="text-sm font-semibold group-hover:text-primary transition-colors">Breakfast</span>
-                          </label>
+                        <div className="grid grid-cols-2 gap-3">
+                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
+                               <input 
+                                 type="checkbox" 
+                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
+                                 checked={day.meals?.breakfast || false}
+                                 onChange={(e) => updateMeals(index, "breakfast", e.target.checked)}
+                               />
+                               <div className="flex items-center gap-2 text-foreground">
+                                 <Coffee size={18} className="text-muted-foreground" />
+                                 <span className="text-sm font-semibold">Breakfast</span>
+                               </div>
+                           </label>
 
-                          <label className="flex items-center gap-2 cursor-pointer group">
-                             <div className="relative">
-                              <input 
-                                type="checkbox" 
-                                className="peer sr-only"
-                                checked={day.meals?.lunch || false}
-                                onChange={(e) => updateMeals(index, "lunch", e.target.checked)}
-                              />
-                              <div className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary transition-all">
-                                <Utensils size={18} />
-                              </div>
-                             </div>
-                             <span className="text-sm font-semibold group-hover:text-primary transition-colors">Lunch</span>
-                          </label>
+                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
+                               <input 
+                                 type="checkbox" 
+                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
+                                 checked={day.meals?.lunch || false}
+                                 onChange={(e) => updateMeals(index, "lunch", e.target.checked)}
+                               />
+                               <div className="flex items-center gap-2 text-foreground">
+                                 <Utensils size={18} className="text-muted-foreground" />
+                                 <span className="text-sm font-semibold">Lunch</span>
+                               </div>
+                           </label>
+                           
+                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
+                               <input 
+                                 type="checkbox" 
+                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
+                                 checked={day.meals?.snacks || false}
+                                 onChange={(e) => updateMeals(index, "snacks", e.target.checked)}
+                               />
+                               <div className="flex items-center gap-2 text-foreground">
+                                 <Cookie size={18} className="text-muted-foreground" />
+                                 <span className="text-sm font-semibold">Snacks</span>
+                               </div>
+                           </label>
 
-                          <label className="flex items-center gap-2 cursor-pointer group">
-                             <div className="relative">
-                              <input 
-                                type="checkbox" 
-                                className="peer sr-only"
-                                checked={day.meals?.dinner || false}
-                                onChange={(e) => updateMeals(index, "dinner", e.target.checked)}
-                              />
-                              <div className="w-9 h-9 flex items-center justify-center rounded-lg border border-border bg-background text-muted-foreground peer-checked:bg-primary/10 peer-checked:border-primary peer-checked:text-primary transition-all">
-                                <Utensils size={18} className="rotate-12" />
-                              </div>
-                             </div>
-                             <span className="text-sm font-semibold group-hover:text-primary transition-colors">Dinner</span>
-                          </label>
+                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
+                               <input 
+                                 type="checkbox" 
+                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
+                                 checked={day.meals?.dinner || false}
+                                 onChange={(e) => updateMeals(index, "dinner", e.target.checked)}
+                               />
+                               <div className="flex items-center gap-2 text-foreground">
+                                 <Utensils size={18} className="text-muted-foreground rotate-12" />
+                                 <span className="text-sm font-semibold">Dinner</span>
+                               </div>
+                           </label>
                         </div>
                       </div>
                     </div>
