@@ -2,13 +2,33 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
 export async function listUsers(req: Request, res: Response) {
+  const { role } = req.query;
+
+  const where: any = {};
+  
+  if (role) {
+    where.roles = {
+      some: {
+        role: {
+          name: String(role)
+        }
+      }
+    };
+  }
+
   const users = await prisma.user.findMany({
+    where,
     select: {
       id: true,
       email: true,
       name: true,
       status: true,
       createdAt: true,
+      avatarImage: {
+          select: {
+              thumbUrl: true
+          }
+      },
       roles: {
         include: {
           role: true,
@@ -25,6 +45,7 @@ export async function listUsers(req: Request, res: Response) {
       status: u.status,
       roles: u.roles.map((r) => r.role.name),
       createdAt: u.createdAt,
+      avatarImage: u.avatarImage
     }))
   );
 }

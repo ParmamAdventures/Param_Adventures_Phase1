@@ -30,6 +30,7 @@ type Props = {
   sortOrder?: string;
   onSort?: (field: string) => void;
   onAssignGuide?: (id: string) => void;
+  onAssignManager?: (id: string) => void;
 };
 
 export default function TripListTable({ 
@@ -43,7 +44,8 @@ export default function TripListTable({
   sortBy,
   sortOrder,
   onSort,
-  onAssignGuide
+  onAssignGuide,
+  onAssignManager
 }: Props) {
   if (loading) {
     return (
@@ -140,7 +142,7 @@ export default function TripListTable({
                     <StatusBadge status={trip.status} />
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       {trip.status === "DRAFT" && onAction && (
                         <Button 
                           variant="primary" 
@@ -186,27 +188,39 @@ export default function TripListTable({
                           Archive
                         </Button>
                       )}
-                      {(trip.status === "APPROVED" || trip.status === "PUBLISHED") && onAssignGuide && (
-                        <Button
-                          variant="subtle"
-                          className="px-3 py-1.5 h-auto text-xs"
-                          onClick={() => onAssignGuide(trip.id)}
-                        >
-                          Assign Guide
+                      
+                      <Link href={`/admin/trips/${trip.id}/edit`}>
+                        <Button variant="ghost" className="px-3 py-1.5 h-auto text-xs">
+                            Edit
                         </Button>
-                      )}
-                          <>
-                              <Link href={`/admin/trips/${trip.id}/edit`}>
-                              <Button variant="ghost" className="px-3 py-1.5 h-auto text-xs">
-                                  Edit
-                              </Button>
-                              </Link>
-                              <Link href={`/trips/${trip.slug}`} target="_blank">
-                              <Button variant="subtle" className="px-3 py-1.5 h-auto text-xs">
-                                  Preview
-                              </Button>
-                              </Link>
-                          </>
+                      </Link>
+                      <Link href={`/trips/${trip.slug}`} target="_blank">
+                        <Button variant="subtle" className="px-3 py-1.5 h-auto text-xs">
+                            Preview
+                        </Button>
+                      </Link>
+                    </div>
+
+                    {/* Secondary Row for Assignments */}
+                    <div className="flex items-center gap-2 mt-2">
+                        {(trip.status === "APPROVED" || trip.status === "PUBLISHED" || trip.status === "COMPLETED") && onAssignManager && (
+                            <Button
+                                variant="outline"
+                                className="px-3 py-1.5 h-auto text-xs text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                                onClick={() => onAssignManager(trip.id)}
+                            >
+                                Assign Manager
+                            </Button>
+                        )}
+                        {(trip.status === "APPROVED" || trip.status === "PUBLISHED" || trip.status === "COMPLETED") && onAssignGuide && (
+                            <Button
+                                variant="subtle"
+                                className="px-3 py-1.5 h-auto text-xs"
+                                onClick={() => onAssignGuide(trip.id)}
+                            >
+                                Assign Guide
+                            </Button>
+                        )}
                     </div>
                   </td>
                 </tr>

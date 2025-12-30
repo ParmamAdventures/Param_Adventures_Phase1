@@ -82,9 +82,9 @@ export default function ReviewDocsModal({ isOpen, onClose, trip, onSuccess }: Re
             </div>
             <div className="flex gap-2">
                 <Button variant="ghost" onClick={onClose}>Close Review</Button>
-                <Button onClick={handleComplete} disabled={loading || trip.status === "COMPLETED"} className="bg-green-600 hover:bg-green-700 text-white">
+                <Button onClick={handleComplete} disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
                     {loading ? <Loader2 className="animate-spin mr-2" /> : <CheckCircle2 className="mr-2" size={16} />}
-                    {trip.status === "COMPLETED" ? "Trip Already Completed" : "Approve & Complete Trip"}
+                    {trip.status === "COMPLETED" ? "Sync Bookings Status" : "Approve & Complete Trip"}
                 </Button>
             </div>
         </DialogFooter>

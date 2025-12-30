@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "../../../components/ui/Button";
 import TripListTable from "../../../components/admin/TripListTable";
 import AssignGuideModal from "../../../components/admin/trips/AssignGuideModal";
+import AssignManagerModal from "../../../components/admin/AssignManagerModal";
 
 export default function AdminTripsPage() {
   const [trips, setTrips] = useState<any[]>([]);
@@ -19,6 +20,10 @@ export default function AdminTripsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState("desc");
+
+  // Manager Modal State
+  const [showManagerModal, setShowManagerModal] = useState(false);
+  const [selectedTripForManager, setSelectedTripForManager] = useState<{id: string, title: string} | null>(null);
 
   const fetchTrips = useCallback(async () => {
     setLoading(true);
@@ -78,6 +83,15 @@ export default function AdminTripsPage() {
     }
   };
 
+  // 3. Add handleAssignManager function
+  const handleAssignManager = (id: string) => {
+    const trip = trips.find(t => t.id === id);
+    if (trip) {
+      setSelectedTripForManager({ id: trip.id, title: trip.title });
+      setShowManagerModal(true);
+    }
+  };
+
   return (
     <PermissionRoute permission="trip:view:internal">
       <div className="space-y-6">
@@ -108,6 +122,8 @@ export default function AdminTripsPage() {
             onRefresh={fetchTrips} 
             onAction={handleAction}
             onAssignGuide={setAssignTripId}
+            // 4. Pass onAssignManager to TripListTable
+            onAssignManager={handleAssignManager}
             currentPage={page}
             totalPages={totalPages}
             onPageChange={setPage}
@@ -124,6 +140,16 @@ export default function AdminTripsPage() {
             alert("Guide assigned successfully!");
             fetchTrips();
           }}
+        />
+
+        <AssignManagerModal
+            isOpen={showManagerModal}
+            onClose={() => setShowManagerModal(false)}
+            tripId={selectedTripForManager?.id || null}
+            tripTitle={selectedTripForManager?.title}
+            onSuccess={() => {
+                fetchTrips();
+            }}
         />
       </div>
     </PermissionRoute>

@@ -57,29 +57,12 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
       
       <div className="space-y-2">
         <label className="text-sm font-medium">Rating</label>
-        <div onMouseLeave={() => setHoverRating(0)} className="flex gap-1 w-fit">
-            {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                    key={star}
-                    type="button"
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    className="focus:outline-none transition-transform hover:scale-110"
-                >
-                    <StarRating rating={hoverRating || rating} size={24} editable={false} /> 
-                    {/* Reusing StarRating purely for icon display is a bit redundant if we loop manually, 
-                        but easier here. Actually let's just use StarRating's props properly if possible 
-                        or just raw icons. Let's stick to the component. */}
-                </button>
-            ))}
-             {/* Better Implementation: Use StarRating directly if it supports hover out of box, 
-                 but our StarRating component is simple. Let's rewrite this part for clarity. */}
-        </div>
          <StarRating 
-            rating={rating} 
-            size={28} 
+            rating={hoverRating || rating} 
+            size={32} 
             editable 
             onRatingChange={setRating} 
+            onHover={setHoverRating}
          />
       </div>
 

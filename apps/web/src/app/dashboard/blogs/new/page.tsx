@@ -5,8 +5,9 @@ import { BlogEditor } from "@/components/editor/BlogEditor";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { apiFetch } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ImageUploader } from "@/components/media/ImageUploader";
+import { useEffect } from "react";
 
 export default function NewBlogPage() {
   const [title, setTitle] = useState("");
@@ -15,6 +16,35 @@ export default function NewBlogPage() {
   const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  
+  const searchParams = useSearchParams();
+  const tripIdParam = searchParams?.get("tripId");
+  const [tripDetails, setTripDetails] = useState<any>(null);
+
+  useEffect(() => {
+    if (!tripIdParam) {
+        // Enforce: Must have a trip to write a blog (User Request)
+        alert("Please select a completed adventure to write about.");
+        router.push("/dashboard/bookings");
+        return;
+    }
+
+    if (tripIdParam) {
+        setLoading(true);
+        // Verify trip exists and (optimally) valid booking
+        apiFetch(`/trips/${tripIdParam}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Invalid Trip");
+                return res.json();
+            })
+            .then(setTripDetails)
+            .catch(() => {
+                alert("Invalid Trip");
+                router.push("/dashboard/bookings");
+            })
+            .finally(() => setLoading(false));
+    }
+  }, [tripIdParam, router]); // Dependency array updated
 
   async function handleSave(status: "DRAFT" | "SUBMIT") {
     if (!title) return alert("Title is required");
@@ -29,12 +59,14 @@ export default function NewBlogPage() {
           excerpt,
           content,
           coverImageId: coverImage?.id,
+          tripId: tripIdParam // Pass tripId if present
         }),
       });
 
       if (response.ok) {
         const blog = await response.json();
         if (status === "SUBMIT") {
+// ... rest of the function remains same ...
           const submitRes = await apiFetch(`/blogs/${blog.id}/submit`, { method: "POST" });
           if (submitRes.ok) {
             router.push("/dashboard");
@@ -61,6 +93,13 @@ export default function NewBlogPage() {
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Create New Blog</h1>
         <p className="text-muted-foreground">Share your adventure with the world.</p>
+        
+        {tripDetails && (
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-sm font-medium border border-accent/20">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
+                Writing about: {tripDetails.title}
+            </div>
+        )}
       </div>
 
       <div className="space-y-6">

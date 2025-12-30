@@ -7,12 +7,17 @@ interface StarRatingProps {
   editable?: boolean;
   onRatingChange?: (rating: number) => void;
   size?: number;
+  /**
+   * Only used if editable.
+   */
+  onHover?: (rating: number) => void;
 }
 
 export default function StarRating({ 
   rating, 
   editable = false, 
   onRatingChange,
+  onHover,
   size = 18 
 }: StarRatingProps) {
   // Simplification: StarRating should just display stars. The interactivity can be managed here or by parent.
@@ -29,7 +34,7 @@ export default function StarRating({
         key={i}
         role={editable ? "button" : "presentation"}
         onClick={() => editable && onRatingChange && onRatingChange(i)}
-        onMouseEnter={() => editable && onRatingChange && onRatingChange(i)}
+        onMouseEnter={() => editable && onHover && onHover(i)}
         className={`${editable ? 'cursor-pointer hover:scale-110 transition-transform' : 'cursor-default'} focus:outline-none`}
       >
         {isFull ? (
@@ -43,5 +48,9 @@ export default function StarRating({
     );
   }
 
-  return <div className="flex items-center gap-1">{stars}</div>;
+  return (
+    <div className="flex items-center gap-1" onMouseLeave={() => editable && onHover && onHover(0)}>
+        {stars}
+    </div>
+  );
 }

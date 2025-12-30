@@ -106,9 +106,9 @@ export default function MyBookingsPage() {
             <Card key={booking.id} className="p-6 md:p-8 flex flex-col md:flex-row gap-6 hover:shadow-lg transition-shadow">
               {/* Image */}
               <div className="w-full md:w-48 h-32 bg-muted rounded-xl overflow-hidden shrink-0 relative">
-                 {booking.trip.coverImage?.mediumUrl ? (
+                 {booking.trip.coverImage?.mediumUrl || booking.trip.coverImageLegacy ? (
                    <img 
-                     src={booking.trip.coverImage.mediumUrl} 
+                     src={booking.trip.coverImage?.mediumUrl || booking.trip.coverImageLegacy} 
                      alt={booking.trip.title} 
                      className="w-full h-full object-cover"
                    />
@@ -154,13 +154,23 @@ export default function MyBookingsPage() {
                 <div className="flex justify-end gap-3 pt-2">
                    {/* Leave Review Button */}
                    {booking.status === "COMPLETED" && (
-                        <Button 
-                            variant="primary" 
-                            className="h-auto py-2 text-sm gap-2"
-                            onClick={() => openReviewModal(booking)}
-                        >
-                             <Star size={14} /> Leave Review
-                        </Button>
+                        <>
+                            <Button 
+                                variant="primary" 
+                                className="h-auto py-2 text-sm gap-2"
+                                onClick={() => openReviewModal(booking)}
+                            >
+                                 <Star size={14} /> Leave Review
+                            </Button>
+                            <Link href={`/dashboard/blogs/new?tripId=${booking.tripId}`}>
+                                <Button 
+                                    variant="outline" 
+                                    className="h-auto py-2 text-sm gap-2 border-amber-500 text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+                                >
+                                     <FileText size={14} /> Share Story
+                                </Button>
+                            </Link>
+                        </>
                    )}
 
                    {/* Invoice Button */}

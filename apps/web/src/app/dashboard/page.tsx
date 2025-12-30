@@ -49,8 +49,8 @@ export default function Page() {
     <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-black italic uppercase tracking-tighter">Your Stories</h2>
-            <Link href="/dashboard/blogs/new">
-              <Button variant="primary">Write New Blog</Button>
+            <Link href="/dashboard/bookings">
+              <Button variant="primary">Write about an Adventure</Button>
             </Link>
           </div>
 
@@ -60,8 +60,8 @@ export default function Page() {
             <EmptyState
               title="No stories yet"
               description="You haven't chronicled any adventures. Start writing your first blog post today."
-              actionLabel="Start Writing"
-              actionLink="/dashboard/blogs/new"
+              actionLabel="Write about an Adventure"
+              actionLink="/dashboard/bookings"
               icon={
                 <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

@@ -98,7 +98,8 @@ export function BlogEditor({
   });
 
   useEffect(() => {
-    if (editor && value && JSON.stringify(value) !== JSON.stringify(editor.getJSON())) {
+    // Prevent update loop: Don't set content if editor is focused (user is typing)
+    if (editor && value && !editor.isFocused && JSON.stringify(value) !== JSON.stringify(editor.getJSON())) {
       editor.commands.setContent(value);
     }
   }, [value, editor]);
