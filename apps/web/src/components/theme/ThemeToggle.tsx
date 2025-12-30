@@ -29,9 +29,6 @@ export default function ThemeToggle() {
             >
               {theme === "dark" ? "🌙" : "☀️"}
             </span>
-            <span className="hidden md:inline" style={{ marginLeft: 8 }}>
-              {theme === "dark" ? "Light" : "Dark"}
-            </span>
           </>
         ) : (
           <span style={{ width: 28, height: 20, display: "inline-block" }} />

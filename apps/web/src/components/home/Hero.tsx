@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "../ui/Button";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeroSlide {
   id: string;
@@ -19,6 +20,7 @@ interface HeroProps {
 }
 
 export function Hero({ slides = [] }: HeroProps) {
+  const { user } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
 
   // If no slides, fallback to default static content or a placeholder list
@@ -92,13 +94,14 @@ export function Hero({ slides = [] }: HeroProps) {
                     exit={{ y: -20, opacity: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <span className="inline-block px-4 py-1.5 rounded-full bg-accent/20 text-accent text-sm font-semibold tracking-wide uppercase mb-4 backdrop-blur-sm border border-accent/20">
+                    <span className="inline-block px-4 py-1.5 rounded-full bg-accent/20 text-accent text-sm font-semibold tracking-wide uppercase mb-4 backdrop-blur-sm border border-accent/20 shadow-[0_0_15px_rgba(249,115,22,0.3)]">
                         {displaySlides.length > 1 ? `0${activeIndex + 1} / 0${displaySlides.length}` : "Premium Travel"}
                     </span>
+
                     <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white leading-[1.05] drop-shadow-2xl">
                         {activeSlide.title}
                     </h1>
-                     <p className="text-xl md:text-2xl text-gray-200/90 max-w-2xl mx-auto mt-6 font-light">
+                    <p className="text-xl md:text-2xl text-gray-200/90 max-w-2xl mx-auto mt-6 font-light">
                         {activeSlide.subtitle}
                     </p>
                 </motion.div>

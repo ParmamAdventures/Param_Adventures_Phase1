@@ -60,16 +60,10 @@ export default function PublicNavbar() {
             <NavLink href="/trips" active={isActive("/trips")} isTransparent={isHome && !isScrolled}>Expeditions</NavLink>
             <NavLink href="/blogs" active={isActive("/blogs")} isTransparent={isHome && !isScrolled}>Journal</NavLink>
             
-            {user && (
-              <NavLink href="/dashboard" active={isActive("/dashboard")} isTransparent={isHome && !isScrolled}>Dashboard</NavLink>
-            )}
-
-            {user?.permissions?.includes("trip:view:internal") ? (
-               <NavLink href="/admin" active={isActive("/admin")} isTransparent={isHome && !isScrolled}>Admin</NavLink>
-            ) : null}
+            {/* Links moved to User Menu */}
           </nav>
 
-           {/* Actions */}
+            {/* Actions */}
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsSearchOpen(true)}
@@ -83,14 +77,24 @@ export default function PublicNavbar() {
             <ThemeToggle />
             
             {user ? (
-              <div className="flex items-center gap-4">
-                 <span className={`hidden md:block text-sm font-medium ${isHome && !isScrolled ? "text-white/80" : "text-muted-foreground"}`}>
-                    {user.name || user.email?.split("@")[0]}
-                 </span>
-                 <Button variant="ghost" onClick={logout} className={`text-sm h-9 ${isHome && !isScrolled ? "text-white hover:bg-white/10 hover:text-white" : ""}`}>
-                    Log out
-                 </Button>
-              </div>
+               <>
+                 <div className={`hidden md:flex items-center gap-3 mr-1 ${isHome && !isScrolled ? "text-white/90" : "text-foreground/90"}`}>
+                    <span className="text-sm font-medium tracking-tight">
+                       Hi, {user.name?.split(' ')[0]}
+                    </span>
+                    {user.roles && user.roles.length > 0 && user.roles.map((role: string) => {
+                       const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
+                       const isGuide = role === 'GUIDE';
+                       
+                       return (
+                           <div key={role} title={role} className={`p-1.5 rounded-full ${isAdmin ? 'bg-blue-500/20 text-blue-500' : isGuide ? 'bg-green-500/20 text-green-500' : 'bg-orange-500/20 text-orange-500'}`}>
+                               {isAdmin ? <ShieldCheck size={14} /> : isGuide ? <Compass size={14} /> : <User size={14} />}
+                           </div>
+                       );
+                    })}
+                 </div>
+                 <UserMenu user={user} logout={logout} isHome={isHome} isScrolled={isScrolled} />
+               </>
             ) : (
               <div className="flex items-center gap-3">
                 <Link href="/login">
@@ -128,5 +132,87 @@ function NavLink({ href, active, children, isTransparent }: { href: string; acti
         active ? "w-full" : "w-0 group-hover:w-full"
       }`} />
     </Link>
+  );
+}
+
+import { User, LayoutDashboard, Shield, LogOut, ChevronDown, Settings, ShieldCheck, Compass } from "lucide-react";
+
+function UserMenu({ user, logout, isHome, isScrolled }: { user: any, logout: () => void, isHome: boolean, isScrolled: boolean }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // Close menu when clicking outside (simple version: onMouseLeave container)
+  
+  const buttonClass = isHome && !isScrolled 
+    ? "text-white hover:bg-white/10 border-white/20" 
+    : "text-foreground hover:bg-accent/5 border-border";
+
+  return (
+    <div className="relative">
+        <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className={`flex items-center gap-2 p-1.5 pr-3 rounded-full border transition-all duration-200 ${buttonClass} ${isOpen ? "ring-2 ring-accent/20 bg-accent/10" : ""}`}
+        >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/80 to-accent text-white flex items-center justify-center text-sm font-bold shadow-sm">
+                {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </div>
+            <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+        </button>
+
+        {/* Dropdown */}
+        {isOpen && (
+            <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
+        )}
+        <div className={`absolute right-0 top-full mt-2 z-20 w-64 p-2 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-xl transition-all duration-200 origin-top-right ${isOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}`}>
+            
+            {/* Header */}
+            <div className="px-4 py-3 mb-2 border-b border-border/50">
+                <p className="text-sm font-bold text-foreground truncate">{user.name || "User"}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+            </div>
+
+            {/* Links */}
+            <div className="space-y-1">
+                <Link 
+                    href="/dashboard" 
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-colors"
+                >
+                    <LayoutDashboard size={16} />
+                    Dashboard
+                </Link>
+                
+                <Link 
+                    href="/dashboard/profile" 
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-xl transition-colors"
+                >
+                    <User size={16} />
+                    Profile
+                </Link>
+
+                {user?.permissions?.includes("trip:view:internal") && (
+                    <Link 
+                        href="/admin" 
+                        onClick={() => setIsOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-500/10 rounded-xl transition-colors"
+                    >
+                        <Shield size={16} />
+                        Admin Panel
+                    </Link>
+                )}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-2 pt-2 border-t border-border/50">
+                <button 
+                    onClick={logout}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-500/5 rounded-xl transition-colors"
+                >
+                    <LogOut size={16} />
+                    Log out
+                </button>
+            </div>
+        </div>
+    </div>
   );
 }
