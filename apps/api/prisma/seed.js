@@ -94,7 +94,7 @@ async function main() {
     update: {},
     create: {
       name: "UPLOADER",
-      description: "Can create and edit draft trips",
+      description: "Can create and edit draft trips and content",
       isSystem: false,
     },
   });
@@ -114,7 +114,7 @@ async function main() {
   const publicRole = await prisma.role.upsert({
     where: { name: "PUBLIC" },
     update: {},
-    create: { name: "PUBLIC", description: "Public visitors", isSystem: false },
+    create: { name: "PUBLIC", description: "Public visitors", isSystem: true }, // Mark as system to hide from assignment UI
   });
   
   const tripManagerRole = await prisma.role.upsert({
@@ -142,85 +142,50 @@ async function main() {
     }
   }
 
-  // Assign suggested mappings
-  await grantPermissionsToRole(uploaderRole, [
-    "trip:create",
-    "trip:edit",
-    "trip:submit",
-  ]);
+  // 1. ADMIN - Almost full access
   await grantPermissionsToRole(adminRole, [
-    "trip:approve",
-    "trip:publish",
-    "trip:archive",
-    "trip:view:internal",
-    // booking admin reads
-    "booking:read:admin",
-    "booking:approve",
-    "booking:reject",
-    "booking:cancel",
-    "booking:view",
-    // Base admin access
-    "user:list",
-    "user:view",
-    "role:list",
-    "media:view",
-    "media:upload",
-    "media:delete",
-    "audit:view",
-    "blog:approve",
-    "blog:reject",
-    "blog:publish",
-  ]);
-  await grantPermissionsToRole(publicRole, ["trip:view:public"]);
-
-  // Booking-related grants
-  await grantPermissionsToRole(publicRole, ["booking:create", "booking:view"]);
-  await grantPermissionsToRole(uploaderRole, ["booking:view"]);
-  await grantPermissionsToRole(adminRole, [
-    "booking:approve",
-    "booking:reject",
-    "booking:cancel",
-    "booking:view",
+    "trip:create", "trip:edit", "trip:submit",
+    "trip:approve", "trip:publish", "trip:archive", "trip:view:internal",
+    "booking:read:admin", "booking:approve", "booking:reject", "booking:cancel", "booking:view",
+    "user:list", "user:view", "role:list",
+    "media:view", "media:upload", "media:delete",
+    "audit:view", "blog:approve", "blog:reject", "blog:publish",
+    "trip:assign-guide", "trip:update-status", "trip:view:guests"
   ]);
 
-  // Blog-related grants
+  // 2. USER - Standard Traveler
   await grantPermissionsToRole(userRole, [
-    "blog:create",
-    "blog:update",
-    "blog:submit",
-  ]);
-  await grantPermissionsToRole(adminRole, [
-    "blog:approve",
-    "blog:reject",
-    "blog:publish",
-    // Media management
-    "media:view",
-    "media:upload",
-    // Assignment permissions
-    "trip:assign-guide",
-    "trip:update-status",
-    "trip:view:guests",
+    "blog:create", "blog:update", "blog:submit",
+    "booking:create", "booking:view" // Can view their own bookings
   ]);
 
-  // Trip Manager grants
+  // 3. UPLOADER - Content Creator
+  await grantPermissionsToRole(uploaderRole, [
+    "trip:create", "trip:edit", "trip:submit",
+    "blog:create", "blog:update", "blog:submit",
+    "media:upload", "media:view"
+  ]);
+
+  // 4. TRIP MANAGER - Logistics
   await grantPermissionsToRole(tripManagerRole, [
     "trip:view:internal",
     "trip:assign-guide",
     "trip:view:guests",
     "trip:update-status",
     "booking:view",
-    "media:view",
-    "media:upload",
+    "media:view", "media:upload",
   ]);
 
-  // Trip Guide grants
+  // 5. TRIP GUIDE - On ground
   await grantPermissionsToRole(tripGuideRole, [
-    "trip:view:internal",
+    "trip:view:internal", // Needs this to access Guide Portal
     "trip:view:guests",
     "trip:update-status",
-    "media:view",
-    "media:upload",
+    "media:view", "media:upload",
   ]);
+
+  // 6. PUBLIC - Minimal
+  await grantPermissionsToRole(publicRole, ["trip:view:public", "booking:create"]);
 
   // Seed a sensible default capacity for existing trips
   await prisma.trip.updateMany({ data: { capacity: 10 } });

@@ -84,11 +84,30 @@ export default function PublicNavbar() {
                     </span>
                     {user.roles && user.roles.length > 0 && user.roles.map((role: string) => {
                        const isAdmin = role === 'ADMIN' || role === 'SUPER_ADMIN';
-                       const isGuide = role === 'GUIDE';
+                       const isGuide = role === 'GUIDE' || role === 'TRIP_GUIDE';
+                       const isManager = role === 'TRIP_MANAGER';
+                       const isUploader = role === 'UPLOADER';
                        
+                       let badgeClass = 'bg-gray-500/20 text-gray-500';
+                       let Icon = User;
+                       
+                       if (isAdmin) {
+                           badgeClass = 'bg-blue-500/20 text-blue-500';
+                           Icon = ShieldCheck;
+                       } else if (isGuide) {
+                           badgeClass = 'bg-green-500/20 text-green-500';
+                           Icon = Compass;
+                       } else if (isManager) {
+                           badgeClass = 'bg-purple-500/20 text-purple-500';
+                           Icon = Briefcase;
+                       } else if (isUploader) {
+                           badgeClass = 'bg-orange-500/20 text-orange-500';
+                           Icon = UploadCloud;
+                       }
+
                        return (
-                           <div key={role} title={role} className={`p-1.5 rounded-full ${isAdmin ? 'bg-blue-500/20 text-blue-500' : isGuide ? 'bg-green-500/20 text-green-500' : 'bg-orange-500/20 text-orange-500'}`}>
-                               {isAdmin ? <ShieldCheck size={14} /> : isGuide ? <Compass size={14} /> : <User size={14} />}
+                           <div key={role} title={role.replace('_', ' ')} className={`p-1.5 rounded-full ${badgeClass}`}>
+                               <Icon size={14} />
                            </div>
                        );
                     })}
@@ -135,7 +154,7 @@ function NavLink({ href, active, children, isTransparent }: { href: string; acti
   );
 }
 
-import { User, LayoutDashboard, Shield, LogOut, ChevronDown, Settings, ShieldCheck, Compass } from "lucide-react";
+import { User, LayoutDashboard, Shield, LogOut, ChevronDown, Settings, ShieldCheck, Compass, Briefcase, UploadCloud } from "lucide-react";
 
 function UserMenu({ user, logout, isHome, isScrolled }: { user: any, logout: () => void, isHome: boolean, isScrolled: boolean }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -150,10 +169,19 @@ function UserMenu({ user, logout, isHome, isScrolled }: { user: any, logout: () 
     <div className="relative">
         <button 
             onClick={() => setIsOpen(!isOpen)}
-            className={`flex items-center gap-2 p-1.5 pr-3 rounded-full border transition-all duration-200 ${buttonClass} ${isOpen ? "ring-2 ring-accent/20 bg-accent/10" : ""}`}
+            className={`flex items-center gap-2 p-1 pr-3 rounded-full border transition-all duration-200 ${buttonClass} ${isOpen ? "ring-2 ring-accent/20 bg-accent/10" : ""}`}
         >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent/80 to-accent text-white flex items-center justify-center text-sm font-bold shadow-sm">
-                {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+            <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-accent/80 to-accent text-white flex items-center justify-center text-sm font-bold shadow-sm ring-2 ring-background">
+                {user.avatarImage?.mediumUrl ? (
+                    <Image 
+                        src={user.avatarImage.mediumUrl} 
+                        alt={user.name || "User"} 
+                        fill 
+                        className="object-cover"
+                    />
+                ) : (
+                    user.name ? user.name.charAt(0).toUpperCase() : "U"
+                )}
             </div>
             <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
         </button>
