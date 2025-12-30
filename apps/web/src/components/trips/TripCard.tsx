@@ -81,12 +81,14 @@ export default function TripCard({ trip, initialSaved = false, onToggle }: TripC
 
         {/* CTA */}
         <div className="pt-2">
-          <Button variant="subtle" className="w-full justify-between group-hover:bg-accent group-hover:text-white transition-colors">
-            View Details
-            <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Button>
+          <Link href={`/trips/${trip.slug}`} className="w-full block relative z-10">
+            <Button variant="subtle" className="w-full justify-between group-hover:bg-accent group-hover:text-white transition-colors">
+              View Details
+              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
