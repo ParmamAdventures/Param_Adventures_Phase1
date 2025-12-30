@@ -42,7 +42,7 @@ export default function TripCard({ trip, initialSaved = false, onToggle }: TripC
           className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
         {trip.price && (
-          <div className="absolute top-4 right-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-black dark:text-white shadow-sm border border-black/10 dark:border-white/10">
+          <div className="absolute top-4 left-4 bg-white/90 dark:bg-black/80 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-black dark:text-white shadow-sm border border-black/10 dark:border-white/10">
             ₹{trip.price}
           </div>
         )}

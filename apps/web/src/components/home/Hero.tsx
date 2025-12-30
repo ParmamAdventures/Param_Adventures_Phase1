@@ -132,16 +132,9 @@ export function Hero({ slides = [] }: HeroProps) {
             transition={{ delay: 0.5 }}
             className="pt-8"
         >
-             <Link href={
-                activeSlide.title.toLowerCase().includes("trek") ? "#category-trek" :
-                activeSlide.title.toLowerCase().includes("corporate") ? "#category-corporate" :
-                activeSlide.title.toLowerCase().includes("educational") ? "#category-educational" :
-                activeSlide.title.toLowerCase().includes("spiritual") ? "#category-spiritual" :
-                activeSlide.title.toLowerCase().includes("custom") ? "#custom-trip-form" :
-                "/trips"
-             }>
+             <Link href="/trips">
                 <Button variant="primary" className="h-14 px-10 text-lg shadow-xl shadow-accent/20 hover:scale-105 transition-transform">
-                    Explore This Adventure
+                    Explore All
                 </Button>
             </Link>
         </motion.div>

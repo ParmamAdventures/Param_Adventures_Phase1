@@ -51,7 +51,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-transparent z-10" />
         
         <div className="relative z-20 flex flex-col justify-between p-12 w-full text-white">
-            <Link href="/" className="flex items-center gap-2 text-white/80 hover:text-white transition-colors w-fit">
+            <Link href="/" className="flex items-center gap-2 text-white/80 hover:text-white transition-colors w-fit mt-8">
                 <ArrowLeft size={20} />
                 <span>Back to Home</span>
             </Link>

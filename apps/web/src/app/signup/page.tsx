@@ -21,9 +21,25 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  function validatePassword(pwd: string): string | null {
+    if (pwd.length < 8) return "Password must be at least 8 characters";
+    if (!/[A-Z]/.test(pwd)) return "Password must contain at least one uppercase letter";
+    if (!/[a-z]/.test(pwd)) return "Password must contain at least one lowercase letter";
+    if (!/[0-9]/.test(pwd)) return "Password must contain at least one number";
+    if (!/[^A-Za-z0-9]/.test(pwd)) return "Password must contain at least one special character";
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    const pwdError = validatePassword(password);
+    if (pwdError) {
+        setError(pwdError);
+        return;
+    }
+
     setLoading(true);
 
     try {
@@ -134,7 +150,7 @@ export default function SignupPage() {
             <div className="absolute inset-0 bg-background/90 backdrop-blur-sm" />
         </div>
 
-        <div className="absolute top-8 left-8 z-20">
+        <div className="absolute top-8 left-8 z-20 mt-8">
              <Link href="/" className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition-colors">
                 <ArrowLeft size={20} />
                 <span>Home</span>

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getHeroSlides, updateHeroSlide } from "../controllers/content/heroSlide.controller";
+import { getPublicStats } from "../controllers/content/stats.controller";
 import * as SiteConfigController from "../controllers/siteConfig.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
@@ -22,6 +23,10 @@ router.put(
   // requirePermission("hero:update"), // We don't have this yet.
   updateHeroSlide
 );
+
+
+// Public: Get stats
+router.get("/stats", getPublicStats);
 
 // Public: Site Configs
 router.get("/config", SiteConfigController.getSiteConfigs);

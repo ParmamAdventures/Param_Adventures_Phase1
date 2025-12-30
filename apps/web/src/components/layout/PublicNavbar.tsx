@@ -57,7 +57,7 @@ export default function PublicNavbar() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <NavLink href="/trips" active={isActive("/trips")} isTransparent={isHome && !isScrolled}>Adventures</NavLink>
+            <NavLink href="/trips" active={isActive("/trips")} isTransparent={isHome && !isScrolled}>Expeditions</NavLink>
             <NavLink href="/blogs" active={isActive("/blogs")} isTransparent={isHome && !isScrolled}>Journal</NavLink>
             
             {user && (

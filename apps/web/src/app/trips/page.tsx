@@ -10,8 +10,8 @@ export const metadata = constructMetadata({
 // Force rebuild
 export default function PublicTripsPage() {
   return (
-    <section className="space-y-6">
-      <h1 className="text-3xl font-bold">Upcoming Trips</h1>
+    <section className="space-y-6 min-h-screen pt-24 px-6 max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold">Upcoming Expeditions</h1>
       <TripsClient />
     </section>
   );
