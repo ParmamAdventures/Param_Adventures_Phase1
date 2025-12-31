@@ -23,7 +23,7 @@ export default function BlogsClient() {
       if (!res.ok) throw new Error("Failed to load stories");
 
       const data = await res.json();
-      setBlogs(data.data);
+      setBlogs(data.data || (Array.isArray(data) ? data : []));
     } catch (err: any) {
       setError(err.message);
       setBlogs([]);
