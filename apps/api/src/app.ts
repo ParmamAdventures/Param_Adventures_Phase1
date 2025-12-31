@@ -27,8 +27,11 @@ import adminAuditRoutes from "./routes/admin/audit.routes";
 import dashboardRoutes from "./routes/admin/dashboard.routes";
 import contentRoutes from "./routes/content.routes";
 import tripAssignmentRoutes from "./routes/admin/trip-assignment.routes";
+import adminInquiryRoutes from "./routes/admin/inquiry.routes";
 import reviewRoutes from "./routes/review.routes";
 import wishlistRoutes from "./routes/wishlist.routes";
+import inquiryRoutes from "./routes/inquiry.routes";
+import newsletterRoutes from "./routes/newsletter.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
 
@@ -92,6 +95,8 @@ app.use("/metrics", metricsRoutes);
 app.use("/content", contentRoutes);
 app.use("/reviews", reviewRoutes);
 app.use("/wishlist", wishlistRoutes);
+app.use("/inquiries", inquiryRoutes);
+app.use("/newsletter", newsletterRoutes);
 
 // Admin routes
 app.use("/admin/users", adminUsersRoutes);
@@ -102,6 +107,7 @@ app.use("/admin/analytics", adminAnalyticsRoutes);
 app.use("/admin/audit-logs", adminAuditRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
 app.use("/admin/trip-assignments", tripAssignmentRoutes);
+app.use("/admin/inquiries", adminInquiryRoutes);
 
 // must be LAST
 app.use(errorHandler);

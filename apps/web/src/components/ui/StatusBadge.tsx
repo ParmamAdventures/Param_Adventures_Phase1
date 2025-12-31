@@ -30,7 +30,7 @@ export function StatusBadge({ status }: Props) {
 
   return (
     <span className={`rounded-full px-2 py-1 text-xs font-medium ${className}`}>
-      {status.replace(/_/g, " ")}
+      {(status || "UNKNOWN").replace(/_/g, " ")}
     </span>
   );
 }

@@ -107,6 +107,46 @@ export const getTripReviews = async (req: Request, res: Response) => {
   }
 };
 
+// Get featured reviews (Top rated, recent) for Home Page
+export const getFeaturedReviews = async (req: Request, res: Response) => {
+  try {
+    const reviews = await prisma.review.findMany({
+      where: {
+        rating: {
+          gte: 4,
+        },
+      },
+      take: 3,
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            avatarImage: {
+              select: {
+                thumbUrl: true,
+              },
+            },
+          },
+        },
+        trip: {
+          select: {
+            title: true,
+            location: true,
+          },
+        },
+      },
+    });
+
+    res.json(reviews);
+  } catch (error) {
+    console.error("Get Featured Reviews Error:", error);
+    res.status(500).json({ message: "Failed to fetch featured reviews" });
+  }
+};
+
 // Delete a review (Admin or Owner)
 export const deleteReview = async (req: Request, res: Response) => {
   try {

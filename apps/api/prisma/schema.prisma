@@ -412,3 +412,23 @@ model SiteConfig {
   value String
   label String
 }
+
+model TripInquiry {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  phoneNumber String?
+  destination String
+  dates       String?
+  budget      String?
+  details     String?
+  status      String   @default("NEW") // NEW, CONTACTED, CONVERTED, CLOSED
+  createdAt   DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

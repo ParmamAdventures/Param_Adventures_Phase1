@@ -4,12 +4,14 @@ import { useState } from "react";
 import { Button } from "../ui/Button";
 import { Select } from "../ui/Select";
 import { motion } from "framer-motion";
+import { apiFetch } from "../../lib/api";
 
 export function CustomTripForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phoneNumber: "",
     destination: "",
     dates: "",
     budget: "",
@@ -22,18 +24,31 @@ export function CustomTripForm() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.destination) {
       alert("Please select a destination");
       return;
     }
     setStatus("loading");
-    // Simulate API call
-    setTimeout(() => {
-      setStatus("success");
-      setFormData({ name: "", email: "", destination: "", dates: "", budget: "", details: "" });
-    }, 2000);
+    try {
+      const res = await apiFetch("/inquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (res.ok) {
+        setStatus("success");
+        setFormData({ name: "", email: "", phoneNumber: "", destination: "", dates: "", budget: "", details: "" });
+      } else {
+        setStatus("error");
+        alert("Something went wrong. Please try again.");
+      }
+    } catch {
+      setStatus("error");
+      alert("Failed to submit inquiry.");
+    }
   };
 
   return (
@@ -109,6 +124,18 @@ export function CustomTripForm() {
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
+                  <label className="text-sm font-medium">Phone Number</label>
+                  <input
+                    name="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    className="border-border bg-background focus:ring-accent/50 w-full rounded-xl border px-4 py-3 outline-none focus:ring-2"
+                    placeholder="+91 98765 43210"
+                    suppressHydrationWarning
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="text-sm font-medium">Preferred Destination</label>
                   <Select
                     name="destination"
@@ -126,6 +153,9 @@ export function CustomTripForm() {
                     ]}
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Approximate Budget (per person)</label>
                   <input

@@ -8,6 +8,7 @@ import TripQuickStats from "../../../components/trips/TripQuickStats";
 import TripInclusions from "../../../components/trips/TripInclusions";
 import ReviewList from "../../../components/reviews/ReviewList";
 import ReviewForm from "../../../components/reviews/ReviewForm";
+import { Testimonials } from "../../../components/home/Testimonials";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -43,7 +44,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       cache: "no-store",
     });
     if (!res.ok) return constructMetadata({ title: "Adventure not found" });
-    const trip = (await res.json()) as TripFull;
+    const json = await res.json();
+    const trip = (json.data || json) as TripFull;
 
     return constructMetadata({
       title: trip.title,
@@ -68,7 +70,8 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
       cache: "no-store",
     }).catch(() => null);
     if (!listRes || !listRes.ok) notFound();
-    const trips = await listRes.json();
+    const json = await listRes.json();
+    const trips = json.data || json;
     type TripItem = { slug: string } & Record<string, unknown>;
     const trip = (trips || []).find((t: TripItem) => t.slug === slug) as TripFull | undefined;
     if (!trip) notFound();
@@ -76,9 +79,13 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
   }
 
   if (!res.ok) notFound();
-  const trip = (await res.json()) as TripFull;
+  const json = await res.json();
+  const trip = (json.data || json) as TripFull;
   return renderTrip(trip);
 }
+// replaced render function... wait, I can just replace the top part and then use another replacement for the bottom part.
+
+// Split into chunks for safety.
 
 function renderTrip(trip: TripFull) {
   return (
@@ -197,24 +204,9 @@ function renderTrip(trip: TripFull) {
               </section>
             )}
 
-            {/* Reviews Section */}
-            <section id="reviews" className="border-border scroll-mt-24 border-t pt-8">
-              <div className="mb-8 flex items-center justify-between">
-                <h2 className="text-2xl font-bold">Traveler Reviews</h2>
-                {/* Add average rating here if available in trip calculation later */}
-              </div>
 
-              <div className="grid gap-8 lg:grid-cols-2">
-                <div>
-                  <ReviewList tripId={trip.id!} />
-                </div>
-                <div>
-                  {/* Ideally check if user has booking here, but backend validates it. 
-                             We'll show the form, and it will error if unauthorized. */}
-                  <ReviewForm tripId={trip.id!} />
-                </div>
-              </div>
-            </section>
+            {/* Reviews / Testimonials */}
+            <Testimonials tripId={trip.id} />
 
             {/* Mobile Booking CTA (Fixed Bottom) */}
             <div className="bg-background/80 fixed right-0 bottom-0 left-0 z-50 border-t p-4 backdrop-blur-md lg:hidden">

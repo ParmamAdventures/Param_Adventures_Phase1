@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { createReview, getTripReviews, deleteReview } from "../controllers/review.controller";
+import { createReview, getTripReviews, deleteReview, getFeaturedReviews } from "../controllers/review.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 
 const router = Router();
 
 // Public routes
+router.get("/featured", getFeaturedReviews);
 router.get("/:tripId", getTripReviews);
 
 // Protected routes
