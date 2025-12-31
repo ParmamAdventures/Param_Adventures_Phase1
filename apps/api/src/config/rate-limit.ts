@@ -21,7 +21,7 @@ import { env } from "./env";
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: env.NODE_ENV === "production" ? 5 : 1000, // Strict limit for prod, relaxed for dev/test
+  max: env.NODE_ENV === "production" ? 15 : 1000, 
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res, _next, options) => {
