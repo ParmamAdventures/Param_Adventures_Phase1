@@ -1,15 +1,14 @@
 import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
-import Redis from "ioredis";
-import { env } from "../config/env";
+import { createRedisClient } from "./redis";
 import { verifyAccessToken } from "../utils/jwt";
 import { logger } from "./logger";
 
 let io: Server;
 
 export function initSocket(httpServer: any) {
-  const pubClient = new Redis(env.REDIS_URL);
-  const subClient = pubClient.duplicate();
+  const pubClient = createRedisClient();
+  const subClient = createRedisClient();
 
   io = new Server(httpServer, {
     cors: {
