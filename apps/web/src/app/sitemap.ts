@@ -12,34 +12,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1 : 0.8,
   }));
 
-  try {
-    // Dynamic Trip routes - Handle wrapped ApiResponse
-    const tripsRes = await fetch(`${apiBase}/trips/public`);
-    const tripsJson = await tripsRes.json();
-    const trips = Array.isArray(tripsJson) ? tripsJson : tripsJson.data || [];
-    
-    const tripRoutes = trips.map((trip: any) => ({
-      url: `${baseUrl}/trips/${trip.slug}`,
-      lastModified: trip.updatedAt || trip.createdAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    }));
+  async function safeFetch(url: string) {
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: "application/json" },
+        next: { revalidate: 3600 }, // Cache for 1 hour
+      });
 
-    // Dynamic Blog routes - Handle wrapped ApiResponse
-    const blogsRes = await fetch(`${apiBase}/blogs/public`);
-    const blogsJson = await blogsRes.json();
-    const blogs = Array.isArray(blogsJson) ? blogsJson : blogsJson.data || [];
-    
-    const blogRoutes = blogs.map((blog: any) => ({
-      url: `${baseUrl}/blogs/${blog.slug}`,
-      lastModified: blog.updatedAt || blog.createdAt,
-      changeFrequency: "weekly" as const,
-      priority: 0.6,
-    }));
+      if (!res.ok) {
+        console.warn(`Sitemap fetch failed: ${url} (Status: ${res.status})`);
+        return [];
+      }
 
-    return [...routes, ...tripRoutes, ...blogRoutes];
-  } catch (error) {
-    console.error("Sitemap generation error:", error);
-    return routes;
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        console.warn(`Sitemap fetch returned non-JSON: ${url} (Type: ${contentType})`);
+        return [];
+      }
+
+      const json = await res.json();
+      return Array.isArray(json) ? json : json.data || [];
+    } catch (e) {
+      console.error(`Sitemap fetch error: ${url}`, e);
+      return [];
+    }
   }
+
+  // Dynamic Trip routes
+  const trips = await safeFetch(`${apiBase}/trips/public`);
+  const tripRoutes = trips.map((trip: any) => ({
+    url: `${baseUrl}/trips/${trip.slug}`,
+    lastModified: trip.updatedAt || trip.createdAt,
+    changeFrequency: "weekly" as const,
+    priority: 0.7,
+  }));
+
+  // Dynamic Blog routes
+  const blogs = await safeFetch(`${apiBase}/blogs/public`);
+  const blogRoutes = blogs.map((blog: any) => ({
+    url: `${baseUrl}/blogs/${blog.slug}`,
+    lastModified: blog.updatedAt || blog.createdAt,
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
+
+  return [...routes, ...tripRoutes, ...blogRoutes];
 }
