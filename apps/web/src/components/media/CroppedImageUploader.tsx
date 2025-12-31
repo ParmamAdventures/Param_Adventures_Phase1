@@ -17,9 +17,16 @@ import { Loader2, Image as ImageIcon, Crop as CropIcon } from "lucide-react";
 type Props = {
   onUpload: (url: string) => void;
   label?: string;
+  id?: string;
+  aspectRatio?: number;
 };
 
-export default function CroppedImageUploader({ onUpload, label = "Upload Image" }: Props) {
+export default function CroppedImageUploader({
+  onUpload,
+  label = "Upload Image",
+  id = "cropInput",
+  aspectRatio = 4 / 3,
+}: Props) {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -87,7 +94,7 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
       {!uploadedUrl && !imageSrc && (
         <div
           className="cursor-pointer rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 text-center transition-colors hover:border-blue-400"
-          onClick={() => document.getElementById("cropInput")?.click()}
+          onClick={() => document.getElementById(id)?.click()}
         >
           <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500">
             <ImageIcon size={20} />
@@ -98,7 +105,7 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
       )}
 
       <input
-        id="cropInput"
+        id={id}
         type="file"
         accept="image/*"
         onChange={onFileChange}
@@ -136,7 +143,7 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
-                aspect={4 / 3} // Standard aspect ratio for docs/photos
+                aspect={aspectRatio} // Flexible aspect ratio
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
