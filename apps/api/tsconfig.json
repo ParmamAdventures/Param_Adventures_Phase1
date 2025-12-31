@@ -4,9 +4,11 @@
     "rootDir": ".",
     "outDir": "dist",
     "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*", "../../node_modules/*"]
-    }
+    "moduleResolution": "node",
+    "typeRoots": [
+      "./node_modules/@types",
+      "../../node_modules/@types"
+    ]
   },
-  "include": ["src", "tests"]
+  "include": ["src"]
 }
