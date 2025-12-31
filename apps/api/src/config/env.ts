@@ -22,6 +22,12 @@ const envSchema = z.object({
   // Redis
   REDIS_URL: z.string().default("redis://localhost:6379"),
 
+  // DB
+  DATABASE_URL: z.string(),
+
+  // Frontend
+  FRONTEND_URL: z.string().default("*"),
+
   // SMTP (Email)
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.string().optional(),
