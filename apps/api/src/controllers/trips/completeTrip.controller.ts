@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export const completeTrip = async (req: Request, res: Response) => {
+export const completeTrip = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const userId = req.user!.id;
 
@@ -50,5 +52,5 @@ export const completeTrip = async (req: Request, res: Response) => {
 
   // TODO: Trigger Badge Awards / Review Requests here
 
-  res.json({ success: true, trip: updatedTrip });
-};
+  return ApiResponse.success(res, "Trip completed successfully", { trip: updatedTrip });
+});

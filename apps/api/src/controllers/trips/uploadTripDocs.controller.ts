@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export const uploadTripDocs = async (req: Request, res: Response) => {
+export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const userId = req.user!.id;
   
@@ -33,11 +35,14 @@ export const uploadTripDocs = async (req: Request, res: Response) => {
 
   // Append to existing docs safely
   let existingDocs: any[] = [];
-  if (Array.isArray(trip.documentation)) {
-      existingDocs = trip.documentation as any[];
-  } else if (trip.documentation) {
+  // explicit cast due to outdated prisma client (locked file)
+  const tripAny = trip as any;
+  
+  if (Array.isArray(tripAny.documentation)) {
+      existingDocs = tripAny.documentation as any[];
+  } else if (tripAny.documentation) {
       // If it exists but isn't an array (unexpected), wrap it or ignore?
-      console.warn(`[UploadDocs] Warning: trip.documentation is not an array:`, trip.documentation);
+      console.warn(`[UploadDocs] Warning: trip.documentation is not an array:`, tripAny.documentation);
       // existingDocs = [trip.documentation]; // Optional recovery
   }
   
@@ -54,10 +59,10 @@ export const uploadTripDocs = async (req: Request, res: Response) => {
 
   const updatedTrip = await prisma.trip.update({
       where: { id },
-      data: { documentation: updatedDocs }
+      data: { documentation: updatedDocs } as any // Cast for stale client
   });
 
   logger.info("Trip Doc Uploaded", { tripId: id, userId, type });
 
-  res.json({ success: true, documentation: updatedDocs });
-};
+  return ApiResponse.success(res, "Document uploaded", { documentation: updatedDocs });
+});

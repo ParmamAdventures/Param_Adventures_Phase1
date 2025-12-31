@@ -1,81 +1,71 @@
 import { Request, Response } from "express";
 import { authService } from "../services/auth.service";
+import { catchAsync } from "../utils/catchAsync";
+import { ApiResponse } from "../utils/ApiResponse";
 
-export async function register(req: Request, res: Response) {
-  try {
-    const { email, password, name } = req.body;
-    const user = await authService.register({ email, password, name });
-    res.status(201).json({
-      message: "User registered successfully",
-      user,
-    });
-  } catch (error: any) {
-    res.status(error.message === "Email already registered" ? 409 : 500).json({ error: error.message });
-  }
-}
+export const register = catchAsync(async (req: Request, res: Response) => {
+  const { email, password, name } = req.body;
+  const user = await authService.register({ email, password, name });
+  return ApiResponse.success(res, "User registered successfully", { user }, 201);
+});
 
-export async function login(req: Request, res: Response) {
-  try {
-    const { email, password } = req.body;
-    const { accessToken, refreshToken, user: authUser } = await authService.login(email, password);
+export const login = catchAsync(async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const { accessToken, refreshToken, user: authUser } = await authService.login(email, password);
 
-    // Fetch full user details with roles and permissions
-    const { prisma } = await import("../lib/prisma");
+  // Fetch full user details with roles and permissions
+  const { prisma } = await import("../lib/prisma");
 
-    const user = await (prisma.user as any).findUnique({
-      where: { id: authUser.id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        nickname: true,
-        bio: true,
-        status: true,
-        createdAt: true,
-        avatarImage: true,
-        preferences: true,
-        roles: {
-          select: {
-            role: {
-              select: {
-                id: true,
-                name: true,
-              },
+  const user = await (prisma.user as any).findUnique({
+    where: { id: authUser.id },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      nickname: true,
+      bio: true,
+      status: true,
+      createdAt: true,
+      avatarImage: true,
+      preferences: true,
+      roles: {
+        select: {
+          role: {
+            select: {
+              id: true,
+              name: true,
             },
           },
         },
       },
-    });
+    },
+  });
 
-    const userRoles = (user?.roles ?? []).map((r: any) => r.role.name);
+  const userRoles = (user?.roles ?? []).map((r: any) => r.role.name);
 
-    const rolePermissions = await prisma.rolePermission.findMany({
-      where: { role: { name: { in: userRoles } } },
-      include: { permission: true },
-    });
+  const rolePermissions = await prisma.rolePermission.findMany({
+    where: { role: { name: { in: userRoles } } },
+    include: { permission: true },
+  });
 
-    const permissions = Array.from(
-      new Set(rolePermissions.map((rp) => rp.permission.key))
-    );
+  const permissions = Array.from(
+    new Set(rolePermissions.map((rp) => rp.permission.key))
+  );
 
-    res.cookie("refresh_token", refreshToken, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    });
+  res.cookie("refresh_token", refreshToken, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
 
-    res.json({ accessToken, user: { ...user, roles: userRoles, permissions } });
-  } catch (error: any) {
-    if (error.message.includes("Invalid credentials")) {
-        return res.status(401).json({ error: error.message });
-    }
-    console.error("Login Error:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-}
+  return ApiResponse.success(res, "Login successful", { 
+    accessToken, 
+    user: { ...user, roles: userRoles, permissions } 
+  });
+});
 
-export async function loginPage(_req: Request, res: Response) {
+export const loginPage = catchAsync(async (_req: Request, res: Response) => {
   const html = `<!doctype html>
 <html>
   <head>
@@ -102,30 +92,27 @@ export async function loginPage(_req: Request, res: Response) {
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.status(200).send(html);
-}
+  return; 
+});
 
-export async function refresh(req: Request, res: Response) {
+export const refresh = catchAsync(async (req: Request, res: Response) => {
   const token = req.cookies?.refresh_token;
   if (!token) {
-    return res.status(401).json({ error: "Missing refresh token" });
+    return ApiResponse.error(res, "Missing refresh token", 401);
   }
 
-  try {
-    const { accessToken } = await authService.refresh(token);
-    res.json({ accessToken });
-  } catch (error: any) {
-    return res.status(401).json({ error: error.message });
-  }
-}
+  const { accessToken } = await authService.refresh(token);
+  return ApiResponse.success(res, "Token refreshed", { accessToken });
+});
 
-export async function logout(_req: Request, res: Response) {
+export const logout = catchAsync(async (_req: Request, res: Response) => {
   res.clearCookie("refresh_token", {
     path: "/",
   });
-  res.json({ message: "Logged out successfully" });
-}
+  return ApiResponse.success(res, "Logged out successfully");
+});
 
-export async function me(req: Request, res: Response) {
+export const me = catchAsync(async (req: Request, res: Response) => {
   const userId = (req as any).user.id;
   const { prisma } = await import("../lib/prisma");
 
@@ -166,35 +153,26 @@ export async function me(req: Request, res: Response) {
   );
 
   res.set("Cache-Control", "no-store");
-  res.json({ ...user, roles: userRoles, permissions });
-}
+  return ApiResponse.success(res, "Current user details", { ...user, roles: userRoles, permissions });
+});
 
-export async function forgotPassword(req: Request, res: Response) {
+export const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
   await authService.forgotPassword(email);
-  res.json({ message: "If an account exists, a reset link has been sent." });
-}
+  return ApiResponse.success(res, "If an account exists, a reset link has been sent.");
+});
 
-export async function resetPassword(req: Request, res: Response) {
+export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const { token, password } = req.body;
-  try {
-    await authService.resetPassword(token, password);
-    res.json({ message: "Password updated successfully" });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
-  }
-}
+  await authService.resetPassword(token, password);
+  return ApiResponse.success(res, "Password updated successfully");
+});
 
-export async function changePassword(req: Request, res: Response) {
+export const changePassword = catchAsync(async (req: Request, res: Response) => {
   const { currentPassword, newPassword } = req.body;
   const userId = (req as any).user.id;
 
-  try {
-    await authService.changePassword(userId, currentPassword, newPassword);
-    res.json({ message: "Password changed successfully" });
-  } catch (error: any) {
-    const status = error.message.includes("not found") ? 404 : 400;
-    res.status(status).json({ error: error.message });
-  }
-}
+  await authService.changePassword(userId, currentPassword, newPassword);
+  return ApiResponse.success(res, "Password changed successfully");
+});
 

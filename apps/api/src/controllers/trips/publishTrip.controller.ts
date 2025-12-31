@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export async function publishTrip(req: Request, res: Response) {
+export const publishTrip = catchAsync(async (req: Request, res: Response) => {
   const user = (req as any).user;
   const { id } = req.params;
 
   const trip = await prisma.trip.findUnique({ where: { id } });
 
-  if (!trip) return res.status(404).json({ error: "Trip not found" });
+  if (!trip) return ApiResponse.error(res, "Trip not found", 404);
   if (trip.status !== "APPROVED")
-    return res.status(403).json({ error: "Invalid state transition" });
+    return ApiResponse.error(res, "Invalid state transition", 403);
 
   const updated = await prisma.trip.update({
     where: { id },
@@ -29,5 +31,5 @@ export async function publishTrip(req: Request, res: Response) {
     },
   });
 
-  res.json(updated);
-}
+  return ApiResponse.success(res, "Trip published successfully", updated);
+});

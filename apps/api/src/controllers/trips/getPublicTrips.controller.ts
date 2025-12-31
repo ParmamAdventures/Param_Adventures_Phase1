@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export async function getPublicTrips(req: Request, res: Response) {
+export const getPublicTrips = catchAsync(async (req: Request, res: Response) => {
   const { 
     search, 
     category, 
@@ -74,5 +76,5 @@ export async function getPublicTrips(req: Request, res: Response) {
     }
   });
 
-  res.json(trips);
-}
+  return ApiResponse.success(res, "Trips fetched", trips);
+});

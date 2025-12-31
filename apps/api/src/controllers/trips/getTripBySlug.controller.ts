@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export async function getTripBySlug(req: Request, res: Response) {
+export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   const { slug } = req.params;
 
   const trip = await prisma.trip.findUnique({
@@ -27,7 +29,7 @@ export async function getTripBySlug(req: Request, res: Response) {
   }
 
   if (trip.status === "PUBLISHED") {
-    return res.json(trip);
+    return ApiResponse.success(res, "Trip Fetched", trip);
   }
 
   // If not published, check for internal permission
@@ -62,11 +64,11 @@ export async function getTripBySlug(req: Request, res: Response) {
       });
       
       if (permissions.has("trip:view:internal") || trip.createdById === user.id) {
-        return res.json(trip);
+         return ApiResponse.success(res, "Trip Fetched (Internal)", trip);
       }
     }
   }
 
   // Fallback to hiding existence
   throw new HttpError(404, "NOT_FOUND", "Trip not found");
-}
+});
