@@ -1,161 +1,68 @@
-# Param Adventures — Architecture
+# System Architecture — Param Adventures
 
-## Monorepo Structure
+This document outlines the high-level architecture of the Param Adventures platform, focusing on system components, data flow, and design patterns.
 
-apps/
+---
 
-- web: Next.js frontend
-- api: Express backend
+## 🏗️ Monorepo Structure
 
-packages/
+Param Adventures uses an NPM Workspaces monorepo to manage frontend, backend, and testing packages with shared type safety and configuration.
 
-- shared: shared types and utilities (future)
+- **`apps/web`**: Next.js 14 (App Router) frontend.
+- **`apps/api`**: Express.js (TypeScript) backend.
+- **`apps/e2e`**: Playwright end-to-end testing suite.
+- **`packages/shared`**: (Planned) Shared TypeScript interfaces and utility functions.
 
-## Principles
+---
 
-- Backend is source of truth
-- Permission-based RBAC
-- Modular feature-based architecture
+## 🖥️ Backend Architecture (`apps/api`)
 
-## Phase 0 Status
+The backend follows a modular, service-oriented pattern designed for scalability and maintainability.
 
-✔ Monorepo initialized  
-✔ Backend & frontend skeletons  
-✔ Env validation  
-✔ Error handling  
-✔ CI baseline
+### 🔌 API Layer
+- **Routes**: Domain-specific route files (e.g., `trips.routes.ts`, `auth.routes.ts`).
+- **Middleware**: 
+  - `auth.middleware.ts`: JWT verification and user hydration.
+  - `permission.middleware.ts`: RBAC enforcement using granular permissions.
+  - `error.middleware.ts`: Centralized error handling for all environments.
+- **Controllers**: Thin controllers that validate input and orchestrate service calls. We use `catchAsync` to handle promises and `ApiResponse` for standardized JSON outputs.
 
-### Prisma Version Strategy
+### ⚙️ Service Layer
+- **Business Logic**: Encapsulated in services (e.g., `AuthService`, `TripService`).
+- **Data Access**: Prisma ORM (v4.16.2) for type-safe interaction with PostgreSQL.
 
-- Prisma v4.16.2 is used for stability
-- Avoids Accelerate/adapter requirements of v7
-- Suitable for Railway + Docker Postgres
-- Upgrade evaluated only after core product stabilizes
+### 📦 Infrastructure
+- **Redis & BullMQ**: Handles asynchronous tasks like transactional emails and notification broadcasting.
+- **Socket.io**: Provides real-time bi-directional communication for booking alerts and status updates.
 
-## Phase 2.1 — Auth Foundations
+---
 
-✔ JWT utilities (access + refresh)  
-✔ Password hashing  
-✔ Cookie-based session support  
-✔ Env validation for auth secrets
+## 🎨 Frontend Architecture (`apps/web`)
 
-## Phase 2.3 — Authorization
+The frontend is built for performance and responsive UX using modern React patterns.
 
-✔ Role-based access control  
-✔ Permission-based guards  
-✔ Super Admin override  
-✔ Runtime permission loading
+### 🧩 Components
+- **UI Primitives**: Custom-built accessible components (Buttons, Inputs, Modals) using TailwindCSS.
+- **Feature Components**: Domain-specific UI (e.g., `TripHero`, `ItineraryBuilder`).
 
-## Phase 2.4 — Frontend Authentication
+### 🌊 Data Flow
+- **API Client**: A standardized `apiFetch` wrapper that handles auth tokens, refresh logic, and error parsing.
+- **State Management**: React Context for Auth and global UI state; Local state for form management and complex UI interactions (Itinerary).
 
-✔ API client with auto refresh  
-✔ Auth context & session hydration  
-✔ Login & Signup pages  
-✔ Protected routes
+---
 
-## Phase 3.1 — Admin APIs
+## 🔐 Security Framework
 
-✔ User listing API  
-✔ Role listing API  
-✔ Permission-protected admin routes
+- **Identity**: JWT-based authentication with `AccessToken` (short-lived) and `RefreshToken` (long-lived, HTTP-only cookie).
+- **Authorization**: Roles (e.g., ADMIN, GUIDE) map to a set of granular Permissions (e.g., `trip:publish`).
+- **Defenses**:
+  - Helmet for security headers (HSTS, CSP).
+  - Rate limiting on sensitive endpoints (Auth, Payments).
+  - HMAC signature verification for payment webhooks.
 
-## Phase 3.2 — Role Assignment Safety
+---
 
-✔ Safe role assignment  
-✔ Protected system roles  
-✔ Anti self-escalation  
-✔ Audit logging for role changes
+## 📈 Real-time & Workers
 
-## Phase 3.3 — Admin Dashboard (Read-only)
-
-- Permission-based admin routing (only users with `user:list` can access)
-- Users list UI under `/admin/users` (read-only)
-- Roles & permissions UI under `/admin/roles` (read-only)
-- Frontend renders UI based on permissions; backend enforces safety
-
-## Phase 3.4 — Role Assignment UI
-
-- Permission-aware role assignment UI under `/admin/users`
-- Assign/revoke controls are shown only when the signed-in user has `user:assign-role` or `user:remove-role`
-- ADMIN users cannot see or assign system roles; SUPER_ADMIN can
-- UI confirms destructive actions; backend still enforces all safety rules and writes `AuditLog` entries
-
-## Phase 4.1 — Trip Domain Model
-
-Trip lifecycle:
-DRAFT → PENDING_REVIEW → APPROVED → PUBLISHED → ARCHIVED
-
-Roles & responsibilities:
-
-- Uploader: create/edit/submit trips
-- Admin: approve/publish/archive trips
-- Super Admin: override
-- Public: view published trips
-
-Permissions added:
-
-- `trip:create`, `trip:edit`, `trip:submit`, `trip:approve`, `trip:publish`, `trip:archive`, `trip:view:internal`, `trip:view:public`
-
-Next steps:
-
-- Add `Trip` model and `TripStatus` enum to Prisma schema
-- Run `npx prisma migrate dev --name add_trip_domain` and `npx prisma db seed`
-- Implement backend APIs and frontend UI in Phase 4.2 and 4.3
-
-## Phase 4.2 — Trip APIs
-
-✔ State-driven trip lifecycle endpoints (create → submit → approve → publish → archive)
-✔ Permission-guarded actions (`trip:create`, `trip:edit`, `trip:submit`, `trip:approve`, `trip:publish`, `trip:archive`, `trip:view:internal`, `trip:view:public`)
-✔ Audit logging for all state transitions (`AuditLog` entries for created/updated/submitted/approved/published/archived)
-✔ Public vs internal visibility: `/trips/public` (anyone) and `/trips/internal` (permission-gated)
-
-Notes:
-
-- Controllers implemented under `apps/api/src/controllers/trips/` with strict state checks (no skipping allowed).
-- Routes registered at `/trips` in `apps/api/src/routes/trips.routes.ts` and wired in `apps/api/src/app.ts`.
-- Next: add frontend Uploader UI and Admin approval UI (Phase 4.3) and extend E2E tests to exercise lifecycle transitions.
-
-## Phase 1.5 — Billing & Operational Roles
-
-### Billing System
-✔ Razorpay direct integration  
-✔ Server-side HMAC signature verification (`/payments/verify`)  
-✔ Webhook support for `payment.captured`, `payment.failed`, `refund.processed`  
-✔ Immediate post-checkout status confirmation
-
-### Operational Roles
-✔ `TRIP_MANAGER` role for logistics oversight  
-✔ `TRIP_GUIDE` role for on-site execution  
-✔ Multi-guide support per trip via `TripsOnGuides` join table  
-✔ `IN_PROGRESS` and `COMPLETED` operational trip statuses
-
-### Codebase Cleanup
-✔ Standardized `PrismaClient` usage (shared instance in `lib/prisma.ts`)  
-✔ Consolidated role management routes and controllers  
-✔ Removed redundant build artifacts from source tree
-
-## Phase 2 — Background Jobs & Notifications
-
-### Background Infrastructure
-✔ **BullMQ & Redis**: Reliable asynchronous processing for heavy tasks.  
-✔ **Nodemailer**: Standardized email service with Ethereal fallback for dev.  
-✔ **Workers**: Decoupled notification processing with automatic retries and backoff.
-
-### Real-time Infrastructure
-✔ **Socket.io**: Instant server-to-client event broadcasting.  
-✔ **Redis Adapter**: Production-grade scalability for socket sessions.  
-✔ **JWT Auth**: Secure socket connections tied to user identity.  
-✔ **Rooms**: Private per-user rooms (`user:{id}`) for targeted alerts.
-
-### Integration Points
-- **Bookings**: Immediate email confirmation + live toast alert.
-- **Payments**: Verified success email + instant "Payment Confirmed" popup.
-- **Assignments**: Operational staff (Managers/Guides) receive both email and app alerts on new duties.
-
-## Phase 2 — Security Hardening
-
-### Defenses
-✔ **Granular Rate Limiting**: Per-route throttling for Auth (5/15m), Payments (10/h), and Media (50/15m).  
-✔ **Strict CSP**: Content Security Policy optimized for travel platform needs (Google Fonts, local uploads).  
-✔ **Security Headers**: Standardized HTTP headers via Helmet (HSTS, NoSniff, FrameGuard).  
-✔ **Secure CORS**: Dynamic origin validation for production frontend environments.
+- **Socket Rooms**: Users are automatically joined to private rooms (`user:{id}`) on connection to receive targeted alerts.
+- **Worker Processes**: Decoupled workers process background jobs from the Redis queue with automatic retries and exponential backoff.
