@@ -1,5 +1,9 @@
 import { z } from "zod";
-import "dotenv/config";
+try {
+  require("dotenv").config();
+} catch (e) {
+  // Ignore missing dotenv in production
+}
 
 const envSchema = z.object({
   PORT: z.string().default("3000"),
