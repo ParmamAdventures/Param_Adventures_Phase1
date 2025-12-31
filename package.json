@@ -5,6 +5,9 @@
   },
   "name": "param_adventures_phase1",
   "version": "1.0.0",
+  "workspaces": [
+    "apps/*"
+  ],
   "description": "Production-grade adventure travel platform.",
   "main": "index.js",
   "directories": {
