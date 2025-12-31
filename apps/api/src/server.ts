@@ -9,8 +9,10 @@ import { initSocket } from "./lib/socket";
 const httpServer = createServer(app);
 initSocket(httpServer);
 
-const server = httpServer.listen(Number(env.PORT), () => {
-  logger.info(`API running on port ${env.PORT}`);
+const port = Number(env.PORT) || 3000;
+const server = httpServer.listen(port, "0.0.0.0", () => {
+  logger.info(`🚀 API running on http://0.0.0.0:${port}`);
+  console.log(`🚀 API running on http://0.0.0.0:${port}`);
 });
 
 import { prisma } from "./lib/prisma";

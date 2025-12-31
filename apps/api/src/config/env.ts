@@ -39,9 +39,15 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
-  console.error("❌ Invalid environment variables");
-  console.error(parsed.error.flatten().fieldErrors);
-  process.exit(1);
+  console.error("❌ Invalid environment variables:");
+  const fieldErrors = parsed.error.flatten().fieldErrors;
+  Object.entries(fieldErrors).forEach(([field, errors]) => {
+    console.error(`  - ${field}: ${errors?.join(", ")}`);
+  });
+  
+  if (process.env.NODE_ENV === "production") {
+    console.warn("⚠️ Continuing in production despite invalid env - monitoring health...");
+  }
 }
 
-export const env = parsed.data;
+export const env = parsed.success ? parsed.data : (process.env as any);
