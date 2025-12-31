@@ -14,8 +14,15 @@ import { apiFetch } from "@/lib/api";
 import getCroppedImg from "@/lib/canvasUtils";
 import { Loader2, Image as ImageIcon, Crop as CropIcon } from "lucide-react";
 
+export interface UploadedImage {
+  id: string;
+  originalUrl: string;
+  mediumUrl?: string;
+  thumbUrl?: string;
+}
+
 type Props = {
-  onUpload: (url: string) => void;
+  onUpload: (image: UploadedImage) => void;
   label?: string;
   id?: string;
   aspectRatio?: number;
@@ -74,12 +81,13 @@ export default function CroppedImageUploader({
 
       if (!res.ok) throw new Error("Upload failed");
 
-      const data = await res.json();
-      // data.image.mediumUrl or originalUrl
-      const finalUrl = data.image.originalUrl || data.image.mediumUrl;
+      const json = await res.json();
+      const data = json.data; // ApiResponse wrapper
+      const image = data.image;
+      const finalUrl = image.originalUrl || image.mediumUrl;
 
       setUploadedUrl(finalUrl);
-      onUpload(finalUrl);
+      onUpload(image);
       setImageSrc(null); // Close cropper
     } catch (e) {
       console.error(e);

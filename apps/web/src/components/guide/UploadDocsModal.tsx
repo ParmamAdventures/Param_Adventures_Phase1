@@ -89,7 +89,7 @@ export default function UploadDocsModal({
             {type === "GROUP_PHOTO" || type === "OTHER" ? (
               <CroppedImageUploader
                 label="Upload Photo"
-                onUpload={(uploadedUrl) => setUrl(uploadedUrl)}
+                onUpload={(img) => setUrl(img.originalUrl)}
               />
             ) : (
               <DocumentUploader
