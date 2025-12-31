@@ -13,9 +13,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   try {
-    // Dynamic Trip routes
+    // Dynamic Trip routes - Handle wrapped ApiResponse
     const tripsRes = await fetch(`${apiBase}/trips/public`);
-    const trips = await tripsRes.json();
+    const tripsJson = await tripsRes.json();
+    const trips = Array.isArray(tripsJson) ? tripsJson : tripsJson.data || [];
+    
     const tripRoutes = trips.map((trip: any) => ({
       url: `${baseUrl}/trips/${trip.slug}`,
       lastModified: trip.updatedAt || trip.createdAt,
@@ -23,9 +25,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    // Dynamic Blog routes
+    // Dynamic Blog routes - Handle wrapped ApiResponse
     const blogsRes = await fetch(`${apiBase}/blogs/public`);
-    const blogs = await blogsRes.json();
+    const blogsJson = await blogsRes.json();
+    const blogs = Array.isArray(blogsJson) ? blogsJson : blogsJson.data || [];
+    
     const blogRoutes = blogs.map((blog: any) => ({
       url: `${baseUrl}/blogs/${blog.slug}`,
       lastModified: blog.updatedAt || blog.createdAt,

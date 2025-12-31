@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export async function getPublicBlogs(req: Request, res: Response) {
+export const getPublicBlogs = catchAsync(async (req: Request, res: Response) => {
   const { search } = req.query;
 
   const where: any = { status: "PUBLISHED" };
@@ -27,5 +29,5 @@ export async function getPublicBlogs(req: Request, res: Response) {
     },
   });
 
-  res.json(blogs);
-}
+  return ApiResponse.success(res, "Blogs fetched", blogs);
+});
