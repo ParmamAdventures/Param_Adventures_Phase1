@@ -21,6 +21,11 @@ jobs:
 
       - name: Build API
         run: npm run build --workspace=api
+        env:
+          DATABASE_URL: "postgresql://mock:mock@localhost:5432/mock"
 
       - name: Build Web
         run: npm run build --workspace=web
+        env:
+          DATABASE_URL: "postgresql://mock:mock@localhost:5432/mock"
+          NEXT_PUBLIC_API_URL: "http://localhost:3000"
