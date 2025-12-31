@@ -1,8 +1,18 @@
-export function Spinner({ size = 16, className = "" }: { size?: number; className?: string }) {
+type SpinnerSize = "sm" | "md" | "lg" | number;
+
+const sizeMap: Record<string, number> = {
+  sm: 16,
+  md: 24,
+  lg: 40,
+};
+
+export function Spinner({ size = 16, className = "" }: { size?: SpinnerSize; className?: string }) {
+  const numericSize = typeof size === "number" ? size : sizeMap[size] || 16;
+
   return (
     <svg
-      width={size}
-      height={size}
+      width={numericSize}
+      height={numericSize}
       viewBox="0 0 24 24"
       fill="none"
       className={`animate-spin duration-700 ${className}`}
