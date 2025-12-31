@@ -1,16 +1,16 @@
 export default function PublicLoading() {
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-6 animate-fade-in-up">
-      <div className="relative w-20 h-20">
-        <div className="absolute inset-0 border-4 border-accent/20 rounded-full" />
-        <div className="absolute inset-0 border-4 border-accent border-t-transparent rounded-full animate-spin" />
+    <div className="animate-fade-in-up flex min-h-[60vh] flex-col items-center justify-center space-y-6">
+      <div className="relative h-20 w-20">
+        <div className="border-accent/20 absolute inset-0 rounded-full border-4" />
+        <div className="border-accent absolute inset-0 animate-spin rounded-full border-4 border-t-transparent" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-[10px] font-black uppercase tracking-tighter text-accent animate-pulse">
+          <span className="text-accent animate-pulse text-[10px] font-black tracking-tighter uppercase">
             PARAM
           </span>
         </div>
       </div>
-      <p className="text-sm font-black uppercase tracking-[0.3em] text-muted-foreground animate-pulse">
+      <p className="text-muted-foreground animate-pulse text-sm font-black tracking-[0.3em] uppercase">
         Initializing Expedition...
       </p>
     </div>

@@ -48,12 +48,17 @@ export default function AdminModerationPage() {
     fetchModerationData();
   }, [fetchModerationData]);
 
-  const handleModeration = async (id: string, type: "trips" | "blogs", action: "submit" | "approve" | "reject" | "publish" | "archive") => {
+  const handleModeration = async (
+    id: string,
+    type: "trips" | "blogs",
+    action: "submit" | "approve" | "reject" | "publish" | "archive",
+  ) => {
     try {
-      const endpoint = type === "trips" 
-        ? `/trips/${id}/${action}` // e.g. /trips/123/approve
-        : `/blogs/${id}/${action}`; // e.g. /blogs/123/approve
-      
+      const endpoint =
+        type === "trips"
+          ? `/trips/${id}/${action}` // e.g. /trips/123/approve
+          : `/blogs/${id}/${action}`; // e.g. /blogs/123/approve
+
       const res = await apiFetch(endpoint, { method: "POST" });
       if (res.ok) {
         fetchModerationData(); // Refresh everything
@@ -75,32 +80,38 @@ export default function AdminModerationPage() {
         </div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-card border rounded-2xl p-6 shadow-sm">
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Pending</p>
-            <p className="text-4xl font-bold pt-2">{summary?.totalPending || 0}</p>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="bg-card rounded-2xl border p-6 shadow-sm">
+            <p className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
+              Total Pending
+            </p>
+            <p className="pt-2 text-4xl font-bold">{summary?.totalPending || 0}</p>
           </div>
-          <div className="bg-card border rounded-2xl p-6 shadow-sm">
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pending Trips</p>
-            <p className="text-4xl font-bold pt-2 text-primary">{summary?.pendingTrips || 0}</p>
+          <div className="bg-card rounded-2xl border p-6 shadow-sm">
+            <p className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
+              Pending Trips
+            </p>
+            <p className="text-primary pt-2 text-4xl font-bold">{summary?.pendingTrips || 0}</p>
           </div>
-          <div className="bg-card border rounded-2xl p-6 shadow-sm">
-            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pending Stories</p>
-            <p className="text-4xl font-bold pt-2 text-accent">{summary?.pendingBlogs || 0}</p>
+          <div className="bg-card rounded-2xl border p-6 shadow-sm">
+            <p className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
+              Pending Stories
+            </p>
+            <p className="text-accent pt-2 text-4xl font-bold">{summary?.pendingBlogs || 0}</p>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-4 border-b pb-4">
-          <button 
+          <button
             onClick={() => setActiveTab("trips")}
-            className={`px-4 py-2 font-medium transition-colors border-b-2 ${activeTab === "trips" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`border-b-2 px-4 py-2 font-medium transition-colors ${activeTab === "trips" ? "border-primary text-primary" : "text-muted-foreground hover:text-foreground border-transparent"}`}
           >
             Pending Trips ({data.trips.length})
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab("blogs")}
-            className={`px-4 py-2 font-medium transition-colors border-b-2 ${activeTab === "blogs" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+            className={`border-b-2 px-4 py-2 font-medium transition-colors ${activeTab === "blogs" ? "border-primary text-primary" : "text-muted-foreground hover:text-foreground border-transparent"}`}
           >
             Pending Blogs ({data.blogs.length})
           </button>
@@ -111,19 +122,21 @@ export default function AdminModerationPage() {
             <Spinner size={40} />
           </div>
         ) : error ? (
-          <div className="bg-destructive/10 text-destructive p-4 rounded-xl border border-destructive/20">{error}</div>
+          <div className="bg-destructive/10 text-destructive border-destructive/20 rounded-xl border p-4">
+            {error}
+          </div>
         ) : (
           <div className="space-y-6">
             {activeTab === "trips" ? (
-              <TripListTable 
-                trips={data.trips} 
-                loading={loading} 
+              <TripListTable
+                trips={data.trips}
+                loading={loading}
                 onRefresh={fetchModerationData}
                 onAction={(id, action) => handleModeration(id, "trips", action)}
               />
             ) : (
-              <BlogListTable 
-                blogs={data.blogs} 
+              <BlogListTable
+                blogs={data.blogs}
                 loading={loading}
                 onRefresh={fetchModerationData}
                 onAction={(id, action) => handleModeration(id, "blogs", action)}

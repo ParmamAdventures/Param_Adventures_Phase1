@@ -21,9 +21,7 @@ require("dotenv").config();
       orderBy: { createdAt: "desc" },
     });
     if (!booking) {
-      console.error(
-        "No CONFIRMED booking found for admin. Run seed_admin_booking.js first."
-      );
+      console.error("No CONFIRMED booking found for admin. Run seed_admin_booking.js first.");
       process.exit(2);
     }
 
@@ -42,11 +40,7 @@ require("dotenv").config();
     try {
       loginBody = JSON.parse(loginText);
     } catch (e) {
-      console.error(
-        "Login failed or returned non-json:",
-        loginRes.status,
-        loginText
-      );
+      console.error("Login failed or returned non-json:", loginRes.status, loginText);
       process.exit(3);
     }
     const token = loginBody.accessToken || loginBody.token;
@@ -80,19 +74,12 @@ require("dotenv").config();
     if (expectMode === "production") {
       if (intentRes.status === 500) {
         // look for PAYMENT_PROVIDER_NOT_CONFIGURED
-        const bodyStr =
-          typeof intentBody === "string"
-            ? intentBody
-            : JSON.stringify(intentBody);
+        const bodyStr = typeof intentBody === "string" ? intentBody : JSON.stringify(intentBody);
         if (bodyStr.includes("PAYMENT_PROVIDER_NOT_CONFIGURED")) {
-          console.log(
-            "✅ Production guard active: PAYMENT_PROVIDER_NOT_CONFIGURED returned"
-          );
+          console.log("✅ Production guard active: PAYMENT_PROVIDER_NOT_CONFIGURED returned");
           process.exit(0);
         }
-        console.error(
-          "❌ Expected PAYMENT_PROVIDER_NOT_CONFIGURED in body but not found"
-        );
+        console.error("❌ Expected PAYMENT_PROVIDER_NOT_CONFIGURED in body but not found");
         process.exit(4);
       }
       console.error("❌ Expected 500 in production but got", intentRes.status);

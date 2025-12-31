@@ -3,12 +3,7 @@ import { verifyRazorpaySignature } from "../services/razorpay.service";
 import { handlePaymentCaptured, handlePaymentFailed, handleRefundProcessed } from "./paymentEvents";
 import { HttpError } from "../utils/httpError";
 import { env } from "../config/env";
-import {
-  incTotal,
-  incFailed,
-  incProcessed,
-  setLatency,
-} from "../metrics/webhookMetrics";
+import { incTotal, incFailed, incProcessed, setLatency } from "../metrics/webhookMetrics";
 import { logger } from "../lib/logger";
 
 export async function razorpayWebhookHandler(req: Request, res: Response) {
@@ -27,11 +22,7 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
 
   if (!valid) {
     logger.warn("Razorpay webhook signature verification failed", { signature });
-    throw new HttpError(
-      400,
-      "INVALID_SIGNATURE",
-      "Signature verification failed"
-    );
+    throw new HttpError(400, "INVALID_SIGNATURE", "Signature verification failed");
   }
 
   let event: any;

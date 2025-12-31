@@ -12,19 +12,19 @@ async function main() {
     "kyoto-cherry-blossom",
     "iceland-northern-lights",
     // Add one trek that we seeded recently
-    "annapurna-circuit"
+    "annapurna-circuit",
   ];
 
   for (const slug of featuredSlugs) {
     const trip = await prisma.trip.findUnique({ where: { slug } });
     if (trip) {
-       await prisma.trip.update({
-         where: { slug },
-         data: { isFeatured: true }
-       });
-       console.log(`Marked ${slug} as featured.`);
+      await prisma.trip.update({
+        where: { slug },
+        data: { isFeatured: true },
+      });
+      console.log(`Marked ${slug} as featured.`);
     } else {
-       console.log(`Trip ${slug} not found.`);
+      console.log(`Trip ${slug} not found.`);
     }
   }
 

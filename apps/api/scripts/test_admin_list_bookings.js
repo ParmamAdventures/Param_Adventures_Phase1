@@ -68,10 +68,9 @@ async function run() {
   });
   const adminToken = (await loginRes.json()).accessToken;
 
-  const res = await fetch(
-    `http://localhost:3000/admin/trips/${trip.id}/bookings`,
-    { headers: { Authorization: `Bearer ${adminToken}` } }
-  );
+  const res = await fetch(`http://localhost:3000/admin/trips/${trip.id}/bookings`, {
+    headers: { Authorization: `Bearer ${adminToken}` },
+  });
   console.log("Admin list status:", res.status);
   console.log(await res.json());
 

@@ -14,13 +14,7 @@ async function main() {
     },
   });
 
-  const keys = [
-    "blog:create",
-    "blog:approve",
-    "trip:create",
-    "trip:approve",
-    "trip:publish",
-  ];
+  const keys = ["blog:create", "blog:approve", "trip:create", "trip:approve", "trip:publish"];
   const perms = await prisma.permission.findMany({
     where: { key: { in: keys } },
   });

@@ -1,6 +1,5 @@
-
-import { Request, Response } from 'express';
-import { prisma } from '../lib/prisma';
+import { Request, Response } from "express";
+import { prisma } from "../lib/prisma";
 
 // Create a review
 export const createReview = async (req: Request, res: Response) => {
@@ -10,11 +9,11 @@ export const createReview = async (req: Request, res: Response) => {
 
     // Validate inputs
     if (!tripId || !rating) {
-      return res.status(400).json({ message: 'Trip ID and rating are required' });
+      return res.status(400).json({ message: "Trip ID and rating are required" });
     }
 
     if (rating < 1 || rating > 5) {
-      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
     }
 
     // Check if user has a completed booking for this trip
@@ -22,12 +21,12 @@ export const createReview = async (req: Request, res: Response) => {
       where: {
         userId,
         tripId,
-        status: 'COMPLETED',
+        status: "COMPLETED",
       },
     });
 
     if (!booking) {
-      return res.status(403).json({ message: 'You can only review trips you have completed.' });
+      return res.status(403).json({ message: "You can only review trips you have completed." });
     }
 
     // Check if review already exists
@@ -41,7 +40,7 @@ export const createReview = async (req: Request, res: Response) => {
     });
 
     if (existingReview) {
-      return res.status(409).json({ message: 'You have already reviewed this trip.' });
+      return res.status(409).json({ message: "You have already reviewed this trip." });
     }
 
     // Create review
@@ -69,8 +68,8 @@ export const createReview = async (req: Request, res: Response) => {
 
     res.status(201).json(review);
   } catch (error) {
-    console.error('Create Review Error:', error);
-    res.status(500).json({ message: 'Failed to create review' });
+    console.error("Create Review Error:", error);
+    res.status(500).json({ message: "Failed to create review" });
   }
 };
 
@@ -97,40 +96,40 @@ export const getTripReviews = async (req: Request, res: Response) => {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
     res.json(reviews);
   } catch (error) {
-    console.error('Get Reviews Error:', error);
-    res.status(500).json({ message: 'Failed to fetch reviews' });
+    console.error("Get Reviews Error:", error);
+    res.status(500).json({ message: "Failed to fetch reviews" });
   }
 };
 
 // Delete a review (Admin or Owner)
 export const deleteReview = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user!.id; // AuthenticatedUser uses 'id' not 'userId'
-        const userRoles = req.user!.roles;
+  try {
+    const { id } = req.params;
+    const userId = req.user!.id; // AuthenticatedUser uses 'id' not 'userId'
+    const userRoles = req.user!.roles;
 
-        const review = await prisma.review.findUnique({ where: { id } });
+    const review = await prisma.review.findUnique({ where: { id } });
 
-        if (!review) {
-            return res.status(404).json({ message: "Review not found" });
-        }
-
-        // Allow deletion if admin or if own review
-        if (review.userId !== userId && !userRoles.includes('ADMIN')) {
-             return res.status(403).json({ message: "Not authorized to delete this review" });
-        }
-
-        await prisma.review.delete({ where: { id } });
-
-        res.json({ message: "Review deleted successfully" });
-    } catch (error) {
-        console.error('Delete Review Error:', error);
-        res.status(500).json({ message: 'Failed to delete review' });
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
     }
-}
+
+    // Allow deletion if admin or if own review
+    if (review.userId !== userId && !userRoles.includes("ADMIN")) {
+      return res.status(403).json({ message: "Not authorized to delete this review" });
+    }
+
+    await prisma.review.delete({ where: { id } });
+
+    res.json({ message: "Review deleted successfully" });
+  } catch (error) {
+    console.error("Delete Review Error:", error);
+    res.status(500).json({ message: "Failed to delete review" });
+  }
+};

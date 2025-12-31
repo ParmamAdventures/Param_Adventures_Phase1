@@ -11,7 +11,7 @@ router.get(
   requireAuth,
   attachPermissions,
   requirePermission("booking:read:admin"),
-  listTripBookings
+  listTripBookings,
 );
 
 export default router;

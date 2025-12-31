@@ -1,4 +1,3 @@
-
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import { env } from "../config/env";
@@ -35,12 +34,13 @@ export const razorpayService = {
    * @param signature The signature from x-razorpay-signature header
    * @param secret The webhook secret
    */
-  verifyWebhookSignature(body: string, signature: string, secret: string = env.RAZORPAY_WEBHOOK_SECRET) {
-    const expectedSignature = crypto
-      .createHmac("sha256", secret)
-      .update(body)
-      .digest("hex");
-    
+  verifyWebhookSignature(
+    body: string,
+    signature: string,
+    secret: string = env.RAZORPAY_WEBHOOK_SECRET,
+  ) {
+    const expectedSignature = crypto.createHmac("sha256", secret).update(body).digest("hex");
+
     return expectedSignature === signature;
   },
 
@@ -53,14 +53,14 @@ export const razorpayService = {
       .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
       .update(text)
       .digest("hex");
-    
+
     return expectedSignature === signature;
-  }
+  },
 };
 
 // Also export individual functions for backward compatibility with existing stubs
-export const createRazorpayOrder = (args: { amount: number; currency: string; receipt: string }) => 
+export const createRazorpayOrder = (args: { amount: number; currency: string; receipt: string }) =>
   razorpayService.createOrder(args.amount, args.receipt);
 
-export const verifyRazorpaySignature = (body: string, signature: string, secret: string) => 
+export const verifyRazorpaySignature = (body: string, signature: string, secret: string) =>
   razorpayService.verifyWebhookSignature(body, signature, secret);

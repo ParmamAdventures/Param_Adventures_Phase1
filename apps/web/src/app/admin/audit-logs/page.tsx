@@ -34,100 +34,128 @@ export default function AuditLogsPage() {
     loadLogs();
   }, [filter]);
 
-  const filteredLogs = logs.filter(log => 
-    log.action.toLowerCase().includes(search.toLowerCase()) ||
-    log.targetId?.toLowerCase().includes(search.toLowerCase()) ||
-    log.actorId?.toLowerCase().includes(search.toLowerCase()) ||
-    log.actor?.name?.toLowerCase().includes(search.toLowerCase())
+  const filteredLogs = logs.filter(
+    (log) =>
+      log.action.toLowerCase().includes(search.toLowerCase()) ||
+      log.targetId?.toLowerCase().includes(search.toLowerCase()) ||
+      log.actorId?.toLowerCase().includes(search.toLowerCase()) ||
+      log.actor?.name?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <div className="space-y-12">
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div className="space-y-2">
-          <h1 className="text-4xl font-black italic tracking-tighter uppercase">Audit <span className="text-[var(--accent)]">Trail</span></h1>
-          <p className="text-muted-foreground font-medium uppercase text-xs tracking-widest opacity-60">Complete history of system interactions</p>
+          <h1 className="text-4xl font-black tracking-tighter uppercase italic">
+            Audit <span className="text-[var(--accent)]">Trail</span>
+          </h1>
+          <p className="text-muted-foreground text-xs font-medium tracking-widest uppercase opacity-60">
+            Complete history of system interactions
+          </p>
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <Input 
-            placeholder="Search action, user or ID..." 
+          <Input
+            placeholder="Search action, user or ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full md:w-64 bg-[var(--card)]/50 border-[var(--border)] rounded-2xl h-12"
+            className="h-12 w-full rounded-2xl border-[var(--border)] bg-[var(--card)]/50 md:w-64"
           />
           <div className="w-48">
-             <Select 
-                value={filter}
-                onChange={(val) => setFilter(val)}
-                triggerClassName="h-12 px-6 text-[10px] font-black uppercase tracking-widest"
-                options={[
-                    { value: "", label: "All Actions" },
-                    { value: "LOGIN", label: "Logins" },
-                    { value: "USER_STATUS_CHANGE", label: "User Bans/Suspensions" },
-                    { value: "TRIP_CREATED", label: "Trip Creations" },
-                    { value: "TRIP_UPDATED", label: "Trip Updates" },
-                    { value: "BOOKING_STATUS_CHANGE", label: "Booking Updates" },
-                    { value: "BLOG_PUBLISH", label: "Blog Publishing" },
-                ]}
-             />
+            <Select
+              value={filter}
+              onChange={(val) => setFilter(val)}
+              triggerClassName="h-12 px-6 text-[10px] font-black uppercase tracking-widest"
+              options={[
+                { value: "", label: "All Actions" },
+                { value: "LOGIN", label: "Logins" },
+                { value: "USER_STATUS_CHANGE", label: "User Bans/Suspensions" },
+                { value: "TRIP_CREATED", label: "Trip Creations" },
+                { value: "TRIP_UPDATED", label: "Trip Updates" },
+                { value: "BOOKING_STATUS_CHANGE", label: "Booking Updates" },
+                { value: "BLOG_PUBLISH", label: "Blog Publishing" },
+              ]}
+            />
           </div>
         </div>
       </header>
 
-      <div className="rounded-[48px] bg-[var(--card)]/50 border border-[var(--border)] backdrop-blur-2xl overflow-hidden shadow-2xl shadow-indigo-500/5">
+      <div className="overflow-hidden rounded-[48px] border border-[var(--border)] bg-[var(--card)]/50 shadow-2xl shadow-indigo-500/5 backdrop-blur-2xl">
         {loading ? (
-          <div className="p-20 flex justify-center"><Spinner size={40} /></div>
+          <div className="flex justify-center p-20">
+            <Spinner size={40} />
+          </div>
         ) : filteredLogs.length === 0 ? (
-          <div className="p-20 text-center space-y-4">
-            <div className="text-4xl opacity-20 text-[var(--accent)] font-black uppercase italic">No records</div>
-            <p className="text-muted-foreground uppercase text-xs font-black tracking-widest">No matching security signals found</p>
+          <div className="space-y-4 p-20 text-center">
+            <div className="text-4xl font-black text-[var(--accent)] uppercase italic opacity-20">
+              No records
+            </div>
+            <p className="text-muted-foreground text-xs font-black tracking-widest uppercase">
+              No matching security signals found
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-[var(--border)]">
-                  <th className="py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Timestamp</th>
-                  <th className="py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Action</th>
-                  <th className="py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Actor</th>
-                  <th className="py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Entity</th>
-                  <th className="py-6 px-10 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground text-right">Details</th>
+                  <th className="text-muted-foreground px-10 py-6 text-[10px] font-black tracking-[0.2em] uppercase">
+                    Timestamp
+                  </th>
+                  <th className="text-muted-foreground px-10 py-6 text-[10px] font-black tracking-[0.2em] uppercase">
+                    Action
+                  </th>
+                  <th className="text-muted-foreground px-10 py-6 text-[10px] font-black tracking-[0.2em] uppercase">
+                    Actor
+                  </th>
+                  <th className="text-muted-foreground px-10 py-6 text-[10px] font-black tracking-[0.2em] uppercase">
+                    Entity
+                  </th>
+                  <th className="text-muted-foreground px-10 py-6 text-right text-[10px] font-black tracking-[0.2em] uppercase">
+                    Details
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]/50">
                 {filteredLogs.map((log) => (
-                  <tr key={log.id} className="group hover:bg-[var(--border)]/10 transition-colors">
-                    <td className="py-6 px-10">
+                  <tr key={log.id} className="group transition-colors hover:bg-[var(--border)]/10">
+                    <td className="px-10 py-6">
                       <div className="text-[10px] font-bold opacity-60">
                         {new Date(log.createdAt).toLocaleDateString()}
                       </div>
-                      <div className="text-[10px] font-black italic uppercase text-[var(--accent)]">
+                      <div className="text-[10px] font-black text-[var(--accent)] uppercase italic">
                         {new Date(log.createdAt).toLocaleTimeString()}
                       </div>
                     </td>
-                    <td className="py-6 px-10">
-                      <span className="text-xs font-black italic uppercase tracking-tight bg-[var(--accent)]/10 text-[var(--accent)] px-3 py-1 rounded-lg border border-[var(--accent)]/20">
+                    <td className="px-10 py-6">
+                      <span className="rounded-lg border border-[var(--accent)]/20 bg-[var(--accent)]/10 px-3 py-1 text-xs font-black tracking-tight text-[var(--accent)] uppercase italic">
                         {log.action}
                       </span>
                     </td>
-                    <td className="py-6 px-10">
-                      <div className="text-xs font-bold leading-none">{log.actor?.name || log.actorName || "SYSTEM"}</div>
-                      <div className="text-[8px] font-black opacity-30 mt-1 uppercase tracking-tighter truncate w-32" title={log.actor?.email}>
+                    <td className="px-10 py-6">
+                      <div className="text-xs leading-none font-bold">
+                        {log.actor?.name || log.actorName || "SYSTEM"}
+                      </div>
+                      <div
+                        className="mt-1 w-32 truncate text-[8px] font-black tracking-tighter uppercase opacity-30"
+                        title={log.actor?.email}
+                      >
                         {log.actor?.email || `ID: ${log.actorId || "N/A"}`}
                       </div>
                     </td>
-                    <td className="py-6 px-10">
-                      <div className="text-xs font-bold leading-none italic">{log.targetType}</div>
-                      <div className="text-[8px] font-black opacity-30 mt-1 uppercase tracking-tighter">ID: {log.targetId}</div>
+                    <td className="px-10 py-6">
+                      <div className="text-xs leading-none font-bold italic">{log.targetType}</div>
+                      <div className="mt-1 text-[8px] font-black tracking-tighter uppercase opacity-30">
+                        ID: {log.targetId}
+                      </div>
                     </td>
-                    <td className="py-6 px-10 text-right">
-                       <button 
-                         onClick={() => setSelectedLog(log)}
-                         className="text-[10px] font-black uppercase tracking-widest text-[var(--accent)] hover:underline opacity-40 group-hover:opacity-100 transition-opacity"
-                       >
-                         Inspect ➔
-                       </button>
+                    <td className="px-10 py-6 text-right">
+                      <button
+                        onClick={() => setSelectedLog(log)}
+                        className="text-[10px] font-black tracking-widest text-[var(--accent)] uppercase opacity-40 transition-opacity group-hover:opacity-100 hover:underline"
+                      >
+                        Inspect ➔
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -145,29 +173,39 @@ export default function AuditLogsPage() {
         {selectedLog && (
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-muted/30 p-4 rounded-2xl border border-border">
-                <label className="text-[8px] font-black uppercase tracking-widest opacity-40 block mb-1">Action</label>
-                <div className="font-black italic uppercase text-[var(--accent)]">{selectedLog.action}</div>
+              <div className="bg-muted/30 border-border rounded-2xl border p-4">
+                <label className="mb-1 block text-[8px] font-black tracking-widest uppercase opacity-40">
+                  Action
+                </label>
+                <div className="font-black text-[var(--accent)] uppercase italic">
+                  {selectedLog.action}
+                </div>
               </div>
-              <div className="bg-muted/30 p-4 rounded-2xl border border-border">
-                <label className="text-[8px] font-black uppercase tracking-widest opacity-40 block mb-1">Timestamp</label>
-                <div className="font-bold text-xs">{new Date(selectedLog.createdAt).toLocaleString()}</div>
+              <div className="bg-muted/30 border-border rounded-2xl border p-4">
+                <label className="mb-1 block text-[8px] font-black tracking-widest uppercase opacity-40">
+                  Timestamp
+                </label>
+                <div className="text-xs font-bold">
+                  {new Date(selectedLog.createdAt).toLocaleString()}
+                </div>
               </div>
             </div>
 
             <div>
-              <label className="text-[8px] font-black uppercase tracking-widest opacity-40 block mb-2">Metadata Payload</label>
-              <div className="bg-black/95 p-6 rounded-3xl overflow-x-auto border border-white/10 shadow-inner">
-                <pre className="text-emerald-400 text-[10px] font-mono leading-relaxed">
+              <label className="mb-2 block text-[8px] font-black tracking-widest uppercase opacity-40">
+                Metadata Payload
+              </label>
+              <div className="overflow-x-auto rounded-3xl border border-white/10 bg-black/95 p-6 shadow-inner">
+                <pre className="font-mono text-[10px] leading-relaxed text-emerald-400">
                   {JSON.stringify(selectedLog.metadata, null, 2)}
                 </pre>
               </div>
             </div>
 
-            <div className="pt-4 flex justify-end">
-              <button 
+            <div className="flex justify-end pt-4">
+              <button
                 onClick={() => setSelectedLog(null)}
-                className="bg-foreground text-background px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:opacity-80 transition-opacity"
+                className="bg-foreground text-background rounded-full px-8 py-3 text-[10px] font-black tracking-[0.2em] uppercase transition-opacity hover:opacity-80"
               >
                 Clear Signal
               </button>

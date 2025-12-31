@@ -12,7 +12,7 @@ const styles: Record<string, string> = {
 
 export function ToastViewport({ toasts }: { toasts: Toast[] }) {
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end space-y-3">
+    <div className="fixed right-4 bottom-4 z-50 flex flex-col items-end space-y-3">
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div

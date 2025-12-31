@@ -4,23 +4,23 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 
 export const getPublicTrips = catchAsync(async (req: Request, res: Response) => {
-  const { 
-    search, 
-    category, 
-    difficulty, 
-    maxPrice, 
-    minPrice, 
-    minDays, 
-    maxDays, 
-    startDate, 
+  const {
+    search,
+    category,
+    difficulty,
+    maxPrice,
+    minPrice,
+    minDays,
+    maxDays,
+    startDate,
     endDate,
     capacity,
     sortBy = "createdAt",
-    sortOrder = "desc"
+    sortOrder = "desc",
   } = req.query;
-  
+
   const where: any = { status: "PUBLISHED" };
-  
+
   if (search) {
     // Upgraded to Prisma's full-text search capability
     where.OR = [
@@ -28,19 +28,19 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
       { description: { search: String(search).split(" ").join(" & ") } },
     ];
   }
-  
+
   if (category) {
     where.category = category;
   }
-  
+
   if (difficulty) {
     where.difficulty = difficulty;
   }
-  
+
   if (capacity) {
     where.capacity = { gte: Number(capacity) };
   }
-  
+
   if (maxPrice || minPrice) {
     where.price = {};
     if (maxPrice) where.price.lte = Number(maxPrice);
@@ -60,7 +60,7 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
   }
 
   if (Boolean(req.query.isFeatured) === true) {
-     where.isFeatured = true;
+    where.isFeatured = true;
   }
 
   // Define allowed sort fields to prevent injection
@@ -68,12 +68,12 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
   const finalSortField = allowedSortFields.includes(String(sortBy)) ? String(sortBy) : "createdAt";
   const finalSortOrder = sortOrder === "asc" ? "asc" : "desc";
 
-  const trips = await prisma.trip.findMany({ 
+  const trips = await prisma.trip.findMany({
     where,
     orderBy: { [finalSortField]: finalSortOrder },
     include: {
       coverImage: true,
-    }
+    },
   });
 
   return ApiResponse.success(res, "Trips fetched", trips);

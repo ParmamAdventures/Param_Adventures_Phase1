@@ -8,7 +8,7 @@ import {
   loginPage,
   forgotPassword,
   resetPassword,
-  changePassword
+  changePassword,
 } from "../controllers/auth.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 

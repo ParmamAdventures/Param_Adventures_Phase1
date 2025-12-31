@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
@@ -65,20 +64,21 @@ export function useTripFilters(maxPriceMeta: number) {
   useEffect(() => {
     const timer = setTimeout(() => {
       const params = new URLSearchParams();
-      
+
       if (filters.search) params.set("search", filters.search);
       if (filters.category) params.set("category", filters.category);
       if (filters.difficulty) params.set("difficulty", filters.difficulty);
       if (filters.capacity) params.set("capacity", filters.capacity);
-      
+
       if (filters.sortBy !== DEFAULT_FILTERS.sortBy) params.set("sortBy", filters.sortBy);
-      if (filters.sortOrder !== DEFAULT_FILTERS.sortOrder) params.set("sortOrder", filters.sortOrder);
-      
+      if (filters.sortOrder !== DEFAULT_FILTERS.sortOrder)
+        params.set("sortOrder", filters.sortOrder);
+
       if (filters.priceRange < maxPriceMeta) params.set("maxPrice", filters.priceRange.toString());
-      
+
       if (filters.minDays) params.set("minDays", filters.minDays);
       if (filters.maxDays) params.set("maxDays", filters.maxDays);
-      
+
       if (filters.startDate) params.set("startDate", filters.startDate);
       if (filters.endDate) params.set("endDate", filters.endDate);
 
@@ -89,10 +89,10 @@ export function useTripFilters(maxPriceMeta: number) {
   }, [filters, maxPriceMeta, pathname, router]);
 
   const activeFilterCount = Object.keys(filters).reduce((count, key) => {
-      const k = key as keyof TripFiltersState;
-      if (k === 'priceRange') return filters.priceRange < maxPriceMeta ? count + 1 : count;
-      if (k === 'sortBy' || k === 'sortOrder') return count; // Don't count sorting
-      return filters[k] ? count + 1 : count;
+    const k = key as keyof TripFiltersState;
+    if (k === "priceRange") return filters.priceRange < maxPriceMeta ? count + 1 : count;
+    if (k === "sortBy" || k === "sortOrder") return count; // Don't count sorting
+    return filters[k] ? count + 1 : count;
   }, 0);
 
   return {

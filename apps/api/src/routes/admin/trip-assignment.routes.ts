@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { 
-  assignManager, 
-  assignGuide, 
-  removeGuide, 
-  listEligibleUsers 
+import {
+  assignManager,
+  assignGuide,
+  removeGuide,
+  listEligibleUsers,
 } from "../../controllers/admin/trip-assignment.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";

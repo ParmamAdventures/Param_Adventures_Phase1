@@ -27,9 +27,7 @@ async function apiCall(path, token, method = "GET", body) {
 
 (async () => {
   try {
-    console.log(
-      "1) Ensure ADMIN role exists and has assign/remove permissions"
-    );
+    console.log("1) Ensure ADMIN role exists and has assign/remove permissions");
     const adminRole = await prisma.role.upsert({
       where: { name: "ADMIN" },
       update: {},
@@ -128,9 +126,7 @@ async function apiCall(path, token, method = "GET", body) {
       process.exit(1);
     }
     const adminToken = admLogin.body.accessToken;
-    console.log(
-      "4) Admin logged in, will assign CONTENT_MANAGER to new user (non-system)"
-    );
+    console.log("4) Admin logged in, will assign CONTENT_MANAGER to new user (non-system)");
     // ensure CONTENT_MANAGER exists
     const cm = await prisma.role.findUnique({
       where: { name: "CONTENT_MANAGER" },
@@ -158,22 +154,16 @@ async function apiCall(path, token, method = "GET", body) {
     });
     console.log("  assign SUPER_ADMIN by ADMIN status", r.status, r.body);
 
-    console.log(
-      "6) Admin tries to remove SUPER_ADMIN from existing super admin (should fail)"
-    );
+    console.log("6) Admin tries to remove SUPER_ADMIN from existing super admin (should fail)");
     // find super admin id
-    const superUser = allUsers.find(
-      (u) => u.roles && u.roles.includes("SUPER_ADMIN")
-    );
+    const superUser = allUsers.find((u) => u.roles && u.roles.includes("SUPER_ADMIN"));
     r = await apiCall("/admin/roles/revoke", adminToken, "POST", {
       userId: superUser.id,
       roleName: "SUPER_ADMIN",
     });
     console.log("  revoke SUPER_ADMIN by ADMIN status", r.status, r.body);
 
-    console.log(
-      "9) Super admin assigns SUPER_ADMIN to target (should succeed)"
-    );
+    console.log("9) Super admin assigns SUPER_ADMIN to target (should succeed)");
     let r2 = await apiCall("/admin/roles/assign", superToken, "POST", {
       userId: targetUserRec.id,
       roleName: "SUPER_ADMIN",
@@ -201,7 +191,7 @@ async function apiCall(path, token, method = "GET", body) {
         actorId: l.actorId,
         targetId: l.targetId,
         metadata: l.metadata,
-      }))
+      })),
     );
 
     console.log("\nALL TESTS COMPLETE");

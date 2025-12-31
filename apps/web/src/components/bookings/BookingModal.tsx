@@ -24,11 +24,11 @@ interface Props {
 export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  
+
   const [loading, setLoading] = useState(false);
   const [guests, setGuests] = useState(1);
   const [startDate, setStartDate] = useState("");
-  
+
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -51,8 +51,8 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tripId: trip.id,
-          startDate: new Date(startDate).toISOString(), 
-          guests
+          startDate: new Date(startDate).toISOString(),
+          guests,
         }),
       });
 
@@ -80,10 +80,10 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         <DialogHeader>
           <DialogTitle>Book Adventure: {trip.title}</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6 pt-4">
           {/* Trip Summary */}
-          <div className="bg-muted/30 p-4 rounded-lg space-y-2 text-sm">
+          <div className="bg-muted/30 space-y-2 rounded-lg p-4 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Price per person</span>
               <span className="font-medium">₹{trip.price.toLocaleString()}</span>
@@ -99,20 +99,40 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
             <div className="space-y-2">
               <label className="text-sm font-medium">Select Start Date</label>
               <div className="relative">
-                <div className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-muted-foreground ring-offset-background">
+                <div className="border-input bg-background text-muted-foreground ring-offset-background flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm">
                   {startDate ? (
                     <span className="text-foreground font-medium">
-                      {new Date(startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      {new Date(startDate).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
                     </span>
                   ) : (
                     <span>dd/mm/yyyy</span>
                   )}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="opacity-50"
+                  >
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                    <line x1="16" x2="16" y1="2" y2="6" />
+                    <line x1="8" x2="8" y1="2" y2="6" />
+                    <line x1="3" x2="21" y1="10" y2="10" />
+                  </svg>
                 </div>
-                <input 
+                <input
                   type="date"
                   min={new Date().toISOString().split("T")[0]}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                 />
@@ -120,36 +140,36 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
             </div>
 
             <div className="space-y-2">
-               <label className="text-sm font-medium">Number of Guests</label>
-               <div className="flex items-center gap-4">
-                 <Button 
-                   variant="subtle" 
-                   onClick={() => setGuests(Math.max(1, guests - 1))}
-                   disabled={guests <= 1}
-                   className="h-8 w-8 p-0"
-                 >
-                   -
-                 </Button>
-                 <span className="w-8 text-center font-medium">{guests}</span>
-                 <Button 
-                   variant="subtle" 
-                   onClick={() => setGuests(guests + 1)}
-                   className="h-8 w-8 p-0"
-                 >
-                   +
-                 </Button>
-               </div>
+              <label className="text-sm font-medium">Number of Guests</label>
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="subtle"
+                  onClick={() => setGuests(Math.max(1, guests - 1))}
+                  disabled={guests <= 1}
+                  className="h-8 w-8 p-0"
+                >
+                  -
+                </Button>
+                <span className="w-8 text-center font-medium">{guests}</span>
+                <Button
+                  variant="subtle"
+                  onClick={() => setGuests(guests + 1)}
+                  className="h-8 w-8 p-0"
+                >
+                  +
+                </Button>
+              </div>
             </div>
           </div>
 
           {/* Total */}
-          <div className="pt-4 border-t flex items-center justify-between">
+          <div className="flex items-center justify-between border-t pt-4">
             <div className="flex flex-col">
-              <span className="text-sm text-muted-foreground">Total Payment</span>
+              <span className="text-muted-foreground text-sm">Total Payment</span>
               <span className="text-2xl font-bold">₹{totalPrice.toLocaleString()}</span>
             </div>
-            <Button 
-              onClick={handleBooking} 
+            <Button
+              onClick={handleBooking}
               disabled={loading || !startDate}
               loading={loading}
               className="px-8"

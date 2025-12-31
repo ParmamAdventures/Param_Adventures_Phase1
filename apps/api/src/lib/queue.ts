@@ -52,9 +52,9 @@ export const notificationWorker = new Worker(
             ...payload.details,
             userName: user!.name || user!.email,
           });
-          emitToUser(payload.userId, "booking_update", { 
-            message: "Booking request received", 
-            details: payload.details 
+          emitToUser(payload.userId, "booking_update", {
+            message: "Booking request received",
+            details: payload.details,
           });
           break;
         case "SEND_PAYMENT_EMAIL":
@@ -62,9 +62,9 @@ export const notificationWorker = new Worker(
             ...payload.details,
             userName: user!.name || user!.email,
           });
-          emitToUser(payload.userId, "payment_update", { 
-            status: "SUCCESS", 
-            message: "Payment verified successfully!" 
+          emitToUser(payload.userId, "payment_update", {
+            status: "SUCCESS",
+            message: "Payment verified successfully!",
           });
           break;
         case "SEND_ASSIGNMENT_EMAIL":
@@ -73,9 +73,9 @@ export const notificationWorker = new Worker(
             role: payload.role,
             userName: user!.name || user!.email,
           });
-          emitToUser(payload.userId, "assignment_update", { 
-            role: payload.role, 
-            tripTitle: payload.details.tripTitle 
+          emitToUser(payload.userId, "assignment_update", {
+            role: payload.role,
+            tripTitle: payload.details.tripTitle,
           });
           break;
         default:
@@ -86,7 +86,7 @@ export const notificationWorker = new Worker(
       throw error; // Rethrow to trigger BullMQ retry
     }
   },
-  { connection: redisConnection }
+  { connection: redisConnection },
 );
 
 notificationWorker.on("completed", (job) => {

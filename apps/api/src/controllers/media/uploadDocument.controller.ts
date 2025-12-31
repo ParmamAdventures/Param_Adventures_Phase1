@@ -31,14 +31,13 @@ export async function uploadDocument(req: Request, res: Response) {
     res.status(201).json({
       url,
       filename,
-      size: req.file.size
+      size: req.file.size,
     });
-
   } catch (err: any) {
     console.error("Document Upload Error:", err);
     res.status(500).json({
       error: "UPLOAD_FAILED",
-      details: err.message
+      details: err.message,
     });
   }
 }

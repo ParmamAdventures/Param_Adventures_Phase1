@@ -36,29 +36,30 @@ import { globalLimiter, authLimiter, paymentLimiter, mediaLimiter } from "./conf
 
 export const app = express();
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline often needed for dev/some analytics
-      styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-      fontSrc: ["'self'", "fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline often needed for dev/some analytics
+        styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
+        fontSrc: ["'self'", "fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "blob:"],
+        connectSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
     },
-  },
-  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow images to be loaded by frontend
-}));
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow images to be loaded by frontend
+  }),
+);
 
 app.use(globalLimiter);
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : true,
+    origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_URL : true,
     credentials: true,
-  })
+  }),
 );
 app.use(cookieParser());
 
@@ -68,7 +69,9 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-app.use(morgan("combined", { stream: { write: (message: string) => logger.info(message.trim()) } }));
+app.use(
+  morgan("combined", { stream: { write: (message: string) => logger.info(message.trim()) } }),
+);
 
 import { healthCheck } from "./controllers/health.controller";
 

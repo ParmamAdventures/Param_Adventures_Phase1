@@ -19,33 +19,33 @@ export const completeTrip = catchAsync(async (req: Request, res: Response) => {
   const isAdmin = req.user?.roles.includes("ADMIN") || req.user?.roles.includes("SUPER_ADMIN");
 
   if (!isManager && !isAdmin) {
-      throw new HttpError(403, "FORBIDDEN", "Only the Manager can mark the trip as complete");
+    throw new HttpError(403, "FORBIDDEN", "Only the Manager can mark the trip as complete");
   }
 
   const updatedTrip = await prisma.$transaction(async (tx) => {
-      // 1. Update Trip
-      const t = await tx.trip.update({
-          where: { id },
-          data: { 
-              status: "COMPLETED",
-              endDate: new Date()
-          }
-      });
+    // 1. Update Trip
+    const t = await tx.trip.update({
+      where: { id },
+      data: {
+        status: "COMPLETED",
+        endDate: new Date(),
+      },
+    });
 
-      // 2. Cascade to Bookings (Mark all CONFIRMED bookings as COMPLETED)
-      const updatedBookings = await tx.booking.updateMany({
-          where: {
-              tripId: id,
-              status: "CONFIRMED"
-          },
-          data: {
-              status: "COMPLETED"
-          }
-      });
-      
-      logger.info(`Trip ${id} completed. Updated ${updatedBookings.count} bookings to COMPLETED.`);
+    // 2. Cascade to Bookings (Mark all CONFIRMED bookings as COMPLETED)
+    const updatedBookings = await tx.booking.updateMany({
+      where: {
+        tripId: id,
+        status: "CONFIRMED",
+      },
+      data: {
+        status: "COMPLETED",
+      },
+    });
 
-      return t;
+    logger.info(`Trip ${id} completed. Updated ${updatedBookings.count} bookings to COMPLETED.`);
+
+    return t;
   });
 
   logger.info("Trip Completed", { tripId: id, closedBy: userId });

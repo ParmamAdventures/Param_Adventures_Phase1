@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma";
 
-export async function attachPermissions(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export async function attachPermissions(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -34,18 +30,16 @@ export async function attachPermissions(
     }
 
     if (user.status !== "ACTIVE") {
-      return res.status(403).json({ 
+      return res.status(403).json({
         error: `Your account status is ${user.status}.`,
         status: user.status,
-        reason: user.statusReason
+        reason: user.statusReason,
       });
     }
 
     const roles = user.roles;
 
-    const roleNames = roles
-      .map((r) => r.role?.name)
-      .filter(Boolean) as string[];
+    const roleNames = roles.map((r) => r.role?.name).filter(Boolean) as string[];
 
     const permissionsSet = new Set<string>();
     for (const r of roles) {

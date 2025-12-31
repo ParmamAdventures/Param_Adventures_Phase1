@@ -43,12 +43,12 @@ export default function TripCarousel({ trips }: TripCarouselProps) {
   if (!trips || trips.length === 0) return null;
 
   return (
-    <div className="relative group">
+    <div className="group relative">
       {/* Left Button */}
       {canScrollLeft && (
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 p-3 rounded-full bg-background/80 backdrop-blur-md shadow-lg border border-border text-foreground hover:bg-accent hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100 hidden md:flex"
+          className="bg-background/80 border-border text-foreground hover:bg-accent absolute top-1/2 left-0 z-10 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border p-3 opacity-0 shadow-lg backdrop-blur-md transition-all duration-300 group-hover:opacity-100 hover:text-white md:flex"
           aria-label="Scroll left"
         >
           <ChevronLeft size={24} />
@@ -59,14 +59,17 @@ export default function TripCarousel({ trips }: TripCarouselProps) {
       <div
         ref={scrollContainerRef}
         onScroll={checkScroll}
-        className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 md:-mx-0 md:px-0"
+        className="scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-6 overflow-x-auto px-4 pb-8 md:-mx-0 md:px-0"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {trips.map((trip) => (
-          <div key={trip.id} className="min-w-[85%] md:min-w-[45%] lg:min-w-[32%] shrink-0 snap-center">
-             <div className="h-full">
-               <TripCard trip={trip} />
-             </div>
+          <div
+            key={trip.id}
+            className="min-w-[85%] shrink-0 snap-center md:min-w-[45%] lg:min-w-[32%]"
+          >
+            <div className="h-full">
+              <TripCard trip={trip} />
+            </div>
           </div>
         ))}
       </div>
@@ -75,7 +78,7 @@ export default function TripCarousel({ trips }: TripCarouselProps) {
       {canScrollRight && (
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 p-3 rounded-full bg-background/80 backdrop-blur-md shadow-lg border border-border text-foreground hover:bg-accent hover:text-white transition-all duration-300 opacity-0 group-hover:opacity-100 hidden md:flex"
+          className="bg-background/80 border-border text-foreground hover:bg-accent absolute top-1/2 right-0 z-10 hidden translate-x-1/2 -translate-y-1/2 rounded-full border p-3 opacity-0 shadow-lg backdrop-blur-md transition-all duration-300 group-hover:opacity-100 hover:text-white md:flex"
           aria-label="Scroll right"
         >
           <ChevronRight size={24} />

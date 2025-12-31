@@ -11,19 +11,63 @@ describe("Auth Integration", () => {
     // Or simpler: delete everything.
     // Safe order based on schema:
     // Dependent models first
-    try { await prisma.payment?.deleteMany(); } catch (e: any) { console.error('Error clearing payment:', e.message); }
-    try { await prisma.booking?.deleteMany(); } catch (e: any) { console.error('Error clearing booking:', e.message); }
+    try {
+      await prisma.payment?.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing payment:", e.message);
+    }
+    try {
+      await prisma.booking?.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing booking:", e.message);
+    }
     // tripGalleryImage is cascade deleted by Trip
-    try { await prisma.blog?.deleteMany(); } catch (e: any) { console.error('Error clearing blog:', e.message); }
-    try { await prisma.trip?.deleteMany(); } catch (e: any) { console.error('Error clearing trip:', e.message); }
-    try { await prisma.image?.deleteMany(); } catch (e: any) { console.error('Error clearing image:', e.message); }
+    try {
+      await prisma.blog?.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing blog:", e.message);
+    }
+    try {
+      await prisma.trip?.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing trip:", e.message);
+    }
+    try {
+      await prisma.image?.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing image:", e.message);
+    }
 
-    try { await prisma.auditLog.deleteMany(); } catch (e: any) { console.error('Error clearing auditLog:', e.message); }
-    try { await prisma.userRole?.deleteMany(); } catch (e: any) { console.error('Error clearing userRole:', e.message); }
-    try { await prisma.rolePermission?.deleteMany(); } catch (e: any) { console.error('Error clearing rolePermission:', e.message); }
-    try { await prisma.permission.deleteMany(); } catch (e: any) { console.error('Error clearing permission:', e.message); }
-    try { await prisma.role.deleteMany(); } catch (e: any) { console.error('Error clearing role:', e.message); }
-    try { await prisma.user.deleteMany(); } catch (e: any) { console.error('Error clearing user:', e.message); }
+    try {
+      await prisma.auditLog.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing auditLog:", e.message);
+    }
+    try {
+      await prisma.userRole?.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing userRole:", e.message);
+    }
+    try {
+      await prisma.rolePermission?.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing rolePermission:", e.message);
+    }
+    try {
+      await prisma.permission.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing permission:", e.message);
+    }
+    try {
+      await prisma.role.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing role:", e.message);
+    }
+    try {
+      await prisma.user.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing user:", e.message);
+    }
   });
 
   afterAll(async () => {
@@ -38,7 +82,10 @@ describe("Auth Integration", () => {
     });
 
     if (res.status !== 201) {
-      require("fs").writeFileSync("auth-debug.log", `Status: ${res.status}, Body: ${JSON.stringify(res.body)}`);
+      require("fs").writeFileSync(
+        "auth-debug.log",
+        `Status: ${res.status}, Body: ${JSON.stringify(res.body)}`,
+      );
     }
 
     expect(res.status).toBe(201);
@@ -115,9 +162,7 @@ describe("Auth Integration", () => {
       });
       const token = loginRes.body.accessToken;
 
-      const res = await request(app)
-        .get("/auth/me")
-        .set("Authorization", `Bearer ${token}`);
+      const res = await request(app).get("/auth/me").set("Authorization", `Bearer ${token}`);
 
       expect(res.status).toBe(200);
       expect(res.body.email).toBe(credentials.email);
@@ -130,9 +175,7 @@ describe("Auth Integration", () => {
       });
       const cookies = loginRes.headers["set-cookie"];
 
-      const res = await request(app)
-        .post("/auth/refresh")
-        .set("Cookie", cookies);
+      const res = await request(app).post("/auth/refresh").set("Cookie", cookies);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("accessToken");

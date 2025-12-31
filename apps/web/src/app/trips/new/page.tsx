@@ -23,8 +23,7 @@ export default function NewTripPage() {
         router.push("/trips/internal");
       } else {
         const body = await res.json().catch(() => ({}));
-        const msg =
-          body?.error?.message || body?.message || "Failed to create trip";
+        const msg = body?.error?.message || body?.message || "Failed to create trip";
         // show simple inline error via alert fallback (pages using TripForm can opt-in to show ErrorBlock)
         // for now use console and a transient alert to ensure visibility in dev
         console.error("Create trip failed", body);

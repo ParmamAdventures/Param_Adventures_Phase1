@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -37,32 +36,32 @@ export default function AdminBookingsPage() {
   return (
     <PermissionRoute permission="booking:read:admin">
       <div className="space-y-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div className="space-y-2">
-            <span className="text-[var(--accent)] font-bold tracking-widest uppercase text-xs">Operations</span>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
+            <span className="text-xs font-bold tracking-widest text-[var(--accent)] uppercase">
+              Operations
+            </span>
+            <h1 className="from-foreground to-foreground/60 bg-gradient-to-r bg-clip-text text-4xl font-black tracking-tighter text-transparent md:text-5xl">
               Global Bookings
             </h1>
-            <p className="text-muted-foreground text-lg font-medium">Monitor and manage all trip registrations across the platform.</p>
+            <p className="text-muted-foreground text-lg font-medium">
+              Monitor and manage all trip registrations across the platform.
+            </p>
           </div>
         </div>
 
         {error ? (
           <div className="max-w-4xl py-12">
             <ErrorBlock>{error}</ErrorBlock>
-            <button 
+            <button
               onClick={fetchBookings}
-              className="mt-4 text-[10px] font-bold uppercase tracking-widest text-[var(--accent)] hover:underline"
+              className="mt-4 text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase hover:underline"
             >
               Retry Protocol ➔
             </button>
           </div>
         ) : (
-          <GlobalBookingList 
-            bookings={bookings} 
-            loading={loading} 
-            onRefresh={fetchBookings} 
-          />
+          <GlobalBookingList bookings={bookings} loading={loading} onRefresh={fetchBookings} />
         )}
       </div>
     </PermissionRoute>

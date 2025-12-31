@@ -1,10 +1,4 @@
-export function Card({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+export function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   const classes = [
     "rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4",
     "transition-transform transition-shadow",

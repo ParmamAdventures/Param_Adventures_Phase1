@@ -20,15 +20,15 @@ function ResetPasswordForm() {
 
   if (!token) {
     return (
-        <div className="text-center">
-            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 mb-6">
-                <p className="font-bold">Invalid Link</p>
-                <p className="text-sm mt-1">This password reset link is missing dependencies.</p>
-            </div>
-             <Link href="/auth/forgot-password">
-                <Button variant="ghost">Request new link</Button>
-             </Link>
+      <div className="text-center">
+        <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-600 dark:text-red-400">
+          <p className="font-bold">Invalid Link</p>
+          <p className="mt-1 text-sm">This password reset link is missing dependencies.</p>
         </div>
+        <Link href="/auth/forgot-password">
+          <Button variant="ghost">Request new link</Button>
+        </Link>
+      </div>
     );
   }
 
@@ -38,7 +38,7 @@ function ResetPasswordForm() {
       setError("Passwords do not match");
       return;
     }
-    
+
     setLoading(true);
     setMessage(null);
     setError(null);
@@ -66,9 +66,9 @@ function ResetPasswordForm() {
 
   if (message) {
     return (
-      <div className="text-center space-y-4">
-        <div className="w-16 h-16 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock size={32} />
+      <div className="space-y-4 text-center">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+          <Lock size={32} />
         </div>
         <h2 className="text-2xl font-bold text-green-600">Password Reset!</h2>
         <p className="text-muted-foreground">You will be redirected to login shortly.</p>
@@ -82,11 +82,14 @@ function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 text-left">
       <div className="space-y-2">
-        <label htmlFor="pass" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        <label
+          htmlFor="pass"
+          className="text-muted-foreground text-xs font-bold tracking-wider uppercase"
+        >
           New Password
         </label>
         <div className="relative">
-          <Lock className="absolute left-3 top-2.5 text-muted-foreground h-5 w-5" />
+          <Lock className="text-muted-foreground absolute top-2.5 left-3 h-5 w-5" />
           <input
             id="pass"
             type="password"
@@ -94,33 +97,36 @@ function ResetPasswordForm() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
+            className="bg-background border-border focus:ring-accent/50 focus:border-accent w-full rounded-lg border py-2 pr-4 pl-10 transition-all focus:ring-2 focus:outline-none"
             placeholder="Min 8 characters"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="confirm" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+        <label
+          htmlFor="confirm"
+          className="text-muted-foreground text-xs font-bold tracking-wider uppercase"
+        >
           Confirm Password
         </label>
         <div className="relative">
-            <Lock className="absolute left-3 top-2.5 text-muted-foreground h-5 w-5" />
-            <input
-                id="confirm"
-                type="password"
-                required
-                minLength={8}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all"
-                placeholder="Confirm new password"
-            />
+          <Lock className="text-muted-foreground absolute top-2.5 left-3 h-5 w-5" />
+          <input
+            id="confirm"
+            type="password"
+            required
+            minLength={8}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="bg-background border-border focus:ring-accent/50 focus:border-accent w-full rounded-lg border py-2 pr-4 pl-10 transition-all focus:ring-2 focus:outline-none"
+            placeholder="Confirm new password"
+          />
         </div>
       </div>
 
       {error && (
-        <div className="text-xs text-red-500 font-bold bg-red-500/10 p-2 rounded text-center">
+        <div className="rounded bg-red-500/10 p-2 text-center text-xs font-bold text-red-500">
           {error}
         </div>
       )}
@@ -134,20 +140,23 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="bg-background flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8 text-center">
-         <div>
-            <Link href="/login" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
-                <ArrowLeft size={14} className="mr-2" /> Back to Login
-            </Link>
-            <h1 className="text-3xl font-black tracking-tight">Set New Password</h1>
-            <p className="text-muted-foreground mt-2">
-                Choose a strong password for your account.
-            </p>
+        <div>
+          <Link
+            href="/login"
+            className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center text-sm transition-colors"
+          >
+            <ArrowLeft size={14} className="mr-2" /> Back to Login
+          </Link>
+          <h1 className="text-3xl font-black tracking-tight">Set New Password</h1>
+          <p className="text-muted-foreground mt-2">Choose a strong password for your account.</p>
         </div>
-        
-        <Suspense fallback={<div className="h-64 flex items-center justify-center">Loading...</div>}>
-            <ResetPasswordForm />
+
+        <Suspense
+          fallback={<div className="flex h-64 items-center justify-center">Loading...</div>}
+        >
+          <ResetPasswordForm />
         </Suspense>
       </div>
     </div>

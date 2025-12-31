@@ -20,9 +20,9 @@ export default function UsersPage() {
       .then(async (r) => {
         if (!r.ok) {
           const errData = await r.json().catch(() => ({}));
-          const errMsg = 
-            (typeof errData.error === 'object' ? errData.error.message : errData.error) || 
-            errData.message || 
+          const errMsg =
+            (typeof errData.error === "object" ? errData.error.message : errData.error) ||
+            errData.message ||
             `HTTP error! status: ${r.status}`;
           throw new Error(errMsg);
         }
@@ -59,31 +59,23 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Users
-          </h1>
-          <p className="text-muted-foreground pt-1">
-            Manage system users and role assignments.
-          </p>
+          <h1 className="text-foreground text-3xl font-bold tracking-tight">Users</h1>
+          <p className="text-muted-foreground pt-1">Manage system users and role assignments.</p>
         </div>
       </div>
 
       {error ? (
-        <div className="p-8 text-center border rounded-xl border-dashed border-destructive/50 bg-destructive/5">
+        <div className="border-destructive/50 bg-destructive/5 rounded-xl border border-dashed p-8 text-center">
           <p className="text-destructive font-medium">Failed to load users: {error}</p>
-          <button 
+          <button
             onClick={() => fetchUsers()}
-            className="mt-2 text-xs font-bold uppercase tracking-widest text-[var(--accent)] hover:underline"
+            className="mt-2 text-xs font-bold tracking-widest text-[var(--accent)] uppercase hover:underline"
           >
             Try Again ➔
           </button>
         </div>
       ) : (
-        <UserListTable
-          users={users}
-          loading={loading}
-          onRefresh={fetchUsers}
-        />
+        <UserListTable users={users} loading={loading} onRefresh={fetchUsers} />
       )}
     </div>
   );

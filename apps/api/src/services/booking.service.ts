@@ -1,4 +1,3 @@
-
 import { prisma } from "../lib/prisma";
 import { notificationQueue } from "../lib/queue";
 
@@ -32,9 +31,9 @@ export class BookingService {
           select: {
             title: true,
             slug: true,
-          }
-        }
-      }
+          },
+        },
+      },
     });
 
     // Send Notification (Async)
@@ -45,7 +44,7 @@ export class BookingService {
         bookingId: booking.id,
         startDate: booking.startDate,
         status: booking.status,
-      }
+      },
     });
 
     return booking;
@@ -63,12 +62,12 @@ export class BookingService {
     }
 
     if (["CANCELLED", "COMPLETED", "REJECTED"].includes(booking.status)) {
-        throw new Error("Booking cannot be cancelled in its current state");
+      throw new Error("Booking cannot be cancelled in its current state");
     }
 
     const updatedBooking = await prisma.booking.update({
       where: { id: bookingId },
-      data: { status: "CANCELLED" }
+      data: { status: "CANCELLED" },
     });
 
     return updatedBooking;
@@ -100,7 +99,7 @@ export class BookingService {
   }
 
   async getBookingById(bookingId: string, userId: string) {
-     const booking = await prisma.booking.findUnique({
+    const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
       include: {
         trip: {
@@ -111,18 +110,18 @@ export class BookingService {
             location: true,
             durationDays: true,
             difficulty: true,
-            coverImage: { select: { mediumUrl: true } }
-          }
+            coverImage: { select: { mediumUrl: true } },
+          },
         },
         user: {
           select: {
             id: true,
             name: true,
             email: true,
-          }
+          },
         },
-        payments: true
-      }
+        payments: true,
+      },
     });
 
     if (!booking) {
@@ -130,7 +129,7 @@ export class BookingService {
     }
 
     if (booking.userId !== userId) {
-       throw new Error("Unauthorized");
+      throw new Error("Unauthorized");
     }
 
     return booking;

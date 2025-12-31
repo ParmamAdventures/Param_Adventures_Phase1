@@ -56,15 +56,32 @@ export default function MyBookingsPage() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center p-6 text-center">
         <div className="max-w-md space-y-6">
-          <div className="bg-[var(--accent)]/10 p-6 rounded-3xl inline-block">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div className="inline-block rounded-3xl bg-[var(--accent)]/10 p-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
           </div>
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">Personalized Dashboard</h1>
-            <p className="text-muted-foreground text-lg text-balance">Sign in to track your bookings, explore itineraries, and manage payments.</p>
+            <p className="text-muted-foreground text-lg text-balance">
+              Sign in to track your bookings, explore itineraries, and manage payments.
+            </p>
           </div>
           <Link href="/login" className="block">
-            <Button className="w-full rounded-2xl shadow-xl shadow-[var(--accent)]/20 py-4">Sign in to Continue</Button>
+            <Button className="w-full rounded-2xl py-4 shadow-[var(--accent)]/20 shadow-xl">
+              Sign in to Continue
+            </Button>
           </Link>
         </div>
       </div>
@@ -73,27 +90,33 @@ export default function MyBookingsPage() {
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto py-12 px-4">
+      <div className="mx-auto max-w-4xl px-4 py-12">
         <ErrorBlock>{error}</ErrorBlock>
         <div className="mt-6 text-center">
-          <Button onClick={() => window.location.reload()} variant="subtle">Try Again</Button>
+          <Button onClick={() => window.location.reload()} variant="subtle">
+            Try Again
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto py-12 px-4 sm:px-6 lg:px-8 space-y-10">
+    <div className="mx-auto max-w-6xl space-y-10 px-4 py-12 sm:px-6 lg:px-8">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div className="space-y-2">
-          <span className="text-[var(--accent)] font-bold tracking-widest uppercase text-xs">Adventure Dashboard</span>
-          <h1 className="text-4xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/60">
+          <span className="text-xs font-bold tracking-widest text-[var(--accent)] uppercase">
+            Adventure Dashboard
+          </span>
+          <h1 className="from-foreground to-foreground/60 bg-gradient-to-r bg-clip-text text-4xl font-black tracking-tighter text-transparent md:text-5xl">
             My Bookings
           </h1>
-          <p className="text-muted-foreground text-lg font-medium">Keep track of your upcoming expeditions and stories.</p>
+          <p className="text-muted-foreground text-lg font-medium">
+            Keep track of your upcoming expeditions and stories.
+          </p>
         </div>
-        
+
         {bookings && bookings.length > 0 && (
           <Link href="/trips">
             <Button variant="subtle" className="rounded-full px-6 font-semibold">
@@ -106,19 +129,38 @@ export default function MyBookingsPage() {
       {/* Main Content */}
       <div className="min-h-[400px]">
         {bookings && bookings.length === 0 ? (
-          <Card className="flex flex-col items-center justify-center p-20 text-center space-y-8 border-dashed border-2 bg-transparent">
+          <Card className="flex flex-col items-center justify-center space-y-8 border-2 border-dashed bg-transparent p-20 text-center">
             <div className="relative">
-              <div className="absolute inset-0 blur-3xl bg-[var(--accent)]/10 rounded-full animate-pulse" />
-              <div className="relative bg-[var(--card)] border p-8 rounded-full shadow-2xl">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 8v8"/></svg>
+              <div className="absolute inset-0 animate-pulse rounded-full bg-[var(--accent)]/10 blur-3xl" />
+              <div className="relative rounded-full border bg-[var(--card)] p-8 shadow-2xl">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="64"
+                  height="64"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="var(--accent)"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m16 12-4-4-4 4" />
+                  <path d="M12 8v8" />
+                </svg>
               </div>
             </div>
             <div className="max-w-sm space-y-3">
               <h3 className="text-2xl font-bold tracking-tight">No adventures found yet</h3>
-              <p className="text-muted-foreground font-medium">The world is vast and full of stories waiting for you. Start your first journey today.</p>
+              <p className="text-muted-foreground font-medium">
+                The world is vast and full of stories waiting for you. Start your first journey
+                today.
+              </p>
             </div>
             <Link href="/trips">
-              <Button className="rounded-full px-12 py-4 shadow-xl shadow-[var(--accent)]/20">Explore Trips</Button>
+              <Button className="rounded-full px-12 py-4 shadow-[var(--accent)]/20 shadow-xl">
+                Explore Trips
+              </Button>
             </Link>
           </Card>
         ) : (
@@ -127,21 +169,27 @@ export default function MyBookingsPage() {
       </div>
 
       {/* Analytics/Incentive Section (Placeholder for high-end look) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t">
-        <div className="p-6 bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 rounded-3xl border">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Global Reach</p>
+      <div className="grid grid-cols-1 gap-6 border-t pt-12 md:grid-cols-3">
+        <div className="rounded-3xl border bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 p-6">
+          <p className="text-muted-foreground mb-1 text-xs font-bold tracking-widest uppercase">
+            Global Reach
+          </p>
           <p className="text-3xl font-black tracking-tighter">15+</p>
-          <p className="text-sm text-muted-foreground">Countries explored by our community.</p>
+          <p className="text-muted-foreground text-sm">Countries explored by our community.</p>
         </div>
-        <div className="p-6 bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 rounded-3xl border">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Expert Support</p>
+        <div className="rounded-3xl border bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 p-6">
+          <p className="text-muted-foreground mb-1 text-xs font-bold tracking-widest uppercase">
+            Expert Support
+          </p>
           <p className="text-3xl font-black tracking-tighter">24/7</p>
-          <p className="text-sm text-muted-foreground">Always there for your expedition needs.</p>
+          <p className="text-muted-foreground text-sm">Always there for your expedition needs.</p>
         </div>
-        <div className="p-6 bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 rounded-3xl border">
-          <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold mb-1">Impact Made</p>
+        <div className="rounded-3xl border bg-gradient-to-br from-[var(--card)] to-[var(--border)]/10 p-6">
+          <p className="text-muted-foreground mb-1 text-xs font-bold tracking-widest uppercase">
+            Impact Made
+          </p>
           <p className="text-3xl font-black tracking-tighter">1.2k</p>
-          <p className="text-sm text-muted-foreground">Stories shared by travelers like you.</p>
+          <p className="text-muted-foreground text-sm">Stories shared by travelers like you.</p>
         </div>
       </div>
     </div>

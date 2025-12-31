@@ -5,8 +5,7 @@ const prisma = new PrismaClient();
 async function run() {
   const email = "admin@local.test";
   const admin = await prisma.user.findUnique({ where: { email } });
-  if (!admin)
-    throw new Error("Admin user not found; run ensure_admin.js first");
+  if (!admin) throw new Error("Admin user not found; run ensure_admin.js first");
 
   const trip = await prisma.trip.create({
     data: {
@@ -37,7 +36,7 @@ async function run() {
   console.log("tripId:", trip.id);
   console.log("bookingId:", booking.id);
   console.log(
-    "Open the web app and sign in as admin@local.test to see the Pay Now CTA on My Bookings."
+    "Open the web app and sign in as admin@local.test to see the Pay Now CTA on My Bookings.",
   );
 
   await prisma.$disconnect();

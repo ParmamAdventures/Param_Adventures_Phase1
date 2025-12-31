@@ -34,7 +34,7 @@ describe("ToastProvider", () => {
     render(
       <ToastProvider>
         <TestHarness />
-      </ToastProvider>
+      </ToastProvider>,
     );
 
     const btn = screen.getByText("Trigger");

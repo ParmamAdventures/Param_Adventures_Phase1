@@ -9,7 +9,13 @@ type Props = {
   min?: string;
 };
 
-export default function FormattedDateInput({ value, onChange, className, placeholder, min }: Props) {
+export default function FormattedDateInput({
+  value,
+  onChange,
+  className,
+  placeholder,
+  min,
+}: Props) {
   const [inputType, setInputType] = useState<"text" | "date">("text");
 
   const formatDate = (isoString: string) => {

@@ -12,7 +12,14 @@ interface ModalProps {
   className?: string;
 }
 
-export default function Modal({ isOpen, onClose, title, children, footer, className = "" }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  footer,
+  className = "",
+}: ModalProps) {
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -32,32 +39,28 @@ export default function Modal({ isOpen, onClose, title, children, footer, classN
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" 
+      <div
+        className="animate-in fade-in absolute inset-0 bg-black/60 backdrop-blur-sm duration-200"
         onClick={onClose}
       />
-      
+
       {/* Modal Content */}
-      <div className={`relative bg-background w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200 ${className}`}>
-        <div className="p-5 border-b flex items-center justify-between bg-[var(--card)] shrink-0">
-            <h3 className="text-lg font-bold tracking-tight">{title}</h3>
-            <button 
-                onClick={onClose} 
-                className="p-2 hover:bg-accent/10 rounded-full transition-colors text-muted-foreground hover:text-foreground"
-            >
-                <X size={20} />
-            </button>
-        </div>
-        
-        <div className="p-6 overflow-y-auto min-h-0 flex-1">
-            {children}
+      <div
+        className={`bg-background animate-in zoom-in-95 relative flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl shadow-2xl duration-200 ${className}`}
+      >
+        <div className="flex shrink-0 items-center justify-between border-b bg-[var(--card)] p-5">
+          <h3 className="text-lg font-bold tracking-tight">{title}</h3>
+          <button
+            onClick={onClose}
+            className="hover:bg-accent/10 text-muted-foreground hover:text-foreground rounded-full p-2 transition-colors"
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        {footer && (
-          <div className="p-4 border-t bg-[var(--card)] shrink-0">
-            {footer}
-          </div>
-        )}
+        <div className="min-h-0 flex-1 overflow-y-auto p-6">{children}</div>
+
+        {footer && <div className="shrink-0 border-t bg-[var(--card)] p-4">{footer}</div>}
       </div>
     </div>
   );

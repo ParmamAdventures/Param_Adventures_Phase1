@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -38,17 +37,20 @@ export default function HeartButton({
   // Check stats on mount if requested and user is logged in
   useEffect(() => {
     if (checkStatus && user) {
-        // We'd need a specific endpoint to check ONE trip, or fetch all.
-        // For now, let's just fetch all (cached) or assume the list is lightweight.
-        // A better API would be GET /wishlist/check?tripId=...
-        // For now, let's skip complex API changes and assume we can tolerate the "Toggle" quirck 
-        // OR implementing a quick check.
-        // Let's implement /wishlist/check endpoint later if needed.
-        // Actually, fetching all wishlist IDs is cheap.
-        apiFetch('/wishlist').then(res => res.json()).then((data: any[]) => {
-            const saved = data.some(t => t.id === tripId);
-            setIsSaved(saved);
-        }).catch(() => {});
+      // We'd need a specific endpoint to check ONE trip, or fetch all.
+      // For now, let's just fetch all (cached) or assume the list is lightweight.
+      // A better API would be GET /wishlist/check?tripId=...
+      // For now, let's skip complex API changes and assume we can tolerate the "Toggle" quirck
+      // OR implementing a quick check.
+      // Let's implement /wishlist/check endpoint later if needed.
+      // Actually, fetching all wishlist IDs is cheap.
+      apiFetch("/wishlist")
+        .then((res) => res.json())
+        .then((data: any[]) => {
+          const saved = data.some((t) => t.id === tripId);
+          setIsSaved(saved);
+        })
+        .catch(() => {});
     }
   }, [checkStatus, user, tripId]);
 
@@ -82,36 +84,31 @@ export default function HeartButton({
       if (onToggle) {
         onToggle(newState);
       }
-      
+
       showToast(newState ? "Added to wishlist" : "Removed from wishlist", "success");
     } catch (error) {
       // Revert on error
       setIsSaved(!newState);
       showToast("Something went wrong", "error");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <button
       onClick={toggleWishlist}
+      suppressHydrationWarning
       className={cn(
-        "p-2 rounded-full transition-all duration-200 active:scale-90 focus:outline-none focus:ring-2 focus:ring-accent/50",
+        "focus:ring-accent/50 rounded-full p-2 transition-all duration-200 focus:ring-2 focus:outline-none active:scale-90",
         isSaved
           ? "bg-red-500/10 text-red-500 hover:bg-red-500/20"
           : "bg-black/20 text-white backdrop-blur-sm hover:bg-black/40",
-        className
+        className,
       )}
       aria-label={isSaved ? "Remove from wishlist" : "Add to wishlist"}
     >
-      <Heart
-        size={size}
-        className={cn(
-          "transition-all duration-300",
-          isSaved && "fill-current"
-        )}
-      />
+      <Heart size={size} className={cn("transition-all duration-300", isSaved && "fill-current")} />
     </button>
   );
 }

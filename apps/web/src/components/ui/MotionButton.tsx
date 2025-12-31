@@ -8,10 +8,7 @@ import { scaleOnHover } from "./motion";
 export function MotionButton(props: React.ComponentProps<typeof Button>) {
   const { children, ...rest } = props;
   return (
-    <motion.div
-      whileHover={scaleOnHover.whileHover}
-      whileTap={scaleOnHover.whileTap}
-    >
+    <motion.div whileHover={scaleOnHover.whileHover} whileTap={scaleOnHover.whileTap}>
       <Button {...(rest as any)}>{children}</Button>
     </motion.div>
   );

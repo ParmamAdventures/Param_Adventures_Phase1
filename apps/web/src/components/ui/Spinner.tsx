@@ -1,4 +1,4 @@
-export function Spinner({ size = 16, className = "" }: { size?: number, className?: string }) {
+export function Spinner({ size = 16, className = "" }: { size?: number; className?: string }) {
   return (
     <svg
       width={size}

@@ -1,4 +1,3 @@
-
 jest.mock("../../src/lib/prisma", () => ({
   __esModule: true,
   prisma: {
@@ -35,16 +34,27 @@ describe("BookingService", () => {
 
   describe("createBooking", () => {
     it("should create a booking successfully", async () => {
-      const bookingData = { userId: "user-1", tripId: "trip-1", startDate: "2024-01-01", guests: 2 };
-      const mockTrip = { id: "trip-1", price: 100, status: "PUBLISHED", title: "Test Trip", slug: "test-trip" };
-      
+      const bookingData = {
+        userId: "user-1",
+        tripId: "trip-1",
+        startDate: "2024-01-01",
+        guests: 2,
+      };
+      const mockTrip = {
+        id: "trip-1",
+        price: 100,
+        status: "PUBLISHED",
+        title: "Test Trip",
+        slug: "test-trip",
+      };
+
       prismaMock.trip.findUnique.mockResolvedValue(mockTrip);
       prismaMock.booking.create.mockResolvedValue({
         id: "booking-1",
         ...bookingData,
         totalPrice: 200,
         status: "REQUESTED",
-        trip: { title: "Test Trip", slug: "test-trip" }
+        trip: { title: "Test Trip", slug: "test-trip" },
       });
 
       const result = await bookingService.createBooking(bookingData);
@@ -57,14 +67,16 @@ describe("BookingService", () => {
 
     it("should throw error if trip not found", async () => {
       prismaMock.trip.findUnique.mockResolvedValue(null);
-      await expect(bookingService.createBooking({ userId: "u1", tripId: "t1", startDate: "2024", guests: 1 }))
-        .rejects.toThrow("Trip not found");
+      await expect(
+        bookingService.createBooking({ userId: "u1", tripId: "t1", startDate: "2024", guests: 1 }),
+      ).rejects.toThrow("Trip not found");
     });
 
     it("should throw error if trip is not published", async () => {
       prismaMock.trip.findUnique.mockResolvedValue({ status: "DRAFT" });
-      await expect(bookingService.createBooking({ userId: "u1", tripId: "t1", startDate: "2024", guests: 1 }))
-        .rejects.toThrow("Trip is not available for booking");
+      await expect(
+        bookingService.createBooking({ userId: "u1", tripId: "t1", startDate: "2024", guests: 1 }),
+      ).rejects.toThrow("Trip is not available for booking");
     });
   });
 
@@ -79,7 +91,7 @@ describe("BookingService", () => {
       expect(result.status).toBe("CANCELLED");
       expect(prismaMock.booking.update).toHaveBeenCalledWith({
         where: { id: "b1" },
-        data: { status: "CANCELLED" }
+        data: { status: "CANCELLED" },
       });
     });
 

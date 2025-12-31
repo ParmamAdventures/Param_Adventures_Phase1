@@ -1,9 +1,9 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
   const email = "akashkbhat216@gmail.com";
-  
+
   // Find roles
   const superAdminRole = await prisma.role.findUnique({ where: { name: "SUPER_ADMIN" } });
   const adminRole = await prisma.role.findUnique({ where: { name: "ADMIN" } });
@@ -31,5 +31,5 @@ async function main() {
 }
 
 main()
-  .catch(e => console.error(e))
+  .catch((e) => console.error(e))
   .finally(() => prisma.$disconnect());

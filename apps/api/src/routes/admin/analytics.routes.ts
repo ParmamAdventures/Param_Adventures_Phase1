@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { getRevenueSummary, getTripPerformance, getBookingStats, getModerationSummary } from "../../controllers/admin/analytics.controller";
+import {
+  getRevenueSummary,
+  getTripPerformance,
+  getBookingStats,
+  getModerationSummary,
+} from "../../controllers/admin/analytics.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";
 import { requirePermission } from "../../middlewares/require-permission.middleware";

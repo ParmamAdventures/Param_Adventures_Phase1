@@ -17,10 +17,7 @@ export type ProcessedMedia = {
   duration: number; // in seconds, 0 if unknown
 };
 
-export async function processMedia(
-  buffer: Buffer,
-  mimeType: string
-): Promise<ProcessedMedia> {
+export async function processMedia(buffer: Buffer, mimeType: string): Promise<ProcessedMedia> {
   // Ensure directories exist
   await fs.mkdir(path.join(UPLOAD_DIR, "original"), { recursive: true });
   await fs.mkdir(path.join(UPLOAD_DIR, "medium"), { recursive: true });
@@ -77,7 +74,7 @@ async function processImage(buffer: Buffer, mimeType: string): Promise<Processed
     size: stats.size,
     mimeType: "image/webp",
     type: "IMAGE",
-    duration: 0
+    duration: 0,
   };
 }
 
@@ -85,27 +82,27 @@ async function processVideo(buffer: Buffer, mimeType: string): Promise<Processed
   const id = crypto.randomUUID();
   // Keep original extension or default to .mp4/.webm based on mimetype
   const ext = mimeType === "video/webm" ? ".webm" : ".mp4";
-  
+
   const filename = `${id}${ext}`;
   const originalPath = path.join(UPLOAD_DIR, "original", filename);
 
   // For video, we just save the original file for now
   await fs.writeFile(originalPath, buffer);
-  
+
   const stats = await fs.stat(originalPath);
 
-  // TODO: Extract duration/dimensions if possible without ffmpeg, 
+  // TODO: Extract duration/dimensions if possible without ffmpeg,
   // or rely on client sending metadata. For now, use placeholders.
-  
+
   return {
     originalUrl: `/uploads/original/${filename}`,
     mediumUrl: `/uploads/original/${filename}`, // Reuse original for now
-    thumbUrl: `/uploads/original/${filename}`,   // Reuse original (frontend can use video poster)
+    thumbUrl: `/uploads/original/${filename}`, // Reuse original (frontend can use video poster)
     width: 0,
     height: 0,
     size: stats.size,
     mimeType: mimeType,
     type: "VIDEO",
-    duration: 0
+    duration: 0,
   };
 }

@@ -28,9 +28,12 @@ export default function AdminBlogsPage() {
     load();
   }, [load]);
 
-  async function handleAction(id: string, type: "submit" | "approve" | "reject" | "publish" | "archive") {
+  async function handleAction(
+    id: string,
+    type: "submit" | "approve" | "reject" | "publish" | "archive",
+  ) {
     if (!confirm(`Are you sure you want to ${type} this blog?`)) return;
-    
+
     try {
       const response = await apiFetch(`/blogs/${id}/${type}`, { method: "POST" });
       if (response.ok) {
@@ -45,10 +48,10 @@ export default function AdminBlogsPage() {
   }
 
   return (
-    <div className="space-y-8 max-w-6xl mx-auto pb-12">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="mx-auto max-w-6xl space-y-8 pb-12">
+      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div className="space-y-1">
-          <h1 className="text-4xl font-extrabold tracking-tight text-foreground bg-clip-text">
+          <h1 className="text-foreground bg-clip-text text-4xl font-extrabold tracking-tight">
             Editorial Queue
           </h1>
           <p className="text-muted-foreground text-lg">
@@ -62,12 +65,7 @@ export default function AdminBlogsPage() {
         </div>
       </div>
 
-      <BlogListTable 
-        blogs={blogs} 
-        loading={loading} 
-        onAction={handleAction}
-        onRefresh={load}
-      />
+      <BlogListTable blogs={blogs} loading={loading} onAction={handleAction} onRefresh={load} />
     </div>
   );
 }

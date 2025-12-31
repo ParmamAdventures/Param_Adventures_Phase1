@@ -4,7 +4,7 @@ export default function BlogMeta({ blog }: { blog: any }) {
   const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString() : "";
 
   return (
-    <div className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+    <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium">
       <span className="text-foreground">{authorName}</span>
       <span>•</span>
       <span>{formattedDate}</span>

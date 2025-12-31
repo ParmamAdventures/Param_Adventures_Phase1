@@ -2,13 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { 
-  Tent, 
-  Briefcase, 
-  GraduationCap, 
-  Sprout, 
-  Map 
-} from "lucide-react";
+import { Tent, Briefcase, GraduationCap, Sprout, Map } from "lucide-react";
 
 const categories = [
   {
@@ -55,18 +49,16 @@ const categories = [
 
 export function AdventureCategories() {
   return (
-    <section className="py-24 bg-surface">
-      <div className="max-w-7xl mx-auto px-6 md:px-8">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight">
-            Choose Your Adventure
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+    <section className="bg-surface py-24">
+      <div className="mx-auto max-w-7xl px-6 md:px-8">
+        <div className="mb-16 space-y-4 text-center">
+          <h2 className="text-3xl font-black tracking-tight md:text-5xl">Choose Your Adventure</h2>
+          <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
             Whether you seek adrenaline, peace, or connection, we have the perfect path for you.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-5">
           {categories.map((cat, idx) => (
             <Link key={cat.id} href={cat.href} className="group">
               <motion.div
@@ -74,17 +66,17 @@ export function AdventureCategories() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="h-full bg-background border border-border p-6 rounded-2xl hover:border-accent/50 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group-hover:bg-accent/5"
+                className="bg-background border-border hover:border-accent/50 group-hover:bg-accent/5 flex h-full flex-col items-center rounded-2xl border p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className={`p-4 rounded-full mb-4 ${cat.color} group-hover:scale-110 transition-transform duration-300`}>
+                <div
+                  className={`mb-4 rounded-full p-4 ${cat.color} transition-transform duration-300 group-hover:scale-110`}
+                >
                   <cat.icon size={32} strokeWidth={1.5} />
                 </div>
-                <h3 className="text-lg font-bold mb-2 group-hover:text-accent transition-colors">
+                <h3 className="group-hover:text-accent mb-2 text-lg font-bold transition-colors">
                   {cat.title}
                 </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {cat.description}
-                </p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{cat.description}</p>
               </motion.div>
             </Link>
           ))}

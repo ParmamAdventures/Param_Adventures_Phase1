@@ -11,7 +11,9 @@ describe("User Profile Integration", () => {
 
   beforeAll(async () => {
     // Clean up
-    try { await prisma.user.deleteMany(); } catch (e) {}
+    try {
+      await prisma.user.deleteMany();
+    } catch (e) {}
 
     // Create user
     const user = await prisma.user.create({
@@ -51,11 +53,9 @@ describe("User Profile Integration", () => {
   });
 
   it("should return 401 if unauthorized", async () => {
-    const res = await request(app)
-      .patch("/users/profile")
-      .send({
-        nickname: "Hacker",
-      });
+    const res = await request(app).patch("/users/profile").send({
+      nickname: "Hacker",
+    });
 
     expect(res.status).toBe(401);
   });

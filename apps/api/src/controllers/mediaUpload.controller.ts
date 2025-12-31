@@ -9,10 +9,7 @@ export const uploadImage = catchAsync(async (req: Request, res: Response) => {
     return ApiResponse.error(res, "NO_FILE_UPLOADED", 400);
   }
 
-  const mediaData = await processMedia(
-    req.file.buffer,
-    req.file.mimetype
-  );
+  const mediaData = await processMedia(req.file.buffer, req.file.mimetype);
 
   const image = await prisma.image.create({
     data: {

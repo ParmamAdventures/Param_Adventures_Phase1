@@ -30,15 +30,15 @@ export async function addTripGalleryImage(req: Request, res: Response) {
         create: {
           imageId: imageId,
           order: nextOrder,
-        }
-      }
+        },
+      },
     },
     include: {
       gallery: {
         orderBy: { order: "asc" },
-        include: { image: true }
-      }
-    }
+        include: { image: true },
+      },
+    },
   });
 
   res.json(trip);

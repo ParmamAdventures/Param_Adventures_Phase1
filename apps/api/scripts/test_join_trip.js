@@ -59,9 +59,7 @@ async function run() {
       update: {},
       create: { roleId: publicRole.id, permissionId: bookingPerm.id },
     });
-    console.log(
-      "Assigned PUBLIC role to test user and ensured booking:create permission"
-    );
+    console.log("Assigned PUBLIC role to test user and ensured booking:create permission");
   }
 
   // 2. Fetch a published trip

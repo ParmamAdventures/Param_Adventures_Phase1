@@ -15,11 +15,7 @@ function expectThrows(fn: () => void, msg?: string) {
     process.exitCode = 1;
     process.exit(1);
   } catch (err: any) {
-    if (
-      !err ||
-      !err.message ||
-      !err.message.startsWith("INVALID_BOOKING_TRANSITION")
-    ) {
+    if (!err || !err.message || !err.message.startsWith("INVALID_BOOKING_TRANSITION")) {
       console.error(`FAIL: ${msg || ""} — unexpected error: ${err}`);
       process.exitCode = 1;
       process.exit(1);
@@ -33,22 +29,22 @@ console.log("Testing booking transition validator...");
 expectEqual(
   assertBookingTransition("REQUESTED" as any, "approve" as any),
   "CONFIRMED",
-  "REQUESTED -> approve"
+  "REQUESTED -> approve",
 );
 expectEqual(
   assertBookingTransition("REQUESTED" as any, "reject" as any),
   "REJECTED",
-  "REQUESTED -> reject"
+  "REQUESTED -> reject",
 );
 
 // Invalid transitions
 expectThrows(
   () => assertBookingTransition("CONFIRMED" as any, "approve" as any),
-  "CONFIRMED -> approve"
+  "CONFIRMED -> approve",
 );
 expectThrows(
   () => assertBookingTransition("REJECTED" as any, "approve" as any),
-  "REJECTED -> approve"
+  "REJECTED -> approve",
 );
 
 console.log("All booking transition tests passed");

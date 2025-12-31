@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import { listAllBookings } from "../../controllers/admin/listAllBookings.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
@@ -12,7 +11,7 @@ router.get(
   requireAuth,
   attachPermissions,
   requirePermission("booking:read:admin"),
-  listAllBookings
+  listAllBookings,
 );
 
 export default router;

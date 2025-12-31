@@ -25,13 +25,13 @@ export const getManagerTrips = catchAsync(async (req: Request, res: Response) =>
     include: {
       coverImage: true,
       guides: {
-          include: {
-              guide: { select: { id: true, name: true, email: true, avatarImage: true } }
-          }
+        include: {
+          guide: { select: { id: true, name: true, email: true, avatarImage: true } },
+        },
       },
       _count: {
-        select: { bookings: true }
-      }
+        select: { bookings: true },
+      },
     },
   });
 

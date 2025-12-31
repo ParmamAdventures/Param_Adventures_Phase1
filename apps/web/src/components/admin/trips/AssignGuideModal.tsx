@@ -78,38 +78,41 @@ export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) 
         <DialogHeader>
           <DialogTitle>Assign Trip Guide</DialogTitle>
         </DialogHeader>
-        
-        <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto">
+
+        <div className="max-h-[60vh] space-y-4 overflow-y-auto py-4">
           {loading ? (
             <div className="flex justify-center p-4">
               <Spinner size={24} />
             </div>
           ) : guides.length === 0 ? (
-            <p className="text-center text-muted-foreground p-4">No eligible guides found.</p>
+            <p className="text-muted-foreground p-4 text-center">No eligible guides found.</p>
           ) : (
             <div className="grid gap-2">
               {guides.map((guide) => (
                 <div
                   key={guide.id}
                   onClick={() => setSelectedGuideId(guide.id)}
-                  className={`
-                    flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all
-                    ${selectedGuideId === guide.id 
-                      ? "border-accent bg-accent/5 ring-1 ring-accent" 
-                      : "border-border hover:border-accent/50 hover:bg-muted/50"}
-                  `}
+                  className={`flex cursor-pointer items-center justify-between rounded-xl border p-3 transition-all ${
+                    selectedGuideId === guide.id
+                      ? "border-accent bg-accent/5 ring-accent ring-1"
+                      : "border-border hover:border-accent/50 hover:bg-muted/50"
+                  } `}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full">
                       {guide.avatarImage ? (
-                        <img src={guide.avatarImage.thumbUrl} alt={guide.name} className="w-full h-full object-cover" />
+                        <img
+                          src={guide.avatarImage.thumbUrl}
+                          alt={guide.name}
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
                         <User size={16} className="text-muted-foreground" />
                       )}
                     </div>
                     <div>
-                      <p className="font-bold text-sm">{guide.name}</p>
-                      <p className="text-xs text-muted-foreground">{guide.email}</p>
+                      <p className="text-sm font-bold">{guide.name}</p>
+                      <p className="text-muted-foreground text-xs">{guide.email}</p>
                     </div>
                   </div>
                   {selectedGuideId === guide.id && <Check size={18} className="text-accent" />}
@@ -123,11 +126,7 @@ export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) 
           <Button variant="ghost" onClick={onClose} disabled={assigning}>
             Cancel
           </Button>
-          <Button 
-            variant="primary" 
-            onClick={handleAssign} 
-            disabled={assigning || !selectedGuideId}
-          >
+          <Button variant="primary" onClick={handleAssign} disabled={assigning || !selectedGuideId}>
             {assigning ? "Assigning..." : "Assign Guide"}
           </Button>
         </DialogFooter>

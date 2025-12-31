@@ -2,10 +2,7 @@ import { BookingStatus } from "@prisma/client";
 
 type Action = "approve" | "reject";
 
-const transitions: Record<
-  BookingStatus,
-  Partial<Record<Action, BookingStatus>>
-> = {
+const transitions: Record<BookingStatus, Partial<Record<Action, BookingStatus>>> = {
   REQUESTED: {
     approve: "CONFIRMED",
     reject: "REJECTED",
@@ -16,10 +13,7 @@ const transitions: Record<
   COMPLETED: {},
 };
 
-export function assertBookingTransition(
-  from: BookingStatus,
-  action: Action
-): BookingStatus {
+export function assertBookingTransition(from: BookingStatus, action: Action): BookingStatus {
   const next = transitions[from]?.[action];
 
   if (!next) {

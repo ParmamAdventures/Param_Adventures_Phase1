@@ -14,9 +14,7 @@ export async function listTripBookings(req: Request, res: Response) {
     include: { user: { select: { id: true, name: true, email: true } } },
   });
 
-  const confirmedCount = bookings.filter(
-    (b) => b.status === "CONFIRMED"
-  ).length;
+  const confirmedCount = bookings.filter((b) => b.status === "CONFIRMED").length;
 
   return res.json({
     trip: {
@@ -29,9 +27,7 @@ export async function listTripBookings(req: Request, res: Response) {
       id: b.id,
       status: b.status,
       createdAt: b.createdAt,
-      user: b.user
-        ? { id: b.user.id, name: b.user.name, email: b.user.email }
-        : null,
+      user: b.user ? { id: b.user.id, name: b.user.name, email: b.user.email } : null,
     })),
   });
 }

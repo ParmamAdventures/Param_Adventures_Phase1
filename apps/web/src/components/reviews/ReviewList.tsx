@@ -1,10 +1,9 @@
-
 "use client";
 
-import React, { useEffect, useState } from 'react';
-import StarRating from './StarRating';
-import { apiFetch } from '@/lib/api';
-import { formatDistanceToNow } from 'date-fns';
+import React, { useEffect, useState } from "react";
+import StarRating from "./StarRating";
+import { apiFetch } from "@/lib/api";
+import { formatDistanceToNow } from "date-fns";
 
 interface Review {
   id: string;
@@ -34,8 +33,8 @@ export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) 
       try {
         const res = await apiFetch(`/reviews/${tripId}`);
         if (res.ok) {
-            const data = await res.json();
-            setReviews(data);
+          const data = await res.json();
+          setReviews(data);
         }
       } catch (error) {
         console.error("Failed to fetch reviews", error);
@@ -52,7 +51,11 @@ export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) 
   }
 
   if (reviews.length === 0) {
-    return <div className="text-muted-foreground text-sm italic">No reviews yet. Be the first to share your experience!</div>;
+    return (
+      <div className="text-muted-foreground text-sm italic">
+        No reviews yet. Be the first to share your experience!
+      </div>
+    );
   }
 
   return (
@@ -60,29 +63,35 @@ export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) 
       <h3 className="text-xl font-semibold">Traveler Reviews ({reviews.length})</h3>
       <div className="space-y-6">
         {reviews.map((review) => (
-          <div key={review.id} className="border-b border-border pb-6 last:border-0 last:pb-0">
-            <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-accent/10 overflow-hidden flex-shrink-0">
-                        {review.user.avatarImage ? (
-                            <img src={review.user.avatarImage.thumbUrl} alt={review.user.name || "User"} className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-accent font-bold">
-                                {(review.user.name?.[0] || "U").toUpperCase()}
-                            </div>
-                        )}
+          <div key={review.id} className="border-border border-b pb-6 last:border-0 last:pb-0">
+            <div className="mb-2 flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-accent/10 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
+                  {review.user.avatarImage ? (
+                    <img
+                      src={review.user.avatarImage.thumbUrl}
+                      alt={review.user.name || "User"}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="text-accent flex h-full w-full items-center justify-center font-bold">
+                      {(review.user.name?.[0] || "U").toUpperCase()}
                     </div>
-                    <div>
-                        <div className="font-semibold text-sm">{review.user.name || "Anonymous Traveler"}</div>
-                        <div className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(review.createdAt), { addSuffix: true })}</div>
-                    </div>
+                  )}
                 </div>
-                <StarRating rating={review.rating} size={16} />
+                <div>
+                  <div className="text-sm font-semibold">
+                    {review.user.name || "Anonymous Traveler"}
+                  </div>
+                  <div className="text-muted-foreground text-xs">
+                    {formatDistanceToNow(new Date(review.createdAt), { addSuffix: true })}
+                  </div>
+                </div>
+              </div>
+              <StarRating rating={review.rating} size={16} />
             </div>
             {review.comment && (
-                <p className="text-sm text-foreground/80 mt-2 leading-relaxed">
-                    {review.comment}
-                </p>
+              <p className="text-foreground/80 mt-2 text-sm leading-relaxed">{review.comment}</p>
             )}
           </div>
         ))}

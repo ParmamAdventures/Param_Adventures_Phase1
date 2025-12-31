@@ -23,7 +23,7 @@ html {
   --muted: #64748b;
   --border: #e5e7eb;
   --accent: #ff6a00;
-  
+
   /* Motion tokens */
   --motion-fast: 120ms;
   --motion-base: 180ms;
@@ -162,12 +162,15 @@ body {
 }
 
 /* Floating & Bubble Menus */
-.bubble-menu, .floating-menu {
+.bubble-menu,
+.floating-menu {
   display: flex;
   background-color: var(--card);
   padding: 0.25rem;
   border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   border: 1px solid var(--border);
   gap: 0.25rem;
   z-index: 50;
@@ -202,7 +205,9 @@ body {
 
 /* Base Motion Utilities */
 .hover-lift {
-  transition: transform var(--motion-base) var(--motion-ease), box-shadow var(--motion-base) var(--motion-ease);
+  transition:
+    transform var(--motion-base) var(--motion-ease),
+    box-shadow var(--motion-base) var(--motion-ease);
 }
 
 .hover-lift:hover {
@@ -229,8 +234,12 @@ body {
 }
 
 @keyframes progress-loading {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(300%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
 }
 
 .animate-fade-in-up {

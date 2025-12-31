@@ -4,8 +4,7 @@ import crypto from "crypto";
 import fetch from "node-fetch";
 
 (async function main() {
-  process.env.RAZORPAY_WEBHOOK_SECRET =
-    process.env.RAZORPAY_WEBHOOK_SECRET || "testsecret";
+  process.env.RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || "testsecret";
   const prisma = new PrismaClient();
   try {
     // create user/trip/booking/payment similar to test_webhook_e2e
@@ -56,8 +55,7 @@ import fetch from "node-fetch";
       .update(payload)
       .digest("hex");
 
-    const url =
-      process.env.API_URL || "http://localhost:3001/webhooks/razorpay";
+    const url = process.env.API_URL || "http://localhost:3001/webhooks/razorpay";
     console.log("POSTing webhook to", url);
     const res = await fetch(url, {
       method: "POST",

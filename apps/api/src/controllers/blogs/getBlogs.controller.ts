@@ -6,15 +6,15 @@ export async function getBlogs(req: Request, res: Response) {
 
   const blogs = await prisma.blog.findMany({
     where: status ? { status: status as any } : undefined,
-    include: { 
+    include: {
       author: {
         select: {
           id: true,
           name: true,
           email: true,
-        }
-      }, 
-      coverImage: true 
+        },
+      },
+      coverImage: true,
     },
     orderBy: { createdAt: "desc" },
   });

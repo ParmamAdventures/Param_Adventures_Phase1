@@ -19,27 +19,27 @@ describe("Admin Analytics Integration", () => {
     const adminRole = await prisma.role.upsert({
       where: { name: "SUPER_ADMIN" },
       update: {},
-      create: { name: "SUPER_ADMIN", isSystem: true }
+      create: { name: "SUPER_ADMIN", isSystem: true },
     });
 
     const viewPerm = await prisma.permission.upsert({
       where: { key: "analytics:view" },
       update: {},
-      create: { key: "analytics:view", description: "View analytics" }
+      create: { key: "analytics:view", description: "View analytics" },
     });
 
     await prisma.rolePermission.upsert({
       where: {
         roleId_permissionId: {
           roleId: adminRole.id,
-          permissionId: viewPerm.id
-        }
+          permissionId: viewPerm.id,
+        },
       },
       update: {},
       create: {
         roleId: adminRole.id,
-        permissionId: viewPerm.id
-      }
+        permissionId: viewPerm.id,
+      },
     });
 
     // Create admin
@@ -48,15 +48,15 @@ describe("Admin Analytics Integration", () => {
         email: "admin_analytics@example.com",
         password: "password123",
         name: "Admin Analytics",
-        status: "ACTIVE"
-      }
+        status: "ACTIVE",
+      },
     });
 
     await prisma.userRole.create({
       data: {
         userId: admin.id,
-        roleId: adminRole.id
-      }
+        roleId: adminRole.id,
+      },
     });
 
     userId = admin.id;
@@ -74,8 +74,8 @@ describe("Admin Analytics Integration", () => {
         difficulty: "MEDIUM",
         itinerary: [],
         status: "PUBLISHED",
-        createdById: userId
-      }
+        createdById: userId,
+      },
     });
 
     // Create multiple bookings and payments across different statuses
@@ -86,8 +86,8 @@ describe("Admin Analytics Integration", () => {
         status: "CONFIRMED",
         totalPrice: 2000,
         guests: 2,
-        startDate: new Date()
-      }
+        startDate: new Date(),
+      },
     });
 
     await prisma.payment.create({
@@ -98,8 +98,8 @@ describe("Admin Analytics Integration", () => {
         status: "CAPTURED",
         provider: "RAZORPAY",
         providerPaymentId: "pay_1",
-        providerOrderId: "order_1"
-      }
+        providerOrderId: "order_1",
+      },
     });
 
     await prisma.booking.create({
@@ -109,8 +109,8 @@ describe("Admin Analytics Integration", () => {
         status: "CANCELLED",
         totalPrice: 1000,
         guests: 1,
-        startDate: new Date()
-      }
+        startDate: new Date(),
+      },
     });
   });
 
@@ -125,7 +125,7 @@ describe("Admin Analytics Integration", () => {
       expect(res.body).toHaveProperty("potentialRevenue");
       expect(res.body).toHaveProperty("growthPercentage");
       expect(Array.isArray(res.body.monthlyChart)).toBe(true);
-      
+
       // Based on our setup: 2000 INR confirmed, 2000 INR captured
       expect(res.body.currentMonthRevenue).toBe(2000);
       expect(res.body.potentialRevenue).toBe(2000); // Only confirmed/requested

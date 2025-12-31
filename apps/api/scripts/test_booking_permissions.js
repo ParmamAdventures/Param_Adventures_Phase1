@@ -56,10 +56,10 @@ async function run() {
   const token = loginJson.accessToken;
 
   // Try approve -> expect 403
-  const res = await fetch(
-    `http://localhost:3000/bookings/${booking.id}/approve`,
-    { method: "POST", headers: { Authorization: `Bearer ${token}` } }
-  );
+  const res = await fetch(`http://localhost:3000/bookings/${booking.id}/approve`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
   console.log("Approve without perm status (expect 403):", res.status);
   console.log(await res.json());
 
@@ -141,10 +141,10 @@ async function run() {
   // (debug /auth/me removed)
 
   // Try approve as operator (should have booking:approve via ADMIN role)
-  const res2 = await fetch(
-    `http://localhost:3000/bookings/${booking.id}/approve`,
-    { method: "POST", headers: { Authorization: `Bearer ${opToken}` } }
-  );
+  const res2 = await fetch(`http://localhost:3000/bookings/${booking.id}/approve`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${opToken}` },
+  });
   console.log("Approve with ADMIN status (expect 200 or 409):", res2.status);
   console.log(await res2.json());
 

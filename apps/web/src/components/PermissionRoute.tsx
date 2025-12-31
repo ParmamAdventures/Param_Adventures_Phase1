@@ -18,8 +18,7 @@ export default function PermissionRoute({
     if (!loading) {
       if (!user) router.replace("/login");
       else {
-        const perms: string[] =
-          (user as { permissions?: string[] } | null)?.permissions || [];
+        const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];
         if (!perms.includes(permission)) router.replace("/dashboard");
       }
     }
@@ -28,8 +27,7 @@ export default function PermissionRoute({
   if (loading) return <p>Loading...</p>;
   if (!user) return null;
 
-  const perms: string[] =
-    (user as { permissions?: string[] } | null)?.permissions || [];
+  const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];
   if (!perms.includes(permission)) return null;
 
   return <>{children}</>;

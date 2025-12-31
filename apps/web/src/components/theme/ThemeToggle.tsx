@@ -21,10 +21,7 @@ export default function ThemeToggle() {
               style={{
                 display: "inline-block",
                 transition: "transform 200ms ease, opacity 200ms ease",
-                transform:
-                  theme === "dark"
-                    ? "rotate(40deg) scale(0.95)"
-                    : "rotate(0deg) scale(1)",
+                transform: theme === "dark" ? "rotate(40deg) scale(0.95)" : "rotate(0deg) scale(1)",
               }}
             >
               {theme === "dark" ? "🌙" : "☀️"}

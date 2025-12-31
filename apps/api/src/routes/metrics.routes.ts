@@ -13,7 +13,7 @@ router.get(
   requirePermission("metrics:read"),
   (_req, res) => {
     res.json(getWebhookMetrics());
-  }
+  },
 );
 
 export default router;

@@ -18,10 +18,10 @@ export default function BlogsClient() {
     try {
       const params = new URLSearchParams();
       if (search) params.append("search", search);
-      
+
       const res = await apiFetch(`/blogs/public?${params.toString()}`);
       if (!res.ok) throw new Error("Failed to load stories");
-      
+
       const data = await res.json();
       setBlogs(data);
     } catch (err: any) {
@@ -42,30 +42,35 @@ export default function BlogsClient() {
   return (
     <div className="space-y-12">
       {/* Search Bar */}
-      <div className="max-w-2xl mx-auto -mt-12 mb-16 relative group">
-        <div className="absolute inset-0 bg-[var(--accent)]/10 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        <div className="relative flex items-center bg-[var(--card)]/80 backdrop-blur-2xl border border-[var(--border)] rounded-3xl p-2 shadow-2xl shadow-black/10 transition-all focus-within:ring-2 focus-within:ring-[var(--accent)]/50 focus-within:border-[var(--accent)]">
-          <div className="pl-4 text-muted-foreground">
+      <div className="group relative mx-auto -mt-12 mb-16 max-w-2xl">
+        <div className="absolute inset-0 rounded-full bg-[var(--accent)]/10 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="relative flex items-center rounded-3xl border border-[var(--border)] bg-[var(--card)]/80 p-2 shadow-2xl shadow-black/10 backdrop-blur-2xl transition-all focus-within:border-[var(--accent)] focus-within:ring-2 focus-within:ring-[var(--accent)]/50">
+          <div className="text-muted-foreground pl-4">
             <Search size={20} />
           </div>
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Search stories, survival tips, or expeditions..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent border-none outline-none px-4 py-3 text-sm font-bold placeholder:text-muted-foreground/30"
+            className="placeholder:text-muted-foreground/30 flex-1 border-none bg-transparent px-4 py-3 text-sm font-bold outline-none"
           />
           {loading ? (
-             <div className="pr-4 text-[var(--accent)] animate-spin">
-               <Loader2 size={20} />
-             </div>
+            <div className="animate-spin pr-4 text-[var(--accent)]">
+              <Loader2 size={20} />
+            </div>
           ) : search ? (
-            <button onClick={() => setSearch("")} className="pr-4 text-muted-foreground hover:text-red-500 transition-colors">
+            <button
+              onClick={() => setSearch("")}
+              className="text-muted-foreground pr-4 transition-colors hover:text-red-500"
+            >
               <X size={20} />
             </button>
           ) : (
-            <div className="pr-4 pointer-events-none">
-                <span className="hidden md:block text-[10px] font-black uppercase tracking-widest text-muted-foreground bg-[var(--background)] px-2 py-1 rounded-lg">Enter to Search</span>
+            <div className="pointer-events-none pr-4">
+              <span className="text-muted-foreground hidden rounded-lg bg-[var(--background)] px-2 py-1 text-[10px] font-black tracking-widest uppercase md:block">
+                Enter to Search
+              </span>
             </div>
           )}
         </div>
@@ -75,23 +80,31 @@ export default function BlogsClient() {
       <div className="min-h-[400px]">
         {blogs === null ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-             {[1, 2, 3].map(i => (
-                <div key={i} className="aspect-[4/5] bg-[var(--card)] rounded-[40px] animate-pulse border border-[var(--border)]" />
-             ))}
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="aspect-[4/5] animate-pulse rounded-[40px] border border-[var(--border)] bg-[var(--card)]"
+              />
+            ))}
           </div>
         ) : error ? (
-           <Card className="text-center py-20 border-red-500/20 bg-red-500/5">
-              <h3 className="text-xl font-bold text-red-500">Error Loading Stories</h3>
-              <p className="text-muted-foreground mt-2">{error}</p>
-              <button onClick={loadBlogs} className="mt-6 px-8 py-3 bg-[var(--accent)] text-white rounded-2xl font-bold">Try Again</button>
-           </Card>
+          <Card className="border-red-500/20 bg-red-500/5 py-20 text-center">
+            <h3 className="text-xl font-bold text-red-500">Error Loading Stories</h3>
+            <p className="text-muted-foreground mt-2">{error}</p>
+            <button
+              onClick={loadBlogs}
+              className="mt-6 rounded-2xl bg-[var(--accent)] px-8 py-3 font-bold text-white"
+            >
+              Try Again
+            </button>
+          </Card>
         ) : blogs.length === 0 ? (
-          <Card className="text-center py-32 border-dashed bg-[var(--surface)]/50 rounded-[40px]">
-            <div className="mx-auto w-16 h-16 rounded-3xl bg-[var(--accent)]/5 flex items-center justify-center text-[var(--accent)] mb-6">
+          <Card className="rounded-[40px] border-dashed bg-[var(--surface)]/50 py-32 text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--accent)]/5 text-[var(--accent)]">
               <Search size={32} />
             </div>
             <h3 className="text-2xl font-bold">No stories found</h3>
-            <p className="text-muted-foreground mt-2 max-w-xs mx-auto font-medium">
+            <p className="text-muted-foreground mx-auto mt-2 max-w-xs font-medium">
               We couldn't find any matches for "{search}". Try another keyword?
             </p>
           </Card>

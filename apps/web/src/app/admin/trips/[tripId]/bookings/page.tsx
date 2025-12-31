@@ -36,17 +36,13 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
   const [trip, setTrip] = useState<Trip | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<{ code: string; message: string } | null>(
-    null
-  );
+  const [error, setError] = useState<{ code: string; message: string } | null>(null);
   const [processingIds, setProcessingIds] = useState<string[]>([]);
   const { loading: authLoading, user: currentUser } = useAuth();
   const { showToast } = useToast();
 
-  const perms: string[] =
-    (currentUser as { permissions?: string[] } | null)?.permissions || [];
-  const canManage =
-    perms.includes("booking:approve") && perms.includes("booking:reject");
+  const perms: string[] = (currentUser as { permissions?: string[] } | null)?.permissions || [];
+  const canManage = perms.includes("booking:approve") && perms.includes("booking:reject");
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -79,9 +75,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
   }, [fetchData]);
 
   const setProcessing = (id: string, v: boolean) =>
-    setProcessingIds((prev) =>
-      v ? [...prev, id] : prev.filter((x) => x !== id)
-    );
+    setProcessingIds((prev) => (v ? [...prev, id] : prev.filter((x) => x !== id)));
 
   const approveBooking = async (id: string) => {
     setError(null);
@@ -100,10 +94,8 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
         });
         try {
           showToast(
-            ERROR_MESSAGES[code] ||
-              body?.error?.message ||
-              "Failed to approve booking",
-            "error"
+            ERROR_MESSAGES[code] || body?.error?.message || "Failed to approve booking",
+            "error",
           );
         } catch {}
         return;
@@ -142,10 +134,8 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
         });
         try {
           showToast(
-            ERROR_MESSAGES[code] ||
-              body?.error?.message ||
-              "Failed to reject booking",
-            "error"
+            ERROR_MESSAGES[code] || body?.error?.message || "Failed to reject booking",
+            "error",
           );
         } catch {}
         return;
@@ -174,8 +164,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
       <h2>Bookings for {trip?.title ?? tripId}</h2>
 
       <p>
-        Capacity: {trip?.capacity ?? "-"} — Confirmed:{" "}
-        {trip?.confirmedCount ?? 0}
+        Capacity: {trip?.capacity ?? "-"} — Confirmed: {trip?.confirmedCount ?? 0}
       </p>
 
       {error && (
@@ -202,9 +191,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
               <tr key={b.id}>
                 <td>{new Date(b.createdAt).toLocaleString()}</td>
                 <td>{b.status}</td>
-                <td>
-                  {b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}
-                </td>
+                <td>{b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}</td>
                 <td>
                   {needsAction ? (
                     showActions ? (

@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
-import ReviewForm from './ReviewForm';
+import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
+import ReviewForm from "./ReviewForm";
 
 interface ReviewBookingModalProps {
   isOpen: boolean;
@@ -16,12 +15,17 @@ interface ReviewBookingModalProps {
   onSuccess?: () => void;
 }
 
-export default function ReviewBookingModal({ isOpen, onClose, booking, onSuccess }: ReviewBookingModalProps) {
+export default function ReviewBookingModal({
+  isOpen,
+  onClose,
+  booking,
+  onSuccess,
+}: ReviewBookingModalProps) {
   if (!booking) return null;
 
   const handleSuccess = () => {
-      if (onSuccess) onSuccess();
-      onClose();
+    if (onSuccess) onSuccess();
+    onClose();
   };
 
   return (
@@ -31,7 +35,7 @@ export default function ReviewBookingModal({ isOpen, onClose, booking, onSuccess
           <DialogTitle>Review {booking.trip.title}</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-             <ReviewForm tripId={booking.tripId} onSuccess={handleSuccess} />
+          <ReviewForm tripId={booking.tripId} onSuccess={handleSuccess} />
         </div>
       </DialogContent>
     </Dialog>

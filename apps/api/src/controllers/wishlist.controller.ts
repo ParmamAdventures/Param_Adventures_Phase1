@@ -1,6 +1,5 @@
-
-import { Request, Response } from 'express';
-import { prisma } from '../lib/prisma';
+import { Request, Response } from "express";
+import { prisma } from "../lib/prisma";
 
 // Toggle Wishlist (Add/Remove)
 export const toggleWishlist = async (req: Request, res: Response) => {
@@ -9,7 +8,7 @@ export const toggleWishlist = async (req: Request, res: Response) => {
     const userId = req.user!.id;
 
     if (!tripId) {
-      return res.status(400).json({ message: 'Trip ID is required' });
+      return res.status(400).json({ message: "Trip ID is required" });
     }
 
     // Check if trip exists
@@ -18,7 +17,7 @@ export const toggleWishlist = async (req: Request, res: Response) => {
     });
 
     if (!trip) {
-      return res.status(404).json({ message: 'Trip not found' });
+      return res.status(404).json({ message: "Trip not found" });
     }
 
     // Check if already saved using composite key
@@ -41,7 +40,7 @@ export const toggleWishlist = async (req: Request, res: Response) => {
           },
         },
       });
-      return res.json({ message: 'Removed from wishlist', saved: false });
+      return res.json({ message: "Removed from wishlist", saved: false });
     } else {
       // Add
       await prisma.savedTrip.create({
@@ -50,11 +49,11 @@ export const toggleWishlist = async (req: Request, res: Response) => {
           tripId,
         },
       });
-      return res.status(201).json({ message: 'Added to wishlist', saved: true });
+      return res.status(201).json({ message: "Added to wishlist", saved: true });
     }
   } catch (error) {
-    console.error('Toggle Wishlist Error:', error);
-    res.status(500).json({ message: 'Failed to update wishlist' });
+    console.error("Toggle Wishlist Error:", error);
+    res.status(500).json({ message: "Failed to update wishlist" });
   }
 };
 
@@ -87,7 +86,7 @@ export const getWishlist = async (req: Request, res: Response) => {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
@@ -96,7 +95,7 @@ export const getWishlist = async (req: Request, res: Response) => {
 
     res.json(trips);
   } catch (error) {
-    console.error('Get Wishlist Error:', error);
-    res.status(500).json({ message: 'Failed to fetch wishlist' });
+    console.error("Get Wishlist Error:", error);
+    res.status(500).json({ message: "Failed to fetch wishlist" });
   }
 };

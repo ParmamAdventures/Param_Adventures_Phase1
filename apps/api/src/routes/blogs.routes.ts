@@ -25,13 +25,37 @@ router.get("/public/:slug", getBlogBySlug);
 router.get("/my-blogs", requireAuth, attachPermissions, getMyBlogs);
 router.post("/", requireAuth, attachPermissions, requirePermission("blog:create"), createBlog);
 router.put("/:id", requireAuth, attachPermissions, updateBlog);
-router.post("/:id/submit", requireAuth, attachPermissions, requirePermission("blog:submit"), submitBlog);
+router.post(
+  "/:id/submit",
+  requireAuth,
+  attachPermissions,
+  requirePermission("blog:submit"),
+  submitBlog,
+);
 
 // Admin-only moderation routes
 router.get("/", requireAuth, attachPermissions, requirePermission("blog:approve"), getBlogs);
-router.post("/:id/approve", requireAuth, attachPermissions, requirePermission("blog:approve"), approveBlog);
-router.post("/:id/publish", requireAuth, attachPermissions, requirePermission("blog:publish"), publishBlog);
-router.post("/:id/reject", requireAuth, attachPermissions, requirePermission("blog:reject"), rejectBlog);
+router.post(
+  "/:id/approve",
+  requireAuth,
+  attachPermissions,
+  requirePermission("blog:approve"),
+  approveBlog,
+);
+router.post(
+  "/:id/publish",
+  requireAuth,
+  attachPermissions,
+  requirePermission("blog:publish"),
+  publishBlog,
+);
+router.post(
+  "/:id/reject",
+  requireAuth,
+  attachPermissions,
+  requirePermission("blog:reject"),
+  rejectBlog,
+);
 
 // General authenticated route (permission checked in controller)
 router.get("/:id", requireAuth, attachPermissions, getBlogById);

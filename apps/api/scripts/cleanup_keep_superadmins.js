@@ -61,23 +61,17 @@ async function run() {
   });
 
   if (!candidates.length) {
-    console.log(
-      "No candidate test users found to remove (excluding SUPER_ADMINs and local.test)."
-    );
+    console.log("No candidate test users found to remove (excluding SUPER_ADMINs and local.test).");
     await prisma.$disconnect();
     return;
   }
 
-  console.log(
-    "Found",
-    candidates.length,
-    "candidate users to remove (excluding SUPER_ADMINs):"
-  );
+  console.log("Found", candidates.length, "candidate users to remove (excluding SUPER_ADMINs):");
   candidates.forEach((u) => console.log(" -", u.email, u.id));
 
   if (!confirm) {
     console.log(
-      "Run this script with --yes to delete the above users and their bookings/roles/trips."
+      "Run this script with --yes to delete the above users and their bookings/roles/trips.",
     );
     await prisma.$disconnect();
     return;
@@ -102,7 +96,7 @@ async function run() {
       .deleteMany({ where: { tripId: { in: tripIds } } })
       .catch(() => ({ count: 0 }));
     console.log(
-      `Deleted ${tbDel.count ?? 0} bookings for ${tripIds.length} trips created by candidates.`
+      `Deleted ${tbDel.count ?? 0} bookings for ${tripIds.length} trips created by candidates.`,
     );
     const tDel = await prisma.trip
       .deleteMany({ where: { id: { in: tripIds } } })

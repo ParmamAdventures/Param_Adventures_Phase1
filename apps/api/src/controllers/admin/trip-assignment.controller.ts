@@ -24,14 +24,14 @@ export async function assignManager(req: Request, res: Response) {
     include: { roles: { include: { role: true } } },
   });
 
-  if (!manager || !manager.roles.some(r => r.role.name === "TRIP_MANAGER")) {
+  if (!manager || !manager.roles.some((r) => r.role.name === "TRIP_MANAGER")) {
     throw new HttpError(400, "INVALID_ROLE", "User does not have TRIP_MANAGER role");
   }
 
   const updatedTrip = await prisma.trip.update({
     where: { id: tripId },
     data: { managerId },
-    include: { manager: { select: { id: true, name: true, email: true } } }
+    include: { manager: { select: { id: true, name: true, email: true } } },
   });
 
   logger.info("Manager assigned to trip", { tripId, managerId });
@@ -42,7 +42,7 @@ export async function assignManager(req: Request, res: Response) {
     role: "TRIP_MANAGER",
     details: {
       tripTitle: trip.title,
-    }
+    },
   });
 
   res.json({ success: true, trip: updatedTrip });
@@ -77,17 +77,17 @@ export async function assignGuide(req: Request, res: Response) {
     include: { roles: { include: { role: true } } },
   });
 
-  if (!guide || !guide.roles.some(r => r.role.name === "TRIP_GUIDE")) {
+  if (!guide || !guide.roles.some((r) => r.role.name === "TRIP_GUIDE")) {
     throw new HttpError(400, "INVALID_ROLE", "User does not have TRIP_GUIDE role");
   }
 
   // Add to many-to-many relation
   await prisma.tripsOnGuides.upsert({
     where: {
-      tripId_guideId: { tripId, guideId }
+      tripId_guideId: { tripId, guideId },
     },
     update: {},
-    create: { tripId, guideId }
+    create: { tripId, guideId },
   });
 
   logger.info("Guide assigned to trip", { tripId, guideId, assignedBy: userId });
@@ -98,7 +98,7 @@ export async function assignGuide(req: Request, res: Response) {
     role: "TRIP_GUIDE",
     details: {
       tripTitle: trip.title,
-    }
+    },
   });
 
   res.json({ success: true, message: "Guide assigned successfully" });
@@ -123,8 +123,8 @@ export async function removeGuide(req: Request, res: Response) {
 
   await prisma.tripsOnGuides.delete({
     where: {
-      tripId_guideId: { tripId, guideId }
-    }
+      tripId_guideId: { tripId, guideId },
+    },
   });
 
   logger.info("Guide removed from trip", { tripId, guideId, removedBy: userId });
@@ -134,7 +134,7 @@ export async function removeGuide(req: Request, res: Response) {
 export async function listEligibleUsers(req: Request, res: Response) {
   const { role } = req.query; // 'TRIP_MANAGER' or 'TRIP_GUIDE'
 
-  if (!role || typeof role !== 'string') {
+  if (!role || typeof role !== "string") {
     throw new HttpError(400, "INVALID_REQUEST", "role query parameter is required");
   }
 
@@ -142,16 +142,16 @@ export async function listEligibleUsers(req: Request, res: Response) {
     where: {
       roles: {
         some: {
-          role: { name: role }
-        }
-      }
+          role: { name: role },
+        },
+      },
     },
     select: {
       id: true,
       name: true,
       email: true,
-      nickname: true
-    }
+      nickname: true,
+    },
   });
 
   res.json(users);

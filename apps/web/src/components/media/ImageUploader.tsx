@@ -73,33 +73,43 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
   return (
     <div className="space-y-3">
       <div
-        className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:border-blue-400 transition-colors bg-slate-50/50"
+        className="cursor-pointer rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 text-center transition-colors hover:border-blue-400"
         onClick={() => document.getElementById("fileInput")?.click()}
       >
         {preview ? (
-          <div className="relative group">
+          <div className="group relative">
             <img
               src={preview}
               alt="Preview"
-              className="mx-auto max-h-48 rounded-lg shadow-sm group-hover:opacity-75 transition-opacity"
+              className="mx-auto max-h-48 rounded-lg shadow-sm transition-opacity group-hover:opacity-75"
             />
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-sm font-medium text-slate-700 bg-white/80 px-3 py-1 rounded-full shadow-sm">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-700 shadow-sm">
                 Change Image
               </span>
             </div>
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="mx-auto w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                <circle cx="9" cy="9" r="2" />
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+              </svg>
             </div>
-            <p className="text-sm text-slate-500">
-              Click or drop an image here
-            </p>
-            <p className="text-xs text-slate-400">
-                JPG, PNG or WEBP (max. 5MB)
-            </p>
+            <p className="text-sm text-slate-500">Click or drop an image here</p>
+            <p className="text-xs text-slate-400">JPG, PNG or WEBP (max. 5MB)</p>
           </div>
         )}
       </div>
@@ -109,26 +119,24 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
         type="file"
         hidden
         accept="image/*"
-        onChange={(e) =>
-          e.target.files && handleSelect(e.target.files[0])
-        }
+        onChange={(e) => e.target.files && handleSelect(e.target.files[0])}
       />
 
-      {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
+      {error && <p className="text-sm font-medium text-red-500">{error}</p>}
 
       {file && (
-        <Button 
-            onClick={upload} 
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-100"
+        <Button
+          onClick={upload}
+          disabled={loading}
+          className="w-full bg-blue-600 text-white shadow-md shadow-blue-100 hover:bg-blue-700"
         >
           {loading ? (
             <div className="flex items-center gap-2">
-                <Spinner className="w-4 h-4" />
-                <span>Uploading...</span>
+              <Spinner className="h-4 w-4" />
+              <span>Uploading...</span>
             </div>
           ) : (
-             label
+            label
           )}
         </Button>
       )}

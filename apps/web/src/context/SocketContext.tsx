@@ -41,7 +41,10 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       });
 
       socket.on("assignment_update", (data) => {
-        showToast(`📋 New Assignment: You are assigned as ${data.role} for ${data.tripTitle}`, "info");
+        showToast(
+          `📋 New Assignment: You are assigned as ${data.role} for ${data.tripTitle}`,
+          "info",
+        );
       });
 
       socket.on("error", (err) => {

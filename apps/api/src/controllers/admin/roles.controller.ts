@@ -13,14 +13,13 @@ export async function listRoles(req: Request, res: Response) {
     },
   });
 
-
   res.json(
     roles.map((r) => ({
       id: r.id,
       name: r.name,
       isSystem: r.isSystem,
       permissions: r.permissions.map((p) => p.permission.key),
-    }))
+    })),
   );
 }
 

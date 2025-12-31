@@ -23,7 +23,7 @@ export function initSocket(httpServer: any) {
   // Authentication Middleware for Sockets
   io.use((socket, next) => {
     const token = socket.handshake.auth.token || socket.handshake.headers.authorization;
-    
+
     if (!token) {
       return next(new Error("Authentication error: No token provided"));
     }

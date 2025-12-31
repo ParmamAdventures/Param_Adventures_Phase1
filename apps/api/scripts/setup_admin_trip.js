@@ -21,8 +21,7 @@ async function run() {
   const superRole = await prisma.role.findUnique({
     where: { name: "SUPER_ADMIN" },
   });
-  if (!superRole)
-    throw new Error("SUPER_ADMIN role not found in DB (run seed)");
+  if (!superRole) throw new Error("SUPER_ADMIN role not found in DB (run seed)");
   await prisma.userRole.upsert({
     where: { userId_roleId: { userId: admin.id, roleId: superRole.id } },
     update: {},
@@ -70,9 +69,7 @@ async function run() {
     data: { userId: u2.id, tripId: trip.id, status: "REQUESTED" },
   });
 
-  console.log(
-    "Setup complete. Use these credentials to sign in via the web app:"
-  );
+  console.log("Setup complete. Use these credentials to sign in via the web app:");
   console.log("Admin email:", adminEmail);
   console.log("Admin password:", adminPassword);
   console.log("Admin bookings page URL (open in browser after starting web):");

@@ -39,8 +39,8 @@ export default function DynamicList({
 
   return (
     <div className="space-y-3">
-      {label && <label className="block text-sm font-semibold text-foreground">{label}</label>}
-      
+      {label && <label className="text-foreground block text-sm font-semibold">{label}</label>}
+
       <div className="flex gap-2">
         <input
           disabled={disabled}
@@ -48,7 +48,7 @@ export default function DynamicList({
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="flex-1 px-4 py-2 border border-input rounded-lg outline-none focus:border-primary bg-background text-foreground transition-colors placeholder:text-muted-foreground"
+          className="border-input focus:border-primary bg-background text-foreground placeholder:text-muted-foreground flex-1 rounded-lg border px-4 py-2 transition-colors outline-none"
         />
         <Button
           type="button"
@@ -62,17 +62,33 @@ export default function DynamicList({
       </div>
 
       {items.length > 0 && (
-        <ul className="space-y-2 mt-2">
+        <ul className="mt-2 space-y-2">
           {items.map((item, index) => (
-            <li key={index} className="flex items-center justify-between p-3 bg-muted/40 border border-border rounded-lg group">
-              <span className="text-sm text-foreground">{item}</span>
+            <li
+              key={index}
+              className="bg-muted/40 border-border group flex items-center justify-between rounded-lg border p-3"
+            >
+              <span className="text-foreground text-sm">{item}</span>
               <button
                 type="button"
                 onClick={() => remove(index)}
                 disabled={disabled}
-                className="text-muted-foreground hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all p-1"
+                className="text-muted-foreground p-1 opacity-0 transition-all group-hover:opacity-100 hover:text-red-500"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
               </button>
             </li>
           ))}

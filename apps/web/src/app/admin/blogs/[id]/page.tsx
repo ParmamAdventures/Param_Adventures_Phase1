@@ -23,7 +23,7 @@ export default function BlogPreviewPage() {
           const data = await response.json();
           setBlog(data);
         } else {
-           console.error("Failed to fetch blog");
+          console.error("Failed to fetch blog");
         }
       } catch (error) {
         console.error("Error fetching blog", error);
@@ -55,60 +55,56 @@ export default function BlogPreviewPage() {
   if (!blog) return <div className="p-10 text-center text-red-500">Blog not found.</div>;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
+    <div className="mx-auto max-w-4xl space-y-8 pb-20">
       <div className="flex items-center gap-4">
-        <Link href="/admin/blogs" className="text-sm text-accent hover:underline">
+        <Link href="/admin/blogs" className="text-accent text-sm hover:underline">
           &larr; Back to list
         </Link>
       </div>
 
-      <div className="border-b pb-6 space-y-4">
+      <div className="space-y-4 border-b pb-6">
         <h1 className="text-4xl font-bold tracking-tight">{blog.title}</h1>
-        <div className="flex items-center gap-3 text-muted-foreground">
-           <span className="font-medium text-foreground">{blog.author?.name || blog.author?.email}</span>
-           <span>•</span>
-           <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
-           <span>•</span>
-           <span className="bg-accent/10 text-accent px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider">
-             {blog.status}
-           </span>
+        <div className="text-muted-foreground flex items-center gap-3">
+          <span className="text-foreground font-medium">
+            {blog.author?.name || blog.author?.email}
+          </span>
+          <span>•</span>
+          <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+          <span>•</span>
+          <span className="bg-accent/10 text-accent rounded px-2 py-0.5 text-xs font-semibold tracking-wider uppercase">
+            {blog.status}
+          </span>
         </div>
       </div>
 
       {blog.coverImage && (
-        <div className="aspect-video relative rounded-xl overflow-hidden bg-muted">
-          <img 
-            src={blog.coverImage.mediumUrl} 
+        <div className="bg-muted relative aspect-video overflow-hidden rounded-xl">
+          <img
+            src={blog.coverImage.mediumUrl}
             alt={blog.title}
-            className="object-cover w-full h-full"
+            className="h-full w-full object-cover"
           />
         </div>
       )}
 
       {blog.excerpt && (
-        <p className="text-xl text-muted-foreground italic border-l-4 pl-4 py-2">
-          {blog.excerpt}
-        </p>
+        <p className="text-muted-foreground border-l-4 py-2 pl-4 text-xl italic">{blog.excerpt}</p>
       )}
 
       <div className="prose prose-lg dark:prose-invert max-w-none">
         <BlogEditor value={blog.content} readOnly />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t flex justify-center gap-4 z-50">
+      <div className="bg-background/80 fixed right-0 bottom-0 left-0 z-50 flex justify-center gap-4 border-t p-4 backdrop-blur-md">
         <Button
           variant="primary"
           onClick={() => action("approve")}
-          className="bg-green-600 hover:bg-green-700 text-white px-8"
+          className="bg-green-600 px-8 text-white hover:bg-green-700"
         >
           Approve Blog
         </Button>
 
-        <Button
-          variant="danger"
-          onClick={() => action("reject")}
-          className="px-8"
-        >
+        <Button variant="danger" onClick={() => action("reject")} className="px-8">
           Reject Blog
         </Button>
       </div>

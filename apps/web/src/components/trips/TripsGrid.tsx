@@ -7,11 +7,9 @@ import MotionCard from "../ui/MotionCard";
 export default function TripsGrid({ trips }: { trips: any[] }) {
   if (!trips || trips.length === 0) {
     return (
-      <Card className="text-center py-16">
+      <Card className="py-16 text-center">
         <h3 className="text-lg font-semibold">No trips available yet</h3>
-        <p className="text-[var(--muted)] mt-2">
-          New adventures coming soon 🚀
-        </p>
+        <p className="mt-2 text-[var(--muted)]">New adventures coming soon 🚀</p>
         <div className="mt-4">
           <Link href="/trips/new">
             <Button variant="primary">Create Trip</Button>

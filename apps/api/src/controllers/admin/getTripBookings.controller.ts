@@ -29,9 +29,7 @@ export async function getTripBookings(req: Request, res: Response) {
       id: b.id,
       status: b.status,
       createdAt: b.createdAt,
-      user: b.user
-        ? { id: b.user.id, name: b.user.name, email: b.user.email }
-        : null,
+      user: b.user ? { id: b.user.id, name: b.user.name, email: b.user.email } : null,
     })),
   });
 }

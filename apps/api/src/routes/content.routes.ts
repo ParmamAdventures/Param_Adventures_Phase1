@@ -12,8 +12,8 @@ const router = Router();
 router.get("/hero-slides", getHeroSlides);
 
 // Admin: Update a slide
-// For now, we reuse an existing permission or just ensure they are authenticated as admin. 
-// Since we didn't seed 'hero:update', let's use 'trip:publish' as a proxy for Content Admin, 
+// For now, we reuse an existing permission or just ensure they are authenticated as admin.
+// Since we didn't seed 'hero:update', let's use 'trip:publish' as a proxy for Content Admin,
 // or simply assume SUPER_ADMIN/ADMIN has access if we skip strict permission check for this demo.
 // But to be safe and follow pattern:
 router.put(
@@ -21,9 +21,8 @@ router.put(
   requireAuth,
   attachPermissions,
   // requirePermission("hero:update"), // We don't have this yet.
-  updateHeroSlide
+  updateHeroSlide,
 );
-
 
 // Public: Get stats
 router.get("/stats", getPublicStats);
@@ -33,11 +32,11 @@ router.get("/config", SiteConfigController.getSiteConfigs);
 
 // Admin: Update Site Config
 router.put(
-    "/config",
-    requireAuth,
-    attachPermissions,
-    // requirePermission("site:update"), // Future proofing
-    SiteConfigController.updateSiteConfig
+  "/config",
+  requireAuth,
+  attachPermissions,
+  // requirePermission("site:update"), // Future proofing
+  SiteConfigController.updateSiteConfig,
 );
 
 export default router;

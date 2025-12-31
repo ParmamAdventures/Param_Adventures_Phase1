@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { listUsers, updateUserStatus, deleteUser, unsuspendUser } from "../../controllers/admin/users.controller";
+import {
+  listUsers,
+  updateUserStatus,
+  deleteUser,
+  unsuspendUser,
+} from "../../controllers/admin/users.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";
 import { requirePermission } from "../../middlewares/require-permission.middleware";
@@ -13,7 +18,7 @@ router.get(
   attachPermissions,
   requirePermission("user:list"),
   autoLog({ action: "USER_LIST_VIEW", targetType: "User" }),
-  listUsers
+  listUsers,
 );
 
 router.patch(
@@ -22,23 +27,17 @@ router.patch(
   attachPermissions,
   requirePermission("user:edit"),
   autoLog({ action: "USER_STATUS_CHANGE", targetType: "User" }),
-  updateUserStatus
+  updateUserStatus,
 );
 
-router.delete(
-  "/:id",
-  requireAuth,
-  attachPermissions,
-  requirePermission("user:delete"),
-  deleteUser
-);
+router.delete("/:id", requireAuth, attachPermissions, requirePermission("user:delete"), deleteUser);
 
 router.patch(
   "/:id/unsuspend",
   requireAuth,
   attachPermissions,
   requirePermission("user:edit"),
-  unsuspendUser
+  unsuspendUser,
 );
 
 export default router;

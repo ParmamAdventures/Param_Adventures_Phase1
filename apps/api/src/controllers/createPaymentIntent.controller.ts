@@ -25,14 +25,14 @@ export async function createPaymentIntent(req: Request, res: Response) {
     throw new HttpError(403, "FORBIDDEN", "Not your booking");
   }
 
-  // Support both CONFIRMED (if prepay is required after manual review) 
+  // Support both CONFIRMED (if prepay is required after manual review)
   // and REQUESTED (if payment is allowed immediately)
   const allowedStatuses = ["REQUESTED", "CONFIRMED"];
   if (!allowedStatuses.includes(booking.status)) {
     throw new HttpError(
       403,
       "INVALID_STATE",
-      `Booking status must be one of [${allowedStatuses.join(", ")}] to pay`
+      `Booking status must be one of [${allowedStatuses.join(", ")}] to pay`,
     );
   }
 
@@ -44,7 +44,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
   }
 
   const razorpayConfigured =
-    env.RAZORPAY_KEY_ID !== "rzp_test_placeholder" && 
+    env.RAZORPAY_KEY_ID !== "rzp_test_placeholder" &&
     env.RAZORPAY_KEY_SECRET !== "placeholder_secret";
 
   let finalOrder: any = null;
@@ -63,7 +63,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
         throw new HttpError(
           500,
           "PAYMENT_PROVIDER_NOT_CONFIGURED",
-          "Payment service is temporarily unavailable"
+          "Payment service is temporarily unavailable",
         );
       }
 
@@ -76,11 +76,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
         receipt: booking.id,
       } as any;
     } else {
-      throw new HttpError(
-        500,
-        "INTERNAL_ERROR",
-        "Failed to create provider order"
-      );
+      throw new HttpError(500, "INTERNAL_ERROR", "Failed to create provider order");
     }
   }
 

@@ -2,7 +2,13 @@
 
 import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { apiFetch } from "@/lib/api";
 import getCroppedImg from "@/lib/canvasUtils";
@@ -43,14 +49,14 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
 
   const handleUpload = async () => {
     if (!imageSrc || !croppedAreaPixels) return;
-    
+
     setLoading(true);
     try {
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       if (!croppedImageBlob) throw new Error("Could not crop image");
 
       const file = new File([croppedImageBlob], "cropped.jpg", { type: "image/jpeg" });
-      
+
       const formData = new FormData();
       formData.append("file", file);
 
@@ -64,7 +70,7 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
       const data = await res.json();
       // data.image.mediumUrl or originalUrl
       const finalUrl = data.image.originalUrl || data.image.mediumUrl;
-      
+
       setUploadedUrl(finalUrl);
       onUpload(finalUrl);
       setImageSrc(null); // Close cropper
@@ -79,16 +85,16 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
   return (
     <div className="space-y-4">
       {!uploadedUrl && !imageSrc && (
-         <div
-            className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer hover:border-blue-400 transition-colors bg-slate-50/50"
-            onClick={() => document.getElementById("cropInput")?.click()}
+        <div
+          className="cursor-pointer rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-6 text-center transition-colors hover:border-blue-400"
+          onClick={() => document.getElementById("cropInput")?.click()}
         >
-             <div className="mx-auto w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 mb-2">
-                <ImageIcon size={20} />
-            </div>
-            <p className="text-sm text-slate-500">{label}</p>
-            <p className="text-xs text-slate-400">JPG/PNG with Crop</p>
-         </div>
+          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+            <ImageIcon size={20} />
+          </div>
+          <p className="text-sm text-slate-500">{label}</p>
+          <p className="text-xs text-slate-400">JPG/PNG with Crop</p>
+        </div>
       )}
 
       <input
@@ -100,14 +106,21 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
       />
 
       {uploadedUrl && (
-          <div className="relative rounded-xl overflow-hidden border border-border group">
-              <img src={uploadedUrl} alt="Uploaded" className="w-full h-48 object-cover" />
-              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                   <Button variant="outline" size="sm" onClick={() => { setUploadedUrl(null); setImageSrc(null); }}>
-                       Replace
-                   </Button>
-              </div>
+        <div className="border-border group relative overflow-hidden rounded-xl border">
+          <img src={uploadedUrl} alt="Uploaded" className="h-48 w-full object-cover" />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setUploadedUrl(null);
+                setImageSrc(null);
+              }}
+            >
+              Replace
+            </Button>
           </div>
+        </div>
       )}
 
       {/* Cropper Modal */}
@@ -116,10 +129,10 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
           <DialogHeader>
             <DialogTitle>Adjust Image</DialogTitle>
           </DialogHeader>
-          
-          <div className="relative w-full h-80 bg-black">
+
+          <div className="relative h-80 w-full bg-black">
             {imageSrc && (
-                <Cropper
+              <Cropper
                 image={imageSrc}
                 crop={crop}
                 zoom={zoom}
@@ -127,27 +140,33 @@ export default function CroppedImageUploader({ onUpload, label = "Upload Image" 
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
-                />
+              />
             )}
           </div>
 
           <div className="mt-4">
-             <label className="text-xs text-muted-foreground">Zoom</label>
-             <input 
-                type="range" 
-                min={1} 
-                max={3} 
-                step={0.1} 
-                value={zoom} 
-                onChange={(e) => setZoom(Number(e.target.value))} 
-                className="w-full"
-             />
+            <label className="text-muted-foreground text-xs">Zoom</label>
+            <input
+              type="range"
+              min={1}
+              max={3}
+              step={0.1}
+              value={zoom}
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="w-full"
+            />
           </div>
 
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setImageSrc(null)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setImageSrc(null)}>
+              Cancel
+            </Button>
             <Button onClick={handleUpload} disabled={loading}>
-              {loading ? <Loader2 className="animate-spin mr-2" /> : <CropIcon className="mr-2" size={16} />}
+              {loading ? (
+                <Loader2 className="mr-2 animate-spin" />
+              ) : (
+                <CropIcon className="mr-2" size={16} />
+              )}
               Crop & Upload
             </Button>
           </DialogFooter>

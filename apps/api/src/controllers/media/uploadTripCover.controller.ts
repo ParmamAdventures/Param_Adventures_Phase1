@@ -30,8 +30,8 @@ export async function uploadTripCover(req: Request, res: Response) {
   // Update Trip
   await prisma.trip.update({
     where: { id: tripId },
-    data: { 
-      coverImageId: image.id 
+    data: {
+      coverImageId: image.id,
     },
   });
 

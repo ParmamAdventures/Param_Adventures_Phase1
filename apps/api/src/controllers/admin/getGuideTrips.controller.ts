@@ -20,19 +20,19 @@ export async function getGuideTrips(req: Request, res: Response) {
                     name: true,
                     phoneNumber: true,
                     email: true,
-                  }
-                }
-              }
-            }
-          }
-        }
+                  },
+                },
+              },
+            },
+          },
+        },
       },
-      orderBy: { trip: { startDate: "asc" } }
+      orderBy: { trip: { startDate: "asc" } },
     });
 
-    const trips = assignments.map(a => ({
-        ...a.trip,
-        assignedAt: a.assignedAt
+    const trips = assignments.map((a) => ({
+      ...a.trip,
+      assignedAt: a.assignedAt,
     }));
 
     res.json(trips);

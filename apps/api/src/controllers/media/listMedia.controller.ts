@@ -8,7 +8,7 @@ export async function listMedia(req: Request, res: Response) {
   try {
     const where: any = {};
     if (type && type !== "ALL") {
-        where.type = type;
+      where.type = type;
     }
 
     const [mediaItems, total] = await Promise.all([
@@ -18,26 +18,26 @@ export async function listMedia(req: Request, res: Response) {
         skip,
         take: Number(limit),
         include: {
-            _count: {
-                select: {
-                    tripsCover: true,
-                    blogsCover: true,
-                    userAvatar: true,
-                    tripsGallery: true,
-                }
-            }
-        }
+          _count: {
+            select: {
+              tripsCover: true,
+              blogsCover: true,
+              userAvatar: true,
+              tripsGallery: true,
+            },
+          },
+        },
       }),
       prisma.image.count({ where }),
     ]);
 
-    const media = mediaItems.map(item => ({
-        ...item,
-        usage: {
-            trips: item._count.tripsCover + item._count.tripsGallery,
-            blogs: item._count.blogsCover,
-            users: item._count.userAvatar
-        }
+    const media = mediaItems.map((item) => ({
+      ...item,
+      usage: {
+        trips: item._count.tripsCover + item._count.tripsGallery,
+        blogs: item._count.blogsCover,
+        users: item._count.userAvatar,
+      },
     }));
 
     res.json({
@@ -56,21 +56,23 @@ export async function listMedia(req: Request, res: Response) {
 }
 
 export async function deleteMedia(req: Request, res: Response) {
-    const { id } = req.params;
-    try {
-        await prisma.image.delete({
-            where: { id }
-        });
-        // TODO: Delete actual file from disk to save space
-        res.json({ success: true });
-    } catch (error: any) {
-        console.error("Delete media error:", error);
-        if (error.code === 'P2003') {
-            return res.status(400).json({ error: "Cannot delete media because it is being used by other records (Trips/Blogs/Users)." });
-        }
-        if (error.code === 'P2025') {
-            return res.status(404).json({ error: "Media not found." });
-        }
-        res.status(500).json({ error: "Failed to delete media" });
+  const { id } = req.params;
+  try {
+    await prisma.image.delete({
+      where: { id },
+    });
+    // TODO: Delete actual file from disk to save space
+    res.json({ success: true });
+  } catch (error: any) {
+    console.error("Delete media error:", error);
+    if (error.code === "P2003") {
+      return res.status(400).json({
+        error: "Cannot delete media because it is being used by other records (Trips/Blogs/Users).",
+      });
     }
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Media not found." });
+    }
+    res.status(500).json({ error: "Failed to delete media" });
+  }
 }

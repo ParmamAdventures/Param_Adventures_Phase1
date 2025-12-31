@@ -7,7 +7,7 @@ require("dotenv").config();
   try {
     console.log(
       "Running test_create_intent_env.js with NODE_ENV=",
-      process.env.NODE_ENV || "(unset)"
+      process.env.NODE_ENV || "(unset)",
     );
 
     const admin = await prisma.user.findUnique({
@@ -23,9 +23,7 @@ require("dotenv").config();
       orderBy: { createdAt: "desc" },
     });
     if (!booking) {
-      console.error(
-        "No CONFIRMED booking found for admin. Run seed_admin_booking.js first."
-      );
+      console.error("No CONFIRMED booking found for admin. Run seed_admin_booking.js first.");
       process.exit(1);
     }
 
@@ -45,11 +43,7 @@ require("dotenv").config();
       const jb = JSON.parse(loginBody);
       token = jb.accessToken || jb.token || null;
     } catch (e) {
-      console.error(
-        "Login failed or returned non-json:",
-        loginRes.status,
-        loginBody
-      );
+      console.error("Login failed or returned non-json:", loginRes.status, loginBody);
       process.exit(1);
     }
 
@@ -85,14 +79,12 @@ require("dotenv").config();
     });
     console.log(
       "Payments for booking (latest 5):",
-      payments
-        .slice(0, 5)
-        .map((p) => ({
-          id: p.id,
-          providerOrderId: p.providerOrderId,
-          status: p.status,
-          createdAt: p.createdAt,
-        }))
+      payments.slice(0, 5).map((p) => ({
+        id: p.id,
+        providerOrderId: p.providerOrderId,
+        status: p.status,
+        createdAt: p.createdAt,
+      })),
     );
 
     await prisma.$disconnect();

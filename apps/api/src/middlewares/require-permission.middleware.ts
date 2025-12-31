@@ -7,51 +7,51 @@ export function requirePermission(permission: string) {
     const user = (req as any).user;
 
     if (!user) {
-        throw new HttpError(403, "FORBIDDEN", "Unauthenticated");
+      throw new HttpError(403, "FORBIDDEN", "Unauthenticated");
     }
 
     // Check if permission is present in current list
     if (user.permissions && user.permissions.includes(permission)) {
-        return next();
+      return next();
     }
 
     // If not present (or permissions list is empty), fetch from DB to be sure
     const dbUser = await prisma.user.findUnique({
-        where: { id: user.id },
-        include: {
-            roles: {
-                include: {
-                    role: {
-                        include: {
-                            permissions: {
-                                include: {
-                                    permission: true
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+      where: { id: user.id },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (dbUser) {
-        const permissions = new Set<string>();
-        dbUser.roles.forEach(ur => {
-            ur.role.permissions.forEach(rp => {
-                permissions.add(rp.permission.key);
-            });
+      const permissions = new Set<string>();
+      dbUser.roles.forEach((ur) => {
+        ur.role.permissions.forEach((rp) => {
+          permissions.add(rp.permission.key);
         });
-        user.permissions = Array.from(permissions);
-        (req as any).user.permissions = user.permissions; // persist for downstream
+      });
+      user.permissions = Array.from(permissions);
+      (req as any).user.permissions = user.permissions; // persist for downstream
     }
-    
+
     // Final check
     if (!user.permissions?.includes(permission)) {
       throw new HttpError(
         403,
         "FORBIDDEN",
-        `You do not have permission to perform this action (${permission})`
+        `You do not have permission to perform this action (${permission})`,
       );
     }
 

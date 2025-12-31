@@ -21,9 +21,7 @@ export function autoLog(options: AutoLogOptions) {
       // If the status is 2xx, the action succeeded.
       if (res.statusCode >= 200 && res.statusCode < 300) {
         const actorId = (req as any).user?.id;
-        const targetId = options.getTargetId
-          ? options.getTargetId(req)
-          : req.params.id;
+        const targetId = options.getTargetId ? options.getTargetId(req) : req.params.id;
 
         auditService.logAudit({
           actorId,

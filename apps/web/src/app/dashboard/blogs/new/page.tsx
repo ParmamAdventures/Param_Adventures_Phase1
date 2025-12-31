@@ -16,39 +16,39 @@ export default function NewBlogPage() {
   const [content, setContent] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  
+
   const searchParams = useSearchParams();
   const tripIdParam = searchParams?.get("tripId");
   const [tripDetails, setTripDetails] = useState<any>(null);
 
   useEffect(() => {
     if (!tripIdParam) {
-        // Enforce: Must have a trip to write a blog (User Request)
-        alert("Please select a completed adventure to write about.");
-        router.push("/dashboard/bookings");
-        return;
+      // Enforce: Must have a trip to write a blog (User Request)
+      alert("Please select a completed adventure to write about.");
+      router.push("/dashboard/bookings");
+      return;
     }
 
     if (tripIdParam) {
-        setLoading(true);
-        // Verify trip exists and (optimally) valid booking
-        apiFetch(`/trips/${tripIdParam}`)
-            .then(res => {
-                if (!res.ok) throw new Error("Invalid Trip");
-                return res.json();
-            })
-            .then(setTripDetails)
-            .catch(() => {
-                alert("Invalid Trip");
-                router.push("/dashboard/bookings");
-            })
-            .finally(() => setLoading(false));
+      setLoading(true);
+      // Verify trip exists and (optimally) valid booking
+      apiFetch(`/trips/${tripIdParam}`)
+        .then((res) => {
+          if (!res.ok) throw new Error("Invalid Trip");
+          return res.json();
+        })
+        .then(setTripDetails)
+        .catch(() => {
+          alert("Invalid Trip");
+          router.push("/dashboard/bookings");
+        })
+        .finally(() => setLoading(false));
     }
   }, [tripIdParam, router]); // Dependency array updated
 
   async function handleSave(status: "DRAFT" | "SUBMIT") {
     if (!title) return alert("Title is required");
-    
+
     setLoading(true);
     try {
       const response = await apiFetch("/blogs", {
@@ -59,14 +59,14 @@ export default function NewBlogPage() {
           excerpt,
           content,
           coverImageId: coverImage?.id,
-          tripId: tripIdParam // Pass tripId if present
+          tripId: tripIdParam, // Pass tripId if present
         }),
       });
 
       if (response.ok) {
         const blog = await response.json();
         if (status === "SUBMIT") {
-// ... rest of the function remains same ...
+          // ... rest of the function remains same ...
           const submitRes = await apiFetch(`/blogs/${blog.id}/submit`, { method: "POST" });
           if (submitRes.ok) {
             router.push("/dashboard");
@@ -89,65 +89,101 @@ export default function NewBlogPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-6 space-y-8 pb-32">
+    <div className="mx-auto max-w-4xl space-y-8 px-6 py-10 pb-32">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Create New Blog</h1>
         <p className="text-muted-foreground">Share your adventure with the world.</p>
-        
+
         {tripDetails && (
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-sm font-medium border border-accent/20">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-                Writing about: {tripDetails.title}
-            </div>
+          <div className="bg-accent/10 text-accent border-accent/20 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg>
+            Writing about: {tripDetails.title}
+          </div>
         )}
       </div>
 
       <div className="space-y-6">
         <div className="space-y-2">
-           <label className="text-sm font-semibold uppercase tracking-wider opacity-70">Cover Image</label>
-           <div className="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4">
-             {coverImage ? (
-                <div className="relative aspect-video rounded-xl overflow-hidden group">
-                  <img src={coverImage.mediumUrl} alt="Cover" className="w-full h-full object-cover" />
-                  <button 
-                    onClick={() => setCoverImage(null)}
-                    className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+          <label className="text-sm font-semibold tracking-wider uppercase opacity-70">
+            Cover Image
+          </label>
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
+            {coverImage ? (
+              <div className="group relative aspect-video overflow-hidden rounded-xl">
+                <img
+                  src={coverImage.mediumUrl}
+                  alt="Cover"
+                  className="h-full w-full object-cover"
+                />
+                <button
+                  onClick={() => setCoverImage(null)}
+                  className="absolute top-2 right-2 rounded-full bg-black/50 p-2 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                  </button>
-                </div>
-             ) : (
-                <ImageUploader onUpload={setCoverImage} label="Upload Cover Image" />
-             )}
-           </div>
+                    <path d="M18 6 6 18" />
+                    <path d="m6 6 12 12" />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <ImageUploader onUpload={setCoverImage} label="Upload Cover Image" />
+            )}
+          </div>
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-semibold uppercase tracking-wider opacity-70">Title</label>
+          <label className="text-sm font-semibold tracking-wider uppercase opacity-70">Title</label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a catchy title..."
-            className="text-xl font-bold p-6 h-auto"
+            className="h-auto p-6 text-xl font-bold"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold uppercase tracking-wider opacity-70">Excerpt (Optional)</label>
+          <label className="text-sm font-semibold tracking-wider uppercase opacity-70">
+            Excerpt (Optional)
+          </label>
           <textarea
             value={excerpt}
             onChange={(e) => setExcerpt(e.target.value)}
             placeholder="A short summary for the preview card..."
-            className="w-full min-h-[100px] p-4 rounded-md border bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+            className="bg-surface focus:ring-accent/20 min-h-[100px] w-full rounded-md border p-4 text-sm transition-all focus:ring-2 focus:outline-none"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-semibold uppercase tracking-wider opacity-70">Content</label>
+          <label className="text-sm font-semibold tracking-wider uppercase opacity-70">
+            Content
+          </label>
           <BlogEditor value={content} onChange={setContent} />
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md border-t flex justify-center gap-4 z-50">
+      <div className="bg-background/80 fixed right-0 bottom-0 left-0 z-50 flex justify-center gap-4 border-t p-4 backdrop-blur-md">
         <Button
           variant="subtle"
           onClick={() => handleSave("DRAFT")}

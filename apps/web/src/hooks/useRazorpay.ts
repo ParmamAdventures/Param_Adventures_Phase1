@@ -1,4 +1,3 @@
-
 import { useState, useCallback, useRef } from "react";
 import { apiFetch } from "../lib/api";
 import { useToast } from "../components/ui/ToastProvider";
@@ -56,162 +55,173 @@ export function useRazorpay() {
     }
   }, []);
 
-  const startPolling = useCallback((bookingId: string) => {
-    clearPolling();
-    let attempts = 0;
-    const maxAttempts = 20;
+  const startPolling = useCallback(
+    (bookingId: string) => {
+      clearPolling();
+      let attempts = 0;
+      const maxAttempts = 20;
 
-    pollIntervalRef.current = setInterval(async () => {
-      attempts++;
-      try {
-        const res = await apiFetch("/bookings/me");
-        if (!res.ok) return;
+      pollIntervalRef.current = setInterval(async () => {
+        attempts++;
+        try {
+          const res = await apiFetch("/bookings/me");
+          if (!res.ok) return;
 
-        const bookings = await res.json();
-        const booking = bookings.find((b: any) => b.id === bookingId);
+          const bookings = await res.json();
+          const booking = bookings.find((b: any) => b.id === bookingId);
 
-        if (booking?.paymentStatus === "PAID") {
-          clearPolling();
-          setMessage("Payment successful! 🎉");
-          setLoading(false);
-          showToast("Payment verified successfully", "success");
-          router.refresh();
-        } else if (booking?.paymentStatus === "FAILED") {
-          clearPolling();
-          setMessage("Payment failed. Please try again.");
-          setLoading(false);
-          showToast("Payment verification failed", "error");
-        } else if (attempts >= maxAttempts) {
-          clearPolling();
-          setMessage("Verification taking longer than expected. Please refresh.");
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error("Polling error:", error);
-      }
-    }, 3000);
-  }, [clearPolling, router, showToast]);
-
-  const initiatePayment = useCallback(async (bookingId: string, user?: { name?: string; email?: string }) => {
-    setLoading(true);
-    setMessage("Initializing payment...");
-
-    try {
-      const res = await apiFetch("/payments/intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bookingId }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Failed to create payment intent");
-      }
-
-      const data = await res.json();
-      const orderId = data.orderId;
-
-      // Handle dev fallback
-      if (orderId.startsWith("order_test_")) {
-        setMessage("Dev order created. Click 'Simulate' to finish.");
-        setLoading(false);
-        return { isDev: true, orderId };
-      }
-
-      const scriptLoaded = await loadScript();
-      if (!scriptLoaded) {
-        throw new Error("Failed to load Razorpay SDK");
-      }
-
-      const Razorpay = (window as WindowWithRazorpay).Razorpay!;
-      const accentColor = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#FF6A00";
-
-      const options: RazorpayOptions = {
-        key: data.key,
-        amount: data.amount,
-        currency: data.currency || "INR",
-        order_id: orderId,
-        name: "Param Adventures",
-        description: "Trip Booking Payment",
-        prefill: {
-          name: user?.name,
-          email: user?.email,
-        },
-        theme: {
-          color: accentColor,
-        },
-        handler: async (response: any) => {
-          setMessage("Payment received. Verifying...");
-          setLoading(true);
-          try {
-            const verifyRes = await apiFetch("/payments/verify", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                orderId: response.razorpay_order_id,
-                paymentId: response.razorpay_payment_id,
-                signature: response.razorpay_signature,
-              }),
-            });
-            
-            if (verifyRes.ok) {
-              setMessage("Payment successful! 🎉");
-              setLoading(false);
-              showToast("Payment verified successfully", "success");
-              router.refresh();
-            } else {
-              startPolling(bookingId);
-            }
-          } catch (error) {
-            console.error("Verification error:", error);
-            startPolling(bookingId);
-          }
-        },
-        modal: {
-          ondismiss: () => {
-            setMessage("Payment cancelled");
+          if (booking?.paymentStatus === "PAID") {
+            clearPolling();
+            setMessage("Payment successful! 🎉");
             setLoading(false);
-          },
-        },
-      };
+            showToast("Payment verified successfully", "success");
+            router.refresh();
+          } else if (booking?.paymentStatus === "FAILED") {
+            clearPolling();
+            setMessage("Payment failed. Please try again.");
+            setLoading(false);
+            showToast("Payment verification failed", "error");
+          } else if (attempts >= maxAttempts) {
+            clearPolling();
+            setMessage("Verification taking longer than expected. Please refresh.");
+            setLoading(false);
+          }
+        } catch (error) {
+          console.error("Polling error:", error);
+        }
+      }, 3000);
+    },
+    [clearPolling, router, showToast],
+  );
 
-      const rzp = new Razorpay(options);
-      rzp.open();
-    } catch (error: any) {
-      console.error("Payment error:", error);
-      setMessage(error.message || "Payment failed to start");
-      showToast(error.message || "Payment failed", "error");
-      setLoading(false);
-    }
-    return { isDev: false };
-  }, [loadScript, showToast, startPolling]);
+  const initiatePayment = useCallback(
+    async (bookingId: string, user?: { name?: string; email?: string }) => {
+      setLoading(true);
+      setMessage("Initializing payment...");
 
-  const simulateDevSuccess = useCallback(async (bookingId: string, orderId?: string) => {
-    setMessage("Simulating success. Verifying...");
-    setLoading(true);
-
-    if (orderId) {
       try {
-        const verifyRes = await apiFetch("/payments/verify", {
+        const res = await apiFetch("/payments/intent", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderId }),
+          body: JSON.stringify({ bookingId }),
         });
-        
-        if (verifyRes.ok) {
-          setMessage("Payment successful! 🎉");
-          setLoading(false);
-          showToast("Payment verified successfully", "success");
-          router.refresh();
-          return;
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to create payment intent");
         }
-      } catch (error) {
-        console.error("Simulation verification error:", error);
+
+        const data = await res.json();
+        const orderId = data.orderId;
+
+        // Handle dev fallback
+        if (orderId.startsWith("order_test_")) {
+          setMessage("Dev order created. Click 'Simulate' to finish.");
+          setLoading(false);
+          return { isDev: true, orderId };
+        }
+
+        const scriptLoaded = await loadScript();
+        if (!scriptLoaded) {
+          throw new Error("Failed to load Razorpay SDK");
+        }
+
+        const Razorpay = (window as WindowWithRazorpay).Razorpay!;
+        const accentColor =
+          getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() ||
+          "#FF6A00";
+
+        const options: RazorpayOptions = {
+          key: data.key,
+          amount: data.amount,
+          currency: data.currency || "INR",
+          order_id: orderId,
+          name: "Param Adventures",
+          description: "Trip Booking Payment",
+          prefill: {
+            name: user?.name,
+            email: user?.email,
+          },
+          theme: {
+            color: accentColor,
+          },
+          handler: async (response: any) => {
+            setMessage("Payment received. Verifying...");
+            setLoading(true);
+            try {
+              const verifyRes = await apiFetch("/payments/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  orderId: response.razorpay_order_id,
+                  paymentId: response.razorpay_payment_id,
+                  signature: response.razorpay_signature,
+                }),
+              });
+
+              if (verifyRes.ok) {
+                setMessage("Payment successful! 🎉");
+                setLoading(false);
+                showToast("Payment verified successfully", "success");
+                router.refresh();
+              } else {
+                startPolling(bookingId);
+              }
+            } catch (error) {
+              console.error("Verification error:", error);
+              startPolling(bookingId);
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setMessage("Payment cancelled");
+              setLoading(false);
+            },
+          },
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } catch (error: any) {
+        console.error("Payment error:", error);
+        setMessage(error.message || "Payment failed to start");
+        showToast(error.message || "Payment failed", "error");
+        setLoading(false);
       }
-    }
-    
-    startPolling(bookingId);
-  }, [startPolling, router, showToast]);
+      return { isDev: false };
+    },
+    [loadScript, showToast, startPolling],
+  );
+
+  const simulateDevSuccess = useCallback(
+    async (bookingId: string, orderId?: string) => {
+      setMessage("Simulating success. Verifying...");
+      setLoading(true);
+
+      if (orderId) {
+        try {
+          const verifyRes = await apiFetch("/payments/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId }),
+          });
+
+          if (verifyRes.ok) {
+            setMessage("Payment successful! 🎉");
+            setLoading(false);
+            showToast("Payment verified successfully", "success");
+            router.refresh();
+            return;
+          }
+        } catch (error) {
+          console.error("Simulation verification error:", error);
+        }
+      }
+
+      startPolling(bookingId);
+    },
+    [startPolling, router, showToast],
+  );
 
   return {
     initiatePayment,

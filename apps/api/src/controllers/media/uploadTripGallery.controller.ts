@@ -17,7 +17,7 @@ export async function uploadTripGallery(req: Request, res: Response) {
     (req.files as Express.Multer.File[]).map(async (file) => {
       const result = await processImage(file.buffer, file.mimetype);
       processedResults.push(result);
-    })
+    }),
   );
 
   // Calculate starting order index
@@ -43,8 +43,8 @@ export async function uploadTripGallery(req: Request, res: Response) {
           create: {
             tripId,
             order: nextOrder++,
-          }
-        }
+          },
+        },
       },
     });
     imageRecords.push(image);

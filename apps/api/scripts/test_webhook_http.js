@@ -53,9 +53,7 @@ const http = require("http");
       .update(payload)
       .digest("hex");
 
-    const url = new URL(
-      process.env.API_URL || "http://localhost:3001/webhooks/razorpay"
-    );
+    const url = new URL(process.env.API_URL || "http://localhost:3001/webhooks/razorpay");
 
     const opts = {
       hostname: url.hostname,

@@ -1,7 +1,17 @@
 import { useState } from "react";
 import Button from "../ui/Button";
 import DynamicList from "../ui/DynamicList";
-import { Coffee, Utensils, Moon, Truck, MapPin, ChevronDown, ChevronUp, Trash2, Cookie } from "lucide-react";
+import {
+  Coffee,
+  Utensils,
+  Moon,
+  Truck,
+  MapPin,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  Cookie,
+} from "lucide-react";
 
 type ItineraryDay = {
   day: number;
@@ -50,13 +60,22 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
     onChange(newDays);
   };
 
-  const updateMeals = (index: number, meal: keyof NonNullable<ItineraryDay["meals"]>, value: boolean) => {
+  const updateMeals = (
+    index: number,
+    meal: keyof NonNullable<ItineraryDay["meals"]>,
+    value: boolean,
+  ) => {
     console.log(`[ItineraryBuilder] Updating meal day ${index + 1}: ${meal} = ${value}`);
     const newDays = [...days];
-    const currentMeals = newDays[index].meals || { breakfast: false, lunch: false, dinner: false, snacks: false };
-    newDays[index] = { 
-      ...newDays[index], 
-      meals: { ...currentMeals, [meal]: value } 
+    const currentMeals = newDays[index].meals || {
+      breakfast: false,
+      lunch: false,
+      dinner: false,
+      snacks: false,
+    };
+    newDays[index] = {
+      ...newDays[index],
+      meals: { ...currentMeals, [meal]: value },
     };
     onChange(newDays);
   };
@@ -67,19 +86,25 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
   };
 
   const toggleExpand = (dayNum: number) => {
-    setExpandedDays(prev => 
-      prev.includes(dayNum) ? prev.filter(d => d !== dayNum) : [...prev, dayNum]
+    setExpandedDays((prev) =>
+      prev.includes(dayNum) ? prev.filter((d) => d !== dayNum) : [...prev, dayNum],
     );
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between pb-4 border-b border-border/50">
+      <div className="border-border/50 flex items-center justify-between border-b pb-4">
         <div>
-          <h3 className="text-xl font-bold text-foreground">Day-by-Day Itinerary</h3>
-          <p className="text-sm text-muted-foreground">Detail the journey for your adventurers.</p>
+          <h3 className="text-foreground text-xl font-bold">Day-by-Day Itinerary</h3>
+          <p className="text-muted-foreground text-sm">Detail the journey for your adventurers.</p>
         </div>
-        <Button onClick={addDay} type="button" variant="primary" disabled={disabled} className="rounded-full px-6">
+        <Button
+          onClick={addDay}
+          type="button"
+          variant="primary"
+          disabled={disabled}
+          className="rounded-full px-6"
+        >
           + Add Day {days.length + 1}
         </Button>
       </div>
@@ -87,46 +112,46 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
       <div className="space-y-4">
         {days.map((day, index) => {
           const isExpanded = expandedDays.includes(day.day);
-          
+
           return (
-            <div key={index} className={`
-              border rounded-2xl transition-all duration-300 overflow-hidden
-              ${isExpanded ? "border-primary/30 bg-card shadow-xl shadow-primary/5" : "border-border bg-muted/10 hover:border-primary/20"}
-            `}>
+            <div
+              key={index}
+              className={`overflow-hidden rounded-2xl border transition-all duration-300 ${isExpanded ? "border-primary/30 bg-card shadow-primary/5 shadow-xl" : "border-border bg-muted/10 hover:border-primary/20"} `}
+            >
               {/* Header */}
-              <div 
-                className={`p-4 flex items-center gap-4 cursor-pointer select-none transition-colors ${isExpanded ? "bg-primary/5" : "hover:bg-muted/20"}`}
+              <div
+                className={`flex cursor-pointer items-center gap-4 p-4 transition-colors select-none ${isExpanded ? "bg-primary/5" : "hover:bg-muted/20"}`}
                 onClick={() => toggleExpand(day.day)}
               >
-                <div className="w-12 h-12 rounded-xl bg-primary text-white flex items-center justify-center font-black text-lg shadow-lg shadow-primary/20">
+                <div className="bg-primary shadow-primary/20 flex h-12 w-12 items-center justify-center rounded-xl text-lg font-black text-white shadow-lg">
                   {day.day}
                 </div>
-                
-                <div className="flex-1 min-w-0">
+
+                <div className="min-w-0 flex-1">
                   {isExpanded ? (
                     <input
                       value={day.title}
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => updateDay(index, "title", e.target.value)}
                       placeholder="Day Title (e.g. Arrival in Manali)"
-                      className="w-full bg-transparent border-none outline-none font-bold text-lg text-foreground placeholder:text-muted-foreground/50 p-0 focus:ring-0"
+                      className="text-foreground placeholder:text-muted-foreground/50 w-full border-none bg-transparent p-0 text-lg font-bold outline-none focus:ring-0"
                       disabled={disabled}
                     />
                   ) : (
-                    <h4 className="font-bold text-lg text-foreground truncate">
+                    <h4 className="text-foreground truncate text-lg font-bold">
                       {day.title || `Day ${day.day}: Untitled`}
                     </h4>
                   )}
                 </div>
 
                 <div className="flex items-center gap-2">
-                   <button
+                  <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
                       removeDay(index);
                     }}
-                    className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="text-muted-foreground rounded-lg p-2 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
                     disabled={disabled}
                     title="Delete Day"
                   >
@@ -140,28 +165,35 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
 
               {/* Body */}
               {isExpanded && (
-                <div className="p-6 pt-2 space-y-6 animate-in slide-in-from-top-2 duration-300">
+                <div className="animate-in slide-in-from-top-2 space-y-6 p-6 pt-2 duration-300">
                   {/* Common Row */}
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid gap-6 md:grid-cols-2">
                     <div className="space-y-4">
                       <div>
-                        <label className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-2 block">Description</label>
+                        <label className="text-muted-foreground mb-2 block text-xs font-black tracking-wider uppercase">
+                          Description
+                        </label>
                         <textarea
                           value={day.description}
                           onChange={(e) => updateDay(index, "description", e.target.value)}
                           placeholder="What happens on this day? Be descriptive..."
-                          className="w-full px-4 py-3 border border-border rounded-xl outline-none focus:border-primary min-h-[140px] text-sm bg-background text-foreground transition-all"
+                          className="border-border focus:border-primary bg-background text-foreground min-h-[140px] w-full rounded-xl border px-4 py-3 text-sm transition-all outline-none"
                           disabled={disabled}
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-2 block">Accommodation</label>
+                          <label className="text-muted-foreground mb-2 block text-xs font-black tracking-wider uppercase">
+                            Accommodation
+                          </label>
                           <div className="relative">
-                            <Moon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                            <input 
-                              className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg bg-background"
+                            <Moon
+                              className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+                              size={16}
+                            />
+                            <input
+                              className="border-border bg-background w-full rounded-lg border py-2 pr-4 pl-10 text-sm"
                               value={day.accommodation}
                               onChange={(e) => updateDay(index, "accommodation", e.target.value)}
                               placeholder="e.g. Luxury Tent"
@@ -169,11 +201,16 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
                           </div>
                         </div>
                         <div>
-                          <label className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-2 block">Travel Info</label>
+                          <label className="text-muted-foreground mb-2 block text-xs font-black tracking-wider uppercase">
+                            Travel Info
+                          </label>
                           <div className="relative">
-                            <Truck className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-                            <input 
-                              className="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-lg bg-background"
+                            <Truck
+                              className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+                              size={16}
+                            />
+                            <input
+                              className="border-border bg-background w-full rounded-lg border py-2 pr-4 pl-10 text-sm"
                               value={day.distance}
                               onChange={(e) => updateDay(index, "distance", e.target.value)}
                               placeholder="e.g. 5km / 2hrs"
@@ -184,67 +221,69 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
                     </div>
 
                     <div className="space-y-6">
-                      <DynamicList 
+                      <DynamicList
                         label="Daily Activities"
-                        items={day.activities || []} 
-                        onChange={(items) => updateDay(index, "activities", items)} 
+                        items={day.activities || []}
+                        onChange={(items) => updateDay(index, "activities", items)}
                         placeholder="Add activity (e.g. Forest Walk)"
                       />
 
-                      <div className="p-4 bg-muted/30 rounded-xl border border-border/50">
-                        <label className="text-xs font-black uppercase tracking-wider text-muted-foreground mb-3 block">Meals Included</label>
+                      <div className="bg-muted/30 border-border/50 rounded-xl border p-4">
+                        <label className="text-muted-foreground mb-3 block text-xs font-black tracking-wider uppercase">
+                          Meals Included
+                        </label>
                         <div className="grid grid-cols-2 gap-3">
-                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
-                               <input 
-                                 type="checkbox" 
-                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
-                                 checked={day.meals?.breakfast || false}
-                                 onChange={(e) => updateMeals(index, "breakfast", e.target.checked)}
-                               />
-                               <div className="flex items-center gap-2 text-foreground">
-                                 <Coffee size={18} className="text-muted-foreground" />
-                                 <span className="text-sm font-semibold">Breakfast</span>
-                               </div>
-                           </label>
+                          <label className="border-border/50 hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg border p-2 transition-colors">
+                            <input
+                              type="checkbox"
+                              className="border-input text-primary accent-primary h-5 w-5 rounded"
+                              checked={day.meals?.breakfast || false}
+                              onChange={(e) => updateMeals(index, "breakfast", e.target.checked)}
+                            />
+                            <div className="text-foreground flex items-center gap-2">
+                              <Coffee size={18} className="text-muted-foreground" />
+                              <span className="text-sm font-semibold">Breakfast</span>
+                            </div>
+                          </label>
 
-                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
-                               <input 
-                                 type="checkbox" 
-                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
-                                 checked={day.meals?.lunch || false}
-                                 onChange={(e) => updateMeals(index, "lunch", e.target.checked)}
-                               />
-                               <div className="flex items-center gap-2 text-foreground">
-                                 <Utensils size={18} className="text-muted-foreground" />
-                                 <span className="text-sm font-semibold">Lunch</span>
-                               </div>
-                           </label>
-                           
-                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
-                               <input 
-                                 type="checkbox" 
-                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
-                                 checked={day.meals?.snacks || false}
-                                 onChange={(e) => updateMeals(index, "snacks", e.target.checked)}
-                               />
-                               <div className="flex items-center gap-2 text-foreground">
-                                 <Cookie size={18} className="text-muted-foreground" />
-                                 <span className="text-sm font-semibold">Snacks</span>
-                               </div>
-                           </label>
+                          <label className="border-border/50 hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg border p-2 transition-colors">
+                            <input
+                              type="checkbox"
+                              className="border-input text-primary accent-primary h-5 w-5 rounded"
+                              checked={day.meals?.lunch || false}
+                              onChange={(e) => updateMeals(index, "lunch", e.target.checked)}
+                            />
+                            <div className="text-foreground flex items-center gap-2">
+                              <Utensils size={18} className="text-muted-foreground" />
+                              <span className="text-sm font-semibold">Lunch</span>
+                            </div>
+                          </label>
 
-                           <label className="flex items-center gap-3 cursor-pointer p-2 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors">
-                               <input 
-                                 type="checkbox" 
-                                 className="w-5 h-5 rounded border-input text-primary accent-primary"
-                                 checked={day.meals?.dinner || false}
-                                 onChange={(e) => updateMeals(index, "dinner", e.target.checked)}
-                               />
-                               <div className="flex items-center gap-2 text-foreground">
-                                 <Utensils size={18} className="text-muted-foreground rotate-12" />
-                                 <span className="text-sm font-semibold">Dinner</span>
-                               </div>
-                           </label>
+                          <label className="border-border/50 hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg border p-2 transition-colors">
+                            <input
+                              type="checkbox"
+                              className="border-input text-primary accent-primary h-5 w-5 rounded"
+                              checked={day.meals?.snacks || false}
+                              onChange={(e) => updateMeals(index, "snacks", e.target.checked)}
+                            />
+                            <div className="text-foreground flex items-center gap-2">
+                              <Cookie size={18} className="text-muted-foreground" />
+                              <span className="text-sm font-semibold">Snacks</span>
+                            </div>
+                          </label>
+
+                          <label className="border-border/50 hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-lg border p-2 transition-colors">
+                            <input
+                              type="checkbox"
+                              className="border-input text-primary accent-primary h-5 w-5 rounded"
+                              checked={day.meals?.dinner || false}
+                              onChange={(e) => updateMeals(index, "dinner", e.target.checked)}
+                            />
+                            <div className="text-foreground flex items-center gap-2">
+                              <Utensils size={18} className="text-muted-foreground rotate-12" />
+                              <span className="text-sm font-semibold">Dinner</span>
+                            </div>
+                          </label>
                         </div>
                       </div>
                     </div>
@@ -256,15 +295,22 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
         })}
 
         {days.length === 0 && (
-          <div className="text-center p-12 border-2 border-dashed border-border rounded-3xl bg-muted/5 group hover:bg-muted/10 transition-colors">
-             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <MapPin className="text-muted-foreground" size={32} />
-             </div>
-             <h4 className="text-xl font-bold text-foreground mb-2">Build Your Journey</h4>
-             <p className="text-muted-foreground text-sm mb-6 max-w-xs mx-auto">Click below to start adding day-by-day details of your adventure.</p>
-             <Button onClick={addDay} type="button" variant="primary" className="rounded-full px-8 shadow-lg shadow-primary/20">
-               Start Building
-             </Button>
+          <div className="border-border bg-muted/5 group hover:bg-muted/10 rounded-3xl border-2 border-dashed p-12 text-center transition-colors">
+            <div className="bg-muted mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full transition-transform group-hover:scale-110">
+              <MapPin className="text-muted-foreground" size={32} />
+            </div>
+            <h4 className="text-foreground mb-2 text-xl font-bold">Build Your Journey</h4>
+            <p className="text-muted-foreground mx-auto mb-6 max-w-xs text-sm">
+              Click below to start adding day-by-day details of your adventure.
+            </p>
+            <Button
+              onClick={addDay}
+              type="button"
+              variant="primary"
+              className="shadow-primary/20 rounded-full px-8 shadow-lg"
+            >
+              Start Building
+            </Button>
           </div>
         )}
       </div>

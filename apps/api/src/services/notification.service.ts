@@ -77,7 +77,11 @@ class NotificationService {
         <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
       </div>
     `;
-    return this.sendEmail({ to: email, subject: `Booking Received: ${bookingDetails.tripTitle}`, html });
+    return this.sendEmail({
+      to: email,
+      subject: `Booking Received: ${bookingDetails.tripTitle}`,
+      html,
+    });
   }
 
   async sendPaymentSuccess(email: string, paymentDetails: any) {
@@ -95,7 +99,11 @@ class NotificationService {
         <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
       </div>
     `;
-    return this.sendEmail({ to: email, subject: `Payment Confirmed: ${paymentDetails.tripTitle}`, html });
+    return this.sendEmail({
+      to: email,
+      subject: `Payment Confirmed: ${paymentDetails.tripTitle}`,
+      html,
+    });
   }
 
   async sendAssignmentNotification(email: string, assignmentDetails: any) {
@@ -113,7 +121,11 @@ class NotificationService {
         <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
       </div>
     `;
-    return this.sendEmail({ to: email, subject: `New Assignment: ${assignmentDetails.tripTitle}`, html });
+    return this.sendEmail({
+      to: email,
+      subject: `New Assignment: ${assignmentDetails.tripTitle}`,
+      html,
+    });
   }
 
   async sendPasswordResetEmail(email: string, resetLink: string) {

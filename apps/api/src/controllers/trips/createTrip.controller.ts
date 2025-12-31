@@ -38,12 +38,15 @@ export const createTrip = catchAsync(async (req: Request, res: Response) => {
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       coverImageId: req.body.coverImageId || null,
       createdById: user.id,
-      gallery: req.body.gallery && req.body.gallery.length > 0 ? {
-        create: req.body.gallery.map((g: any, index: number) => ({
-          imageId: g.id,
-          order: index,
-        })),
-      } : undefined,
+      gallery:
+        req.body.gallery && req.body.gallery.length > 0
+          ? {
+              create: req.body.gallery.map((g: any, index: number) => ({
+                imageId: g.id,
+                order: index,
+              })),
+            }
+          : undefined,
     },
     include: {
       coverImage: true,

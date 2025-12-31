@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Star, StarHalf } from 'lucide-react';
+import React from "react";
+import { Star, StarHalf } from "lucide-react";
 
 interface StarRatingProps {
   rating: number; // 0 to 5
@@ -13,12 +12,12 @@ interface StarRatingProps {
   onHover?: (rating: number) => void;
 }
 
-export default function StarRating({ 
-  rating, 
-  editable = false, 
+export default function StarRating({
+  rating,
+  editable = false,
   onRatingChange,
   onHover,
-  size = 18 
+  size = 18,
 }: StarRatingProps) {
   // Simplification: StarRating should just display stars. The interactivity can be managed here or by parent.
   // To avoid nested button issues (illegal HTML), we'll change these to spans/divs with onClick.
@@ -35,7 +34,7 @@ export default function StarRating({
         role={editable ? "button" : "presentation"}
         onClick={() => editable && onRatingChange && onRatingChange(i)}
         onMouseEnter={() => editable && onHover && onHover(i)}
-        className={`${editable ? 'cursor-pointer hover:scale-110 transition-transform' : 'cursor-default'} focus:outline-none`}
+        className={`${editable ? "cursor-pointer transition-transform hover:scale-110" : "cursor-default"} focus:outline-none`}
       >
         {isFull ? (
           <Star size={size} className="fill-yellow-400 text-yellow-400" />
@@ -44,13 +43,13 @@ export default function StarRating({
         ) : (
           <Star size={size} className="text-gray-300 dark:text-gray-600" />
         )}
-      </div>
+      </div>,
     );
   }
 
   return (
     <div className="flex items-center gap-1" onMouseLeave={() => editable && onHover && onHover(0)}>
-        {stars}
+      {stars}
     </div>
   );
 }

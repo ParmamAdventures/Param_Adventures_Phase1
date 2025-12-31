@@ -11,10 +11,10 @@ export const createBooking = async (req: Request, res: Response) => {
     }
 
     const booking = await bookingService.createBooking({
-        userId,
-        tripId,
-        startDate,
-        guests: Number(guests)
+      userId,
+      tripId,
+      startDate,
+      guests: Number(guests),
     });
 
     res.status(201).json(booking);

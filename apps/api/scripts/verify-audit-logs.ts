@@ -9,13 +9,16 @@ async function main() {
   });
 
   console.log("Found Logs:", logs.length);
-  const listLog = logs.find(l => l.action === "USER_LIST_VIEW");
-  
+  const listLog = logs.find((l) => l.action === "USER_LIST_VIEW");
+
   if (listLog) {
     console.log("SUCCESS: Found USER_LIST_VIEW log:", JSON.stringify(listLog));
   } else {
     console.log("FAILURE: USER_LIST_VIEW log not found.");
-    console.log("Recent actions:", logs.map(l => l.action));
+    console.log(
+      "Recent actions:",
+      logs.map((l) => l.action),
+    );
     process.exit(1);
   }
 }

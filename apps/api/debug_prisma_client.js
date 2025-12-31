@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("Checking Prisma Client for isFeatured field...");
-  
+
   // 1. Create a dummy trip
   const trip = await prisma.trip.create({
     data: {
@@ -16,8 +16,8 @@ async function main() {
       location: "Test",
       price: 100,
       createdById: (await prisma.user.findFirst()).id,
-      isFeatured: true // Try setting it
-    }
+      isFeatured: true, // Try setting it
+    },
   });
 
   console.log("Created trip with isFeatured:", trip.isFeatured);
@@ -25,7 +25,7 @@ async function main() {
   // 2. Update it
   const updated = await prisma.trip.update({
     where: { id: trip.id },
-    data: { isFeatured: false }
+    data: { isFeatured: false },
   });
 
   console.log("Updated trip isFeatured:", updated.isFeatured);

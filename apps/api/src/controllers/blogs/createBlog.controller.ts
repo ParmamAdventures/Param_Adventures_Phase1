@@ -10,20 +10,22 @@ export async function createBlog(req: Request, res: Response) {
   const slug = slugify(title);
 
   if (!tripId) {
-      return res.status(400).json({ message: "Blogs must be linked to a completed adventure." });
+    return res.status(400).json({ message: "Blogs must be linked to a completed adventure." });
   }
 
   if (tripId) {
     const booking = await prisma.booking.findFirst({
-        where: {
-            userId: user.id,
-            tripId: tripId,
-            status: 'COMPLETED'
-        }
+      where: {
+        userId: user.id,
+        tripId: tripId,
+        status: "COMPLETED",
+      },
     });
 
     if (!booking) {
-        return res.status(403).json({ message: "You can only write blogs for trips you have completed." });
+      return res
+        .status(403)
+        .json({ message: "You can only write blogs for trips you have completed." });
     }
   }
 

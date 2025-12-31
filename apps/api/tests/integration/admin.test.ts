@@ -12,18 +12,38 @@ describe("Admin RBAC Integration", () => {
   beforeAll(async () => {
     // Setup Admin and User
     // Check for dependent models and delete safely
-    try { await prisma.payment?.deleteMany(); } catch (e) {}
-    try { await prisma.booking?.deleteMany(); } catch (e) {}
+    try {
+      await prisma.payment?.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.booking?.deleteMany();
+    } catch (e) {}
     // tripGalleryImage is cascade deleted by Trip
-    try { await prisma.blog?.deleteMany(); } catch (e) {}
-    try { await prisma.trip?.deleteMany(); } catch (e) {}
-    try { await prisma.image?.deleteMany(); } catch (e) {}
+    try {
+      await prisma.blog?.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.trip?.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.image?.deleteMany();
+    } catch (e) {}
 
-    try { await prisma.rolePermission?.deleteMany(); } catch (e) {}
-    try { await prisma.role.deleteMany(); } catch (e) {}
-    try { await prisma.auditLog.deleteMany(); } catch (e) {}
-    try { await prisma.userRole?.deleteMany(); } catch (e) {}
-    try { await prisma.user.deleteMany(); } catch (e) {}
+    try {
+      await prisma.rolePermission?.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.role.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.auditLog.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.userRole?.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.user.deleteMany();
+    } catch (e) {}
 
     // Create Admin Role & Perms
     const perm = await prisma.permission.create({
@@ -66,19 +86,15 @@ describe("Admin RBAC Integration", () => {
   });
 
   it("should allow admin to list users", async () => {
-    const res = await request(app)
-      .get("/admin/users")
-      .set("Authorization", `Bearer ${adminToken}`);
-    
+    const res = await request(app).get("/admin/users").set("Authorization", `Bearer ${adminToken}`);
+
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
   });
 
   it("should forbid normal user", async () => {
-    const res = await request(app)
-      .get("/admin/users")
-      .set("Authorization", `Bearer ${userToken}`);
-    
+    const res = await request(app).get("/admin/users").set("Authorization", `Bearer ${userToken}`);
+
     expect(res.status).toBe(403);
   });
 

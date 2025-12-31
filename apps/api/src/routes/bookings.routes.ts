@@ -10,31 +10,15 @@ import { createBooking } from "../controllers/bookings/createBooking.controller"
 const router = Router();
 
 // Create a new booking
-router.post(
-  "/",
-  requireAuth,
-  createBooking
-);
+router.post("/", requireAuth, createBooking);
 
 // Get user's bookings
-router.get(
-  "/my-bookings",
-  requireAuth,
-  getBookings
-);
+router.get("/my-bookings", requireAuth, getBookings);
 
 // Get single booking details
-router.get(
-  "/:id",
-  requireAuth,
-  getBookingById
-);
+router.get("/:id", requireAuth, getBookingById);
 
 // Cancel booking
-router.post(
-  "/:id/cancel",
-  requireAuth,
-  cancelBooking
-);
+router.post("/:id/cancel", requireAuth, cancelBooking);
 
 export default router;

@@ -3,8 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 
 (async function main() {
-  process.env.RAZORPAY_WEBHOOK_SECRET =
-    process.env.RAZORPAY_WEBHOOK_SECRET || "testsecret";
+  process.env.RAZORPAY_WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET || "testsecret";
   const prisma = new PrismaClient();
   try {
     // Find an existing payment that is already CAPTURED (so replay makes sense)
@@ -14,9 +13,7 @@ import crypto from "crypto";
     });
 
     if (!payment) {
-      console.error(
-        "No captured razorpay payment found to replay. Run test_webhook_e2e.ts first."
-      );
+      console.error("No captured razorpay payment found to replay. Run test_webhook_e2e.ts first.");
       process.exit(2);
     }
 

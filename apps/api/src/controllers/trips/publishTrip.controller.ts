@@ -10,8 +10,7 @@ export const publishTrip = catchAsync(async (req: Request, res: Response) => {
   const trip = await prisma.trip.findUnique({ where: { id } });
 
   if (!trip) return ApiResponse.error(res, "Trip not found", 404);
-  if (trip.status !== "APPROVED")
-    return ApiResponse.error(res, "Invalid state transition", 403);
+  if (trip.status !== "APPROVED") return ApiResponse.error(res, "Invalid state transition", 403);
 
   const updated = await prisma.trip.update({
     where: { id },

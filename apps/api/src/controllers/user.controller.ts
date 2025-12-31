@@ -6,7 +6,8 @@ import { ApiResponse } from "../utils/ApiResponse";
 
 export const updateProfile = catchAsync(async (req: Request, res: Response) => {
   const userId = (req as any).user.id;
-  const { name, nickname, bio, avatarImageId, age, gender, phoneNumber, address, preferences } = req.body;
+  const { name, nickname, bio, avatarImageId, age, gender, phoneNumber, address, preferences } =
+    req.body;
 
   const user = await (prisma.user as any).update({
     where: { id: userId },
@@ -23,7 +24,7 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
     },
     include: {
       avatarImage: true,
-    }
+    },
   });
 
   await auditService.logAudit({

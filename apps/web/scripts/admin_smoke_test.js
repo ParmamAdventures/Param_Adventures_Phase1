@@ -40,7 +40,7 @@ async function callWithToken(path, token) {
     console.log(
       "  /admin/users status",
       r1.status,
-      r1.body && typeof r1.body === "object" ? JSON.stringify(r1.body) : r1.body
+      r1.body && typeof r1.body === "object" ? JSON.stringify(r1.body) : r1.body,
     );
 
     console.log("\nTest 2 — Normal user (fresh unprivileged) (expect 403)");
@@ -59,17 +59,13 @@ async function callWithToken(path, token) {
     console.log(
       "  /admin/users status",
       r2.status,
-      r2.body && typeof r2.body === "object" ? JSON.stringify(r2.body) : r2.body
+      r2.body && typeof r2.body === "object" ? JSON.stringify(r2.body) : r2.body,
     );
 
     console.log("\nTest 3 — Super admin (expect 200)");
     const superLogin = await login("test+1766053638.10583@example.com");
     if (superLogin.status !== 200) {
-      console.log(
-        "  Super admin login failed:",
-        superLogin.status,
-        superLogin.body
-      );
+      console.log("  Super admin login failed:", superLogin.status, superLogin.body);
       process.exit(1);
     }
     const superToken = superLogin.body?.accessToken;
@@ -77,17 +73,13 @@ async function callWithToken(path, token) {
     console.log(
       "  /admin/users status",
       ru.status,
-      Array.isArray(ru.body)
-        ? `users=${ru.body.length}`
-        : JSON.stringify(ru.body)
+      Array.isArray(ru.body) ? `users=${ru.body.length}` : JSON.stringify(ru.body),
     );
     const rr = await callWithToken("/admin/roles", superToken);
     console.log(
       "  /admin/roles status",
       rr.status,
-      Array.isArray(rr.body)
-        ? `roles=${rr.body.length}`
-        : JSON.stringify(rr.body)
+      Array.isArray(rr.body) ? `roles=${rr.body.length}` : JSON.stringify(rr.body),
     );
 
     console.log("\nSmoke test complete");

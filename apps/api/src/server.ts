@@ -24,11 +24,11 @@ async function gracefulShutdown(signal: string) {
   try {
     await prisma.$disconnect();
     logger.info("Database disconnected.");
-    
+
     await notificationWorker.close();
     await redisConnection.quit();
     logger.info("Background systems stopped.");
-    
+
     process.exit(0);
   } catch (err) {
     logger.error("Error during shutdown", { error: err });

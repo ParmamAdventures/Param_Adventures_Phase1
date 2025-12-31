@@ -14,8 +14,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     try {
       const saved = (localStorage.getItem("theme") as Theme) || null;
       const systemDark =
-        typeof window !== "undefined" &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches;
+        typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
       return saved ?? (systemDark ? "dark" : "light");
     } catch {
       return "light";
@@ -44,11 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.dataset.theme = next;
   };
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggle }}>{children}</ThemeContext.Provider>;
 }
 
 export const useTheme = () => useContext(ThemeContext);

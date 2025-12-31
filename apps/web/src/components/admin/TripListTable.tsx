@@ -33,10 +33,10 @@ type Props = {
   onAssignManager?: (id: string) => void;
 };
 
-export default function TripListTable({ 
-  trips, 
-  loading, 
-  onRefresh, 
+export default function TripListTable({
+  trips,
+  loading,
+  onRefresh,
   onAction,
   currentPage = 1,
   totalPages = 1,
@@ -45,11 +45,11 @@ export default function TripListTable({
   sortOrder,
   onSort,
   onAssignGuide,
-  onAssignManager
+  onAssignManager,
 }: Props) {
   if (loading) {
     return (
-      <div className="p-8 text-center text-muted-foreground flex flex-col items-center gap-2">
+      <div className="text-muted-foreground flex flex-col items-center gap-2 p-8 text-center">
         <Spinner size={24} />
         <p>Loading adventures...</p>
       </div>
@@ -58,7 +58,7 @@ export default function TripListTable({
 
   if (trips.length === 0) {
     return (
-      <div className="p-12 text-center border rounded-xl border-dashed bg-muted/20 flex flex-col items-center gap-4">
+      <div className="bg-muted/20 flex flex-col items-center gap-4 rounded-xl border border-dashed p-12 text-center">
         <p className="text-muted-foreground">No trips found. Time to create a new adventure!</p>
         <Link href="/admin/trips/new">
           <Button variant="primary">+ Create First Trip</Button>
@@ -69,27 +69,24 @@ export default function TripListTable({
 
   const renderSortArrow = (field: string) => {
     if (sortBy !== field) return null;
-    return (
-      <span className="ml-1 inline-block">
-        {sortOrder === "asc" ? "↑" : "↓"}
-      </span>
-    );
+    return <span className="ml-1 inline-block">{sortOrder === "asc" ? "↑" : "↓"}</span>;
   };
 
-  const headerClass = "px-6 py-4 cursor-pointer hover:text-foreground transition-colors select-none";
+  const headerClass =
+    "px-6 py-4 cursor-pointer hover:text-foreground transition-colors select-none";
 
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
+      <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-muted/50 text-muted-foreground uppercase text-xs font-semibold">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/50 text-muted-foreground text-xs font-semibold uppercase">
               <tr>
                 <th className={headerClass} onClick={() => onSort?.("title")}>
                   Adventure {renderSortArrow("title")}
                 </th>
                 <th className={headerClass} onClick={() => onSort?.("price")}>
-                    Price {renderSortArrow("price")}
+                  Price {renderSortArrow("price")}
                 </th>
                 <th className={headerClass} onClick={() => onSort?.("location")}>
                   Location {renderSortArrow("location")}
@@ -100,24 +97,22 @@ export default function TripListTable({
                 <th className="px-6 py-4">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border">
+            <tbody className="divide-border divide-y">
               {trips.map((trip) => (
                 <tr key={trip.id} className="hover:bg-muted/5 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
-                      <span className="font-medium text-foreground text-base">
-                        {trip.title}
-                      </span>
+                      <span className="text-foreground text-base font-medium">{trip.title}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     {trip.price ? (
-                        <span className="text-muted-foreground font-mono">
-                          ₹{trip.price.toLocaleString()}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground/50 italic">N/A</span>
-                      )}
+                      <span className="text-muted-foreground font-mono">
+                        ₹{trip.price.toLocaleString()}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground/50 italic">N/A</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-muted-foreground flex items-center gap-1">
@@ -142,84 +137,90 @@ export default function TripListTable({
                     <StatusBadge status={trip.status} />
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex flex-wrap items-center gap-2">
                       {trip.status === "DRAFT" && onAction && (
-                        <Button 
-                          variant="primary" 
-                          className="bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 h-auto text-xs"
+                        <Button
+                          variant="primary"
+                          className="h-auto bg-indigo-600 px-3 py-1.5 text-xs hover:bg-indigo-700"
                           onClick={() => onAction(trip.id, "submit")}
                         >
                           Submit
                         </Button>
                       )}
                       {trip.status === "PENDING_REVIEW" && onAction && (
-                          <>
-                              <Button 
-                                  variant="primary" 
-                                  className="bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 h-auto text-xs"
-                                  onClick={() => onAction(trip.id, "approve")}
-                              >
-                                  Approve
-                              </Button>
-                              <Button 
-                                  variant="danger" 
-                                  className="px-3 py-1.5 h-auto text-xs"
-                                  onClick={() => onAction(trip.id, "reject")}
-                              >
-                                  Reject
-                              </Button>
-                          </>
+                        <>
+                          <Button
+                            variant="primary"
+                            className="h-auto bg-emerald-600 px-3 py-1.5 text-xs hover:bg-emerald-700"
+                            onClick={() => onAction(trip.id, "approve")}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            variant="danger"
+                            className="h-auto px-3 py-1.5 text-xs"
+                            onClick={() => onAction(trip.id, "reject")}
+                          >
+                            Reject
+                          </Button>
+                        </>
                       )}
                       {trip.status === "APPROVED" && onAction && (
-                        <Button 
-                          variant="primary" 
-                          className="bg-blue-600 hover:bg-blue-700 px-3 py-1.5 h-auto text-xs"
+                        <Button
+                          variant="primary"
+                          className="h-auto bg-blue-600 px-3 py-1.5 text-xs hover:bg-blue-700"
                           onClick={() => onAction(trip.id, "publish")}
                         >
                           Publish
                         </Button>
                       )}
                       {trip.status === "PUBLISHED" && onAction && (
-                        <Button 
-                          variant="ghost" 
-                          className="text-amber-600 hover:text-amber-700 px-3 py-1.5 h-auto text-xs"
+                        <Button
+                          variant="ghost"
+                          className="h-auto px-3 py-1.5 text-xs text-amber-600 hover:text-amber-700"
                           onClick={() => onAction(trip.id, "archive")}
                         >
                           Archive
                         </Button>
                       )}
-                      
+
                       <Link href={`/admin/trips/${trip.id}/edit`}>
-                        <Button variant="ghost" className="px-3 py-1.5 h-auto text-xs">
-                            Edit
+                        <Button variant="ghost" className="h-auto px-3 py-1.5 text-xs">
+                          Edit
                         </Button>
                       </Link>
                       <Link href={`/trips/${trip.slug}`} target="_blank">
-                        <Button variant="subtle" className="px-3 py-1.5 h-auto text-xs">
-                            Preview
+                        <Button variant="subtle" className="h-auto px-3 py-1.5 text-xs">
+                          Preview
                         </Button>
                       </Link>
                     </div>
 
                     {/* Secondary Row for Assignments */}
-                    <div className="flex items-center gap-2 mt-2">
-                        {(trip.status === "APPROVED" || trip.status === "PUBLISHED" || trip.status === "COMPLETED") && onAssignManager && (
-                            <Button
-                                variant="outline"
-                                className="px-3 py-1.5 h-auto text-xs text-indigo-600 border-indigo-200 hover:bg-indigo-50"
-                                onClick={() => onAssignManager(trip.id)}
-                            >
-                                Assign Manager
-                            </Button>
+                    <div className="mt-2 flex items-center gap-2">
+                      {(trip.status === "APPROVED" ||
+                        trip.status === "PUBLISHED" ||
+                        trip.status === "COMPLETED") &&
+                        onAssignManager && (
+                          <Button
+                            variant="outline"
+                            className="h-auto border-indigo-200 px-3 py-1.5 text-xs text-indigo-600 hover:bg-indigo-50"
+                            onClick={() => onAssignManager(trip.id)}
+                          >
+                            Assign Manager
+                          </Button>
                         )}
-                        {(trip.status === "APPROVED" || trip.status === "PUBLISHED" || trip.status === "COMPLETED") && onAssignGuide && (
-                            <Button
-                                variant="subtle"
-                                className="px-3 py-1.5 h-auto text-xs"
-                                onClick={() => onAssignGuide(trip.id)}
-                            >
-                                Assign Guide
-                            </Button>
+                      {(trip.status === "APPROVED" ||
+                        trip.status === "PUBLISHED" ||
+                        trip.status === "COMPLETED") &&
+                        onAssignGuide && (
+                          <Button
+                            variant="subtle"
+                            className="h-auto px-3 py-1.5 text-xs"
+                            onClick={() => onAssignGuide(trip.id)}
+                          >
+                            Assign Guide
+                          </Button>
                         )}
                     </div>
                   </td>
@@ -232,7 +233,7 @@ export default function TripListTable({
 
       {totalPages > 1 && onPageChange && (
         <div className="flex items-center justify-between px-2">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Page {currentPage} of {totalPages}
           </p>
           <div className="flex items-center gap-2">
@@ -240,7 +241,7 @@ export default function TripListTable({
               variant="subtle"
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage <= 1}
-              className="px-4 py-2 h-auto text-sm"
+              className="h-auto px-4 py-2 text-sm"
             >
               Previous
             </Button>
@@ -248,7 +249,7 @@ export default function TripListTable({
               variant="subtle"
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage >= totalPages}
-              className="px-4 py-2 h-auto text-sm"
+              className="h-auto px-4 py-2 text-sm"
             >
               Next
             </Button>

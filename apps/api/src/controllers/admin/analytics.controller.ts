@@ -35,8 +35,12 @@ export async function getModerationSummary(req: Request, res: Response) {
   // Keeping this simple/direct as it's just counts
   try {
     const [pendingTrips, pendingBlogs] = await Promise.all([
-      import("../../lib/prisma").then(m => m.prisma.trip.count({ where: { status: "PENDING_REVIEW" } })),
-      import("../../lib/prisma").then(m => m.prisma.blog.count({ where: { status: "PENDING_REVIEW" } })),
+      import("../../lib/prisma").then((m) =>
+        m.prisma.trip.count({ where: { status: "PENDING_REVIEW" } }),
+      ),
+      import("../../lib/prisma").then((m) =>
+        m.prisma.blog.count({ where: { status: "PENDING_REVIEW" } }),
+      ),
     ]);
 
     res.json({
@@ -49,4 +53,3 @@ export async function getModerationSummary(req: Request, res: Response) {
     res.status(500).json({ error: "Internal server error" });
   }
 }
-

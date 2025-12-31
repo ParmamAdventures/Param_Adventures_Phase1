@@ -26,13 +26,13 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-24 bg-surface">
-      <div className="max-w-7xl mx-auto px-6 md:px-8">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-center mb-12">
+    <section className="bg-surface py-24">
+      <div className="mx-auto max-w-7xl px-6 md:px-8">
+        <h2 className="mb-12 text-center text-3xl font-bold tracking-tight md:text-4xl">
           What Our Travelers Say
         </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.id}
@@ -40,15 +40,13 @@ export function Testimonials() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
-              className="bg-card border border-border p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow relative"
+              className="bg-card border-border relative rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-md"
             >
-              <div className="text-accent text-4xl font-serif absolute top-4 left-6">"</div>
-              <p className="text-muted-foreground italic mb-6 relative z-10 pt-4">
-                {t.text}
-              </p>
+              <div className="text-accent absolute top-4 left-6 font-serif text-4xl">"</div>
+              <p className="text-muted-foreground relative z-10 mb-6 pt-4 italic">{t.text}</p>
               <div>
-                <h4 className="font-bold text-foreground">{t.author}</h4>
-                <p className="text-sm text-accent">{t.location}</p>
+                <h4 className="text-foreground font-bold">{t.author}</h4>
+                <p className="text-accent text-sm">{t.location}</p>
               </div>
             </motion.div>
           ))}

@@ -1,13 +1,7 @@
 "use client";
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
-import { apiFetch, setAccessToken } from "../lib/api";
+import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { apiFetch, setAccessToken, getAccessToken } from "../lib/api";
 import { User } from "../types/auth";
 
 interface AuthContextValue {
@@ -32,17 +26,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const r = await apiFetch("/auth/refresh", { method: "POST" });
           if (r.ok) {
             const d = await r.json();
-            if (d?.accessToken) setAccessToken(d.accessToken);
+            const data = d.data || d;
+            if (data?.accessToken) setAccessToken(data.accessToken);
           }
         } catch {
-          // ignore refresh errors and fall through to /auth/me which will
-          // return 401 if no session exists
+          // ignore refresh errors
+        }
+
+        // If no token after refresh attempt, we are guest. Don't call /auth/me to avoid 401 noise.
+        const token = getAccessToken();
+        if (!token) {
+          setUser(null);
+          setLoading(false);
+          return;
         }
 
         const res = await apiFetch("/auth/me");
         if (res.ok) {
-          const data = await res.json();
-          setUser(data);
+          const d = await res.json();
+          setUser(d.data || d);
         } else {
           setUser(null);
         }
@@ -65,10 +67,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!res.ok) {
       const data = await res.json();
-      throw new Error(data.error || "Login failed");
+      throw new Error(data.message || data.error || "Login failed");
     }
 
-    const data = await res.json();
+    const d = await res.json();
+    const data = d.data || d;
     setAccessToken(data.accessToken);
     setUser(data.user);
   }
@@ -83,9 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>{children}</AuthContext.Provider>
   );
 }
 

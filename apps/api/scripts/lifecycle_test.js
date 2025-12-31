@@ -72,12 +72,7 @@ async function seedRoles(prisma, uploaderUser, adminUser) {
     }
   };
 
-  await mapPerms(uploaderRole, [
-    "trip:create",
-    "trip:edit",
-    "trip:submit",
-    "trip:view:public",
-  ]);
+  await mapPerms(uploaderRole, ["trip:create", "trip:edit", "trip:submit", "trip:view:public"]);
   await mapPerms(adminRole, [
     "trip:approve",
     "trip:publish",
@@ -111,8 +106,7 @@ async function login(email, password) {
 }
 
 function expect(status, got, msg) {
-  if (status !== got)
-    throw new Error(`Expected ${status} but got ${got} (${msg || ""})`);
+  if (status !== got) throw new Error(`Expected ${status} but got ${got} (${msg || ""})`);
 }
 
 const { PrismaClient } = require("@prisma/client");
@@ -148,8 +142,7 @@ const { PrismaClient } = require("@prisma/client");
   const adminUser = await prisma.user.findUnique({
     where: { email: adminEmail },
   });
-  if (!uploaderUser || !adminUser)
-    throw new Error("Test users not found in DB");
+  if (!uploaderUser || !adminUser) throw new Error("Test users not found in DB");
   await seedRoles(prisma, uploaderUser, adminUser);
 
   // re-login to obtain tokens (if login returns tokens)
@@ -262,8 +255,7 @@ const { PrismaClient } = require("@prisma/client");
 
   console.log("Internal list without permission (should be 401/403)");
   r = await req("/trips/internal");
-  if (![401, 403].includes(r.status))
-    throw new Error("internal list did not deny unauthenticated");
+  if (![401, 403].includes(r.status)) throw new Error("internal list did not deny unauthenticated");
 
   console.log("Lifecycle test completed successfully");
 })();

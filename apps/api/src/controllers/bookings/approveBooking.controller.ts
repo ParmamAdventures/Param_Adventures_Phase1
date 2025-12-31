@@ -22,7 +22,7 @@ export async function approveBooking(req: Request, res: Response) {
         throw new HttpError(
           403,
           "INVALID_BOOKING_TRANSITION",
-          "Booking cannot be approved in its current state"
+          "Booking cannot be approved in its current state",
         );
       }
 

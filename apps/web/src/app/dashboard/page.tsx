@@ -46,74 +46,86 @@ export default function Page() {
   };
 
   return (
-    <section className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <section className="animate-in fade-in slide-in-from-bottom-4 space-y-6 duration-500">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-black italic uppercase tracking-tighter">Your Stories</h2>
-            <Link href="/dashboard/bookings">
-              <Button variant="primary">Write about an Adventure</Button>
-            </Link>
-          </div>
+        <h2 className="text-2xl font-black tracking-tighter uppercase italic">Your Stories</h2>
+        <Link href="/dashboard/bookings">
+          <Button variant="primary">Write about an Adventure</Button>
+        </Link>
+      </div>
 
-          {loading ? (
-            <div className="text-center py-10 text-muted-foreground">Loading specific adventures...</div>
-          ) : blogs.length === 0 ? (
-            <EmptyState
-              title="No stories yet"
-              description="You haven't chronicled any adventures. Start writing your first blog post today."
-              actionLabel="Write about an Adventure"
-              actionLink="/dashboard/bookings"
-              icon={
-                <svg className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              }
-            />
-          ) : (
-            <div className="grid gap-4">
-              {blogs.map((blog) => (
-                <div key={blog.id} className="flex items-center justify-between p-4 border rounded-lg bg-card hover:shadow-sm transition-shadow">
-                  <div>
-                    <h3 className="font-bold text-lg">{blog.title || "Untitled Draft"}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {new Date(blog.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <StatusBadge status={blog.status} />
-                    
-                    {blog.status === "DRAFT" && (
-                      <Button 
-                        variant="primary" 
-                        onClick={() => handleAction(blog.id, "submit")}
-                      >
-                        Submit
-                      </Button>
-                    )}
+      {loading ? (
+        <div className="text-muted-foreground py-10 text-center">
+          Loading specific adventures...
+        </div>
+      ) : blogs.length === 0 ? (
+        <EmptyState
+          title="No stories yet"
+          description="You haven't chronicled any adventures. Start writing your first blog post today."
+          actionLabel="Write about an Adventure"
+          actionLink="/dashboard/bookings"
+          icon={
+            <svg
+              className="text-muted-foreground h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+          }
+        />
+      ) : (
+        <div className="grid gap-4">
+          {blogs.map((blog) => (
+            <div
+              key={blog.id}
+              className="bg-card flex items-center justify-between rounded-lg border p-4 transition-shadow hover:shadow-sm"
+            >
+              <div>
+                <h3 className="text-lg font-bold">{blog.title || "Untitled Draft"}</h3>
+                <p className="text-muted-foreground text-sm">
+                  {new Date(blog.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <StatusBadge status={blog.status} />
 
-                    {blog.status === "APPROVED" && (
-                      <Button 
-                        variant="primary" 
-                        className="bg-blue-600 hover:bg-blue-700"
-                        onClick={() => handleAction(blog.id, "publish")}
-                      >
-                        Publish
-                      </Button>
-                    )}
+                {blog.status === "DRAFT" && (
+                  <Button variant="primary" onClick={() => handleAction(blog.id, "submit")}>
+                    Submit
+                  </Button>
+                )}
 
-                    {blog.status === "PUBLISHED" && (
-                      <Link href={`/blogs/${blog.slug}`} target="_blank">
-                        <Button variant="subtle">View Public</Button>
-                      </Link>
-                    )}
+                {blog.status === "APPROVED" && (
+                  <Button
+                    variant="primary"
+                    className="bg-blue-600 hover:bg-blue-700"
+                    onClick={() => handleAction(blog.id, "publish")}
+                  >
+                    Publish
+                  </Button>
+                )}
 
-                    <Link href={`/dashboard/blogs/${blog.id}/edit`}>
-                      <Button variant="ghost">Edit</Button>
-                    </Link>
-                  </div>
-                </div>
-              ))}
+                {blog.status === "PUBLISHED" && (
+                  <Link href={`/blogs/${blog.slug}`} target="_blank">
+                    <Button variant="subtle">View Public</Button>
+                  </Link>
+                )}
+
+                <Link href={`/dashboard/blogs/${blog.id}/edit`}>
+                  <Button variant="ghost">Edit</Button>
+                </Link>
+              </div>
             </div>
-          )}
+          ))}
+        </div>
+      )}
     </section>
   );
 }

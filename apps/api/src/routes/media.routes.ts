@@ -18,31 +18,21 @@ const router = Router();
  * multipart/form-data
  * field: file
  */
-router.post(
-  "/upload",
-  requireAuth,
-  upload.single("file"),
-  uploadImage
-);
+router.post("/upload", requireAuth, upload.single("file"), uploadImage);
 
 /**
  * POST /media/upload-doc
  * multipart/form-data
  * field: file (PDF)
  */
-router.post(
-  "/upload-doc",
-  requireAuth,
-  uploadDocument.single("file"),
-  uploadDocController
-);
+router.post("/upload-doc", requireAuth, uploadDocument.single("file"), uploadDocController);
 
 router.post(
   "/trips/:tripId/cover",
   requireAuth,
   requirePermission("trip:edit"),
   legacyUpload.single("image"),
-  uploadTripCover
+  uploadTripCover,
 );
 
 router.post(
@@ -50,7 +40,7 @@ router.post(
   requireAuth,
   requirePermission("trip:edit"),
   legacyUpload.array("images", 6), // Max 6 images
-  uploadTripGallery
+  uploadTripGallery,
 );
 
 // New attachment endpoints
@@ -58,22 +48,17 @@ router.post(
   "/trips/:tripId/cover/attach",
   requireAuth,
   requirePermission("trip:edit"),
-  setTripCoverImage
+  setTripCoverImage,
 );
 
 router.post(
   "/trips/:tripId/gallery/attach",
   requireAuth,
   requirePermission("trip:edit"),
-  addTripGalleryImage
+  addTripGalleryImage,
 );
 
-router.post(
-  "/trips/:tripId/gallery",
-  requireAuth,
-  requirePermission("trip:edit"),
-  setTripGallery
-);
+router.post("/trips/:tripId/gallery", requireAuth, requirePermission("trip:edit"), setTripGallery);
 
 import { listMedia, deleteMedia } from "../controllers/media/listMedia.controller";
 

@@ -15,10 +15,7 @@ export type ProcessedImage = {
   mimeType: string;
 };
 
-export async function processImage(
-  buffer: Buffer,
-  mimeType: string
-): Promise<ProcessedImage> {
+export async function processImage(buffer: Buffer, mimeType: string): Promise<ProcessedImage> {
   if (!mimeType.startsWith("image/")) {
     throw new Error("INVALID_IMAGE_TYPE");
   }

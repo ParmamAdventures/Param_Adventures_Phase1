@@ -3,9 +3,7 @@ import "dotenv/config";
 
 const envSchema = z.object({
   PORT: z.string().default("3000"),
-  NODE_ENV: z
-    .enum(["development", "test", "production"])
-    .default("development"),
+  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 
   JWT_ACCESS_SECRET: z.string(),
   JWT_REFRESH_SECRET: z.string(),

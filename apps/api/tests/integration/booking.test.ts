@@ -12,10 +12,18 @@ describe("Booking Integration", () => {
 
   beforeAll(async () => {
     // Clean up
-    try { await prisma.payment.deleteMany(); } catch (e) {}
-    try { await prisma.booking.deleteMany(); } catch (e) {}
-    try { await prisma.trip.deleteMany(); } catch (e) {}
-    try { await prisma.user.deleteMany(); } catch (e) {}
+    try {
+      await prisma.payment.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.booking.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.trip.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.user.deleteMany();
+    } catch (e) {}
 
     // Create user
     const user = await prisma.user.create({
@@ -101,7 +109,7 @@ describe("Booking Integration", () => {
         startDate: new Date(),
         guests: 1,
         totalPrice: 500,
-      }
+      },
     });
 
     const res = await request(app)
@@ -109,7 +117,7 @@ describe("Booking Integration", () => {
       .set("Authorization", `Bearer ${userToken}`);
 
     expect(res.status).toBe(200);
-    
+
     const updated = await prisma.booking.findUnique({ where: { id: booking.id } });
     expect(updated?.status).toBe("CANCELLED");
   });

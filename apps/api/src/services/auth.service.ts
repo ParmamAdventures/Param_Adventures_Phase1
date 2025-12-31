@@ -1,7 +1,12 @@
-
 import { prisma } from "../lib/prisma";
 import { hashPassword, verifyPassword } from "../utils/password";
-import { signAccessToken, signRefreshToken, verifyRefreshToken, signResetToken, verifyResetToken } from "../utils/jwt";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+  signResetToken,
+  verifyResetToken,
+} from "../utils/jwt";
 import { auditService } from "./audit.service";
 import { notificationService } from "./notification.service";
 
@@ -13,7 +18,9 @@ export class AuthService {
 
     const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
-      console.warn(`[AuthService] Registration failed: Email ${normalizedEmail} already registered`);
+      console.warn(
+        `[AuthService] Registration failed: Email ${normalizedEmail} already registered`,
+      );
       throw new Error("Email already registered");
     }
 
@@ -87,7 +94,7 @@ export class AuthService {
 
     const token = signResetToken(user.id);
     const resetLink = `${process.env.WEB_URL || "http://localhost:3000"}/auth/reset-password?token=${token}`;
-    
+
     await notificationService.sendPasswordResetEmail(user.email, resetLink);
   }
 
@@ -98,7 +105,7 @@ export class AuthService {
 
       await prisma.user.update({
         where: { id: payload.sub },
-        data: { password: hashedPassword }
+        data: { password: hashedPassword },
       });
     } catch (error) {
       throw new Error("Invalid or expired reset token");
@@ -120,7 +127,7 @@ export class AuthService {
 
     await prisma.user.update({
       where: { id: userId },
-      data: { password: hashedPassword }
+      data: { password: hashedPassword },
     });
 
     await auditService.logAudit({

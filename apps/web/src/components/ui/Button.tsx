@@ -19,13 +19,13 @@ export function Button({
     size === "sm" && "px-3 py-1.5 text-xs",
     size === "md" && "px-6 py-3 text-sm",
     size === "lg" && "px-8 py-4 text-base",
-    variant === "primary" && "bg-accent text-white shadow-md shadow-accent/20 hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5",
-    variant === "ghost" &&
-      "bg-transparent text-foreground hover:bg-accent/10 hover:text-accent",
-    variant === "danger" &&
-      "bg-red-600 text-white hover:bg-red-700 shadow-sm",
+    variant === "primary" &&
+      "bg-accent text-white shadow-md shadow-accent/20 hover:shadow-lg hover:shadow-accent/30 hover:-translate-y-0.5",
+    variant === "ghost" && "bg-transparent text-foreground hover:bg-accent/10 hover:text-accent",
+    variant === "danger" && "bg-red-600 text-white hover:bg-red-700 shadow-sm",
     variant === "subtle" && "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-    variant === "outline" && "bg-transparent border-2 border-[var(--border)] hover:bg-accent/5 hover:border-accent/20 text-foreground",
+    variant === "outline" &&
+      "bg-transparent border-2 border-[var(--border)] hover:bg-accent/5 hover:border-accent/20 text-foreground",
     loading && "opacity-70 cursor-not-allowed",
     "active:scale-[0.98] duration-200",
     className,
@@ -34,7 +34,12 @@ export function Button({
     .join(" ");
 
   return (
-    <button {...props} disabled={loading || props.disabled} className={classes} suppressHydrationWarning>
+    <button
+      {...props}
+      disabled={loading || props.disabled}
+      className={classes}
+      suppressHydrationWarning
+    >
       {loading ? <Spinner size={14} /> : children}
     </button>
   );

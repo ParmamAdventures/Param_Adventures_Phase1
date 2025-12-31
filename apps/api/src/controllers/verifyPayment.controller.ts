@@ -26,8 +26,8 @@ export async function verifyPayment(req: Request, res: Response) {
     where: { providerOrderId: orderId },
     include: {
       booking: {
-        include: { trip: true }
-      }
+        include: { trip: true },
+      },
     },
   });
 
@@ -62,7 +62,7 @@ export async function verifyPayment(req: Request, res: Response) {
       tripTitle: payment.booking.trip.title,
       amount: payment.amount,
       bookingId: payment.bookingId,
-    }
+    },
   });
 
   res.json({ success: true, message: "Payment verified and booking confirmed" });
@@ -70,13 +70,13 @@ export async function verifyPayment(req: Request, res: Response) {
 
 async function handleDevSimulation(orderId: string, res: Response) {
   logger.info("[Dev] Handling payment simulation", { orderId });
-  
+
   const payment = await prisma.payment.findUnique({
     where: { providerOrderId: orderId },
     include: {
       booking: {
-        include: { trip: true }
-      }
+        include: { trip: true },
+      },
     },
   });
 
@@ -108,7 +108,7 @@ async function handleDevSimulation(orderId: string, res: Response) {
       tripTitle: payment.booking.trip.title,
       amount: payment.amount,
       bookingId: payment.bookingId,
-    }
+    },
   });
 
   return res.json({ success: true, message: "Dev simulation successful" });

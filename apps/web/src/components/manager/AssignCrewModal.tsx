@@ -15,7 +15,13 @@ interface AssignCrewModalProps {
   currentGuides?: any[]; // Already assigned guides
 }
 
-export default function AssignCrewModal({ isOpen, onClose, tripId, onSuccess, currentGuides = [] }: AssignCrewModalProps) {
+export default function AssignCrewModal({
+  isOpen,
+  onClose,
+  tripId,
+  onSuccess,
+  currentGuides = [],
+}: AssignCrewModalProps) {
   const [guides, setGuides] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -63,26 +69,27 @@ export default function AssignCrewModal({ isOpen, onClose, tripId, onSuccess, cu
   };
 
   const handleRemove = async (guideId: string) => {
-     if (!tripId) return;
-     setAssigningId(guideId); 
-     try {
-         const res = await apiFetch(`/admin/trip-assignments/${tripId}/guide/${guideId}`, {
-             method: "DELETE"
-         });
-         if (res.ok) {
-             onSuccess();
-         }
-     } catch (e) {
-         console.error(e);
-     } finally {
-         setAssigningId(null);
-     }
-  }
+    if (!tripId) return;
+    setAssigningId(guideId);
+    try {
+      const res = await apiFetch(`/admin/trip-assignments/${tripId}/guide/${guideId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        onSuccess();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setAssigningId(null);
+    }
+  };
 
   // Filter guides: Exclude those already assigned (handled by visual check mostly)
-  const availableGuides = guides.filter(g => 
-      g.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      g.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const availableGuides = guides.filter(
+    (g) =>
+      g.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      g.email.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -94,79 +101,104 @@ export default function AssignCrewModal({ isOpen, onClose, tripId, onSuccess, cu
         </DialogHeader>
 
         <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={16} />
-            <input 
-                type="text" 
-                placeholder="Search guides by name..." 
-                className="w-full pl-9 pr-4 py-2 text-sm border border-border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-accent/50"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
+          <Search
+            className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2"
+            size={16}
+          />
+          <input
+            type="text"
+            placeholder="Search guides by name..."
+            className="border-border bg-background focus:ring-accent/50 w-full rounded-lg border py-2 pr-4 pl-9 text-sm focus:ring-2 focus:outline-none"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
-        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
-             {/* Current Assignments */}
-             {currentGuides.length > 0 && (
-                 <div className="space-y-2">
-                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Assigned</p>
-                     {currentGuides.map((item: any) => (
-                         <div key={item.guide.id} className="flex items-center justify-between p-2 rounded-lg bg-green-500/10 border border-green-500/20">
-                             <div className="flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-xs font-bold text-green-700">
-                                     {item.guide.name[0]}
-                                 </div>
-                                 <div className="flex flex-col">
-                                     <span className="text-sm font-medium text-foreground">{item.guide.name}</span>
-                                     <span className="text-xs text-muted-foreground">{item.guide.email}</span>
-                                 </div>
-                             </div>
-                             <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
-                                onClick={() => handleRemove(item.guide.id)}
-                                disabled={assigningId === item.guide.id}
-                             >
-                                 {assigningId === item.guide.id ? <Loader2 className="animate-spin" size={14} /> : <X size={16} />}
-                             </Button>
-                         </div>
-                     ))}
-                 </div>
-             )}
-
+        <div className="max-h-[300px] space-y-4 overflow-y-auto pr-1">
+          {/* Current Assignments */}
+          {currentGuides.length > 0 && (
             <div className="space-y-2">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Available Guides</p>
-                {loading ? (
-                    <div className="flex justify-center p-4"><Loader2 className="animate-spin text-muted-foreground" /></div>
-                ) : availableGuides.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-4">No guides found.</p>
-                ) : (
-                    availableGuides
-                        .filter(g => !currentGuides.some(cg => cg.guide.id === g.id))
-                        .map((guide) => (
-                        <div key={guide.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-accent/5 border border-transparent hover:border-border transition-all">
-                             <div className="flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-xs font-bold text-accent">
-                                     {guide.name[0]}
-                                 </div>
-                                 <div className="flex flex-col">
-                                     <span className="text-sm font-medium text-foreground">{guide.name}</span>
-                                     <span className="text-xs text-muted-foreground">{guide.email}</span>
-                                 </div>
-                             </div>
-                             <Button 
-                                size="sm" 
-                                variant="outline" 
-                                onClick={() => handleAssign(guide.id)}
-                                disabled={assigningId === guide.id}
-                                className="h-8 gap-1"
-                             >
-                                 {assigningId === guide.id ? <Loader2 className="animate-spin" size={14} /> : <><UserPlus size={14} /> Add</>}
-                             </Button>
-                        </div>
-                    ))
-                )}
+              <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                Assigned
+              </p>
+              {currentGuides.map((item: any) => (
+                <div
+                  key={item.guide.id}
+                  className="flex items-center justify-between rounded-lg border border-green-500/20 bg-green-500/10 p-2"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">
+                      {item.guide.name[0]}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-foreground text-sm font-medium">{item.guide.name}</span>
+                      <span className="text-muted-foreground text-xs">{item.guide.email}</span>
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-muted-foreground h-8 w-8 p-0 hover:bg-red-500/10 hover:text-red-500"
+                    onClick={() => handleRemove(item.guide.id)}
+                    disabled={assigningId === item.guide.id}
+                  >
+                    {assigningId === item.guide.id ? (
+                      <Loader2 className="animate-spin" size={14} />
+                    ) : (
+                      <X size={16} />
+                    )}
+                  </Button>
+                </div>
+              ))}
             </div>
+          )}
+
+          <div className="space-y-2">
+            <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+              Available Guides
+            </p>
+            {loading ? (
+              <div className="flex justify-center p-4">
+                <Loader2 className="text-muted-foreground animate-spin" />
+              </div>
+            ) : availableGuides.length === 0 ? (
+              <p className="text-muted-foreground py-4 text-center text-sm">No guides found.</p>
+            ) : (
+              availableGuides
+                .filter((g) => !currentGuides.some((cg) => cg.guide.id === g.id))
+                .map((guide) => (
+                  <div
+                    key={guide.id}
+                    className="hover:bg-accent/5 hover:border-border flex items-center justify-between rounded-lg border border-transparent p-2 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-accent/10 text-accent flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold">
+                        {guide.name[0]}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-foreground text-sm font-medium">{guide.name}</span>
+                        <span className="text-muted-foreground text-xs">{guide.email}</span>
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleAssign(guide.id)}
+                      disabled={assigningId === guide.id}
+                      className="h-8 gap-1"
+                    >
+                      {assigningId === guide.id ? (
+                        <Loader2 className="animate-spin" size={14} />
+                      ) : (
+                        <>
+                          <UserPlus size={14} /> Add
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                ))
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

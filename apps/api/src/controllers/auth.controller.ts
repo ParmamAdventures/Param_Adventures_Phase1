@@ -48,9 +48,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     include: { permission: true },
   });
 
-  const permissions = Array.from(
-    new Set(rolePermissions.map((rp) => rp.permission.key))
-  );
+  const permissions = Array.from(new Set(rolePermissions.map((rp) => rp.permission.key)));
 
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
@@ -59,9 +57,9 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     path: "/",
   });
 
-  return ApiResponse.success(res, "Login successful", { 
-    accessToken, 
-    user: { ...user, roles: userRoles, permissions } 
+  return ApiResponse.success(res, "Login successful", {
+    accessToken,
+    user: { ...user, roles: userRoles, permissions },
   });
 });
 
@@ -92,7 +90,7 @@ export const loginPage = catchAsync(async (_req: Request, res: Response) => {
 
   res.setHeader("Content-Type", "text/html; charset=utf-8");
   res.status(200).send(html);
-  return; 
+  return;
 });
 
 export const refresh = catchAsync(async (req: Request, res: Response) => {
@@ -148,12 +146,14 @@ export const me = catchAsync(async (req: Request, res: Response) => {
     include: { permission: true },
   });
 
-  const permissions = Array.from(
-    new Set(rolePermissions.map((rp) => rp.permission.key))
-  );
+  const permissions = Array.from(new Set(rolePermissions.map((rp) => rp.permission.key)));
 
   res.set("Cache-Control", "no-store");
-  return ApiResponse.success(res, "Current user details", { ...user, roles: userRoles, permissions });
+  return ApiResponse.success(res, "Current user details", {
+    ...user,
+    roles: userRoles,
+    permissions,
+  });
 });
 
 export const forgotPassword = catchAsync(async (req: Request, res: Response) => {
@@ -175,4 +175,3 @@ export const changePassword = catchAsync(async (req: Request, res: Response) => 
   await authService.changePassword(userId, currentPassword, newPassword);
   return ApiResponse.success(res, "Password changed successfully");
 });
-

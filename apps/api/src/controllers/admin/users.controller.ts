@@ -5,14 +5,14 @@ export async function listUsers(req: Request, res: Response) {
   const { role } = req.query;
 
   const where: any = {};
-  
+
   if (role) {
     where.roles = {
       some: {
         role: {
-          name: String(role)
-        }
-      }
+          name: String(role),
+        },
+      },
     };
   }
 
@@ -25,9 +25,9 @@ export async function listUsers(req: Request, res: Response) {
       status: true,
       createdAt: true,
       avatarImage: {
-          select: {
-              thumbUrl: true
-          }
+        select: {
+          thumbUrl: true,
+        },
       },
       roles: {
         include: {
@@ -45,8 +45,8 @@ export async function listUsers(req: Request, res: Response) {
       status: u.status,
       roles: u.roles.map((r) => r.role.name),
       createdAt: u.createdAt,
-      avatarImage: u.avatarImage
-    }))
+      avatarImage: u.avatarImage,
+    })),
   );
 }
 export async function updateUserStatus(req: Request, res: Response) {
@@ -106,21 +106,21 @@ export async function deleteUser(req: Request, res: Response) {
 }
 
 export async function unsuspendUser(req: Request, res: Response) {
-    const { id } = req.params;
-  
-    const user = await prisma.user.update({
-      where: { id },
-      data: { status: "ACTIVE", statusReason: null },
-    });
-  
-    await prisma.auditLog.create({
-      data: {
-        actorId: (req as any).user.id,
-        action: "USER_UNSUSPENDED",
-        targetType: "USER",
-        targetId: user.id,
-      },
-    });
-  
-    res.json(user);
+  const { id } = req.params;
+
+  const user = await prisma.user.update({
+    where: { id },
+    data: { status: "ACTIVE", statusReason: null },
+  });
+
+  await prisma.auditLog.create({
+    data: {
+      actorId: (req as any).user.id,
+      action: "USER_UNSUSPENDED",
+      targetType: "USER",
+      targetId: user.id,
+    },
+  });
+
+  res.json(user);
 }

@@ -17,13 +17,13 @@ export const getBookings = async (req: Request, res: Response) => {
             coverImage: {
               select: {
                 mediumUrl: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
-        payments: true
+        payments: true,
       },
-      orderBy: { createdAt: "desc" }
+      orderBy: { createdAt: "desc" },
     });
 
     res.json(bookings);

@@ -10,11 +10,11 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
   const trip = await prisma.trip.findUnique({ where: { id } });
 
   if (!trip) return ApiResponse.error(res, "Trip not found", 404);
-  
+
   // Check permissions: Owner OR Admin (trip:edit)
   const isOwner = trip.createdById === user.id;
   const canEditAny = user.permissions?.includes("trip:edit");
-  
+
   if (!isOwner && !canEditAny) {
     return ApiResponse.error(res, "Insufficient permissions to edit this trip", 403);
   }
@@ -55,21 +55,23 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       coverImageId: req.body.coverImageId,
       // Update gallery
-      gallery: req.body.gallery ? {
-        deleteMany: {},
-        create: req.body.gallery.map((g: any, index: number) => ({
-          imageId: g.id,
-          order: index,
-        })),
-      } : undefined,
+      gallery: req.body.gallery
+        ? {
+            deleteMany: {},
+            create: req.body.gallery.map((g: any, index: number) => ({
+              imageId: g.id,
+              order: index,
+            })),
+          }
+        : undefined,
     },
     include: {
-        coverImage: true,
-        gallery: {
-            include: { image: true },
-            orderBy: { order: "asc" }
-        }
-    }
+      coverImage: true,
+      gallery: {
+        include: { image: true },
+        orderBy: { order: "asc" },
+      },
+    },
   });
 
   await prisma.auditLog.create({

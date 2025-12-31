@@ -10,7 +10,7 @@ async function main() {
   const admin = await prisma.user.upsert({
     where: { email: "admin@local.test" },
     update: {
-        password: hashedPassword
+      password: hashedPassword,
     },
     create: {
       email: "admin@local.test",
@@ -22,27 +22,27 @@ async function main() {
   const superAdminRole = await prisma.role.findFirst({ where: { name: "SUPER_ADMIN" } });
   if (superAdminRole) {
     await prisma.userRole.upsert({
-      where: { 
-          userId_roleId: { 
-              userId: admin.id, 
-              roleId: superAdminRole.id 
-          } 
+      where: {
+        userId_roleId: {
+          userId: admin.id,
+          roleId: superAdminRole.id,
+        },
       },
       update: {},
-      create: { 
-          userId: admin.id, 
-          roleId: superAdminRole.id 
+      create: {
+        userId: admin.id,
+        roleId: superAdminRole.id,
       },
     });
   }
 
   // user@local.test (Standard User)
   const userRole = await prisma.role.findFirst({ where: { name: "USER" } });
-  
+
   const user = await prisma.user.upsert({
     where: { email: "user@local.test" },
     update: {
-        password: hashedPassword
+      password: hashedPassword,
     },
     create: {
       email: "user@local.test",
@@ -53,16 +53,16 @@ async function main() {
 
   if (userRole) {
     await prisma.userRole.upsert({
-      where: { 
-          userId_roleId: { 
-              userId: user.id, 
-              roleId: userRole.id 
-          } 
+      where: {
+        userId_roleId: {
+          userId: user.id,
+          roleId: userRole.id,
+        },
       },
       update: {},
-      create: { 
-          userId: user.id, 
-          roleId: userRole.id 
+      create: {
+        userId: user.id,
+        roleId: userRole.id,
       },
     });
   }
@@ -106,8 +106,10 @@ async function main() {
       create: { userId: guide.id, roleId: guideRole.id },
     });
   }
-  
+
   console.log("Seed users completed.");
 }
 
-main().catch(console.error).finally(() => prisma.$disconnect());
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

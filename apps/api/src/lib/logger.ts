@@ -15,11 +15,7 @@ export const logger = winston.createLogger({
       format:
         env.NODE_ENV === "production"
           ? combine(timestamp(), json())
-          : combine(
-              colorize(),
-              timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-              logFormat
-            ),
+          : combine(colorize(), timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), logFormat),
     }),
   ],
 });

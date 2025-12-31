@@ -1,4 +1,3 @@
-
 import { authService } from "../../src/services/auth.service";
 import { prisma } from "../../src/lib/prisma";
 import { hashPassword, verifyPassword } from "../../src/utils/password";

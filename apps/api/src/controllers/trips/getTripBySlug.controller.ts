@@ -45,26 +45,26 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
               include: {
                 permissions: {
                   include: {
-                    permission: true
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (dbUser) {
       const permissions = new Set<string>();
-      dbUser.roles.forEach(ur => {
-        ur.role.permissions.forEach(rp => {
+      dbUser.roles.forEach((ur) => {
+        ur.role.permissions.forEach((rp) => {
           permissions.add(rp.permission.key);
         });
       });
-      
+
       if (permissions.has("trip:view:internal") || trip.createdById === user.id) {
-         return ApiResponse.success(res, "Trip Fetched (Internal)", trip);
+        return ApiResponse.success(res, "Trip Fetched (Internal)", trip);
       }
     }
   }

@@ -25,7 +25,10 @@ export async function updateHeroSlide(req: Request, res: Response) {
   const result = updateHeroSlideSchema.safeParse(req.body);
 
   if (!result.success) {
-    console.error("[UpdateSlide] Validation Error:", JSON.stringify(result.error.format(), null, 2));
+    console.error(
+      "[UpdateSlide] Validation Error:",
+      JSON.stringify(result.error.format(), null, 2),
+    );
     return res.status(400).json({ error: result.error });
   }
 

@@ -27,6 +27,6 @@ async function ok(path, opts) {
   await ok("/trips/internal");
 
   console.log(
-    "Done. For full lifecycle tests create uploader/admin accounts and exercise /trips endpoints with auth."
+    "Done. For full lifecycle tests create uploader/admin accounts and exercise /trips endpoints with auth.",
   );
 })();
