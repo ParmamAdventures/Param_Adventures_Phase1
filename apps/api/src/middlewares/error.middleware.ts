@@ -38,7 +38,9 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
   res.status(500).json({
     error: {
       code: "INTERNAL_ERROR",
-      message: err.message || "Internal Server Error", // Send actual message in dev
+      message: process.env.NODE_ENV === "development" 
+        ? (err.message || "Internal Server Error") 
+        : "Internal Server Error",
       ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
     },
   });
