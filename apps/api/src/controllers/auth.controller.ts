@@ -48,11 +48,11 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     include: { permission: true },
   });
 
-  const permissions = Array.from(new Set(rolePermissions.map((rp) => rp.permission.key)));
+  const permissions = Array.from(new Set(rolePermissions.map((rp: any) => rp.permission.key)));
 
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
   });
@@ -105,6 +105,9 @@ export const refresh = catchAsync(async (req: Request, res: Response) => {
 
 export const logout = catchAsync(async (_req: Request, res: Response) => {
   res.clearCookie("refresh_token", {
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
     path: "/",
   });
   return ApiResponse.success(res, "Logged out successfully");
@@ -146,7 +149,7 @@ export const me = catchAsync(async (req: Request, res: Response) => {
     include: { permission: true },
   });
 
-  const permissions = Array.from(new Set(rolePermissions.map((rp) => rp.permission.key)));
+  const permissions = Array.from(new Set(rolePermissions.map((rp: any) => rp.permission.key)));
 
   res.set("Cache-Control", "no-store");
   return ApiResponse.success(res, "Current user details", {
