@@ -9,7 +9,7 @@ export default async function globalTeardown() {
     await prisma.payment?.deleteMany();
     await prisma.booking?.deleteMany();
     await prisma.review?.deleteMany(); // Added
-    await prisma.wishlist?.deleteMany(); // Added
+    await prisma.savedTrip?.deleteMany(); // Added
     await prisma.tripInquiry?.deleteMany(); // Added
     await prisma.newsletterSubscriber?.deleteMany(); // Added
     await prisma.tripGalleryImage?.deleteMany();
