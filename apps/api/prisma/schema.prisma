@@ -254,6 +254,7 @@ model Blog {
   slug    String     @unique
   excerpt String?
   content Json // editor output
+  theme   String?   @default("modern")
   status  BlogStatus @default(DRAFT)
 
   authorId String

@@ -404,6 +404,100 @@ async function main() {
       create: config,
     });
   }
+
+  // --- BLOG SEEDING ---
+  console.log("Seeding sample blogs...");
+
+  const BLOG_TEMPLATES = [
+    {
+      id: "day-by-day",
+      name: "Day-by-Day Journal (Journal Theme)",
+      description: "Chronicle your adventure day by day. Perfect for long treks.",
+      theme: "journal",
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "heading",
+            attrs: { level: 2 },
+            content: [{ type: "text", text: "Journey Overview" }],
+          },
+          {
+            type: "paragraph",
+            content: [
+              {
+                type: "text",
+                text: "A brief summary of the entire trip... We started early morning and the weather was perfect for a long hike.",
+              },
+            ],
+          },
+        ],
+      },
+    },
+    {
+      id: "photo-showcase",
+      name: "Photo Showcase (Minimal Theme)",
+      description: "Let the pictures do the talking. Heavy on gallery usage.",
+      theme: "minimal",
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "heading",
+            attrs: { level: 2 },
+            content: [{ type: "text", text: "Visual Highlights" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "The most stunning moments captured on camera." }],
+          },
+        ],
+      },
+    },
+    {
+      id: "culinary-journey",
+      name: "Culinary Journey (Vibrant Theme)",
+      description: "Focus on the local flavors, street food, and mountain meals.",
+      theme: "vibrant",
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "heading",
+            attrs: { level: 2 },
+            content: [{ type: "text", text: "A Taste of the Mountains" }],
+          },
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: "Exploring the region through its food..." }],
+          },
+        ],
+      },
+    },
+  ];
+
+  const firstTrip = await prisma.trip.findFirst();
+
+  if (systemAdminContent && firstTrip) {
+    for (const template of BLOG_TEMPLATES) {
+      const slug = `sample-${template.id}-${Math.random().toString(36).substring(7)}`;
+      await prisma.blog.upsert({
+        where: { slug },
+        update: {},
+        create: {
+          title: template.name,
+          slug: slug,
+          excerpt: template.description,
+          content: template.content,
+          theme: template.theme,
+          status: "PUBLISHED",
+          authorId: systemAdminContent.id,
+          tripId: firstTrip.id,
+        },
+      });
+    }
+    console.log("Successfully seeded sample blogs!");
+  }
 }
 
 main()
