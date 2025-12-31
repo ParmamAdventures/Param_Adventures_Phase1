@@ -38,6 +38,9 @@ import { errorHandler } from "./middlewares/error.middleware";
 import { globalLimiter, authLimiter, paymentLimiter, mediaLimiter } from "./config/rate-limit";
 
 export const app = express();
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 
 app.use(
   helmet({
