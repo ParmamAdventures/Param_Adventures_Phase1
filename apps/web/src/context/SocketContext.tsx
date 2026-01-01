@@ -22,8 +22,12 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       const token = getAccessToken();
       if (!token) return;
 
-      const socket = io(API_URL, {
+      // Use explicit backend URL for WebSockets since Vercel Proxy doesn't handle WS well
+      const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+      const socket = io(SOCKET_URL, {
         auth: { token },
+        transports: ["websocket", "polling"], // Force websocket first
+        withCredentials: true,
       });
 
       socket.on("connect", () => {
