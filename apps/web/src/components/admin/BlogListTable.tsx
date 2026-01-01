@@ -9,6 +9,7 @@ import Spinner from "../ui/Spinner";
 type Blog = {
   id: string;
   title: string;
+  slug: string;
   author?: {
     name?: string | null;
     email: string;
@@ -165,7 +166,7 @@ export default function BlogListTable({ blogs, loading, onAction, onRefresh }: P
                 </Button>
               )}
 
-              <Link href={`/admin/blogs/${blog.id}`} className="ml-0 md:ml-4">
+              <Link href={`/blogs/${blog.slug || blog.id}`} target="_blank" className="ml-0 md:ml-4">
                 <Button
                   variant="ghost"
                   className="flex h-10 w-10 items-center justify-center rounded-full p-0"

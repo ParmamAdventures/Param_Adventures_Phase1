@@ -4,9 +4,19 @@ import { HttpError } from "../../utils/httpError";
 
 export async function getBlogBySlug(req: Request, res: Response) {
   const { slug } = req.params;
+  const user = (req as any).user;
+  const permissions = (req as any).permissions || [];
+
+  const canViewInternal = permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
+
+  const whereCondition: any = { slug };
+  
+  if (!canViewInternal) {
+    whereCondition.status = "PUBLISHED";
+  }
 
   const blog = await prisma.blog.findFirst({
-    where: { slug, status: "PUBLISHED" },
+    where: whereCondition,
     include: {
       author: {
         select: {
