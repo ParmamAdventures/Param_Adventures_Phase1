@@ -12,6 +12,7 @@ interface Trip {
   title: string;
   price: number;
   durationDays: number;
+  startDate?: string | Date; // Added for auto-fill
 }
 
 interface Props {
@@ -33,10 +34,20 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
   useEffect(() => {
     if (isOpen) {
       setGuests(1);
-      setStartDate("");
+      
+      // Auto-fill date if trip has a fixed start date
+      if (trip.startDate) {
+        // Format to YYYY-MM-DD for input[type="date"]
+        const dateObj = new Date(trip.startDate);
+        const formattedDate = dateObj.toISOString().split("T")[0];
+        setStartDate(formattedDate);
+      } else {
+        setStartDate("");
+      }
+      
       setLoading(false);
     }
-  }, [isOpen]);
+  }, [isOpen, trip.startDate]);
 
   const handleBooking = async () => {
     if (!startDate) {
