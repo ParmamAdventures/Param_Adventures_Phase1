@@ -21,7 +21,7 @@ export default function AdminNewTripPage() {
 
       const body = await res.json().catch(() => ({}));
 
-      if (res.ok && body.id) {
+      if (res.ok && (body.data?.id || body.id)) {
         // Success! Everything attached on backend in one transaction
         router.push("/admin/trips");
       } else {

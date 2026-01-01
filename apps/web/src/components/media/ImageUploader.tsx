@@ -60,7 +60,7 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
         throw new Error(data.error || "Upload failed");
       }
 
-      onUpload(data.image);
+      onUpload(data.data?.image || data.image);
       setFile(null);
       setPreview(null);
     } catch (e: any) {
