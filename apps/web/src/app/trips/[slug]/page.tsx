@@ -71,7 +71,7 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
     }).catch(() => null);
     if (!listRes || !listRes.ok) notFound();
     const json = await listRes.json();
-    const trips = json.data || json;
+    const trips = json.data?.data || json.data || json;
     type TripItem = { slug: string } & Record<string, unknown>;
     const trip = (trips || []).find((t: TripItem) => t.slug === slug) as TripFull | undefined;
     if (!trip) notFound();
