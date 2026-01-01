@@ -255,6 +255,16 @@ router.post(
   archiveTrip,
 );
 
+import { restoreTrip } from "../controllers/trips/restoreTrip.controller";
+
+router.post(
+  "/:id/restore",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:archive"), // Re-using archive permission for restore
+  restoreTrip,
+);
+
 import { uploadTripDocs } from "../controllers/trips/uploadTripDocs.controller";
 import { completeTrip } from "../controllers/trips/completeTrip.controller";
 

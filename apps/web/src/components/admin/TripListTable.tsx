@@ -22,7 +22,7 @@ type Props = {
   trips: Trip[];
   loading: boolean;
   onRefresh?: () => void;
-  onAction?: (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive") => void;
+  onAction?: (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore") => void;
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
@@ -181,6 +181,15 @@ export default function TripListTable({
                           onClick={() => onAction(trip.id, "archive")}
                         >
                           Archive
+                        </Button>
+                      )}
+                      {trip.status === "ARCHIVED" && onAction && (
+                        <Button
+                          variant="ghost"
+                          className="h-auto px-3 py-1.5 text-xs text-emerald-600 hover:text-emerald-700"
+                          onClick={() => onAction(trip.id, "restore")}
+                        >
+                          Restore
                         </Button>
                       )}
 

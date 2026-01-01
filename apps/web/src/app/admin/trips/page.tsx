@@ -73,7 +73,7 @@ export default function AdminTripsPage() {
 
   const handleAction = async (
     id: string,
-    action: "submit" | "approve" | "reject" | "publish" | "archive",
+    action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore",
   ) => {
     if (!confirm(`Are you sure you want to ${action} this trip?`)) return;
     try {
