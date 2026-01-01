@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireAuth } from "../middlewares/auth.middleware";
+import { requireAuth, optionalAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
 
@@ -19,7 +19,7 @@ const router = Router();
 
 // Public routes
 router.get("/public", getPublicBlogs);
-router.get("/public/:slug", getBlogBySlug);
+router.get("/public/:slug", optionalAuth, attachPermissions, getBlogBySlug);
 
 // Protected routes
 router.get("/my-blogs", requireAuth, attachPermissions, getMyBlogs);
