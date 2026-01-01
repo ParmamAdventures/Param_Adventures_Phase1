@@ -124,8 +124,11 @@ export default function ProfilePage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setAvatarImageId(data.image.id);
-        setAvatarUrl(data.image.mediumUrl);
+        const imageData = data.data?.image || data.image; // Handle both wrapped and unwrapped
+        if (imageData) {
+          setAvatarImageId(imageData.id);
+          setAvatarUrl(imageData.mediumUrl);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -159,8 +162,11 @@ export default function ProfilePage() {
 
       const data = await res.json();
       if (res.ok) {
-        setAvatarImageId(data.image.id);
-        setAvatarUrl(data.image.mediumUrl);
+        const imageData = data.data?.image || data.image;
+        if (imageData) {
+          setAvatarImageId(imageData.id);
+          setAvatarUrl(imageData.mediumUrl);
+        }
       }
     } catch (error) {
       console.error("Failed to upload preset", error);
