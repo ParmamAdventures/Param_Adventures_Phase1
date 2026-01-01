@@ -51,7 +51,7 @@ export default function AdminModerationPage() {
   const handleModeration = async (
     id: string,
     type: "trips" | "blogs",
-    action: "submit" | "approve" | "reject" | "publish" | "archive",
+    action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore",
   ) => {
     try {
       const endpoint =
