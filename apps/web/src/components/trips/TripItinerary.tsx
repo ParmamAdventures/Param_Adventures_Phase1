@@ -2,11 +2,6 @@
 
 import { useState } from "react";
 
-type ItineraryDay = {
-  day: number;
-  title: string;
-  description: string;
-};
 
 import {
   MapPin,
