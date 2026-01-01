@@ -8,7 +8,9 @@ export function getAccessToken() {
   return accessToken;
 }
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+// Use relative path to leverage Next.js Rewrites (Proxies to Backend)
+// This ensures same-origin for cookies
+export const API_URL = "/api";
 const baseUrl = API_URL;
 
 export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
@@ -26,6 +28,7 @@ export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
   });
 
   if (response.status === 401 && !url.endsWith("/auth/refresh")) {
+    console.warn("[API] 401 detected, attempting auto-refresh...");
     const refreshed = await fetch(`${baseUrl}/auth/refresh`, {
       method: "POST",
       credentials: "include",
@@ -34,6 +37,7 @@ export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
     if (refreshed.ok) {
       const data = await refreshed.json();
       if (data?.accessToken) {
+        console.log("[API] Token refresh successful");
         setAccessToken(data.accessToken);
         headers.set("Authorization", `Bearer ${data.accessToken}`);
         return fetch(url, { ...init, headers, credentials: "include" });
