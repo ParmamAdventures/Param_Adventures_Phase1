@@ -61,9 +61,17 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
 
+  console.log(`[TripDetail] Fetching: ${API_BASE}/trips/public/${slug}`);
   const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
     cache: "no-store",
-  }).catch(() => null);
+  }).catch((err) => {
+    console.error("[TripDetail] Fetch Error:", err);
+    return null;
+  });
+
+  if (res) {
+    console.log(`[TripDetail] Status: ${res.status}`);
+  }
 
   if (!res || res.status === 404) {
     const listRes = await fetch(`${API_BASE}/trips/public`, {
