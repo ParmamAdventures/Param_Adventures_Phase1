@@ -22,7 +22,7 @@ const PRESET_AVATARS = [
 ];
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [bio, setBio] = useState("");
@@ -66,6 +66,7 @@ export default function ProfilePage() {
   async function handleSave() {
     setLoading(true);
     try {
+      console.log("Saving user data:", { gender, phoneNumber, preferences }); // Debug log
       const res = await apiFetch("/users/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -82,11 +83,12 @@ export default function ProfilePage() {
         }),
       });
       if (res.ok) {
+        await refreshUser(); // Update global auth context without reload
         alert("Profile updated successfully!");
-        window.location.reload();
       }
     } catch (e) {
       console.error(e);
+      alert("Failed to update profile.");
     } finally {
       setLoading(false);
     }
