@@ -1,19 +1,20 @@
-import { constructMetadata } from "../../../lib/metadata";
+"use client";
+
+import React, { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
-import TripHero from "../../../components/trips/TripHero";
-import TripHighlights from "../../../components/trips/TripHighlights";
-import TripBookingCard from "../../../components/trips/TripBookingCard";
-import TripItinerary from "../../../components/trips/TripItinerary";
-import TripQuickStats from "../../../components/trips/TripQuickStats";
-import TripInclusions from "../../../components/trips/TripInclusions";
-import ReviewList from "../../../components/reviews/ReviewList";
-import ReviewForm from "../../../components/reviews/ReviewForm";
-import { Testimonials } from "../../../components/home/Testimonials";
+import { apiFetch } from "@/lib/api";
+import { Loader2 } from "lucide-react";
+import TripHero from "./TripHero";
+import TripQuickStats from "./TripQuickStats";
+import TripHighlights from "./TripHighlights";
+import TripItinerary from "./TripItinerary";
+import TripInclusions from "./TripInclusions";
+import { Testimonials } from "../home/Testimonials";
+import TripBookingCard from "./TripBookingCard";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
-
+// Define strict types matching the API response
 type TripFull = {
-  id?: string;
+  id: string;
   title: string;
   slug: string;
   description?: string | null;
@@ -37,60 +38,8 @@ type TripFull = {
   category?: string;
 };
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  try {
-    const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return constructMetadata({ title: "Adventure not found" });
-    const json = await res.json();
-    const trip = (json.data || json) as TripFull;
-
-    return constructMetadata({
-      title: trip.title,
-      description: trip.description || undefined,
-      image: (trip as any).coverImage?.mediumUrl || "/og-image.jpg",
-    });
-  } catch {
-    return constructMetadata({ title: "Adventure" });
-  }
-}
-
-import TripDetailClient from "../../../components/trips/TripDetailClient";
-
-export default async function TripDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  const resolvedParams = await params;
-  const slug = resolvedParams.slug;
-
-  console.log(`[TripDetail] Server-side fetching: ${API_BASE}/trips/public/${slug}`);
-  
-  let initialTrip = null;
-
-  try {
-    const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
-      cache: "no-store",
-    });
-    
-    if (res.ok) {
-      const json = await res.json();
-      // Robust unpacking on server side too
-      initialTrip = json.data?.data || json.data || json;
-    } else {
-       console.warn(`[TripDetail] Server fetch failed (Status: ${res.status}). Falling back to client.`);
-    }
-  } catch (err) {
-    console.error("[TripDetail] Server network error. Falling back to client:", err);
-    // initialTrip remains null, triggering client fetch check
-  }
-
-  return <TripDetailClient initialTrip={initialTrip} slug={slug} />;
-}
-// replaced render function... wait, I can just replace the top part and then use another replacement for the bottom part.
-
-// Split into chunks for safety.
-
-function renderTrip(trip: TripFull) {
+// Re-using the same render layout as the server component to ensure consistency
+function RenderTripLayout({ trip }: { trip: TripFull }) {
   return (
     <div className="bg-background text-foreground min-h-screen pb-32">
       <TripHero trip={trip} />
@@ -100,19 +49,19 @@ function renderTrip(trip: TripFull) {
         <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:gap-16">
           {/* Main Content */}
           <div className="space-y-12">
-            {/* Quick Stats (Mobile only, or simplified) */}
+            {/* Quick Stats (Mobile only) */}
             <div className="lg:hidden">
               <TripHighlights trip={trip} />
             </div>
 
-            {/* About / Description */}
+            {/* Overview */}
             <section className="space-y-6">
               <h2 className="text-3xl font-bold tracking-tight">Overview</h2>
               <div className="prose dark:prose-invert text-muted-foreground max-w-none text-lg leading-relaxed whitespace-pre-line">
                 {trip.description || "Detailed itinerary coming soon."}
               </div>
 
-              {/* Highlights List */}
+              {/* Highlights */}
               {trip.highlights && trip.highlights.length > 0 && (
                 <div className="bg-accent/5 border-accent/10 mt-8 rounded-xl border p-6">
                   <h3 className="text-accent mb-4 text-lg font-bold">Trip Highlights</h3>
@@ -144,8 +93,6 @@ function renderTrip(trip: TripFull) {
             {/* Itinerary */}
             <section id="itinerary" className="scroll-mt-24">
               <TripItinerary itinerary={trip.itinerary} />
-
-              {/* Download Button (Visible on all devices now) */}
               {trip.itineraryPdf && (
                 <div className="mt-8">
                   <a
@@ -155,29 +102,13 @@ function renderTrip(trip: TripFull) {
                     download
                     className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[var(--accent)]/20 bg-[var(--accent)]/5 py-4 font-bold text-[var(--accent)] transition-all hover:bg-[var(--accent)]/10 active:scale-95"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <path d="M12 18v-6" />
-                      <path d="m9 15 3 3 3-3" />
-                    </svg>
                     Download Detailed Itinerary
                   </a>
                 </div>
               )}
             </section>
 
-            {/* Inclusions & Policies */}
+            {/* Inclusions */}
             <section id="inclusions" className="scroll-mt-24">
               <TripInclusions
                 inclusions={trip.inclusions}
@@ -186,7 +117,7 @@ function renderTrip(trip: TripFull) {
               />
             </section>
 
-            {/* Gallery (if exists) */}
+            {/* Gallery */}
             {trip.gallery && trip.gallery.length > 0 && (
               <section>
                 <h2 className="mb-6 text-2xl font-bold">Gallery</h2>
@@ -207,11 +138,10 @@ function renderTrip(trip: TripFull) {
               </section>
             )}
 
-
-            {/* Reviews / Testimonials */}
+            {/* Reviews */}
             <Testimonials tripId={trip.id} />
 
-            {/* Mobile Booking CTA (Fixed Bottom) */}
+            {/* Mobile Booking CTA */}
             <div className="bg-background/80 fixed right-0 bottom-0 left-0 z-50 border-t p-4 backdrop-blur-md lg:hidden">
               <a href="#book" className="block w-full">
                 <button className="bg-primary text-primary-foreground w-full rounded-lg py-3.5 font-bold shadow-lg">
@@ -225,11 +155,75 @@ function renderTrip(trip: TripFull) {
           <div id="book" className="hidden space-y-6 lg:block">
             <div className="sticky top-24 space-y-6">
               <TripBookingCard trip={trip} />
-              {/* PDF Button moved to main content to avoid overlap */}
             </div>
           </div>
         </div>
       </main>
     </div>
   );
+}
+
+export default function TripDetailClient({
+  initialTrip,
+  slug,
+}: {
+  initialTrip: any; // Using any to avoid strict type mismatch with server-side prop, validated inside
+  slug: string;
+}) {
+  const [trip, setTrip] = useState<TripFull | null>(initialTrip as TripFull);
+  const [loading, setLoading] = useState(!initialTrip);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    // If we already have data from server, do nothing
+    if (initialTrip) return;
+
+    // Otherwise, fetch from client (waking up backend if needed)
+    console.log(`[Client] Waking up backend for slug: ${slug}`);
+    
+    // We can use the proxy route /api/trips/public/...
+    apiFetch(`/trips/public/${slug}`)
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Not found");
+        const json = await res.json();
+        // Unpack robustly
+        const data = json.data?.data || json.data || json;
+        setTrip(data);
+      })
+      .catch((err) => {
+        console.error("Client fetch failed:", err);
+        setError(true);
+      })
+      .finally(() => setLoading(false));
+  }, [initialTrip, slug]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <Loader2 className="text-accent h-12 w-12 animate-spin" />
+        <p className="text-muted-foreground animate-pulse text-lg font-medium">
+          Waking up the Adventure Engine...
+        </p>
+        <p className="text-muted-foreground text-sm">(This might take a moment on the free tier)</p>
+      </div>
+    );
+  }
+
+  if (error || !trip) {
+    // This will trigger the Next.js not-found page on the client side
+    // Or we can just render a custom Error state here
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center p-8 text-center">
+        <h1 className="mb-4 text-4xl font-bold">Adventure Not Found</h1>
+        <p className="text-muted-foreground mb-8 text-lg">
+          We couldn't find the trip you're looking for. It might have been moved or removed.
+        </p>
+        <a href="/trips" className="text-accent hover:underline">
+          Browse all trips
+        </a>
+      </div>
+    );
+  }
+
+  return <RenderTripLayout trip={trip} />;
 }
