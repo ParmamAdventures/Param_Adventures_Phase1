@@ -11,6 +11,7 @@ import TripItinerary from "./TripItinerary";
 import TripInclusions from "./TripInclusions";
 import { Testimonials } from "../home/Testimonials";
 import TripBookingCard from "./TripBookingCard";
+import TripPolicies from "./TripPolicies";
 
 // Define strict types matching the API response
 type TripFull = {
@@ -36,6 +37,9 @@ type TripFull = {
   itineraryPdf?: string;
   gallery?: { image: { mediumUrl: string; originalUrl: string } }[];
   category?: string;
+  cancellationPolicy?: any;
+  faqs?: { question: string; answer: string }[];
+  seasons?: string[];
 };
 
 // Re-using the same render layout as the server component to ensure consistency
@@ -108,6 +112,7 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
               )}
             </section>
 
+
             {/* Inclusions */}
             <section id="inclusions" className="scroll-mt-24">
               <TripInclusions
@@ -115,6 +120,47 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
                 exclusions={trip.exclusions}
                 thingsToPack={trip.thingsToPack}
               />
+            </section>
+
+            {/* Best Seasons */}
+            {trip.seasons && trip.seasons.length > 0 && (
+              <section className="rounded-xl border border-sky-100 bg-sky-50/50 p-6 dark:border-sky-900/30 dark:bg-sky-900/10">
+                <h3 className="mb-4 flex items-center gap-2 text-xl font-bold text-sky-700 dark:text-sky-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M8 2v4" />
+                    <path d="M16 2v4" />
+                    <rect width="18" height="18" x="3" y="4" rx="2" />
+                    <path d="M3 10h18" />
+                    <path d="M10 16a2 2 0 1 0 4 0" />
+                  </svg>
+                  Best Seasons
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {trip.seasons.map((season, i) => (
+                    <span
+                      key={i}
+                      className="rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-sky-700 shadow-sm dark:bg-sky-950 dark:text-sky-300"
+                    >
+                      {season}
+                    </span>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Policies & FAQs */}
+            <section>
+              <TripPolicies cancellationPolicy={trip.cancellationPolicy} faqs={trip.faqs} />
             </section>
 
             {/* Gallery */}
