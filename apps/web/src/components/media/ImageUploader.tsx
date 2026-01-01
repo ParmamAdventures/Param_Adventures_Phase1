@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { apiFetch } from "@/lib/api";
+import imageCompression from "browser-image-compression";
 
 type UploadedImage = {
   id: string;
@@ -23,17 +24,17 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
+
+// ... existing code ...
+
   function handleSelect(file: File) {
     if (!file.type.startsWith("image/")) {
       setError("Only images are allowed");
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be under 5MB");
-      return;
-    }
-
+    // Removed 5MB check - we will compress instead
     setError(null);
     setFile(file);
     setPreview(URL.createObjectURL(file));
@@ -45,10 +46,19 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
     setLoading(true);
     setError(null);
 
-    const form = new FormData();
-    form.append("file", file);
-
     try {
+      // Compress image if larger than 1MB
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await (imageCompression as any)(file, options);
+      
+      const form = new FormData();
+      form.append("file", compressedFile);
+
       const res = await apiFetch("/media/upload", {
         method: "POST",
         body: form,
@@ -109,7 +119,7 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
               </svg>
             </div>
             <p className="text-sm text-slate-500">Click or drop an image here</p>
-            <p className="text-xs text-slate-400">JPG, PNG or WEBP (max. 5MB)</p>
+            <p className="text-xs text-slate-400">JPG, PNG or WEBP (Auto-compressed)</p>
           </div>
         )}
       </div>

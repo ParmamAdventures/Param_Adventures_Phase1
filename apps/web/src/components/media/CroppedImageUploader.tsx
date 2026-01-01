@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { apiFetch } from "@/lib/api";
 import getCroppedImg from "@/lib/canvasUtils";
+import imageCompression from "browser-image-compression";
 import { Loader2, Image as ImageIcon, Crop as CropIcon } from "lucide-react";
 
 export interface UploadedImage {
@@ -65,14 +66,26 @@ export default function CroppedImageUploader({
     if (!imageSrc || !croppedAreaPixels) return;
 
     setLoading(true);
+
+
+// ... inside handleUpload ...
+
     try {
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       if (!croppedImageBlob) throw new Error("Could not crop image");
 
       const file = new File([croppedImageBlob], "cropped.jpg", { type: "image/jpeg" });
 
+      // Compress
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+      const compressedFile = await (imageCompression as any)(file, options);
+
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", compressedFile);
 
       const res = await apiFetch("/media/upload", {
         method: "POST",
