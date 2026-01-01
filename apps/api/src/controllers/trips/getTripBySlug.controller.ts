@@ -56,8 +56,8 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
 
     if (dbUser) {
       const permissions = new Set<string>();
-      dbUser.roles.forEach((ur) => {
-        ur.role.permissions.forEach((rp) => {
+      dbUser.roles.forEach((ur: any) => {
+        ur.role.permissions.forEach((rp: any) => {
           permissions.add(rp.permission.key);
         });
       });
