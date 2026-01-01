@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { processImage } from "../../utils/imageProcessor";
+import { processMedia } from "../../utils/mediaProcessor";
 import { HttpError } from "../../utils/httpError";
 
 export async function uploadTripCover(req: Request, res: Response) {
@@ -11,7 +11,7 @@ export async function uploadTripCover(req: Request, res: Response) {
   const { tripId } = req.params;
 
   // Process image using production-grade sharp pipeline
-  const result = await processImage(req.file.buffer, req.file.mimetype);
+  const result = await processMedia(req.file.buffer, req.file.mimetype);
 
   // Create Image record
   const image = await prisma.image.create({
@@ -24,6 +24,8 @@ export async function uploadTripCover(req: Request, res: Response) {
       width: result.width,
       height: result.height,
       uploadedById: (req as any).user.id,
+      type: result.type,
+      duration: result.duration || 0,
     },
   });
 

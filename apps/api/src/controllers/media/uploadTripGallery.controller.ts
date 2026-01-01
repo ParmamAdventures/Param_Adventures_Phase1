@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { processImage } from "../../utils/imageProcessor";
+import { processMedia } from "../../utils/mediaProcessor";
 import { HttpError } from "../../utils/httpError";
 
 export async function uploadTripGallery(req: Request, res: Response) {
@@ -15,7 +15,7 @@ export async function uploadTripGallery(req: Request, res: Response) {
   // Parallel processing using production-grade sharp pipeline
   await Promise.all(
     (req.files as Express.Multer.File[]).map(async (file) => {
-      const result = await processImage(file.buffer, file.mimetype);
+      const result = await processMedia(file.buffer, file.mimetype);
       processedResults.push(result);
     }),
   );
@@ -37,8 +37,11 @@ export async function uploadTripGallery(req: Request, res: Response) {
         mimeType: result.mimeType,
         size: result.size,
         width: result.width,
+
         height: result.height,
         uploadedById: (req as any).user.id,
+        type: result.type,
+        duration: result.duration || 0,
         tripsGallery: {
           create: {
             tripId,
