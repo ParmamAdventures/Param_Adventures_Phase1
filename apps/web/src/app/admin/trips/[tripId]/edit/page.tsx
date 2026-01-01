@@ -48,6 +48,7 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
 
       if (res.ok) {
         // Success! Atomic update on backend handles metadata and media relations.
+        router.refresh(); // Invalidate Next.js Client Cache to show new data
         router.push("/admin/trips");
       } else {
         const body = await res.json().catch(() => ({}));
