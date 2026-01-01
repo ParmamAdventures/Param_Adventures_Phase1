@@ -459,6 +459,79 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
                 placeholder="e.g. Winter, Spring"
               />
             </div>
+
+            <div className="border-border border-t pt-6">
+              <label className={labelClass}>
+                Frequently Asked Questions
+                <span className="text-muted-foreground ml-2 text-xs font-normal">
+                  (Q&A for this trip)
+                </span>
+              </label>
+              <div className="space-y-4">
+                {form.faqs.map((faq, index) => (
+                  <div key={index} className="bg-muted/30 relative gap-3 rounded-lg border p-4">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        update(
+                          "faqs",
+                          form.faqs.filter((_, i) => i !== index),
+                        )
+                      }
+                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive absolute top-2 right-2 rounded-full p-1 transition-colors"
+                      title="Remove FAQ"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
+                    </button>
+                    <div className="space-y-3 pr-6">
+                      <input
+                        className={inputClass}
+                        placeholder="Question (e.g. Is alcohol allowed?)"
+                        value={faq.question}
+                        onChange={(e) => {
+                          const newFaqs = [...form.faqs];
+                          newFaqs[index].question = e.target.value;
+                          update("faqs", newFaqs);
+                        }}
+                      />
+                      <textarea
+                        className={`${inputClass} min-h-[80px]`}
+                        placeholder="Answer..."
+                        value={faq.answer}
+                        onChange={(e) => {
+                          const newFaqs = [...form.faqs];
+                          newFaqs[index].answer = e.target.value;
+                          update("faqs", newFaqs);
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+                <div className="grid grid-cols-2 gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => update("faqs", [...form.faqs, { question: "", answer: "Answer here..." }])}
+                    className="border-dashed"
+                  >
+                    + Add FAQ
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         );
 
