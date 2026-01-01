@@ -11,6 +11,7 @@ import { publishTrip } from "../controllers/trips/publishTrip.controller";
 import { archiveTrip } from "../controllers/trips/archiveTrip.controller";
 import { getInternalTrips } from "../controllers/trips/internalTrips.controller";
 import { getPublicTrips } from "../controllers/trips/getPublicTrips.controller";
+import { restoreTrip } from "../controllers/trips/restoreTrip.controller";
 import { prisma } from "../lib/prisma";
 const router = Router();
 
@@ -255,7 +256,6 @@ router.post(
   archiveTrip,
 );
 
-import { restoreTrip } from "../controllers/trips/restoreTrip.controller";
 
 router.post(
   "/:id/restore",
