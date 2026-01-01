@@ -58,3 +58,11 @@ This is a Monorepo using `npm` workspaces:
 2. Create PR to `main` (or active feature branch).
 3. Ensure CI checks pass (Lint + Test).
 4. Request review from a team member.
+
+## 6. Issue Reporting 🐛
+- Use the **Bug Report** template for defects.
+- Use the **Feature Request** template for new ideas.
+- All PRs must follow the **Pull Request Template** to ensure quality checks.
+
+## 7. Development Tools 🛠️
+- **Vercel Preview**: Every branch push generates a unique Preview URL. Use this to verify your changes in a live environment before merging.
