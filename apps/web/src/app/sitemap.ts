@@ -31,7 +31,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
 
       const json = await res.json();
-      return Array.isArray(json) ? json : json.data || [];
+      const items = json.data?.data || json.data || json;
+      return Array.isArray(items) ? items : [];
     } catch (e) {
       console.error(`Sitemap fetch error: ${url}`, e);
       return [];

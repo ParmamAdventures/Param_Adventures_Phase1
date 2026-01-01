@@ -66,7 +66,7 @@ export default function TripsClient() {
         return;
       }
       const json = await res.json();
-      setTrips(json.data || json);
+      setTrips(json.data?.data || json.data || json);
     } catch (e) {
       console.error(e);
       setError("Network error");

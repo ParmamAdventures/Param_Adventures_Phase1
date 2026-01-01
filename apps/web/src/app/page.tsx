@@ -40,7 +40,8 @@ async function getBlogs() {
       { cache: "no-store" },
     );
     if (!res.ok) return [];
-    const blogs = await res.json();
+    const json = await res.json();
+    const blogs = json.data?.data || json.data || json;
     return blogs.slice(0, 3);
   } catch {
     return [];
