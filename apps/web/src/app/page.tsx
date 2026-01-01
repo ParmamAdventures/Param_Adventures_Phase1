@@ -27,7 +27,7 @@ async function getTrips() {
     );
     if (!res.ok) return [];
     const json = await res.json();
-    return json.data || json;
+    return json.data?.data || json.data || json;
   } catch {
     return [];
   }
@@ -69,7 +69,7 @@ async function getFeaturedTrips() {
     );
     if (!res.ok) return [];
     const json = await res.json();
-    return json.data || json;
+    return json.data?.data || json.data || json;
   } catch {
     return [];
   }
