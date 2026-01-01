@@ -46,8 +46,8 @@ export default function AdminTripsPage() {
         setError(data?.error || "Unable to load trips");
         setTrips([]);
       } else {
-        setTrips(Array.isArray(data.data) ? data.data : []);
-        setTotalPages(data.metadata?.totalPages || 1);
+        setTrips(Array.isArray(data.data?.data) ? data.data.data : []);
+        setTotalPages(data.data?.metadata?.totalPages || 1);
       }
     } catch {
       setError("Network error: Could not reach the server.");
