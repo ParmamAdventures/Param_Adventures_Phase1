@@ -54,6 +54,7 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
       startDate: req.body.startDate ? new Date(req.body.startDate) : null,
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       coverImageId: req.body.coverImageId,
+      heroImageId: req.body.heroImageId,
       // Update gallery
       gallery: req.body.gallery
         ? {

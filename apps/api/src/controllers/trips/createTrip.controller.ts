@@ -37,6 +37,7 @@ export const createTrip = catchAsync(async (req: Request, res: Response) => {
       startDate: req.body.startDate ? new Date(req.body.startDate) : null,
       endDate: req.body.endDate ? new Date(req.body.endDate) : null,
       coverImageId: req.body.coverImageId || null,
+      heroImageId: req.body.heroImageId || null,
       createdById: user.id,
       gallery:
         req.body.gallery && req.body.gallery.length > 0

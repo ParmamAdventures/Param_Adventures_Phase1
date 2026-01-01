@@ -175,8 +175,11 @@ model Trip {
   seasons            Json? // Array of strings
 
   // Media (Production-grade)
+  // Media (Production-grade)
   coverImageId String?
   coverImage   Image?             @relation("TripCoverImage", fields: [coverImageId], references: [id])
+  heroImageId  String?
+  heroImage    Image?             @relation("TripHeroImage", fields: [heroImageId], references: [id])
   gallery      TripGalleryImage[]
 
   // Legacy fields (Consider removing after migration)
@@ -289,6 +292,7 @@ model Image {
   uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id])
 
   tripsCover   Trip[]             @relation("TripCoverImage")
+  tripsHero    Trip[]             @relation("TripHeroImage")
   tripsGallery TripGalleryImage[]
 
   blogsCover Blog[] @relation("BlogCoverImage")

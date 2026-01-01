@@ -3,12 +3,13 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
-  const blogs = await prisma.blog.findMany({
-    take: 10,
-    orderBy: { createdAt: "desc" },
-    select: { title: true, slug: true, theme: true },
+  const blogs = await prisma.trip.findMany({
+    where: { title: { contains: "Kodaikanal" } },
+    select: { title: true, slug: true, status: true },
   });
-  console.log(JSON.stringify(blogs, null, 2));
+  console.log("---- SLUGS START ----");
+  blogs.forEach(b => console.log(`${b.title} -> ${b.slug} [${b.status}]`));
+  console.log("---- SLUGS END ----");
 }
 
 main()
