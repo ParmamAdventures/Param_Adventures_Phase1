@@ -41,6 +41,7 @@ export const app = express();
 if (process.env.NODE_ENV === "production") {
   app.set("trust proxy", 1);
 }
+console.log("--> Backend Initialized (v1.2.0) - Restore Route Active <--");
 
 app.use(
   helmet({
