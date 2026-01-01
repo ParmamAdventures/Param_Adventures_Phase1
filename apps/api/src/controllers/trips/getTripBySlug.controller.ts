@@ -11,8 +11,6 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
     where: { slug },
     include: {
       coverImage: true,
-      // @ts-ignore
-      heroImage: true,
       gallery: {
         include: {
           image: true,
