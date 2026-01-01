@@ -6,6 +6,6 @@ import { verifyPayment } from "../controllers/verifyPayment.controller";
 const router = Router();
 
 router.post("/intent", requireAuth, createPaymentIntent);
-router.post("/verify", requireAuth, verifyPayment);
+router.post("/verify", verifyPayment);
 
 export default router;
