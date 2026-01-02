@@ -15,8 +15,8 @@ export async function updateBlog(req: Request, res: Response) {
     throw new HttpError(404, "NOT_FOUND", "Blog not found");
   }
 
-  if (!["DRAFT", "REJECTED", "PENDING_REVIEW"].includes(blog.status)) {
-    throw new HttpError(403, "INVALID_STATE", "Cannot edit this blog in its current state");
+  if (blog.status === "ARCHIVED") {
+    throw new HttpError(403, "INVALID_STATE", "Cannot edit archived blogs");
   }
 
   const updateData: any = {
@@ -27,6 +27,11 @@ export async function updateBlog(req: Request, res: Response) {
     coverImageId,
     updatedAt: new Date(),
   };
+
+  // If editing an approved or published blog, revert to pending review
+  if (["APPROVED", "PUBLISHED"].includes(blog.status)) {
+    updateData.status = "PENDING_REVIEW";
+  }
 
   if (title && title !== blog.title) {
     updateData.slug = slugify(title);
