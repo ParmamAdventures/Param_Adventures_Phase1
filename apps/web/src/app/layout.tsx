@@ -1,4 +1,3 @@
-import "../sentry.client.config"; // Force Sentry Init
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -9,6 +8,7 @@ import ThemeProvider from "../components/theme/ThemeProvider";
 import ToastProvider from "../components/ui/ToastProvider";
 import PublicNavbar from "../components/layout/PublicNavbar";
 import Footer from "../components/layout/Footer";
+import { SentryInitializer } from "../components/SentryInitializer";
 
 import { constructMetadata } from "../lib/metadata";
 
@@ -40,6 +40,7 @@ export default function RootLayout({
                 <main className="app-surface">{children}</main>
                 <Footer />
                 <Analytics />
+                <SentryInitializer />
               </SocketProvider>
             </AuthProvider>
           </ToastProvider>
