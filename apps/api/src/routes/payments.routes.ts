@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { requireAuth, requirePermission } from "../middlewares/auth.middleware";
+import { requireAuth } from "../middlewares/auth.middleware";
+import { requirePermission } from "../middlewares/require-permission.middleware";
 import { createPaymentIntent } from "../controllers/createPaymentIntent.controller";
 import { verifyPayment } from "../controllers/verifyPayment.controller";
 import { createManualPayment } from "../controllers/createManualPayment.controller";
