@@ -4,8 +4,8 @@ import { HttpError } from "../../utils/httpError";
 
 export async function getBlogBySlug(req: Request, res: Response) {
   const { slug } = req.params;
-  const user = (req as any).user;
-  const permissions = (req as any).permissions || [];
+  const user = req.user; // Types verified in express.d.ts
+  const permissions = req.permissions || [];
 
   const canViewInternal = permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 

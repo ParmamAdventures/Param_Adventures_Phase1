@@ -13,7 +13,7 @@ export async function publishBlog(req: Request, res: Response) {
     throw new HttpError(404, "NOT_FOUND", "Blog not found");
   }
 
-  const permissions = (req as any).permissions || [];
+  const permissions = req.permissions || [];
   const isOwner = blog.authorId === user.id;
   const hasPermission = permissions.includes("blog:publish");
 
