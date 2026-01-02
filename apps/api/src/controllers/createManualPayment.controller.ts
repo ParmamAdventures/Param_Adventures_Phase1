@@ -34,7 +34,7 @@ export async function createManualPayment(req: Request, res: Response) {
       amount: Number(amount),
       status: "CAPTURED",
       proofUrl,
-      rawPayload: { adminId, recordedAt: new Date(), method },
+      rawPayload: { adminId, recordedAt: new Date().toISOString(), method },
     },
   });
 
