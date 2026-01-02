@@ -46,7 +46,7 @@ router.post(
   "/:id/publish",
   requireAuth,
   attachPermissions,
-  requirePermission("blog:publish"),
+  // requirePermission("blog:publish"), // Logic moved to controller to allow Owner to publish if Approved
   publishBlog,
 );
 router.post(

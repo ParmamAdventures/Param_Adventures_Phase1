@@ -13,6 +13,18 @@ export async function publishBlog(req: Request, res: Response) {
     throw new HttpError(404, "NOT_FOUND", "Blog not found");
   }
 
+  const permissions = (req as any).permissions || [];
+  const isOwner = blog.authorId === user.id;
+  const hasPermission = permissions.includes("blog:publish");
+
+  // Logic: 
+  // 1. Admin/Moderator with 'blog:publish' can publish from APPROVED or PENDING_REVIEW (bypass).
+  // 2. Owner can publish ONLY if status is 'APPROVED'.
+
+  if (!hasPermission && (!isOwner || blog.status !== "APPROVED")) {
+     throw new HttpError(403, "FORBIDDEN", "You do not have permission to publish this blog");
+  }
+
   // Allow publishing from APPROVED or directly from PENDING_REVIEW if the admin wants to skip
   const validStatuses = ["APPROVED", "PENDING_REVIEW"];
   if (!validStatuses.includes(blog.status)) {
