@@ -135,7 +135,7 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
                   <div className="relative h-full w-full">
                     <img src={proofUrl} alt="Proof" className="h-full w-auto rounded-lg object-cover" />
                     <Button 
-                      variant="destructive" 
+                      variant="danger" 
                       size="sm" 
                       onClick={() => setProofUrl("")}
                       className="absolute top-2 right-2 h-6 px-2 text-xs"
