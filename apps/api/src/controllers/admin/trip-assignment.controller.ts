@@ -36,13 +36,15 @@ export async function assignManager(req: Request, res: Response) {
 
   logger.info("Manager assigned to trip", { tripId, managerId });
 
-  // Send Notification (Async)
-  await notificationQueue.add("SEND_ASSIGNMENT_EMAIL", {
+  // Send Notification (Async - Fire & Forget to prevent hanging if Redis is slow)
+  notificationQueue.add("SEND_ASSIGNMENT_EMAIL", {
     userId: managerId,
     role: "TRIP_MANAGER",
     details: {
       tripTitle: trip.title,
     },
+  }).catch((err) => {
+    logger.error("Failed to queue assignment email", { error: err });
   });
 
   res.json({ success: true, trip: updatedTrip });
