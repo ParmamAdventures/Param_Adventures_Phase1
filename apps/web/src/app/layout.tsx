@@ -1,3 +1,4 @@
+import "../sentry.client.config"; // Force Sentry Init
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
