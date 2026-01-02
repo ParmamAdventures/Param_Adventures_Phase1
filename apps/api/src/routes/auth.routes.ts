@@ -8,7 +8,6 @@ import {
   loginPage,
   forgotPassword,
   resetPassword,
-  resetPassword,
   changePassword,
   googleCallback,
 } from "../controllers/auth.controller";
