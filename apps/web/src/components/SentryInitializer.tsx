@@ -6,7 +6,7 @@ import "../sentry.client.config";
 
 export function SentryInitializer() {
   useEffect(() => {
-    console.log("Param Adventures: Sentry Client Initializer Mounted 🔌");
+    // Sentry initialized via import side-effect
   }, []);
   return null;
 }

@@ -88,15 +88,16 @@ app.use(
 app.use(cookieParser());
 app.use(passport.initialize());
 
-// Debug Sentry Route
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error! (Backend)");
-});
 
 // The request handler must be the first middleware on the app
 Sentry.setupExpressErrorHandler(app);
+
+// Webhooks must be registered before the JSON parser
 app.use("/webhooks", webhooksRoutes);
 app.use(express.json());
+
+// The request handler must be the first middleware on the app
+Sentry.setupExpressErrorHandler(app);
 
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
