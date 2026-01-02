@@ -17,7 +17,7 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
         try {
           // 1. Check if user exists by Google ID
           let user = await prisma.user.findUnique({
-            where: { googleId: profile.id },
+            where: { googleId: profile.id } as any,
           });
 
           if (user) {
@@ -37,25 +37,23 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
                 where: { id: user.id },
                 data: {
                   googleId: profile.id,
-                  avatarUrl: profile.photos?.[0]?.value || user.avatarUrl,
-                },
+                  avatarUrl: profile.photos?.[0]?.value || (user as any).avatarUrl,
+                } as any,
               });
               return done(null, user);
             }
           }
 
           // 3. Create New User
-          // We need a dummy password. Users logging in via Google don't have a password.
-          // They can set one later via Forgot Password if they want email login.
           user = await prisma.user.create({
             data: {
               email: email!,
               name: profile.displayName,
               googleId: profile.id,
               avatarUrl: profile.photos?.[0]?.value,
-              password: "", // Empty or Random password (bcrypt handles empty string?? No, better use random)
+              password: "", 
               status: "ACTIVE",
-            },
+            } as any,
           });
 
           return done(null, user);
