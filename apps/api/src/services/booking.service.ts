@@ -37,17 +37,17 @@ export class BookingService {
       },
     });
 
-    // Send Notification (Async) - Updated to include guest info in payload
-    await notificationQueue.add("SEND_BOOKING_EMAIL", {
+    // Send Notification (Fire-and-forget to avoid blocking UI)
+    notificationQueue.add("SEND_BOOKING_EMAIL", {
       userId,
       details: {
         tripTitle: booking.trip.title,
         bookingId: booking.id,
         startDate: booking.startDate,
         status: booking.status,
-        guestDetails, // Pass guests to notification worker
+        guestDetails, 
       },
-    });
+    }).catch(err => console.error("Failed to enqueue notification:", err));
 
     return booking;
   }
