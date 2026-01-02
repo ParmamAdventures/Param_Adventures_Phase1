@@ -205,7 +205,7 @@ async function main() {
 
   // 5. TRIP GUIDE - On ground
   await grantPermissionsToRole(tripGuideRole, [
-    "trip:view:internal", // Needs this to access Guide Portal
+    // "trip:view:internal", // REMOVED: Guides should use Guide Portal, not Manager Portal
     "trip:view:guests",
     "trip:update-status",
     "media:view",
