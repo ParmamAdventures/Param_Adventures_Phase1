@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 export default function NewBlogPage() {
   const [title, setTitle] = useState("");
+  const [theme, setTheme] = useState("modern");
   const [excerpt, setExcerpt] = useState("");
   const [coverImage, setCoverImage] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
@@ -56,6 +57,7 @@ export default function NewBlogPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title,
+          theme,
           excerpt,
           content,
           coverImageId: coverImage?.id,
@@ -153,6 +155,25 @@ export default function NewBlogPage() {
             )}
           </div>
         </div>
+        <div className="space-y-2">
+          <label className="text-sm font-semibold tracking-wider uppercase opacity-70">Theme</label>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {["modern", "journal", "minimal", "vibrant"].map((t) => (
+              <div
+                key={t}
+                onClick={() => setTheme(t)}
+                className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border p-4 text-center transition-all ${
+                  theme === t
+                    ? "border-accent bg-accent/5 ring-accent ring-1"
+                    : "border-border hover:border-accent/50 hover:bg-muted/50"
+                }`}
+              >
+                <span className="text-sm font-medium capitalize">{t}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-2">
           <label className="text-sm font-semibold tracking-wider uppercase opacity-70">Title</label>
           <Input
