@@ -51,7 +51,7 @@ export default withSentryConfig(nextConfig, {
   // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
 
   // Route browser requests to Sentry through the Next.js server to circumvent ad-blockers
-  tunnelRoute: "/monitoring",
+  // tunnelRoute: "/monitoring",
 
   // Automatically annotate React components to show some context
   reactComponentAnnotation: {
