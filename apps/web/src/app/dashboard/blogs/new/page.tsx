@@ -22,6 +22,43 @@ export default function NewBlogPage() {
   const tripIdParam = searchParams?.get("tripId");
   const [tripDetails, setTripDetails] = useState<any>(null);
 
+  const BLOG_TEMPLATES: Record<string, any> = {
+    journal: {
+      type: "doc",
+      content: [
+        { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Day 1: The Beginning" }] },
+        { type: "paragraph", content: [{ type: "text", text: "We started our journey..." }] },
+        { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Day 2" }] },
+        { type: "paragraph" },
+      ],
+    },
+    minimal: {
+      type: "doc",
+      content: [
+         { type: "paragraph", content: [{ type: "text", text: "Just the essentials." }] },
+         { type: "image", attrs: { src: "https://placehold.co/600x400", alt: "Placeholder" } }
+      ],
+    },
+    vibrant: {
+      type: "doc",
+      content: [
+        { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Highlights!" }] },
+        { type: "paragraph", content: [{ type: "text", text: "An explosion of colors and experiences." }] },
+      ],
+    },
+    modern: null, // Empty
+  };
+
+  const handleThemeChange = (t: string) => {
+    setTheme(t);
+    // Ask user or auto-apply? Let's auto-apply if content is empty.
+    if (!content || (content.content && content.content.length <= 1)) {
+        if (BLOG_TEMPLATES[t]) {
+            setContent(BLOG_TEMPLATES[t]);
+        }
+    }
+  };
+
   useEffect(() => {
     if (!tripIdParam) {
       // Enforce: Must have a trip to write a blog (User Request)
@@ -161,7 +198,7 @@ export default function NewBlogPage() {
             {["modern", "journal", "minimal", "vibrant"].map((t) => (
               <div
                 key={t}
-                onClick={() => setTheme(t)}
+                onClick={() => handleThemeChange(t)}
                 className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border p-4 text-center transition-all ${
                   theme === t
                     ? "border-accent bg-accent/5 ring-accent ring-1"

@@ -12,7 +12,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import BubbleMenuExtension from "@tiptap/extension-bubble-menu";
 import FloatingMenuExtension from "@tiptap/extension-floating-menu";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { apiFetch } from "../../lib/api";
 import Spinner from "../ui/Spinner";
 import {
@@ -52,48 +52,52 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const extensions = [
-    StarterKit.configure({
-      heading: {
-        levels: [1, 2, 3],
-      },
-      codeBlock: false, // Using lowlight later maybe, but keep starter kit default or disable if needed
-    }),
-    Underline,
-    Link.configure({
-      openOnClick: false,
-      HTMLAttributes: {
-        class:
-          "text-[var(--accent)] underline font-bold hover:opacity-80 transition-opacity cursor-pointer",
-      },
-    }),
-    Placeholder.configure({
-      placeholder: "Start telling your adventure...",
-      emptyEditorClass: "is-editor-empty",
-    }),
-    ImageExtension.configure({
-      HTMLAttributes: {
-        class: "rounded-2xl shadow-xl my-8 mx-auto block max-w-full",
-      },
-    }),
-    Youtube.configure({
-      width: 840,
-      height: 480,
-      HTMLAttributes: {
-        class: "rounded-2xl shadow-2xl my-10 aspect-video mx-auto block max-w-full",
-      },
-    }),
-    TaskList,
-    TaskItem.configure({
-      nested: true,
-    }),
-    TextAlign.configure({
-      types: ["heading", "paragraph"],
-    }),
-    Highlight.configure({ multicolor: true }),
-    BubbleMenuExtension,
-    FloatingMenuExtension,
-  ];
+  // Memoize extensions to prevent duplication warnings on re-renders
+  const extensions = useMemo(
+    () => [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3],
+        },
+        codeBlock: false,
+      }),
+      Underline,
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class:
+            "text-[var(--accent)] underline font-bold hover:opacity-80 transition-opacity cursor-pointer",
+        },
+      }),
+      Placeholder.configure({
+        placeholder: "Start telling your adventure...",
+        emptyEditorClass: "is-editor-empty",
+      }),
+      ImageExtension.configure({
+        HTMLAttributes: {
+          class: "rounded-2xl shadow-xl my-8 mx-auto block max-w-full",
+        },
+      }),
+      Youtube.configure({
+        width: 840,
+        height: 480,
+        HTMLAttributes: {
+          class: "rounded-2xl shadow-2xl my-10 aspect-video mx-auto block max-w-full",
+        },
+      }),
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      Highlight.configure({ multicolor: true }),
+      BubbleMenuExtension,
+      FloatingMenuExtension,
+    ],
+    [],
+  );
 
   const editor = useEditor({
     extensions,
