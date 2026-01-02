@@ -10,7 +10,7 @@ interface MetadataProps {
 export function constructMetadata({
   title = "Param Adventures | Expedition into the Unknown",
   description = "Join premium adventure travel experiences across the globe. From Spiti Valley to the Himalayas, discover the unseen with Param Adventures.",
-  image = "/og-image.jpg",
+  image = "/og-image.png",
   noIndex = false,
 }: MetadataProps = {}): Metadata {
   return {
@@ -37,7 +37,7 @@ export function constructMetadata({
       images: [image],
       creator: "@paramadventures",
     },
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://param-adventures-phase1-web.vercel.app"),
     ...(noIndex && {
       robots: {
         index: false,
