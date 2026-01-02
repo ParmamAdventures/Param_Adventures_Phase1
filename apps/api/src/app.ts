@@ -1,6 +1,8 @@
 import "express-async-errors";
 import express from "express";
 import cors from "cors";
+import * as Sentry from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import path from "path";

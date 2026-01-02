@@ -3,8 +3,13 @@ import { HttpError } from "../utils/httpError";
 
 import { logger } from "../lib/logger";
 
+import * as Sentry from "@sentry/node";
+
 export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
   logger.error(err.message, { stack: err.stack });
+
+  // Send error to Sentry
+  Sentry.captureException(err);
 
   console.error("Global Error Handler Caught:", err); // Force console log
 
