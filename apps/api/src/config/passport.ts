@@ -1,0 +1,73 @@
+
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import { prisma } from "../lib/prisma";
+import { env } from "./env";
+import { logger } from "../lib/logger";
+
+if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "/api/auth/google/callback", // Proxied via Nginx or direct
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          // 1. Check if user exists by Google ID
+          let user = await prisma.user.findUnique({
+            where: { googleId: profile.id },
+          });
+
+          if (user) {
+            return done(null, user);
+          }
+
+          // 2. Check if user exists by Email
+          const email = profile.emails?.[0]?.value;
+          if (email) {
+            user = await prisma.user.findUnique({
+              where: { email },
+            });
+
+            if (user) {
+              // Link Google Account
+              user = await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                  googleId: profile.id,
+                  avatarUrl: profile.photos?.[0]?.value || user.avatarUrl,
+                },
+              });
+              return done(null, user);
+            }
+          }
+
+          // 3. Create New User
+          // We need a dummy password. Users logging in via Google don't have a password.
+          // They can set one later via Forgot Password if they want email login.
+          user = await prisma.user.create({
+            data: {
+              email: email!,
+              name: profile.displayName,
+              googleId: profile.id,
+              avatarUrl: profile.photos?.[0]?.value,
+              password: "", // Empty or Random password (bcrypt handles empty string?? No, better use random)
+              status: "ACTIVE",
+            },
+          });
+
+          return done(null, user);
+        } catch (error) {
+          logger.error("Google Auth Strategy Error", error);
+          return done(error as Error, undefined);
+        }
+      },
+    ),
+  );
+} else {
+  logger.warn("Google OAuth credentials missing. Social login disabled.");
+}
+
+export default passport;

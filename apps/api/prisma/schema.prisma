@@ -41,6 +41,11 @@ model User {
   status       UserStatus @default(ACTIVE)
   statusReason String?
   preferences  Json?      @default("{}")
+  
+  // Social Auth
+  googleId     String?    @unique
+  avatarUrl    String?
+
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 

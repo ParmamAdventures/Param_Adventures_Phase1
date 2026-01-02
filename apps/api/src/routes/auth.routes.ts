@@ -8,9 +8,12 @@ import {
   loginPage,
   forgotPassword,
   resetPassword,
+  resetPassword,
   changePassword,
+  googleCallback,
 } from "../controllers/auth.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
+import passport from "passport";
 
 import { authLimiter } from "../config/rate-limit";
 import { validate } from "../middlewares/validate.middleware";
@@ -123,5 +126,19 @@ router.get("/me", requireAuth, me);
 router.post("/forgot-password", authLimiter, forgotPassword);
 router.post("/reset-password", authLimiter, resetPassword);
 router.post("/change-password", requireAuth, changePassword);
+
+// OAuth Routes
+router.get(
+  "/google",
+  authLimiter,
+  passport.authenticate("google", { scope: ["profile", "email"], session: false }),
+);
+
+router.get(
+  "/google/callback",
+  authLimiter,
+  passport.authenticate("google", { session: false, failureRedirect: "/login" }),
+  googleCallback,
+);
 
 export default router;

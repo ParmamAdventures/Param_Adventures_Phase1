@@ -7,6 +7,7 @@ import path from "path";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
+import passport from "./config/passport";
 import { logger } from "./lib/logger";
 
 import authRoutes from "./routes/auth.routes";
@@ -82,6 +83,7 @@ app.use(
   }),
 );
 app.use(cookieParser());
+app.use(passport.initialize());
 
 // Webhooks must be registered before the JSON parser
 app.use("/webhooks", webhooksRoutes);

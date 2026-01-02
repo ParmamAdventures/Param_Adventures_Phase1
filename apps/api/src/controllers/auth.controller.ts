@@ -186,3 +186,29 @@ export const changePassword = catchAsync(async (req: Request, res: Response) => 
   await authService.changePassword(userId, currentPassword, newPassword);
   return ApiResponse.success(res, "Password changed successfully");
 });
+
+export const googleCallback = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as any; // User attached by Passport Strategy
+  if (!user) {
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
+  }
+
+  // Generate Session
+  const { accessToken, refreshToken } = await authService.login(user.email);
+
+  // Set Refresh Cookie
+  res.cookie("refresh_token", refreshToken, {
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  });
+
+  // Redirect to Frontend
+  // Note: We can't pass AccessToken easily in URL hash/query securely without exposing it.
+  // Strategy: Redirect to /dashboard.
+  // Frontend's Middleware/Effect checks "Refresh Token" cookie? 
+  // OR Frontend calls "/auth/refresh" immediately on mount if no access token.
+  // This is the standard pattern.
+  res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+});
