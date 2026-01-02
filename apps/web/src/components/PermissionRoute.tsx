@@ -8,7 +8,7 @@ export default function PermissionRoute({
   permission,
   children,
 }: {
-  permission: string;
+  permission: string | string[];
   children: React.ReactNode;
 }) {
   const { user, loading } = useAuth();
@@ -19,7 +19,12 @@ export default function PermissionRoute({
       if (!user) router.replace("/login");
       else {
         const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];
-        if (!perms.includes(permission)) router.replace("/dashboard");
+        
+        const hasPermission = Array.isArray(permission) 
+          ? permission.some(p => perms.includes(p))
+          : perms.includes(permission);
+
+        if (!hasPermission) router.replace("/dashboard");
       }
     }
   }, [loading, user, permission, router]);
@@ -28,7 +33,11 @@ export default function PermissionRoute({
   if (!user) return null;
 
   const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];
-  if (!perms.includes(permission)) return null;
+  const hasPermission = Array.isArray(permission) 
+    ? permission.some(p => perms.includes(p))
+    : perms.includes(permission);
+
+  if (!hasPermission) return null;
 
   return <>{children}</>;
 }
