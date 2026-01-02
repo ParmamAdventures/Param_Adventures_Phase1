@@ -295,7 +295,7 @@ router.post("/:id/docs", requireAuth, attachPermissions, uploadTripDocs);
  *         description: Trip completed
  */
 router.post(
-  "/:id/complete",
+  "/:id/complete", // Route for completing the trip
   requireAuth,
   attachPermissions,
   requirePermission("trip:update-status"),
