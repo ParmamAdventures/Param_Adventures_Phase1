@@ -298,7 +298,7 @@ router.post(
   "/:id/complete",
   requireAuth,
   attachPermissions,
-  requirePermission("trip:edit"),
+  requirePermission("trip:update-status"),
   completeTrip,
 );
 
