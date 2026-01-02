@@ -31,7 +31,7 @@ export default function ManagerDashboard() {
       const res = await apiFetch("/trips/manager");
       if (res.ok) {
         const data = await res.json();
-        setTrips(data);
+        setTrips(data.data || data || []);
       }
     } catch (e) {
       console.error(e);

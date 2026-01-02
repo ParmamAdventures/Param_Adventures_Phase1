@@ -284,7 +284,7 @@ function UserMenu({
             Profile
           </Link>
 
-          {user?.permissions?.includes("trip:approve") && (
+          {(user?.permissions?.includes("trip:approve") || user?.roles?.includes("UPLOADER")) && (
             <Link
               href="/admin"
               onClick={() => setIsOpen(false)}
