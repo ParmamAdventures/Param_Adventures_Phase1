@@ -24,8 +24,19 @@ export async function assignManager(req: Request, res: Response) {
     include: { roles: { include: { role: true } } },
   });
 
-  if (!manager || !manager.roles.some((r) => r.role.name === "TRIP_MANAGER")) {
-    throw new HttpError(400, "INVALID_ROLE", "User does not have TRIP_MANAGER role");
+  if (!manager) {
+     throw new HttpError(404, "NOT_FOUND", "Manager user not found");
+  }
+
+  const validRoles = ["TRIP_MANAGER", "ADMIN", "SUPER_ADMIN"];
+  const hasValidRole = manager.roles.some((r) => validRoles.includes(r.role.name));
+
+  if (!hasValidRole) {
+    logger.warn("AssignManager: Invalid Role", { 
+        managerId, 
+        actualRoles: manager.roles.map(r => r.role.name) 
+    });
+    throw new HttpError(400, "INVALID_ROLE", "User does not have TRIP_MANAGER, ADMIN, or SUPER_ADMIN role");
   }
 
   const updatedTrip = await prisma.trip.update({
