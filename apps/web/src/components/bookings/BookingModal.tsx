@@ -6,6 +6,7 @@ import { Button } from "../ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import { useToast } from "../ui/ToastProvider";
+import { useRazorpay } from "../../hooks/useRazorpay";
 
 interface Trip {
   id: string;
@@ -86,6 +87,8 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     }
   }, [isOpen, trip.startDate]);
 
+  const { initiatePayment, message: paymentMessage } = useRazorpay();
+
   const handleBooking = async () => {
     if (!startDate) {
       showToast("Please select a start date", "error");
@@ -94,6 +97,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
 
     setLoading(true);
     try {
+      // 1. Create Booking
       const res = await apiFetch("/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,10 +115,22 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
       }
 
       const booking = await res.json();
-      showToast("Booking created successfully!", "success");
+      
+      // 2. Initiate Payment (Razorpay)
+      // This handles opening the modal and verification internally
+      const result = await initiatePayment(booking.id, {
+        name: user?.name || guestDetails[0]?.name,
+        email: user?.email || guestDetails[0]?.email
+      });
+
+      // 3. Success (Only if we get here without error)
+      showToast("Booking & Payment Successful!", "success");
       onBookingSuccess(booking);
       onClose();
+
     } catch (err: any) {
+      // If booking was created but payment failed/cancelled, we still show error
+      // The user can pay later from "My Bookings" (Future feature)
       showToast(err.message, "error");
     } finally {
       setLoading(false);
@@ -270,6 +286,9 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
             <div className="flex flex-col">
               <span className="text-muted-foreground text-sm">Total Payment</span>
               <span className="text-2xl font-bold">₹{totalPrice.toLocaleString()}</span>
+              {loading && paymentMessage && (
+                <span className="text-xs text-blue-500 animate-pulse">{paymentMessage}</span>
+              )}
             </div>
             <Button
               onClick={handleBooking}
@@ -277,7 +296,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
               loading={loading}
               className="px-8"
             >
-              Confirm Booking
+              {loading ? "Processing..." : "Confirm & Pay"}
             </Button>
           </div>
         </div>

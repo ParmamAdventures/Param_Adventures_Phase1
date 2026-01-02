@@ -359,6 +359,7 @@ model Payment {
   providerOrderId   String        @unique
   providerPaymentId String?       @unique
   rawPayload        Json?
+  proofUrl          String? // For manual/offline payments (image URL)
   amount            Int // paise
   currency          String        @default("INR")
   status            PaymentStatus @default(CREATED)

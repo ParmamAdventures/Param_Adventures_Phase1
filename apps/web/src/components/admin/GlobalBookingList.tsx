@@ -3,6 +3,7 @@ import StatusBadge from "../ui/StatusBadge";
 import Button from "../ui/Button";
 import { Select } from "../ui/Select";
 import Link from "next/link";
+import ManualPaymentModal from "./ManualPaymentModal";
 
 interface Booking {
   id: string;
@@ -41,6 +42,7 @@ export default function GlobalBookingList({
 }: GlobalBookingListProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [selectedBookingForPayment, setSelectedBookingForPayment] = useState<any>(null);
 
   const filteredBookings = useMemo(() => {
     return bookings.filter((b) => {
@@ -185,6 +187,15 @@ export default function GlobalBookingList({
                       Manage ➔
                     </Button>
                   </Link>
+                  {booking.paymentStatus !== "PAID" && (
+                    <Button
+                      variant="outline"
+                      className="ml-2 h-8 rounded-lg text-xs"
+                      onClick={() => setSelectedBookingForPayment(booking)}
+                    >
+                      Record Pay
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -199,6 +210,15 @@ export default function GlobalBookingList({
           </div>
         )}
       </div>
+      {/* Modal */}
+      {selectedBookingForPayment && (
+        <ManualPaymentModal
+          isOpen={true}
+          onClose={() => setSelectedBookingForPayment(null)}
+          booking={selectedBookingForPayment}
+          onSuccess={onRefresh}
+        />
+      )}
     </div>
   );
 }
