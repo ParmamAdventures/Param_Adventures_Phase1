@@ -45,16 +45,12 @@ export default function AssignManagerModal({
       // Let's assume we can search users and filter by role or the backend handles it.
       // Actually, we have `getUsers` controller.
       // Fetch all users and filter client-side to include Admins and Trip Managers
-      apiFetch(`/admin/users`) 
+      // Use dedicated endpoint/filter for TRIP_MANAGER
+      apiFetch(`/admin/users?role=TRIP_MANAGER`)
         .then(async (res) => {
           if (res.ok) {
             const data = await res.json();
-            // Filter for eligible roles: TRIP_MANAGER, ADMIN, SUPER_ADMIN
-            const validRoles = ["TRIP_MANAGER", "ADMIN", "SUPER_ADMIN"];
-            const eligible = Array.isArray(data) 
-              ? data.filter((u: any) => u.roles && u.roles.some((r: string) => validRoles.includes(r))) 
-              : [];
-            setManagers(eligible);
+            setManagers(Array.isArray(data) ? data : []);
           }
         })
         .finally(() => setLoading(false));
