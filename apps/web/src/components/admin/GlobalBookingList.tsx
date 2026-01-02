@@ -4,6 +4,7 @@ import Button from "../ui/Button";
 import { Select } from "../ui/Select";
 import Link from "next/link";
 import ManualPaymentModal from "./ManualPaymentModal";
+import { apiFetch } from "../../lib/api";
 
 interface Booking {
   id: string;
@@ -187,7 +188,7 @@ export default function GlobalBookingList({
                       Manage ➔
                     </Button>
                   </Link>
-                  {booking.paymentStatus !== "PAID" && (
+                  {booking.paymentStatus !== "PAID" && booking.status !== "CANCELLED" && (
                     <Button
                       variant="outline"
                       className="ml-2 h-8 rounded-lg text-xs"
@@ -195,6 +196,31 @@ export default function GlobalBookingList({
                     >
                       Record Pay
                     </Button>
+                  )}
+                  {booking.paymentStatus === "PAID" && booking.status !== "CANCELLED" && (
+                     <Button
+                       variant="destructive"
+                       className="ml-2 h-8 rounded-lg text-xs bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
+                       onClick={async () => {
+                         if (confirm("Are you sure you want to refund this booking? This action cannot be undone.")) {
+                            try {
+                              const res = await apiFetch(`/bookings/${booking.id}/refund`, { method: "POST" });
+                              if (res.ok) {
+                                alert("Refund processed successfully");
+                                onRefresh();
+                              } else {
+                                const data = await res.json();
+                                alert(data.message || "Refund failed");
+                              }
+                            } catch (e) {
+                              console.error(e);
+                              alert("Refund failed");
+                            }
+                         }
+                       }}
+                     >
+                       Refund
+                     </Button>
                   )}
                 </td>
               </tr>

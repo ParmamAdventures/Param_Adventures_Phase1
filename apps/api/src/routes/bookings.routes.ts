@@ -18,7 +18,12 @@ router.get("/my-bookings", requireAuth, getBookings);
 // Get single booking details
 router.get("/:id", requireAuth, getBookingById);
 
+
 // Cancel booking
 router.post("/:id/cancel", requireAuth, cancelBooking);
+
+// Refund booking (Admin/Manager)
+import { refundBooking } from "../controllers/payments/refundBooking.controller";
+router.post("/:id/refund", requireAuth, requirePermission("booking:refund"), refundBooking);
 
 export default router;

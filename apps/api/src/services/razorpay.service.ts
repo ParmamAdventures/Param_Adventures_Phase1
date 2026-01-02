@@ -56,6 +56,22 @@ export const razorpayService = {
 
     return expectedSignature === signature;
   },
+
+  /**
+   * Refund a payment
+   */
+  async refundPayment(paymentId: string, notes?: Record<string, string>) {
+     try {
+       const refund = await razorpay.payments.refund(paymentId, {
+         speed: "normal",
+         notes,
+       });
+       return refund;
+     } catch (error) {
+       logger.error("Razorpay refund failed", { error, paymentId });
+       throw error;
+     }
+  },
 };
 
 // Also export individual functions for backward compatibility with existing stubs

@@ -363,6 +363,7 @@ model Payment {
   provider          String // "razorpay"
   providerOrderId   String        @unique
   providerPaymentId String?       @unique
+  razorpayRefundId  String?       @unique
   rawPayload        Json?
   proofUrl          String? // For manual/offline payments (image URL)
   amount            Int // paise
