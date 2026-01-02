@@ -42,7 +42,7 @@ export const refundBooking = async (req: Request, res: Response) => {
       data: {
         status: "REFUNDED",
         razorpayRefundId: refund.id,
-      },
+      } as any,
     });
 
     // Update Booking Status to CANCELLED (since we refunded it)

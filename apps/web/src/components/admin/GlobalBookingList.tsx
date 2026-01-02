@@ -199,7 +199,7 @@ export default function GlobalBookingList({
                   )}
                   {booking.paymentStatus === "PAID" && booking.status !== "CANCELLED" && (
                      <Button
-                       variant="destructive"
+                       variant="danger"
                        className="ml-2 h-8 rounded-lg text-xs bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
                        onClick={async () => {
                          if (confirm("Are you sure you want to refund this booking? This action cannot be undone.")) {
