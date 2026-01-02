@@ -168,24 +168,11 @@ export default function BlogListTable({ blogs, loading, onAction, onRefresh }: P
 
               <Link href={`/blogs/${blog.slug || blog.id}`} target="_blank" className="ml-0 md:ml-4">
                 <Button
-                  variant="ghost"
-                  className="flex h-10 w-10 items-center justify-center rounded-full p-0"
+                  variant="outline"
+                  className="flex h-10 items-center justify-center rounded-full px-4 text-xs font-bold uppercase tracking-wider"
                   title="Full Preview"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
+                  Preview
                 </Button>
               </Link>
             </div>
