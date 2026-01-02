@@ -12,7 +12,15 @@ export async function getBlogBySlug(req: Request, res: Response) {
   const whereCondition: any = { slug };
   
   if (!canViewInternal) {
-    whereCondition.status = "PUBLISHED";
+    if (user) {
+      // Allow if PUBLISHED or if the user is the author
+      whereCondition.OR = [
+        { status: "PUBLISHED" },
+        { authorId: user.id }
+      ];
+    } else {
+      whereCondition.status = "PUBLISHED";
+    }
   }
 
   const blog = await prisma.blog.findFirst({
