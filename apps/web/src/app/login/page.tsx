@@ -201,9 +201,10 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <button
               type="button"
+              onClick={() => (window.location.href = "/api/auth/google")}
               className="border-input hover:bg-accent/5 hover:border-accent/40 flex h-10 w-full items-center justify-center rounded-md border bg-transparent transition-colors"
               suppressHydrationWarning
             >
@@ -225,18 +226,20 @@ export default function LoginPage() {
                   fill="#EA4335"
                 />
               </svg>
-              Google
+              Continue with Google
             </button>
+            {/* GitHub Login - Coming Soon
             <button
               type="button"
-              className="border-input hover:bg-accent/5 hover:border-accent/40 flex h-10 w-full items-center justify-center rounded-md border bg-transparent transition-colors"
-              suppressHydrationWarning
+              className="border-input hover:bg-accent/5 hover:border-accent/40 flex h-10 w-full items-center justify-center rounded-md border bg-transparent transition-colors opacity-50 cursor-not-allowed"
+              disabled
             >
               <svg className="text-foreground mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-1.034-.012-1.924-2.783.603-3.08-1.188-3.08-1.188-1.34-1.34-3.08-1.34-3.08-1.34-1.94-.85.34-1.15.34-1.15 1.5.34 3.08 1.15 3.08 1.15 1.34.85 2.15.34 3.08.34.85-1.34 2.15-2.15 3.08-3.08-1.94-.34-3.92-1.15-3.92-3.08 0-.85.34-1.15.34-1.15-.34-.85-.34-2.15 0-3.08 0 0 1.15-.34 3.08 1.15.85-.34 2.15-.34 3.08-.34.85 0 2.15.34 3.08.34 1.94-1.5 3.08-1.15 3.08-1.15.34.85.34 2.15 0 3.08.34 1.15.34 2.15.34 3.08 0 1.94-1.94 2.74-3.92 3.08.85.85 1.62 2.53 1.62 5.11 0 3.69-.03 6.67-.03 7.58 0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12c0-5.523-4.477-10-10-10" />
+                 ...
               </svg>
               GitHub
             </button>
+            */}
           </div>
         </motion.div>
       </div>
