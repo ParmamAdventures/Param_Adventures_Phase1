@@ -9,6 +9,9 @@ export async function getBlogBySlug(req: Request, res: Response) {
 
   const canViewInternal = permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 
+  console.log(`[getBlogBySlug] Request for slug: ${slug}`);
+  console.log(`[getBlogBySlug] User: ${user?.id} (CanViewInternal: ${canViewInternal})`);
+
   const whereCondition: any = { slug };
   
   if (!canViewInternal) {
@@ -23,7 +26,10 @@ export async function getBlogBySlug(req: Request, res: Response) {
     }
   }
 
+  console.log(`[getBlogBySlug] Query: ${JSON.stringify(whereCondition)}`);
+
   const blog = await prisma.blog.findFirst({
+    // where: whereCondition,
     where: whereCondition,
     include: {
       author: {
