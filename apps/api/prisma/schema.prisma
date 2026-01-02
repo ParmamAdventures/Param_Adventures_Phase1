@@ -325,6 +325,7 @@ model Booking {
 
   startDate  DateTime
   guests     Int      @default(1)
+  guestDetails Json?  // Array of { name, email, age, gender }
   totalPrice Int // Stored at time of booking to handle price changes
 
   createdAt DateTime @default(now())

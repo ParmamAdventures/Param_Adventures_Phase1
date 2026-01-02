@@ -29,6 +29,43 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
   const [loading, setLoading] = useState(false);
   const [guests, setGuests] = useState(1);
   const [startDate, setStartDate] = useState("");
+  const [guestDetails, setGuestDetails] = useState<any[]>([]);
+
+  // Update guest details when guest count changes
+  useEffect(() => {
+    setGuestDetails((prev) => {
+      const newDetails = [...prev];
+      if (guests > prev.length) {
+        // Add new guests
+        for (let i = prev.length; i < guests; i++) {
+          if (i === 0 && user) {
+            // Auto-fill primary user
+            newDetails.push({
+              name: user.name || "",
+              email: user.email || "",
+              phone: user.phoneNumber || "",
+              age: user.age || "",
+              gender: user.gender || "",
+            });
+          } else {
+            newDetails.push({ name: "", email: "", phone: "", age: "", gender: "" });
+          }
+        }
+      } else {
+        // Remove guests
+        newDetails.splice(guests);
+      }
+      return newDetails;
+    });
+  }, [guests, user]);
+
+  const updateGuestDetail = (index: number, field: string, value: string) => {
+    setGuestDetails((prev) => {
+      const newDetails = [...prev];
+      newDetails[index] = { ...newDetails[index], [field]: value };
+      return newDetails;
+    });
+  };
 
   // Reset state when modal opens
   useEffect(() => {
@@ -64,6 +101,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
           tripId: trip.id,
           startDate: new Date(startDate).toISOString(),
           guests,
+          guestDetails,
         }),
       });
 
@@ -150,7 +188,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4">
               <label className="text-sm font-medium">Number of Guests</label>
               <div className="flex items-center gap-4">
                 <Button
@@ -170,6 +208,60 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                   +
                 </Button>
               </div>
+            </div>
+
+            {/* Guest Details Forms */}
+            <div className="max-h-[300px] space-y-4 overflow-y-auto pr-2">
+              {Array.from({ length: guests }).map((_, index) => (
+                <div key={index} className="rounded-xl border bg-muted/20 p-4">
+                  <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    {index === 0 ? "Primary Traveler (You)" : `Guest ${index + 1}`}
+                  </h4>
+                  <div className="grid gap-3">
+                    <input
+                      placeholder="Full Name"
+                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                      value={guestDetails[index]?.name || ""}
+                      onChange={(e) => updateGuestDetail(index, "name", e.target.value)}
+                    />
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        placeholder="Email"
+                        type="email"
+                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        value={guestDetails[index]?.email || ""}
+                        onChange={(e) => updateGuestDetail(index, "email", e.target.value)}
+                      />
+                      <input
+                        placeholder="Phone"
+                        type="tel"
+                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        value={guestDetails[index]?.phone || ""}
+                        onChange={(e) => updateGuestDetail(index, "phone", e.target.value)}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <input
+                        placeholder="Age"
+                        type="number"
+                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        value={guestDetails[index]?.age || ""}
+                        onChange={(e) => updateGuestDetail(index, "age", e.target.value)}
+                      />
+                      <select
+                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        value={guestDetails[index]?.gender || ""}
+                        onChange={(e) => updateGuestDetail(index, "gender", e.target.value)}
+                      >
+                        <option value="">Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

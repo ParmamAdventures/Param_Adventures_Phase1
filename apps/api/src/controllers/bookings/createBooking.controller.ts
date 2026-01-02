@@ -3,7 +3,7 @@ import { bookingService } from "../../services/booking.service";
 
 export const createBooking = async (req: Request, res: Response) => {
   try {
-    const { tripId, startDate, guests } = req.body;
+    const { tripId, startDate, guests, guestDetails } = req.body;
     const userId = req.user!.id;
 
     if (!tripId || !startDate || !guests) {
@@ -15,6 +15,7 @@ export const createBooking = async (req: Request, res: Response) => {
       tripId,
       startDate,
       guests: Number(guests),
+      guestDetails,
     });
 
     res.status(201).json(booking);

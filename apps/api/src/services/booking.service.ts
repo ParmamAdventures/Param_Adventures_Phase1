@@ -2,8 +2,8 @@ import { prisma } from "../lib/prisma";
 import { notificationQueue } from "../lib/queue";
 
 export class BookingService {
-  async createBooking(data: { userId: string; tripId: string; startDate: string; guests: number }) {
-    const { userId, tripId, startDate, guests } = data;
+  async createBooking(data: { userId: string; tripId: string; startDate: string; guests: number; guestDetails?: any }) {
+    const { userId, tripId, startDate, guests, guestDetails } = data;
 
     const trip = await prisma.trip.findUnique({ where: { id: tripId } });
     if (!trip) {
@@ -22,6 +22,7 @@ export class BookingService {
         tripId,
         startDate: new Date(startDate),
         guests,
+        guestDetails, // Save JSON to DB
         totalPrice,
         status: "REQUESTED",
         paymentStatus: "PENDING",
@@ -36,7 +37,7 @@ export class BookingService {
       },
     });
 
-    // Send Notification (Async)
+    // Send Notification (Async) - Updated to include guest info in payload
     await notificationQueue.add("SEND_BOOKING_EMAIL", {
       userId,
       details: {
@@ -44,6 +45,7 @@ export class BookingService {
         bookingId: booking.id,
         startDate: booking.startDate,
         status: booking.status,
+        guestDetails, // Pass guests to notification worker
       },
     });
 
