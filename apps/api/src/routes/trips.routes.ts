@@ -221,7 +221,16 @@ router.get("/:id", requireAuth, attachPermissions, async (req, res) => {
 
   if (!trip) return res.status(404).json({ error: "Trip not found" });
 
-  if (permissions.includes("trip:view:internal") || trip.createdById === user.id) {
+  // Allow if Internal, Owner, or User has a booking
+  const userBooking = await prisma.booking.findFirst({
+    where: { tripId: id, userId: user.id },
+  });
+
+  if (
+    permissions.includes("trip:view:internal") ||
+    trip.createdById === user.id ||
+    userBooking
+  ) {
     return res.json(trip);
   }
 
