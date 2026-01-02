@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
+import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
 import { useToast } from "../ui/ToastProvider";
 import { ImageUploader } from "../media/ImageUploader";
@@ -130,11 +131,24 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
           <div className="grid gap-2">
             <label className="text-sm font-medium">Upload Proof (Screenshot)</label>
             <div className="h-32">
-                <ImageUploader 
-                    value={proofUrl} 
-                    onChange={setProofUrl} 
-                    folder="payment-proofs" 
-                />
+                {proofUrl ? (
+                  <div className="relative h-full w-full">
+                    <img src={proofUrl} alt="Proof" className="h-full w-auto rounded-lg object-cover" />
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      onClick={() => setProofUrl("")}
+                      className="absolute top-2 right-2 h-6 px-2 text-xs"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  <ImageUploader 
+                    onUpload={(img) => setProofUrl(img.originalUrl)} 
+                    label="Upload Screenshot" 
+                  />
+                )}
             </div>
           </div>
 
