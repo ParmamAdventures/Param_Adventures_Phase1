@@ -51,7 +51,7 @@ export const refundBooking = async (req: Request, res: Response) => {
       data: { status: "CANCELLED" },
     });
 
-    return ApiResponse.success(res, { refund, booking: updatedBooking }, "Refund processed successfully");
+    return ApiResponse.success(res, "Refund processed successfully", { refund, booking: updatedBooking });
   } catch (error: any) {
     console.error("Refund Controller Error:", error);
      throw new HttpError(502, "GATEWAY_ERROR", error.error?.description || "Refund processing failed");
