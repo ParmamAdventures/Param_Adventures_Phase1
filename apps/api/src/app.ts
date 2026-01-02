@@ -3,9 +3,15 @@ import "./instrument"; // Must be imported before other imports potentially
 import express from "express";
 import cors from "cors";
 import * as Sentry from "@sentry/node"; // Still needed for error handler types
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
+import helmet from "helmet";
 import cookieParser from "cookie-parser";
-import passport from "passport";
-import { logger } from "./utils/logger";
+import path from "path";
+import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger";
+import passport from "./config/passport";
+import { logger } from "./lib/logger";
 
 import authRoutes from "./routes/auth.routes";
 import adminUsersRoutes from "./routes/admin/users.routes";
