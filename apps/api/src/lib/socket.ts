@@ -12,8 +12,15 @@ export function initSocket(httpServer: any) {
 
   io = new Server(httpServer, {
     cors: {
-      origin: "*", // Adjust in production
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "https://param-adventures-phase1-web.vercel.app",
+        "https://param-adventures-phase1-web-git-main-akashs-projects.vercel.app", // Adjust if needed
+        process.env.FRONTEND_URL || "", // Allow env var override
+      ].filter(Boolean),
       methods: ["GET", "POST"],
+      credentials: true, // Required for cookies/headers if client sends them
     },
   });
 
