@@ -15,7 +15,7 @@ export async function updateBlog(req: Request, res: Response) {
     throw new HttpError(404, "NOT_FOUND", "Blog not found");
   }
 
-  if (!["DRAFT", "REJECTED"].includes(blog.status)) {
+  if (!["DRAFT", "REJECTED", "PENDING_REVIEW"].includes(blog.status)) {
     throw new HttpError(403, "INVALID_STATE", "Cannot edit this blog in its current state");
   }
 
