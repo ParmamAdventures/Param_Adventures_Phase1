@@ -126,7 +126,7 @@ export default function ManagerTripCard({ trip, onUpdate }: ManagerTripCardProps
             >
               <FileText size={14} /> Review Docs
             </Button>
-            <Link href={`/dashboard/manager/trip/${trip.id}`}>
+            <Link href={`/admin/trips/${trip.id}/edit`}>
               <Button variant="outline" size="sm" className="h-8 text-xs">
                 Details
               </Button>
