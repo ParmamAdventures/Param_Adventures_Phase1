@@ -303,7 +303,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {navItems
                 .filter((item) => {
                   if (!item.requiredPermission) return true;
-                  return user?.permissions?.includes(item.requiredPermission);
+                  const perms = user?.permissions || [];
+                  if (Array.isArray(item.requiredPermission)) {
+                    return item.requiredPermission.some((p) => perms.includes(p));
+                  }
+                  return perms.includes(item.requiredPermission);
                 })
                 .map((item) => {
                   const isActive = pathname
