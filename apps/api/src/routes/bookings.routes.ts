@@ -22,8 +22,9 @@ router.get("/:id", requireAuth, getBookingById);
 // Cancel booking
 router.post("/:id/cancel", requireAuth, cancelBooking);
 
-// Refund booking (Admin/Manager)
+// Refund booking (Super Admin Only)
 import { refundBooking } from "../controllers/payments/refundBooking.controller";
-router.post("/:id/refund", requireAuth, requirePermission("booking:refund"), refundBooking);
+import { requireRole } from "../middlewares/require-role.middleware";
+router.post("/:id/refund", requireAuth, requireRole("super_admin"), refundBooking);
 
 export default router;
