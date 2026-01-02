@@ -15,9 +15,9 @@ export async function updateBlog(req: Request, res: Response) {
     throw new HttpError(404, "NOT_FOUND", "Blog not found");
   }
 
-  if (blog.status === "ARCHIVED") {
-    throw new HttpError(403, "INVALID_STATE", "Cannot edit archived blogs");
-  }
+  // if (blog.status === "ARCHIVED") {
+  //   throw new HttpError(403, "INVALID_STATE", "Cannot edit archived blogs");
+  // }
 
   const updateData: any = {
     title,
