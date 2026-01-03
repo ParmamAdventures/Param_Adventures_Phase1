@@ -20,10 +20,10 @@ const storage = new CloudinaryStorage({
       allowed_formats: ["jpg", "png", "jpeg", "webp", "mp4", "webm"],
       public_id: file.fieldname + "-" + Date.now(),
       resource_type: isVideo ? "video" : "image",
-      transformation: [
-        { quality: "auto:good", fetch_format: "auto" }, // Compress!
-        ...(isVideo ? [{ width: 1280, crop: "limit" }] : []), // Resize videos to HD max
-      ],
+      // Simplify to rule out Timeout/Processing errors
+      ...(isVideo ? {} : {
+         transformation: [{ quality: "auto:good", fetch_format: "auto" }]
+      }),
     };
   },
 });
