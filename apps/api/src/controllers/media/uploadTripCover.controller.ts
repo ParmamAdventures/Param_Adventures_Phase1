@@ -9,23 +9,27 @@ export async function uploadTripCover(req: Request, res: Response) {
   }
 
   const { tripId } = req.params;
+  const file = req.file as any; // Cloudinary File
 
-  // Process image using production-grade sharp pipeline
-  const result = await processMedia(req.file.buffer, req.file.mimetype);
+  // Construct URLs
+  const originalUrl = file.path;
+  // Apply Cloudinary transformations for display versions
+  const mediumUrl = file.path.replace("/upload/", "/upload/c_limit,w_1200/");
+  const thumbUrl = file.path.replace("/upload/", "/upload/c_fill,w_800,h_500/"); // 16:10 aspect roughly
 
   // Create Image record
   const image = await prisma.image.create({
     data: {
-      originalUrl: result.originalUrl,
-      mediumUrl: result.mediumUrl,
-      thumbUrl: result.thumbUrl,
-      mimeType: result.mimeType,
-      size: result.size,
-      width: result.width,
-      height: result.height,
+      originalUrl: originalUrl,
+      mediumUrl: mediumUrl,
+      thumbUrl: thumbUrl,
+      mimeType: file.mimetype,
+      size: file.size,
+      width: file.width || 0,
+      height: file.height || 0,
       uploadedById: (req as any).user.id,
-      type: result.type,
-      duration: result.duration || 0,
+      type: "IMAGE",
+      duration: 0,
     },
   });
 
@@ -38,12 +42,12 @@ export async function uploadTripCover(req: Request, res: Response) {
   });
 
   res.status(201).json({
-    image: result.originalUrl,
+    image: originalUrl,
     imageId: image.id,
     urls: {
-      original: result.originalUrl,
-      medium: result.mediumUrl,
-      thumb: result.thumbUrl,
+      original: originalUrl,
+      medium: mediumUrl,
+      thumb: thumbUrl,
     },
   });
 }

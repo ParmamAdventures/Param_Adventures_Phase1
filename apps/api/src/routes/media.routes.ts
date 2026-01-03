@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { upload as legacyUpload } from "../utils/multer.config";
+// import { upload as legacyUpload } from "../utils/multer.config"; // Removed
 import { upload, uploadDocument } from "../middlewares/upload.middleware";
 import { uploadTripCover } from "../controllers/media/uploadTripCover.controller";
 import { uploadTripGallery } from "../controllers/media/uploadTripGallery.controller";
@@ -31,7 +31,7 @@ router.post(
   "/trips/:tripId/cover",
   requireAuth,
   requirePermission("trip:edit"),
-  legacyUpload.single("image"),
+  upload.single("image"), // Use Cloudinary Middleware
   uploadTripCover,
 );
 
@@ -39,7 +39,7 @@ router.post(
   "/trips/:tripId/gallery",
   requireAuth,
   requirePermission("trip:edit"),
-  legacyUpload.array("images", 6), // Max 6 images
+  upload.array("images", 10), // Max 10 images (Cloudinary handles it)
   uploadTripGallery,
 );
 
