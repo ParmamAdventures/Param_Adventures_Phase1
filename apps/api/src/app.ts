@@ -94,7 +94,8 @@ Sentry.setupExpressErrorHandler(app);
 
 // Webhooks must be registered before the JSON parser
 app.use("/webhooks", webhooksRoutes);
-app.use(express.json());
+app.use(express.json({ limit: "500mb" }));
+app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 
 // The request handler must be the first middleware on the app
 Sentry.setupExpressErrorHandler(app);

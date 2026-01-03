@@ -12,11 +12,29 @@ export async function uploadTripGallery(req: Request, res: Response) {
   const processedResults: any[] = [];
   const imageRecords: any[] = [];
 
-  // Parallel processing using production-grade sharp pipeline
+  // Parallel processing
   await Promise.all(
-    (req.files as Express.Multer.File[]).map(async (file) => {
-      const result = await processMedia(file.buffer, file.mimetype);
-      processedResults.push(result);
+    (req.files as any[]).map(async (file) => {
+      // Case 1: Video (Uploaded via CloudinaryStorage)
+      if (file.path && file.path.includes("cloudinary")) {
+        // It's already uploaded. We just need to map it to our schema.
+        processedResults.push({
+          originalUrl: file.path, // Secure URL
+          mediumUrl: file.path, 
+          thumbUrl: file.path.replace(/\.[^/.]+$/, ".jpg"), // Video -> Image thumb
+          mimeType: file.mimetype,
+          size: file.size,
+          width: 0, // Metadata might be in file object, or skipped
+          height: 0,
+          type: "VIDEO",
+          duration: 0,
+        });
+      } 
+      // Case 2: Image (Buffer from MemoryStorage)
+      else if (file.buffer) {
+        const result = await processMedia(file.buffer, file.mimetype);
+        processedResults.push(result);
+      }
     }),
   );
 

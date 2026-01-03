@@ -14,10 +14,16 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
+    const isVideo = file.mimetype.startsWith("video/");
     return {
-      folder: "param_adventures_uploads", // Folder in Cloudinary
-      allowed_formats: ["jpg", "png", "jpeg", "webp"],
-      public_id: file.fieldname + "-" + Date.now(), // Unique filename
+      folder: isVideo ? "param_adventures_uploads/videos" : "param_adventures_uploads/images",
+      allowed_formats: ["jpg", "png", "jpeg", "webp", "mp4", "webm"],
+      public_id: file.fieldname + "-" + Date.now(),
+      resource_type: isVideo ? "video" : "image",
+      transformation: [
+        { quality: "auto:good", fetch_format: "auto" }, // Compress!
+        ...(isVideo ? [{ width: 1280, crop: "limit" }] : []), // Resize videos to HD max
+      ],
     };
   },
 });
