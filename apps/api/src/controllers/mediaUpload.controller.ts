@@ -42,7 +42,7 @@ export const uploadImage = catchAsync(async (req: Request, res: Response) => {
       mimeType: file.mimetype,
       type: file.mimetype.startsWith("video/") ? "VIDEO" : "IMAGE",
       duration: file.duration || 0,
-      uploadedById: req.user!.id,
+      uploadedById: (req.user as any).id,
     },
   });
 
