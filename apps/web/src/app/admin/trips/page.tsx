@@ -73,11 +73,17 @@ export default function AdminTripsPage() {
 
   const handleAction = async (
     id: string,
-    action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore",
+    action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore" | "delete",
   ) => {
-    if (!confirm(`Are you sure you want to ${action} this trip?`)) return;
+    if (!confirm(`Are you sure you want to ${action} this trip? This cannot be undone.`)) return;
     try {
-      const res = await apiFetch(`/trips/${id}/${action}`, { method: "POST" });
+      let res;
+      if (action === "delete") {
+        res = await apiFetch(`/trips/${id}`, { method: "DELETE" });
+      } else {
+        res = await apiFetch(`/trips/${id}/${action}`, { method: "POST" });
+      }
+
       if (res.ok) {
         fetchTrips();
       } else {

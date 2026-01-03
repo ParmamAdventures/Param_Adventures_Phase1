@@ -5,6 +5,7 @@ import { requirePermission } from "../middlewares/require-permission.middleware"
 
 import { createTrip } from "../controllers/trips/createTrip.controller";
 import { updateTrip } from "../controllers/trips/updateTrip.controller";
+import { deleteTrip } from "../controllers/trips/deleteTrip.controller";
 import { submitTrip } from "../controllers/trips/submitTrip.controller";
 import { approveTrip } from "../controllers/trips/approveTrip.controller";
 import { publishTrip } from "../controllers/trips/publishTrip.controller";
@@ -202,6 +203,26 @@ router.post("/", requireAuth, attachPermissions, requirePermission("trip:create"
  *         description: Trip updated
  */
 router.put("/:id", requireAuth, attachPermissions, requirePermission("trip:edit"), updateTrip);
+
+/**
+ * @swagger
+ * /trips/{id}:
+ *   delete:
+ *     summary: Delete a trip (Super Admin)
+ *     tags: [Trips]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Trip deleted
+ */
+router.delete(
+  "/:id",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:delete"),
+  deleteTrip
+);
 
 // Get single trip with owner-or-internal-view logic
 router.get("/:id", requireAuth, attachPermissions, async (req, res) => {

@@ -19,6 +19,7 @@ async function main() {
     "trip:archive",
     "trip:view:internal",
     "trip:view:public",
+    "trip:delete",
     // booking permissions
     "booking:create",
     "booking:approve",
@@ -52,7 +53,13 @@ async function main() {
     "trip:assign-guide",
     "trip:update-status",
     "trip:view:guests",
+    "trip:delete", // Added
   ];
+
+  // SUPER ADMIN gets everything via Role-Permissions loop naturally because we add it to 'permissions' list
+  // But wait, the loop (line 77) adds ALL permissions to SUPER_ADMIN role. 
+  // So just adding to the array at line 10-55 is enough for Super Admin.
+  // We DO NOT add it to 'ADMIN' role grant below.
 
   for (const key of permissions) {
     await prisma.permission.upsert({

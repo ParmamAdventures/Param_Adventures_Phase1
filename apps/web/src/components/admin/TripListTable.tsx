@@ -22,7 +22,7 @@ type Props = {
   trips: Trip[];
   loading: boolean;
   onRefresh?: () => void;
-  onAction?: (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore") => void;
+  onAction?: (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore" | "delete") => void;
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
