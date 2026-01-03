@@ -28,7 +28,13 @@ export const uploadImage = catchAsync(async (req: Request, res: Response) => {
      thumbUrl = file.path.replace("/upload/", "/upload/c_fill,w_400,h_400/");
      mediumUrl = file.path.replace("/upload/", "/upload/c_limit,w_1200/");
   } else if (file.mimetype.startsWith("video/")) {
-     thumbUrl = file.path.replace(/\.[^/.]+$/, ".jpg"); // Video Poster
+     // Video Optimization on Delivery (q_auto, f_auto)
+     // This ensures fast upload (raw) but optimized playback
+     const uploadPath = "/upload/";
+     const optimizedPath = "/upload/q_auto:good,f_auto,c_limit,w_1280/";
+     
+     mediumUrl = file.path.replace(uploadPath, optimizedPath);
+     thumbUrl = file.path.replace(uploadPath, optimizedPath).replace(/\.[^/.]+$/, ".jpg"); 
   }
 
   const image = await prisma.image.create({
