@@ -16,23 +16,42 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   try {
     const payload = verifyAccessToken(token);
     
-    // Fetch user with roles
+    // Fetch user with roles and permissions
     const user = await prisma.user.findUnique({
         where: { id: payload.sub },
         include: { 
             roles: {
-                include: { role: true }
+                include: { 
+                    role: {
+                        include: {
+                            permissions: {
+                                include: { permission: true }
+                            }
+                        }
+                    } 
+                }
             } 
         }
     });
 
     if (!user) return res.status(401).json({ error: "User not found" });
 
+    // Flatten unique permissions
+    const permissions = new Set<string>();
+    user.roles.forEach(ur => {
+        ur.role.permissions.forEach(rp => {
+            if(rp.permission?.key) permissions.add(rp.permission.key);
+        });
+    });
+
     req.user = {
       id: user.id,
-      roles: user.roles.map(ur => ur.role.name), // Flatten roles to string array
-      permissions: [], // Permissions logic could be similar, stubbed for now
+      email: user.email,
+      name: user.name || "User",
+      roles: user.roles.map(ur => ur.role.name),
+      permissions: Array.from(permissions),
     };
+    req.permissions = Array.from(permissions); // Populate Request-level permissions
     next();
   } catch (err) {
     console.error("Auth Fail", err);
@@ -40,7 +59,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   }
 }
 
-export function optionalAuth(req: Request, res: Response, next: NextFunction) {
+export async function optionalAuth(req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization;
   if (!auth?.startsWith("Bearer ")) {
     return next();
@@ -50,11 +69,46 @@ export function optionalAuth(req: Request, res: Response, next: NextFunction) {
 
   try {
     const payload = verifyAccessToken(token);
-    req.user = {
-      id: payload.sub,
-      roles: [],
-      permissions: [],
-    };
+    
+    // Optional Auth: If token is valid, try to fetch full user to get permissions
+    // This allows mixed Views (Public vs Draft) to work correctly
+    const user = await prisma.user.findUnique({
+        where: { id: payload.sub },
+        include: { 
+            roles: {
+                include: { 
+                    role: {
+                        include: {
+                            permissions: {
+                                include: { permission: true }
+                            }
+                        }
+                    } 
+                }
+            } 
+        }
+    });
+
+    if (user) {
+         const permissions = new Set<string>();
+        user.roles.forEach(ur => {
+            ur.role.permissions.forEach(rp => {
+                if(rp.permission?.key) permissions.add(rp.permission.key);
+            });
+        });
+
+        req.user = {
+            id: user.id,
+            email: user.email,
+            name: user.name || "User",
+            roles: user.roles.map(ur => ur.role.name),
+            permissions: Array.from(permissions),
+        };
+        req.permissions = Array.from(permissions);
+    } else {
+        // Token valid but user not found? Fallback or ignore.
+        // Usually safe to ignore in optional auth or treat as guest.
+    }
   } catch {
     // Ignore invalid tokens in optional auth
   }
