@@ -193,6 +193,16 @@ export default function TripListTable({
                         </Button>
                       )}
 
+                      {onAction && (trip.status === "DRAFT" || trip.status === "ARCHIVED") && (
+                        <Button
+                          variant="danger"
+                          className="h-auto bg-red-600 px-3 py-1.5 text-xs text-white hover:bg-red-700"
+                          onClick={() => onAction(trip.id, "delete")}
+                        >
+                          Delete
+                        </Button>
+                      )}
+
                       <Link href={`/admin/trips/${trip.id}/edit`}>
                         <Button variant="ghost" className="h-auto px-3 py-1.5 text-xs">
                           Edit
