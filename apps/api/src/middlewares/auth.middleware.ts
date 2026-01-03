@@ -42,6 +42,13 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
         ur.role.permissions.forEach(rp => {
             if(rp.permission?.key) permissions.add(rp.permission.key);
         });
+        // Failsafe: Ensure SUPER_ADMIN has critical permissions even if DB seed is stale
+        if (ur.role.name === 'SUPER_ADMIN') {
+            permissions.add('trip:delete');
+            permissions.add('trip:view:internal');
+            permissions.add('blog:view:internal');
+            // Add other critical ones as needed or rely on DB for the rest
+        }
     });
 
     req.user = {
