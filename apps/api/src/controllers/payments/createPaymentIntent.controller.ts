@@ -5,7 +5,7 @@ import { HttpError } from "../../utils/httpError";
 import { env } from "../../config/env";
 
 export async function createPaymentIntent(req: Request, res: Response) {
-  const userId = req.user!.id; // Using non-null assertion as it's a protected route
+  const userId = (req.user as any).id; // Using non-null assertion as it's a protected route
   const { bookingId } = req.body;
 
   if (!bookingId) {
