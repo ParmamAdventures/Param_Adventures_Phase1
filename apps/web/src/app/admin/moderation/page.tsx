@@ -67,7 +67,6 @@ export default function AdminModerationPage() {
       }
 
       if (res.ok) {
-      if (res.ok) {
         fetchModerationData(); // Refresh everything
       } else {
         const body = await res.json();
