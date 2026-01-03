@@ -6,9 +6,10 @@ import TripBookingCard from "../../../components/trips/TripBookingCard";
 import TripItinerary from "../../../components/trips/TripItinerary";
 import TripQuickStats from "../../../components/trips/TripQuickStats";
 import TripInclusions from "../../../components/trips/TripInclusions";
-import ReviewList from "../../../components/reviews/ReviewList";
-import ReviewForm from "../../../components/reviews/ReviewForm";
-import { Testimonials } from "../../../components/home/Testimonials";
+// import ReviewList from "../../../components/reviews/ReviewList";
+// import ReviewForm from "../../../components/reviews/ReviewForm";
+import ReviewsSection from "../../../components/reviews/ReviewsSection";
+// import { Testimonials } from "../../../components/home/Testimonials";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
 
@@ -209,7 +210,8 @@ function renderTrip(trip: TripFull) {
 
 
             {/* Reviews / Testimonials */}
-            <Testimonials tripId={trip.id} />
+            {/* <Testimonials tripId={trip.id} /> Replaced with Real Reviews */}
+            <ReviewsSection tripId={trip.id!} />
 
             {/* Mobile Booking CTA (Fixed Bottom) */}
             <div className="bg-background/80 fixed right-0 bottom-0 left-0 z-50 border-t p-4 backdrop-blur-md lg:hidden">

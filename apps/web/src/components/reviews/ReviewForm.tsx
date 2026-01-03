@@ -1,11 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button } from "@/components/ui/Button";
-import StarRating from "./StarRating";
-import { apiFetch } from "@/lib/api";
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { StarRating } from "../ui/StarRating";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/ToastProvider";
 
 interface ReviewFormProps {
   tripId: string;
@@ -13,81 +11,94 @@ interface ReviewFormProps {
 }
 
 export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
+  const { user, token } = useAuth();
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [hoverRating, setHoverRating] = useState(0);
-  const { showToast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (!user) {
+    return (
+      <div className="bg-muted/30 rounded-xl border p-6 text-center">
+        <p className="text-muted-foreground">Please log in to leave a review.</p>
+        {/* Ideally show Login Button */}
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (rating === 0) {
-      showToast("Please select a rating", "error");
+      setError("Please select a star rating.");
       return;
     }
 
-    setLoading(true);
+    setIsSubmitting(true);
+    setError(null);
+
     try {
-      const res = await apiFetch("/reviews", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({ tripId, rating, comment }),
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
-        const data = await res.json();
         throw new Error(data.message || "Failed to submit review");
       }
 
-      showToast("Review submitted successfully!", "success");
       setRating(0);
       setComment("");
       if (onSuccess) onSuccess();
-    } catch (error: any) {
-      showToast(error.message, "error");
+    } catch (err: any) {
+      setError(err.message);
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-surface border-border space-y-4 rounded-lg border p-6"
-    >
-      <h3 className="text-lg font-semibold">Write a Review</h3>
+    <div className="bg-card rounded-xl border p-6 shadow-sm">
+      <h3 className="mb-4 text-xl font-bold">Write a Review</h3>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Rating Field */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Your Rating</label>
+          <StarRating rating={rating} onRatingChange={setRating} size={28} />
+        </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Rating</label>
-        <StarRating
-          rating={hoverRating || rating}
-          size={32}
-          editable
-          onRatingChange={setRating}
-          onHover={setHoverRating}
-        />
-      </div>
+        {/* Comment Field */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium">Review (Optional)</label>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="How was your experience?"
+            className="bg-background focus:ring-primary h-32 w-full rounded-md border p-3 focus:outline-none focus:ring-2"
+          />
+        </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Comment (Optional)</label>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Tell us about your experience..."
-          className="border-input focus-visible:ring-ring min-h-[100px] w-full rounded-md border bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none"
-        />
-      </div>
-
-      <Button type="submit" disabled={loading || rating === 0}>
-        {loading ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Submitting...
-          </>
-        ) : (
-          "Submit Review"
+        {error && (
+          <div className="bg-destructive/10 text-destructive text-sm rounded-md p-3">
+            {error}
+          </div>
         )}
-      </Button>
-    </form>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center justify-center gap-2 rounded-md px-4 py-2 font-medium disabled:opacity-50"
+        >
+          {isSubmitting && <Loader2 className="animate-spin" size={16} />}
+          Submit Review
+        </button>
+      </form>
+    </div>
   );
 }

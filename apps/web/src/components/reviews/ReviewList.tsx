@@ -1,27 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import StarRating from "./StarRating";
-import { apiFetch } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { StarRating } from "../ui/StarRating";
 import { formatDistanceToNow } from "date-fns";
 
 interface Review {
   id: string;
   rating: number;
-  comment: string;
+  comment: string | null;
   createdAt: string;
   user: {
-    id: string;
     name: string | null;
-    avatarImage: {
+    avatarImage?: {
       thumbUrl: string;
-    } | null;
+    };
   };
 }
 
 interface ReviewListProps {
   tripId: string;
-  refreshTrigger?: number; // Prop to trigger refetch
+  refreshTrigger?: number; // Used to re-fetch when a new review is added
 }
 
 export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) {
@@ -29,30 +27,30 @@ export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchReviews() {
+    const fetchReviews = async () => {
       try {
-        const res = await apiFetch(`/reviews/${tripId}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/${tripId}`);
         if (res.ok) {
           const data = await res.json();
           setReviews(data);
         }
-      } catch (error) {
-        console.error("Failed to fetch reviews", error);
+      } catch (err) {
+        console.error("Failed to fetch reviews", err);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchReviews();
   }, [tripId, refreshTrigger]);
 
   if (loading) {
-    return <div className="text-muted-foreground text-sm">Loading reviews...</div>;
+    return <div className="py-8 text-center">Loading reviews...</div>;
   }
 
   if (reviews.length === 0) {
     return (
-      <div className="text-muted-foreground text-sm italic">
+      <div className="py-8 text-center text-muted-foreground">
         No reviews yet. Be the first to share your experience!
       </div>
     );
@@ -60,39 +58,40 @@ export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) 
 
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-semibold">Traveler Reviews ({reviews.length})</h3>
+      <h3 className="text-xl font-bold">{reviews.length} Reviews</h3>
+      
       <div className="space-y-6">
         {reviews.map((review) => (
-          <div key={review.id} className="border-border border-b pb-6 last:border-0 last:pb-0">
-            <div className="mb-2 flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="bg-accent/10 h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
-                  {review.user.avatarImage ? (
-                    <img
-                      src={review.user.avatarImage.thumbUrl}
-                      alt={review.user.name || "User"}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="text-accent flex h-full w-full items-center justify-center font-bold">
-                      {(review.user.name?.[0] || "U").toUpperCase()}
+          <div key={review.id} className="border-b pb-6 last:border-0">
+            <div className="flex items-start gap-4">
+              {/* Avatar */}
+              <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-200">
+                 {review.user.avatarImage?.thumbUrl ? (
+                    <img src={review.user.avatarImage.thumbUrl} alt="User" className="h-full w-full object-cover" />
+                 ) : (
+                    <div className="bg-primary/20 flex h-full w-full items-center justify-center font-bold text-primary">
+                      {review.user.name?.charAt(0) || "U"}
                     </div>
-                  )}
-                </div>
-                <div>
-                  <div className="text-sm font-semibold">
-                    {review.user.name || "Anonymous Traveler"}
-                  </div>
-                  <div className="text-muted-foreground text-xs">
-                    {formatDistanceToNow(new Date(review.createdAt), { addSuffix: true })}
-                  </div>
-                </div>
+                 )}
               </div>
-              <StarRating rating={review.rating} size={16} />
+
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold">{review.user.name || "Anonymous User"}</h4>
+                  <span className="text-sm text-muted-foreground">
+                    {formatDistanceToNow(new Date(review.createdAt), { addSuffix: true })}
+                  </span>
+                </div>
+                
+                <StarRating rating={review.rating} size={16} readonly />
+                
+                {review.comment && (
+                  <p className="mt-2 text-muted-foreground leading-relaxed">
+                    {review.comment}
+                  </p>
+                )}
+              </div>
             </div>
-            {review.comment && (
-              <p className="text-foreground/80 mt-2 text-sm leading-relaxed">{review.comment}</p>
-            )}
           </div>
         ))}
       </div>
