@@ -10,7 +10,8 @@ declare global {
     }
 
     interface Request {
-      permissions?: string[]; // Augmening Request to include permissions
+      user?: User; // Explicitly adding user to Request to satisfy Render/TS
+      permissions?: string[];
     }
   }
 }
