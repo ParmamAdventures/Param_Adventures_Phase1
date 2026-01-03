@@ -1,68 +1,47 @@
-# System Architecture — Param Adventures
+# Param Adventures - System Architecture
 
-This document outlines the high-level architecture of the Param Adventures platform, focusing on system components, data flow, and design patterns.
+## Overview
+Param Adventures is a modern Adventure Tourism platform built with a robust tech stack designed for scalability, performance, and user experience.
 
----
+## Technology Stack
 
-## 🏗️ Monorepo Structure
+### Frontend (Client)
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS + Shadcn UI (Radix Primitives)
+- **State Management**: React Context (AuthContext)
+- **Deployment**: Vercel
 
-Param Adventures uses an NPM Workspaces monorepo to manage frontend, backend, and testing packages with shared type safety and configuration.
+### Backend (Server)
+- **Runtime**: Node.js + Express.js
+- **Language**: TypeScript
+- **Database**: PostgreSQL (via Supabase/Neon)
+- **ORM**: Prisma
+- **Deployment**: Render (Web Service)
 
-- **`apps/web`**: Next.js 14 (App Router) frontend.
-- **`apps/api`**: Express.js (TypeScript) backend.
-- **`apps/e2e`**: Playwright end-to-end testing suite.
-- **`packages/shared`**: (Planned) Shared TypeScript interfaces and utility functions.
+### Infrastructure & Services
+- **Storage**: Cloudinary (Image & Video Optimization)
+- **Monitoring**: Sentry (Error Tracking & Performance)
+- **Authentication**: JWT (HttpOnly Cookies)
 
----
+## Key Components
 
-## 🖥️ Backend Architecture (`apps/api`)
+### 1. Media Handling (Cloudinary)
+We use a unified `upload` middleware (`apps/api/src/middlewares/upload.middleware.ts`) that streams files directly to Cloudinary.
+- **Images**: Automatically resized and optimized.
+- **Videos**: Uploaded raw for speed, then optimized on-demand using dynamic URLs (`q_auto`, `f_auto`).
+- **Storage Strategy**: `multer-storage-cloudinary` restricts file types and organizes uploads into folders (`param_adventures_uploads/images` vs `videos`).
 
-The backend follows a modular, service-oriented pattern designed for scalability and maintainability.
+### 2. Database Schema (Prisma)
+- **User**: Core entity with RBAC (Roles: ADMIN, GUIDE, USER).
+- **Trip**: Central entity containing Itinerary, Gallery (Images), and Bookings.
+- **Image**: Polymorphic-style table storing Cloudinary URLs for usage across the app (User Avatar, Trip Cover, Gallery).
 
-### 🔌 API Layer
-- **Routes**: Domain-specific route files (e.g., `trips.routes.ts`, `auth.routes.ts`).
-- **Middleware**: 
-  - `auth.middleware.ts`: JWT verification and user hydration.
-  - `permission.middleware.ts`: RBAC enforcement using granular permissions.
-  - `error.middleware.ts`: Centralized error handling for all environments.
-- **Controllers**: Thin controllers that validate input and orchestrate service calls. We use `catchAsync` to handle promises and `ApiResponse` for standardized JSON outputs.
+### 3. Error Handling
+- **Global Error Handler**: Catches async errors.
+- **Sentry**: Captures unhandled exceptions in Production.
+- **Validation**: Zod (planned/partial) and Manual Request validation.
 
-### ⚙️ Service Layer
-- **Business Logic**: Encapsulated in services (e.g., `AuthService`, `TripService`).
-- **Data Access**: Prisma ORM (v4.16.2) for type-safe interaction with PostgreSQL.
-
-### 📦 Infrastructure
-- **Redis & BullMQ**: Handles asynchronous tasks like transactional emails and notification broadcasting.
-- **Socket.io**: Provides real-time bi-directional communication for booking alerts and status updates.
-
----
-
-## 🎨 Frontend Architecture (`apps/web`)
-
-The frontend is built for performance and responsive UX using modern React patterns.
-
-### 🧩 Components
-- **UI Primitives**: Custom-built accessible components (Buttons, Inputs, Modals) using TailwindCSS.
-- **Feature Components**: Domain-specific UI (e.g., `TripHero`, `ItineraryBuilder`).
-
-### 🌊 Data Flow
-- **API Client**: A standardized `apiFetch` wrapper that handles auth tokens, refresh logic, and error parsing.
-- **State Management**: React Context for Auth and global UI state; Local state for form management and complex UI interactions (Itinerary).
-
----
-
-## 🔐 Security Framework
-
-- **Identity**: JWT-based authentication with `AccessToken` (short-lived) and `RefreshToken` (long-lived, HTTP-only cookie).
-- **Authorization**: Roles (e.g., ADMIN, GUIDE) map to a set of granular Permissions (e.g., `trip:publish`).
-- **Defenses**:
-  - Helmet for security headers (HSTS, CSP).
-  - Rate limiting on sensitive endpoints (Auth, Payments).
-  - HMAC signature verification for payment webhooks.
-
----
-
-## 📈 Real-time & Workers
-
-- **Socket Rooms**: Users are automatically joined to private rooms (`user:{id}`) on connection to receive targeted alerts.
-- **Worker Processes**: Decoupled workers process background jobs from the Redis queue with automatic retries and exponential backoff.
+## Directory Structure
+- `apps/web`: Next.js Frontend
+- `apps/api`: Express Backend
+- `packages`: Shared libraries (if logic expands)
