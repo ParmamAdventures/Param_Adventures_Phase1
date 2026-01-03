@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { StarRating } from "../ui/StarRating";
 import { Loader2 } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 
 interface ReviewFormProps {
   tripId: string;
@@ -11,7 +12,7 @@ interface ReviewFormProps {
 }
 
 export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
-  const { user, token } = useAuth();
+  const { user } = useAuth(); // Token handled by apiFetch
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,7 +22,6 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
     return (
       <div className="bg-muted/30 rounded-xl border p-6 text-center">
         <p className="text-muted-foreground">Please log in to leave a review.</p>
-        {/* Ideally show Login Button */}
       </div>
     );
   }
@@ -37,12 +37,8 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
     setError(null);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews`, {
+      const res = await apiFetch("/reviews", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify({ tripId, rating, comment }),
       });
 
