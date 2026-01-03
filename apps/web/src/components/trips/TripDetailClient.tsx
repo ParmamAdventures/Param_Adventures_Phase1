@@ -9,7 +9,8 @@ import TripQuickStats from "./TripQuickStats";
 import TripHighlights from "./TripHighlights";
 import TripItinerary from "./TripItinerary";
 import TripInclusions from "./TripInclusions";
-import { Testimonials } from "../home/Testimonials";
+// import { Testimonials } from "../home/Testimonials"; // Removed
+import ReviewsSection from "../reviews/ReviewsSection";
 import TripBookingCard from "./TripBookingCard";
 import TripPolicies from "./TripPolicies";
 
@@ -185,7 +186,8 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
             )}
 
             {/* Reviews */}
-            <Testimonials tripId={trip.id} />
+            {/* <Testimonials tripId={trip.id} /> */}
+            <ReviewsSection tripId={trip.id} />
 
             {/* Mobile Booking CTA */}
             <div className="bg-background/80 fixed right-0 bottom-0 left-0 z-50 border-t p-4 backdrop-blur-md lg:hidden">
