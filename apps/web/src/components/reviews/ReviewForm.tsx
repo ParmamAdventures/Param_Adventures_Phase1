@@ -17,6 +17,27 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Eligibility State
+  const [checkingEligibility, setCheckingEligibility] = useState(true);
+  const [isEligible, setIsEligible] = useState(false);
+  const [ineligibilityReason, setIneligibilityReason] = useState("");
+
+  // Check Eligibility on Mount
+  useState(() => {
+    if (user) {
+      apiFetch(`/reviews/check/${tripId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setIsEligible(data.eligible);
+          if (!data.eligible) setIneligibilityReason(data.reason);
+        })
+        .catch(() => setIsEligible(false))
+        .finally(() => setCheckingEligibility(false));
+    } else {
+        setCheckingEligibility(false);
+    }
+  });
 
   if (!user) {
     return (
@@ -26,8 +47,28 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
     );
   }
 
+  if (checkingEligibility) {
+     return <div className="p-4 text-center text-sm text-muted-foreground">Checking eligibility...</div>;
+  }
+
+  if (!isEligible) {
+    return null; // Build stricter: "write a review should only be visible ... not to everyone"
+    // OR return user friendly message:
+    // return (
+    //   <div className="bg-muted/30 rounded-xl border p-6 text-center text-sm text-muted-foreground">
+    //     {ineligibilityReason || "You can only review trips you have completed."}
+    //   </div>
+    // );
+    // User asked "only be visible to user who finished". So "return null" is strictest. 
+    // BUT "return null" might confuse user who expects to see it? 
+    // I'll leave a small note or return null based on strict instruction. 
+    // Instruction: "stricter write a review should only be visible... not to everyone".
+    // I will return NULL to hide it completely.
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+// ... (rest is same)
     if (rating === 0) {
       setError("Please select a star rating.");
       return;

@@ -167,9 +167,50 @@ export const deleteReview = async (req: Request, res: Response) => {
 
     await prisma.review.delete({ where: { id } });
 
+    // ... (existing deleteReview)
     res.json({ message: "Review deleted successfully" });
   } catch (error) {
     console.error("Delete Review Error:", error);
     res.status(500).json({ message: "Failed to delete review" });
+  }
+};
+
+// Check if user is eligible to review
+export const checkReviewEligibility = async (req: Request, res: Response) => {
+  try {
+    const { tripId } = req.params;
+    const userId = (req.user as any).id;
+
+    // 1. Check for Completed Booking
+    const booking = await prisma.booking.findFirst({
+      where: {
+        userId,
+        tripId,
+        status: "COMPLETED",
+      },
+    });
+
+    if (!booking) {
+      return res.json({ eligible: false, reason: "You typically need to complete a trip to review it." });
+    }
+
+    // 2. Check for Existing Review
+    const existingReview = await prisma.review.findUnique({
+      where: {
+        userId_tripId: {
+          userId,
+          tripId,
+        },
+      },
+    });
+
+    if (existingReview) {
+      return res.json({ eligible: false, reason: "You have already reviewed this trip." });
+    }
+
+    res.json({ eligible: true });
+  } catch (error) {
+    console.error("Check Eligibility Error:", error);
+    res.status(500).json({ message: "Failed to check eligibility" });
   }
 };
