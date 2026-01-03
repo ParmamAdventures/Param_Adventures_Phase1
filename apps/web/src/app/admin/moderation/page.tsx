@@ -51,15 +51,22 @@ export default function AdminModerationPage() {
   const handleModeration = async (
     id: string,
     type: "trips" | "blogs",
-    action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore",
+    action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore" | "delete",
   ) => {
     try {
-      const endpoint =
-        type === "trips"
-          ? `/trips/${id}/${action}` // e.g. /trips/123/approve
-          : `/blogs/${id}/${action}`; // e.g. /blogs/123/approve
+      let res;
+      if (action === "delete") {
+         const endpoint = type === "trips" ? `/trips/${id}` : `/blogs/${id}`;
+         res = await apiFetch(endpoint, { method: "DELETE" });
+      } else {
+        const endpoint =
+            type === "trips"
+            ? `/trips/${id}/${action}`
+            : `/blogs/${id}/${action}`;
+        res = await apiFetch(endpoint, { method: "POST" });
+      }
 
-      const res = await apiFetch(endpoint, { method: "POST" });
+      if (res.ok) {
       if (res.ok) {
         fetchModerationData(); // Refresh everything
       } else {
