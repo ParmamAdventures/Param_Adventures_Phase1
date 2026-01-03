@@ -1,5 +1,4 @@
 import { Router } from "express";
-// import { upload as legacyUpload } from "../utils/multer.config"; // Removed
 import { upload, uploadDocument } from "../middlewares/upload.middleware";
 import { uploadTripCover } from "../controllers/media/uploadTripCover.controller";
 import { uploadTripGallery } from "../controllers/media/uploadTripGallery.controller";

@@ -66,7 +66,6 @@ export default function ProfilePage() {
   async function handleSave() {
     setLoading(true);
     try {
-      console.log("Saving user data:", { gender, phoneNumber, preferences }); // Debug log
       const res = await apiFetch("/users/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

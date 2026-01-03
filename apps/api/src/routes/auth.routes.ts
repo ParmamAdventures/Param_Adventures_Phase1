@@ -5,7 +5,6 @@ import {
   logout,
   refresh,
   me,
-  loginPage,
   forgotPassword,
   resetPassword,
   changePassword,
@@ -78,7 +77,6 @@ router.post("/register", authLimiter, validate(registerSchema), register);
  */
 router.post("/login", authLimiter, validate(loginSchema), login);
 
-router.get("/login", loginPage);
 
 /**
  * @swagger

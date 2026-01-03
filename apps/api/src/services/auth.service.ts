@@ -12,7 +12,6 @@ import { notificationService } from "./notification.service";
 
 export class AuthService {
   async register(data: { email: string; password: string; name: string }) {
-    console.log(`[AuthService] Attempting registration for: ${data.email}`);
     const normalizedEmail = data.email.toLowerCase().trim();
     const { password, name } = data;
 
@@ -34,7 +33,6 @@ export class AuthService {
       },
     });
 
-    console.log(`[AuthService] Registration successful for: ${normalizedEmail}`);
     await auditService.logAudit({
       actorId: user.id,
       action: "USER_REGISTER",

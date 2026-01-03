@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
-import { createPaymentIntent } from "../controllers/createPaymentIntent.controller";
-import { verifyPayment } from "../controllers/verifyPayment.controller";
-import { createManualPayment } from "../controllers/createManualPayment.controller";
+import { createPaymentIntent } from "../controllers/payments/createPaymentIntent.controller";
+import { verifyPayment } from "../controllers/payments/verifyPayment.controller";
+import { createManualPayment } from "../controllers/payments/createManualPayment.controller";
 
 const router = Router();
 

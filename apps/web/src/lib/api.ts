@@ -37,7 +37,6 @@ export async function apiFetch(input: RequestInfo, init: RequestInit = {}) {
     if (refreshed.ok) {
       const data = await refreshed.json();
       if (data?.accessToken) {
-        console.log("[API] Token refresh successful");
         setAccessToken(data.accessToken);
         headers.set("Authorization", `Bearer ${data.accessToken}`);
         return fetch(url, { ...init, headers, credentials: "include" });
