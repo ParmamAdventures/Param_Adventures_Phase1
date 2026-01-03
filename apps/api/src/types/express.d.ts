@@ -1,10 +1,16 @@
-import { AuthenticatedUser } from "./auth";
+
+import { Role } from "@prisma/client";
 
 declare global {
   namespace Express {
-    interface Request {
-      user?: AuthenticatedUser;
+    interface User {
+      id: string;
+      email: string;
+      name: string;
+      roles: string[]; // Simplification given CI error on Role enum sometimes
       permissions?: string[];
     }
   }
 }
+
+export {};
