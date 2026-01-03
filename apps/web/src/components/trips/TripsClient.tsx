@@ -7,6 +7,7 @@ import { apiFetch } from "../../lib/api";
 import { Filter, X } from "lucide-react";
 import TripFilters from "./TripFilters";
 import { useTripFilters } from "@/hooks/useTripFilters";
+import { useAuth } from "@/context/AuthContext";
 
 export default function TripsClient() {
   const [trips, setTrips] = useState<any[] | null>(null);
@@ -20,15 +21,30 @@ export default function TripsClient() {
     maxDuration: 30,
   });
 
-  // Load Metadata
+  // Load Metadata & Wishlist
+  const [savedTripIds, setSavedTripIds] = useState<Set<string>>(new Set());
+  const { user } = useAuth(); // Need auth context to check user
+
   useEffect(() => {
+    // 1. Fetch Meta
     apiFetch("/trips/public/meta")
       .then((res) => res.json())
       .then((data) => {
         setMeta(data);
       })
       .catch(console.error);
-  }, []);
+
+    // 2. Fetch Wishlist (if logged in)
+    if (user) {
+        apiFetch("/wishlist")
+            .then((res) => res.json())
+            .then((data: any[]) => {
+                const ids = new Set(data.map((t) => t.id));
+                setSavedTripIds(ids);
+            })
+            .catch(console.error);
+    }
+  }, [user]);
 
   // Use Custom Hook for Filter State
   const { filters, setFilter, clearFilters, activeFilterCount } = useTripFilters(meta.maxPrice);
@@ -130,7 +146,7 @@ export default function TripsClient() {
             </button>
           </div>
         ) : (
-          <TripsGrid trips={trips} />
+          <TripsGrid trips={trips} savedTripIds={savedTripIds} />
         )}
       </div>
     </div>

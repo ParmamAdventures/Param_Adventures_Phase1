@@ -4,7 +4,7 @@ import Button from "../ui/Button";
 import Link from "next/link";
 import MotionCard from "../ui/MotionCard";
 
-export default function TripsGrid({ trips }: { trips: any[] }) {
+export default function TripsGrid({ trips, savedTripIds }: { trips: any[], savedTripIds?: Set<string> }) {
   if (!trips || trips.length === 0) {
     return (
       <Card className="py-16 text-center">
@@ -23,7 +23,7 @@ export default function TripsGrid({ trips }: { trips: any[] }) {
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {trips.map((trip) => (
         <MotionCard key={trip.id} className="p-2">
-          <TripCard trip={trip} />
+          <TripCard trip={trip} initialSaved={savedTripIds?.has(trip.id)} />
         </MotionCard>
       ))}
     </div>
