@@ -175,7 +175,8 @@ export default function ProfilePage() {
     }
   };
 
-  async function handleChangePassword() {
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault();
     if (!currentPassword || !newPassword || !confirmPassword) {
       alert("Please fill in all password fields");
       return;
@@ -506,7 +507,7 @@ export default function ProfilePage() {
               Security
             </h3>
 
-            <div className="space-y-4">
+            <form onSubmit={handleChangePassword} className="space-y-4">
               <div className="space-y-2">
                 <label className="text-muted-foreground block text-[10px] font-black tracking-[0.2em] uppercase">
                   Current Password
@@ -516,6 +517,7 @@ export default function ProfilePage() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="••••••••"
+                  autoComplete="current-password"
                   className="h-12 rounded-2xl border-[var(--border)] bg-[var(--card)]/50"
                 />
               </div>
@@ -529,6 +531,7 @@ export default function ProfilePage() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••••"
+                    autoComplete="new-password"
                     className="h-12 rounded-2xl border-[var(--border)] bg-[var(--card)]/50"
                   />
                 </div>
@@ -541,14 +544,15 @@ export default function ProfilePage() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••"
+                    autoComplete="new-password"
                     className="h-12 rounded-2xl border-[var(--border)] bg-[var(--card)]/50"
                   />
                 </div>
               </div>
               <div className="flex justify-end pt-2">
                 <Button
+                  type="submit"
                   variant="subtle"
-                  onClick={handleChangePassword}
                   loading={loading}
                   disabled={!currentPassword || !newPassword || !confirmPassword}
                   className="h-10 text-xs font-bold tracking-wider uppercase"
@@ -556,7 +560,7 @@ export default function ProfilePage() {
                   Update Password
                 </Button>
               </div>
-            </div>
+            </form>
           </div>
 
           {/* Account Privacy */}
