@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
-import { HttpError } from "../utils/httpError";
-import { logger } from "../lib/logger";
-import { notificationQueue } from "../lib/queue";
+import { prisma } from "../../lib/prisma";
+import { HttpError } from "../../utils/httpError";
+import { logger } from "../../lib/logger";
+import { notificationQueue } from "../../lib/queue";
 
 export async function createManualPayment(req: Request, res: Response) {
   const { bookingId, amount, method, transactionId, proofUrl } = req.body;

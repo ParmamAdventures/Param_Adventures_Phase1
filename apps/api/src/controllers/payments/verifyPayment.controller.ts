@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { prisma } from "../lib/prisma";
-import { razorpayService } from "../services/razorpay.service";
-import { HttpError } from "../utils/httpError";
-import { logger } from "../lib/logger";
-import { notificationQueue } from "../lib/queue";
+import { prisma } from "../../lib/prisma";
+import { razorpayService } from "../../services/razorpay.service";
+import { HttpError } from "../../utils/httpError";
+import { logger } from "../../lib/logger";
+import { notificationQueue } from "../../lib/queue";
 
 export async function verifyPayment(req: Request, res: Response) {
   const { orderId, paymentId, signature } = req.body;
