@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { notificationQueue } from "../lib/queue";
+import { HttpError } from "../utils/httpError";
 
 export class BookingService {
   async createBooking(data: { userId: string; tripId: string; startDate: string; guests: number; guestDetails?: any }) {
@@ -7,11 +8,11 @@ export class BookingService {
 
     const trip = await prisma.trip.findUnique({ where: { id: tripId } });
     if (!trip) {
-      throw new Error("Trip not found");
+      throw new HttpError(404, "NOT_FOUND", "Trip not found");
     }
 
     if (trip.status !== "PUBLISHED") {
-      throw new Error("Trip is not available for booking");
+      throw new HttpError(400, "BAD_REQUEST", "Trip is not available for booking");
     }
 
     const totalPrice = trip.price * guests;
@@ -56,15 +57,15 @@ export class BookingService {
     const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
 
     if (!booking) {
-      throw new Error("Booking not found");
+      throw new HttpError(404, "NOT_FOUND", "Booking not found");
     }
 
     if (booking.userId !== userId) {
-      throw new Error("Unauthorized");
+      throw new HttpError(403, "FORBIDDEN", "Unauthorized");
     }
 
     if (["CANCELLED", "COMPLETED", "REJECTED"].includes(booking.status)) {
-      throw new Error("Booking cannot be cancelled in its current state");
+      throw new HttpError(400, "BAD_REQUEST", "Booking cannot be cancelled in its current state");
     }
 
     const updatedBooking = await prisma.booking.update({
@@ -127,11 +128,11 @@ export class BookingService {
     });
 
     if (!booking) {
-      throw new Error("Booking not found");
+      throw new HttpError(404, "NOT_FOUND", "Booking not found");
     }
 
     if (booking.userId !== userId) {
-      throw new Error("Unauthorized");
+      throw new HttpError(403, "FORBIDDEN", "Unauthorized");
     }
 
     return booking;

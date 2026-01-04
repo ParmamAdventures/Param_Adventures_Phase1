@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { rawBodyMiddleware } from "../middleware/rawBody.middleware";
+import { rawBodyMiddleware } from "../middlewares/rawBody.middleware";
 import { razorpayWebhookHandler } from "../controllers/razorpayWebhook.controller";
 
 const router = Router();

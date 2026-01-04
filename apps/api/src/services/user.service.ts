@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { auditService } from "./audit.service";
 
 export class UserService {
   /**
@@ -69,6 +70,37 @@ export class UserService {
     const user = await this.getUserWithPermissions(userId);
     if (!user) return false;
     return user.permissions.includes(permissionKey);
+  }
+  /**
+   * Updates a user's profile and logs the action.
+   */
+  async updateProfile(userId: string, data: any) {
+    const user = await (prisma.user as any).update({
+      where: { id: userId },
+      data: {
+        name: data.name,
+        nickname: data.nickname,
+        bio: data.bio,
+        age: data.age ? Number(data.age) : null,
+        gender: data.gender,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+        avatarImageId: data.avatarImageId,
+        preferences: data.preferences,
+      },
+      include: {
+        avatarImage: true,
+      },
+    });
+
+    await auditService.logAudit({
+      actorId: userId,
+      action: "USER_UPDATE_PROFILE",
+      targetType: "User",
+      targetId: userId,
+    });
+
+    return user;
   }
 }
 
