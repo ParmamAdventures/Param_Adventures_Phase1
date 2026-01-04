@@ -29,7 +29,7 @@ describe("Booking Integration", () => {
     const user = await prisma.user.create({
       data: {
         email: "booker@test.com",
-        password: "password123",
+        password: "Password123!",
         name: "Booker User",
       },
     });

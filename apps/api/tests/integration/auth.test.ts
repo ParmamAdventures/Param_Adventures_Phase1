@@ -77,7 +77,7 @@ describe("Auth Integration", () => {
   it("should register a new user", async () => {
     const res = await request(app).post("/auth/register").send({
       email: "test@example.com",
-      password: "password123",
+      password: "Password123!",
       name: "Test User",
     });
 
@@ -102,7 +102,7 @@ describe("Auth Integration", () => {
   it("should fail on duplicate email", async () => {
     const res = await request(app).post("/auth/register").send({
       email: "test@example.com",
-      password: "password123",
+      password: "Password123!",
       name: "Test User 2",
     });
 
@@ -113,7 +113,7 @@ describe("Auth Integration", () => {
   it("should fail on invalid email (Zod)", async () => {
     const res = await request(app).post("/auth/register").send({
       email: "invalid-email",
-      password: "password123",
+      password: "Password123!",
       name: "Test User",
     });
 
@@ -124,7 +124,7 @@ describe("Auth Integration", () => {
   describe("Session & Refresh", () => {
     const credentials = {
       email: "session@example.com",
-      password: "password123",
+      password: "Password123!",
       name: "Session User",
     };
 
