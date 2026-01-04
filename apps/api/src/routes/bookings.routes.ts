@@ -13,7 +13,7 @@ const router = Router();
 router.post("/", requireAuth, createBooking);
 
 // Get user's bookings
-router.get("/my-bookings", requireAuth, getBookings);
+router.get("/me", requireAuth, getBookings);
 
 // Get single booking details
 router.get("/:id", requireAuth, getBookingById);

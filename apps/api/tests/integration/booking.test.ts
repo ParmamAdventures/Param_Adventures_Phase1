@@ -78,7 +78,7 @@ describe("Booking Integration", () => {
 
   it("should get user's bookings", async () => {
     const res = await request(app)
-      .get("/bookings/my-bookings")
+      .get("/bookings/me")
       .set("Authorization", `Bearer ${userToken}`);
 
     expect(res.status).toBe(200);
