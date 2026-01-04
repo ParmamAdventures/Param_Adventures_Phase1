@@ -1,0 +1,16 @@
+# node_modules
+dist
+error.log
+*.log
+*.txt
+.env
+.git
+.gitignore
+.prettierrc
+.prettierignore
+eslint.config.mjs
+tests
+tests-results.json
+openapi.json
+docker-compose.yml
+Dockerfile
