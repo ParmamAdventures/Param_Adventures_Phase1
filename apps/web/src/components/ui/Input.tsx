@@ -21,13 +21,7 @@ export function Input({ label, className, error = null, state = "normal", ...pro
         className={`w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] ${stateClasses} ${className ?? ""} transition duration-[var(--motion-fast)] ease-[var(--motion-ease)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--ring-offset-color)] focus-visible:outline-none`}
       />
       {error ? (
-        <div
-          style={{
-            color: "var(--semantic-danger)",
-            marginTop: 6,
-            fontSize: 13,
-          }}
-        >
+        <div className="mt-1.5 text-[13px] text-red-500">
           {error}
         </div>
       ) : null}

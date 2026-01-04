@@ -39,9 +39,9 @@ export default function AdminNewTripPage() {
 
   return (
     <PermissionRoute permission="trip:create">
-      <div style={{ maxWidth: 800, margin: "0 auto" }}>
+      <div className="mx-auto max-w-[800px]">
         <h1>Create New Trip</h1>
-        <p style={{ color: "#666", marginBottom: 24 }}>
+        <p className="mb-6 text-[#666]">
           Fill in the details below to create a new adventure.
         </p>
         <TripForm onSubmit={handleCreate} submitting={submitting} />

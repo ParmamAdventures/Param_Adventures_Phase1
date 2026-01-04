@@ -76,7 +76,7 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
   };
 
   if (loading) return <p>Loading trip details…</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <PermissionRoute permission="trip:edit">

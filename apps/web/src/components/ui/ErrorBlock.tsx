@@ -1,6 +1,6 @@
 export function ErrorBlock({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ color: "var(--semantic-danger)", marginTop: 6, fontSize: 13 }}>{children}</div>
+    <div className="mt-1.5 text-[13px] text-red-500">{children}</div>
   );
 }
 

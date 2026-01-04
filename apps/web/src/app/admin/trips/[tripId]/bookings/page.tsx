@@ -168,18 +168,18 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
       </p>
 
       {error && (
-        <div style={{ marginBottom: 12 }}>
+        <div className="mb-3">
           <strong>{error.code}</strong>: {error.message}
         </div>
       )}
 
-      <table border={1} cellPadding={6} style={{ borderCollapse: "collapse" }}>
+      <table className="w-full border-collapse border">
         <thead>
-          <tr>
-            <th>Created</th>
-            <th>Status</th>
-            <th>User</th>
-            <th>Actions</th>
+          <tr className="bg-muted/50 text-left">
+            <th className="border p-3 font-medium">Created</th>
+            <th className="border p-3 font-medium">Status</th>
+            <th className="border p-3 font-medium">User</th>
+            <th className="border p-3 font-medium">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -189,13 +189,13 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
             const showActions = needsAction && canManage;
             return (
               <tr key={b.id}>
-                <td>{new Date(b.createdAt).toLocaleString()}</td>
-                <td>{b.status}</td>
-                <td>{b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}</td>
-                <td>
+                <td className="border p-3">{new Date(b.createdAt).toLocaleString()}</td>
+                <td className="border p-3">{b.status}</td>
+                <td className="border p-3">{b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}</td>
+                <td className="border p-3">
                   {needsAction ? (
                     showActions ? (
-                      <div style={{ display: "flex", gap: 8 }}>
+                      <div className="flex gap-2">
                         <Button
                           onClick={() => approveBooking(b.id)}
                           loading={processing}
@@ -217,13 +217,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
                         <Button disabled variant="subtle">
                           Approve
                         </Button>
-                        <div
-                          style={{
-                            fontSize: 12,
-                            color: "var(--muted)",
-                            marginTop: 6,
-                          }}
-                        >
+                        <div className="mt-1.5 text-xs text-muted-foreground">
                           You don’t have permission to approve this
                         </div>
                       </div>
