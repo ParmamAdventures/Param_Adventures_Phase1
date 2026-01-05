@@ -11,6 +11,7 @@ async function fetchBlog(slug: string) {
     const headersList = await headers();
     const cookie = headersList.get("cookie");
 
+    console.log(`[BlogDetail] Fetching: ${baseUrl}/blogs/public/${slug}`);
     const response = await fetch(`${baseUrl}/blogs/public/${slug}`, {
       cache: "no-store",
       headers: {

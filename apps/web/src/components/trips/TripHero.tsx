@@ -19,7 +19,7 @@ export default function TripHero({ trip }: { trip: any }) {
 
   const heroImage = getImageUrl(trip.heroImage);
   const coverImage = getImageUrl(trip.coverImage);
-  const legacyImage = trip.image; // Legacy might be a full string
+  const legacyImage = trip.coverImageLegacy || trip.image; // Legacy might be a full string
 
   // Prioritize Hero -> Cover -> Legacy
   const finalCoverImage = heroImage || coverImage || legacyImage;

@@ -30,7 +30,7 @@ type ItineraryDay = {
 };
 
 export default function TripItinerary({ itinerary }: { itinerary: any }) {
-  const days = (Array.isArray(itinerary) ? itinerary : []) as ItineraryDay[];
+  const days = (Array.isArray(itinerary) ? itinerary : itinerary?.days || []) as ItineraryDay[];
   const [openDay, setOpenDay] = useState<number | null>(null);
 
   if (!days || days.length === 0) return null;

@@ -1,5 +1,6 @@
 "use client";
 
+import { apiFetch } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { StarRating } from "../ui/StarRating";
 import { formatDistanceToNow } from "date-fns";
@@ -29,7 +30,7 @@ export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/reviews/${tripId}`);
+        const res = await apiFetch(`/reviews/${tripId}`);
         if (res.ok) {
           const data = await res.json();
           setReviews(data);

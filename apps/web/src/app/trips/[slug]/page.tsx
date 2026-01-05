@@ -11,7 +11,9 @@ import TripInclusions from "../../../components/trips/TripInclusions";
 import ReviewsSection from "../../../components/reviews/ReviewsSection";
 // import { Testimonials } from "../../../components/home/Testimonials";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+// Enhanced API Base Logic for Server Components
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+console.log(`[TripDetail] Configured API_BASE: "${API_BASE}"`);
 
 type TripFull = {
   id?: string;

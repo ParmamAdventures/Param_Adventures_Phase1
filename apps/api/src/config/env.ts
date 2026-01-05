@@ -1,6 +1,6 @@
 import { z } from "zod";
 try {
-  require("dotenv").config();
+  require("dotenv").config({ override: true });
 } catch (e) {
   // Ignore missing dotenv in production
 }
@@ -41,6 +41,7 @@ const envSchema = z.object({
 });
 
 const parsed = envSchema.safeParse(process.env);
+
 
 if (!parsed.success) {
   console.error("❌ Invalid environment variables:");

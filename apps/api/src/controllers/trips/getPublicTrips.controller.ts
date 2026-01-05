@@ -4,6 +4,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 
 export const getPublicTrips = catchAsync(async (req: Request, res: Response) => {
+
   const {
     search,
     category,

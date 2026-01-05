@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { StarRating } from "../ui/StarRating";
 import { Loader2 } from "lucide-react";
@@ -24,20 +24,33 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
   const [ineligibilityReason, setIneligibilityReason] = useState("");
 
   // Check Eligibility on Mount
-  useState(() => {
+  // Check Eligibility on Mount
+  useEffect(() => {
+    let isMounted = true;
+
     if (user) {
       apiFetch(`/reviews/check/${tripId}`)
         .then((res) => res.json())
         .then((data) => {
-          setIsEligible(data.eligible);
-          if (!data.eligible) setIneligibilityReason(data.reason);
+          if (isMounted) {
+            setIsEligible(data.eligible);
+            if (!data.eligible) setIneligibilityReason(data.reason);
+          }
         })
-        .catch(() => setIsEligible(false))
-        .finally(() => setCheckingEligibility(false));
+        .catch(() => {
+          if (isMounted) setIsEligible(false);
+        })
+        .finally(() => {
+          if (isMounted) setCheckingEligibility(false);
+        });
     } else {
-        setCheckingEligibility(false);
+      setCheckingEligibility(false);
     }
-  });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user, tripId]);
 
   if (!user) {
     return (
