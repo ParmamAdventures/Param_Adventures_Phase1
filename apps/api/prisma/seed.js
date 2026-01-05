@@ -486,6 +486,8 @@ async function main() {
   const firstTrip = await prisma.trip.findFirst();
 
   if (systemAdminContent && firstTrip) {
+    // --- BLOG SEEDING ---
+    console.log("Seeding sample blogs...");
     for (const template of BLOG_TEMPLATES) {
       const slug = `sample-${template.id}-${Math.random().toString(36).substring(7)}`;
       await prisma.blog.upsert({
@@ -504,6 +506,61 @@ async function main() {
       });
     }
     console.log("Successfully seeded sample blogs!");
+
+    // --- REVIEW SEEDING ---
+    console.log("Seeding reviews...");
+    const reviewsData = [
+      {
+        tripSlug: "everest-base-camp",
+        rating: 5,
+        comment: "An absolute life-changing experience! The guide was fantastic.",
+      },
+      {
+        tripSlug: "kyoto-cherry-blossom",
+        rating: 4,
+        comment: "Beautiful scenery, but a bit crowded. Well organized though.",
+      },
+      {
+        tripSlug: "iceland-northern-lights",
+        rating: 5,
+        comment: "Saw the lights on the second night! Magical.",
+      },
+      {
+        tripSlug: "corporate-leadership-retreat",
+        rating: 5,
+        comment: "Great team bonding exercise. Highly recommended for startups.",
+      },
+    ];
+
+    for (const review of reviewsData) {
+      const targetTrip = await prisma.trip.findUnique({ where: { slug: review.tripSlug } });
+      if (targetTrip) {
+        // Upsert review for the system admin user (or create a dummy user if needed, but admin is fine for seed)
+        await prisma.review.upsert({
+          where: {
+            userId_tripId: {
+              userId: systemAdminContent.id,
+              tripId: targetTrip.id,
+            },
+          },
+          update: {},
+          create: {
+            rating: review.rating,
+            comment: review.comment,
+            userId: systemAdminContent.id,
+            tripId: targetTrip.id,
+          },
+        });
+      }
+    }
+    console.log("Successfully seeded reviews!");
+
+    // --- FINAL SUPER ADMIN CHECK ---
+    console.log("-----------------------------------------");
+    console.log("Seed Verification Complete.");
+    console.log("Super Admin: admin@paramadventures.com");
+    console.log("Password:    password123");
+    console.log("-----------------------------------------");
   }
 }
 

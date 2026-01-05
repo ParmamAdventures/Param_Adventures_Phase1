@@ -45,7 +45,7 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
       code: "INTERNAL_ERROR",
       message: process.env.NODE_ENV === "development" 
         ? (err.message || "Internal Server Error") 
-        : "Internal Server Error",
+        : "Internal Server Error", // Always generic for non-dev
       ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
     },
   });

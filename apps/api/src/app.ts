@@ -1,3 +1,4 @@
+/// <reference path="./types/express.d.ts" />
 import "express-async-errors";
 import "./instrument"; // Must be imported before other imports potentially
 import express from "express";
@@ -98,7 +99,7 @@ app.use(express.json({ limit: "500mb" }));
 app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 
 // The request handler must be the first middleware on the app
-Sentry.setupExpressErrorHandler(app);
+// Sentry.setupExpressErrorHandler(app);
 
 app.use(express.static(path.join(__dirname, "../public")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
