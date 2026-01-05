@@ -227,40 +227,35 @@ async function main() {
     {
       title: "Trek and Camping",
       subtitle: "Experience the raw beauty of nature.",
-      videoUrl:
-        "https://assets.mixkit.co/videos/preview/mixkit-hiking-in-the-snow-along-a-path-4318-large.mp4",
+      videoUrl: "/seed/trek.mp4",
       ctaLink: "/trips?category=trekking",
       order: 1,
     },
     {
       title: "Corporate Trips",
       subtitle: "Build stronger teams in nature.",
-      videoUrl:
-        "https://assets.mixkit.co/videos/preview/mixkit-group-of-friends-walking-through-the-forest-98-large.mp4",
+      videoUrl: "/seed/corporate.mp4",
       ctaLink: "/trips?category=corporate",
       order: 2,
     },
     {
       title: "Educational Trips",
       subtitle: "Learning through exploration.",
-      videoUrl:
-        "https://assets.mixkit.co/videos/preview/mixkit-students-walking-in-university-hallway-4835-large.mp4",
+      videoUrl: "/seed/education.mp4",
       ctaLink: "/trips?category=education",
       order: 3,
     },
     {
       title: "Spiritual Trips",
       subtitle: "Find your inner peace.",
-      videoUrl:
-        "https://assets.mixkit.co/videos/preview/mixkit-top-aerial-shot-of-seashore-with-rocks-1090-large.mp4",
+      videoUrl: "/seed/spiritual.mp4",
       ctaLink: "/trips?category=spiritual",
       order: 4,
     },
     {
       title: "Custom Trip",
       subtitle: "Your adventure, your way.",
-      videoUrl:
-        "https://assets.mixkit.co/videos/preview/mixkit-family-walking-together-in-nature-39767-large.mp4",
+      videoUrl: "/seed/custom.mp4",
       ctaLink: "/contact",
       order: 5,
     },
