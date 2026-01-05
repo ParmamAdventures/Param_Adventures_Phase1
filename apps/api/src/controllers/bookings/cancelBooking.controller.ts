@@ -1,20 +1,13 @@
 import { Request, Response } from "express";
 import { bookingService } from "../../services/booking.service";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export const cancelBooking = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user!.id;
+export const cancelBooking = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user!.id;
 
-    const updatedBooking = await bookingService.cancelBooking(id, userId);
+  const updatedBooking = await bookingService.cancelBooking(id, userId);
 
-    res.json({ message: "Booking cancelled successfully", booking: updatedBooking });
-  } catch (error: any) {
-    let status = 500;
-    if (error.message.includes("not found")) status = 404;
-    if (error.message.includes("Unauthorized")) status = 403;
-    if (error.message.includes("state")) status = 400;
-
-    res.status(status).json({ error: error.message });
-  }
-};
+  return ApiResponse.success(res, "Booking cancelled successfully", { booking: updatedBooking });
+});

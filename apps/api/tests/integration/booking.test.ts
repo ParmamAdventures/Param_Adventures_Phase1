@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../../src/app";
 import { PrismaClient } from "@prisma/client";
 import { signAccessToken } from "../../src/utils/jwt";
+import { notificationQueue } from "../../src/lib/queue";
 
 const prisma = new PrismaClient();
 
@@ -11,6 +12,9 @@ describe("Booking Integration", () => {
   let tripId: string;
 
   beforeAll(async () => {
+    // Spy on queue to prevent actual Redis jobs and potential errors
+    jest.spyOn(notificationQueue, "add").mockResolvedValue({} as any);
+
     // Clean up
     try {
       await prisma.payment.deleteMany();
@@ -57,6 +61,11 @@ describe("Booking Integration", () => {
 
   afterAll(async () => {
     await prisma.$disconnect();
+    try {
+      await notificationQueue.close();
+    } catch (e) {
+      console.warn("Failed to close queue in tests:", e);
+    }
   });
 
   it("should create a new booking", async () => {
@@ -70,10 +79,14 @@ describe("Booking Integration", () => {
         notes: "Excited for the trip!",
       });
 
+    if (res.status !== 201) {
+      console.log("Create Booking Error:", JSON.stringify(res.body, null, 2));
+    }
+
     expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty("id");
-    expect(res.body.tripId).toBe(tripId);
-    expect(res.body.guests).toBe(2);
+    expect(res.body.data).toHaveProperty("id");
+    expect(res.body.data.tripId).toBe(tripId);
+    expect(res.body.data.guests).toBe(2);
   });
 
   it("should get user's bookings", async () => {
@@ -82,9 +95,9 @@ describe("Booking Integration", () => {
       .set("Authorization", `Bearer ${userToken}`);
 
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThan(0);
-    expect(res.body[0].trip.title).toBe("Test Expedition");
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data.length).toBeGreaterThan(0);
+    expect(res.body.data[0].trip.title).toBe("Test Expedition");
   });
 
   it("should fail to create booking for non-existent trip", async () => {
@@ -98,6 +111,10 @@ describe("Booking Integration", () => {
       });
 
     expect(res.status).toBe(404);
+    // ApiResponse error structure: { error: { code, message } } or { error: message } depending on middleware
+    // Based on error.middleware.ts: res.status(status).json({ error: { code, message } })
+    // But catchAsync passes errors to middleware. Service checks trip existence and throws HttpError(404...).
+    expect(res.body.error).toBeDefined();
   });
 
   it("should cancel a booking", async () => {
@@ -117,6 +134,10 @@ describe("Booking Integration", () => {
       .set("Authorization", `Bearer ${userToken}`);
 
     expect(res.status).toBe(200);
+    
+    // Check wrapped response in data
+    // The controller returns: { booking: updatedBooking } inside data
+    expect(res.body.data.booking.status).toBe("CANCELLED");
 
     const updated = await prisma.booking.findUnique({ where: { id: booking.id } });
     expect(updated?.status).toBe("CANCELLED");

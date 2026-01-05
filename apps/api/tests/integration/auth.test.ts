@@ -89,8 +89,8 @@ describe("Auth Integration", () => {
     }
 
     expect(res.status).toBe(201);
-    expect(res.body.user).toHaveProperty("id");
-    expect(res.body.user.email).toBe("test@example.com");
+    expect(res.body.data.user).toHaveProperty("id");
+    expect(res.body.data.user.email).toBe("test@example.com");
 
     // Verify DB
     const user = await prisma.user.findUnique({
@@ -107,7 +107,7 @@ describe("Auth Integration", () => {
     });
 
     expect(res.status).toBe(409);
-    expect(res.body.error).toBe("Email already registered");
+    expect(res.body.error.message).toBe("Email already registered");
   });
 
   it("should fail on invalid email (Zod)", async () => {
@@ -139,9 +139,9 @@ describe("Auth Integration", () => {
       });
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("accessToken");
-      expect(res.body).toHaveProperty("user");
-      expect(res.body.user.email).toBe(credentials.email);
+      expect(res.body.data).toHaveProperty("accessToken");
+      expect(res.body.data).toHaveProperty("user");
+      expect(res.body.data.user.email).toBe(credentials.email);
       expect(res.headers["set-cookie"]).toBeDefined();
     });
 
@@ -152,7 +152,7 @@ describe("Auth Integration", () => {
       });
 
       expect(res.status).toBe(401);
-      expect(res.body.error).toContain("Invalid credentials");
+      expect(res.body.error.message).toContain("Invalid credentials");
     });
 
     it("should get current user profile with valid token", async () => {
@@ -160,12 +160,12 @@ describe("Auth Integration", () => {
         email: credentials.email,
         password: credentials.password,
       });
-      const token = loginRes.body.accessToken;
+      const token = loginRes.body.data.accessToken;
 
       const res = await request(app).get("/auth/me").set("Authorization", `Bearer ${token}`);
 
       expect(res.status).toBe(200);
-      expect(res.body.email).toBe(credentials.email);
+      expect(res.body.data.email).toBe(credentials.email);
     });
 
     it("should refresh access token using cookie", async () => {
@@ -178,7 +178,7 @@ describe("Auth Integration", () => {
       const res = await request(app).post("/auth/refresh").set("Cookie", cookies);
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("accessToken");
+      expect(res.body.data).toHaveProperty("accessToken");
     });
   });
 });

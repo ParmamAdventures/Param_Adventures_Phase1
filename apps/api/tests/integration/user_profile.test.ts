@@ -42,9 +42,9 @@ describe("User Profile Integration", () => {
       });
 
     expect(res.status).toBe(200);
-    expect(res.body.user.nickname).toBe("Pro");
-    expect(res.body.user.bio).toBe("Adventure enthusiast");
-    expect(res.body.user.preferences).toEqual({ theme: "dark", notifications: true });
+    expect(res.body.data.user.nickname).toBe("Pro");
+    expect(res.body.data.user.bio).toBe("Adventure enthusiast");
+    expect(res.body.data.user.preferences).toEqual({ theme: "dark", notifications: true });
 
     // Verify DB
     const updated = await prisma.user.findUnique({ where: { id: userId } });

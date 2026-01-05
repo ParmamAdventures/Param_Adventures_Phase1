@@ -39,16 +39,23 @@ export class BookingService {
     });
 
     // Send Notification (Fire-and-forget to avoid blocking UI)
-    notificationQueue.add("SEND_BOOKING_EMAIL", {
-      userId,
-      details: {
-        tripTitle: booking.trip.title,
-        bookingId: booking.id,
-        startDate: booking.startDate,
-        status: booking.status,
-        guestDetails, 
-      },
-    }).catch(err => console.error("Failed to enqueue notification:", err));
+    // Send Notification (Fire-and-forget safe wrapper)
+    (async () => {
+      try {
+        await notificationQueue.add("SEND_BOOKING_EMAIL", {
+          userId,
+          details: {
+            tripTitle: booking.trip.title,
+            bookingId: booking.id,
+            startDate: booking.startDate,
+            status: booking.status,
+            guestDetails,
+          },
+        });
+      } catch (err) {
+        console.error("Failed to enqueue notification:", err);
+      }
+    })();
 
     return booking;
   }

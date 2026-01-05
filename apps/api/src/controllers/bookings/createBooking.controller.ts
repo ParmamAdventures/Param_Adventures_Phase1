@@ -1,26 +1,23 @@
 import { Request, Response } from "express";
 import { bookingService } from "../../services/booking.service";
+import { catchAsync } from "../../utils/catchAsync";
+import { ApiResponse } from "../../utils/ApiResponse";
 
-export const createBooking = async (req: Request, res: Response) => {
-  try {
-    const { tripId, startDate, guests, guestDetails } = req.body;
-    const userId = req.user!.id;
+export const createBooking = catchAsync(async (req: Request, res: Response) => {
+  const { tripId, startDate, guests, guestDetails } = req.body;
+  const userId = req.user!.id;
 
-    if (!tripId || !startDate || !guests) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    const booking = await bookingService.createBooking({
-      userId,
-      tripId,
-      startDate,
-      guests: Number(guests),
-      guestDetails,
-    });
-
-    res.status(201).json(booking);
-  } catch (error: any) {
-    const status = error.message.includes("not found") ? 404 : 400;
-    res.status(status).json({ error: error.message });
+  if (!tripId || !startDate || !guests) {
+    return ApiResponse.error(res, "Missing required fields", 400);
   }
-};
+
+  const booking = await bookingService.createBooking({
+    userId,
+    tripId,
+    startDate,
+    guests: Number(guests),
+    guestDetails,
+  });
+
+  return ApiResponse.success(res, "Booking created successfully", booking, 201);
+});

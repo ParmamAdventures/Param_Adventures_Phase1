@@ -9,6 +9,7 @@ import {
 } from "../utils/jwt";
 import { auditService } from "./audit.service";
 import { notificationService } from "./notification.service";
+import { HttpError } from "../utils/httpError";
 
 export class AuthService {
   async register(data: { email: string; password: string; name: string }) {
@@ -20,7 +21,7 @@ export class AuthService {
       console.warn(
         `[AuthService] Registration failed: Email ${normalizedEmail} already registered`,
       );
-      throw new Error("Email already registered");
+      throw new HttpError(409, "EMAIL_REGISTERED", "Email already registered");
     }
 
     const hashed = await hashPassword(password);
@@ -47,13 +48,13 @@ export class AuthService {
     const normalizedEmail = email.toLowerCase().trim();
     const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (!user) {
-      throw new Error("Invalid credentials: User not found");
+      throw new HttpError(401, "INVALID_CREDENTIALS", "Invalid credentials");
     }
 
     if (password) {
       const valid = await verifyPassword(password, user.password!);
       if (!valid) {
-        throw new Error("Invalid credentials: Password mismatch");
+        throw new HttpError(401, "INVALID_CREDENTIALS", "Invalid credentials");
       }
     }
 
