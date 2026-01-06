@@ -1,0 +1,154 @@
+﻿
+> api@1.0.0 test
+> jest --config jest.config.js tests/integration/booking.test.ts
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöä add secrets lifecycle management: https://dotenvx.com/ops
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:12:59 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:13:01 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:43:01 +0000] "POST /bookings HTTP/1.1" 400 65 "-" "-"
+2026-01-05 22:13:01 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:43:01 +0000] "GET /bookings/me HTTP/1.1" 200 508 "-" "-"
+2026-01-05 22:13:01 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:43:01 +0000] "POST /bookings HTTP/1.1" 404 26 "-" "-"
+2026-01-05 22:13:01 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:43:01 +0000] "POST /bookings/6fa5f131-a22b-4a27-babc-d473c52eec84/cancel HTTP/1.1" 200 421 "-" "-"
+node.exe : FAIL tests/
+integration/booking.te
+st.ts (7.434 s)
+At C:\Program Files\no
+dejs\npm.ps1:29 char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (FAIL tests   
+ /inte...st.ts (7.    
+434 s):String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+  Booking Integration
+    ├ù should create 
+a new booking (188 ms)
+    ΓêÜ should get 
+user's bookings (39 
+ms)
+    ΓêÜ should fail 
+to create booking for 
+non-existent trip (15 
+ms)
+    ΓêÜ should cancel 
+a booking (53 ms)
+
+  ΓùÅ Booking 
+Integration ΓÇ║ 
+should create a new 
+booking
+
+    expect(received).t
+oBe(expected) // 
+Object.is equality
+
+    Expected: 201
+    Received: 400
+
+    [0m [90m 71 
+|[39m       
+})[33m;[39m
+     [90m 72 |[39m
+    [31m[1m>[22m[3
+9m[90m 73 |[39m     
+expect(res[33m.[39ms
+tatus)[33m.[39mtoBe(
+[35m201[39m)[33m;[
+39m
+     [90m    |[39m  
+                      
+[31m[1m^[22m[39m
+     [90m 74 |[39m  
+   expect(res[33m.[3
+9mbody)[33m.[39mtoHa
+veProperty([32m"id"[
+39m)[33m;[39m
+     [90m 75 |[39m  
+   expect(res[33m.[3
+9mbody[33m.[39mtripI
+d)[33m.[39mtoBe(trip
+Id)[33m;[39m
+     [90m 76 |[39m  
+   expect(res[33m.[3
+9mbody[33m.[39mguest
+s)[33m.[39mtoBe([35
+m2[39m)[33m;[39m[0
+m
+
+      at 
+Object.<anonymous> (te
+sts/integration/bookin
+g.test.ts:73:24)
+
+Test Suites: 1 
+failed, 1 total
+Tests:       1 
+failed, 3 passed, 4 
+total
+Snapshots:   0 total
+Time:        7.765 s, 
+estimated 8 s
+Ran all test suites 
+matching /tests\\integ
+ration\\booking.test.t
+s/i.
+
+Running global teardown...
+Global teardown complete: Database cleaned.
+Force exiting Jest: 
+Have you considered 
+using 
+`--detectOpenHandles` 
+to detect async 
+operations that kept 
+running after all 
+tests finished?
+npm error Lifecycle 
+script `test` failed 
+with error:
+npm error code 1
+npm error path C:\User
+s\akash\Documents\Para
+m_Adventures_Phase1\ap
+ps\api
+npm error workspace 
+api@1.0.0
+npm error location C:\
+Users\akash\Documents\
+Param_Adventures_Phase
+1\apps\api
+npm error command 
+failed
+npm error command C:\W
+INDOWS\system32\cmd.ex
+e /d /s /c jest 
+--config 
+jest.config.js tests/i
+ntegration/booking.tes
+t.ts

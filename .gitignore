@@ -7,8 +7,7 @@ build
 coverage
 uploads/
 *.log
-*.txt
-*.json
+
 !package.json
 !tsconfig*.json
 !next.config.ts

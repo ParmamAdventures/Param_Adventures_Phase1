@@ -1,0 +1,512 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Param Adventures API",
+    "version": "1.0.0",
+    "description": "API documentation for the Param Adventures Phase 1 backend project."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Trip": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "durationDays": {
+            "type": "integer"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "EASY",
+              "MODERATE",
+              "DIFFICULT",
+              "EXTREME"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Register a new user",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password",
+                  "name"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 8
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login to get access token",
+        "tags": [
+          "Auth"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accessToken": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "Refresh access token using cookie",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Token refreshed"
+          },
+          "401": {
+            "description": "Invalid refresh token"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Logout and clear cookies",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Logged out"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Get current user profile",
+        "tags": [
+          "Auth"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile returned"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        }
+      }
+    },
+    "/trips/public/meta": {
+      "get": {
+        "summary": "Get metadata for trip filtering (min/max price, duration)",
+        "tags": [
+          "Trips"
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata returned"
+          }
+        }
+      }
+    },
+    "/trips/public": {
+      "get": {
+        "summary": "Get public trips",
+        "tags": [
+          "Trips"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of published trips"
+          }
+        }
+      }
+    },
+    "/trips/public/{slug}": {
+      "get": {
+        "summary": "Get a trip by slug (Public)",
+        "tags": [
+          "Trips"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trip details"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/trips/manager": {
+      "get": {
+        "summary": "Get trips managed by current user",
+        "tags": [
+          "Trips"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of managed trips"
+          }
+        }
+      }
+    },
+    "/trips/internal": {
+      "get": {
+        "summary": "Get all trips (Internal/Admin)",
+        "tags": [
+          "Trips"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all trips"
+          }
+        }
+      }
+    },
+    "/trips": {
+      "post": {
+        "summary": "Create a new trip",
+        "tags": [
+          "Trips"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trip"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Trip created"
+          }
+        }
+      }
+    },
+    "/trips/{id}": {
+      "put": {
+        "summary": "Update an existing trip",
+        "tags": [
+          "Trips"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trip"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trip updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a trip (Super Admin)",
+        "tags": [
+          "Trips"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trip deleted"
+          }
+        }
+      }
+    },
+    "/trips/{id}/docs": {
+      "post": {
+        "summary": "Upload documents for a trip",
+        "tags": [
+          "Trips"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document uploaded"
+          }
+        }
+      }
+    },
+    "/trips/{id}/complete": {
+      "post": {
+        "summary": "Mark a trip as complete",
+        "tags": [
+          "Trips"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trip completed"
+          }
+        }
+      }
+    },
+    "/user/profile": {
+      "get": {
+        "summary": "Get current user profile (synonym for /auth/me)",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User profile"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update user profile",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "bio": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated"
+          }
+        }
+      }
+    },
+    "/user/guide/trips": {
+      "get": {
+        "summary": "Get trips assigned to the current user as a guide",
+        "tags": [
+          "User"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of assigned trips"
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}

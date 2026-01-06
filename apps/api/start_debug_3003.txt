@@ -1,0 +1,8 @@
+﻿Param Adventures API: Sentry Instrumented ≡ƒö¡
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+2026-01-05 22:51:23 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+--> Backend Initialized (v1.2.0) - Restore Route Active <--
+2026-01-05 22:51:30 [32minfo[39m: Debug Server running on port 3003
+Γ£à Redis connected
+Γ£à Redis connected
+Γ£à Redis connected

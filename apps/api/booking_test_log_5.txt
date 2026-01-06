@@ -1,0 +1,206 @@
+﻿
+> api@1.0.0 test
+> jest --config jest.config.js tests/integration/booking.test.ts
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:21:13 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:21:14 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:51:14 +0000] "POST /bookings HTTP/1.1" 201 492 "-" "-"
+2026-01-05 22:21:14 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:51:14 +0000] "GET /bookings/me HTTP/1.1" 200 508 "-" "-"
+2026-01-05 22:21:14 [31merror[39m: HttpError: Trip not found
+    at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+    at BookingService.createBooking (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\booking.service.ts:11:13)
+    at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\bookings\createBooking.controller.ts:14:19
+  console.error
+    Global Error Handler Caught: Error [HttpError]: Trip not found
+        at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+        at BookingService.createBooking (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\booking.service.ts:11:13)
+        at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\bookings\createBooking.controller.ts:14:19 {
+      status: 404,
+      code: 'NOT_FOUND'
+    }
+
+    [0m [90m 12 |[39m   [33mSentry[39m[33m.[39mcaptureException(err)[33m;[39m
+     [90m 13 |[39m
+    [31m[1m>[22m[39m[90m 14 |[39m   console[33m.[39merror([32m"Global Error Handler Caught:"[39m[33m,[39m err)[33m;[39m [90m// Force console log[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 15 |[39m
+     [90m 16 |[39m   [36mif[39m (err [36minstanceof[39m [33mHttpError[39m [33m||[39m err[33m.[39mname [33m===[39m [32m"HttpError"[39m) {
+     [90m 17 |[39m     [36mconst[39m status [33m=[39m (err [36mas[39m any)[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m[0m
+
+      at errorHandler (src/middlewares/error.middleware.ts:14:11)
+      at Layer.handleError (../../node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (../../node_modules/router/index.js:340:13)
+      at ../../node_modules/router/index.js:297:9
+      at processParams (../../node_modules/router/index.js:582:12)
+      at next (../../node_modules/router/index.js:291:5)
+      at ../../node_modules/router/index.js:688:15
+      at next (../../node_modules/router/index.js:276:14)
+      at next (../../node_modules/router/lib/route.js:132:14)
+
+2026-01-05 22:21:14 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:51:14 +0000] "POST /bookings HTTP/1.1" 404 57 "-" "-"
+2026-01-05 22:21:14 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:51:14 +0000] "POST /bookings/4a31b9c6-c42f-4d6c-bccc-20122ea414b7/cancel HTTP/1.1" 200 445 "-" "-"
+  console.warn
+    Failed to close queue in tests: TypeError: queue_1.notificationQueue.close is not a function
+        at Object.<anonymous> (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\tests\integration\booking.test.ts:65:31)
+
+    [0m [90m 65 |[39m       [36mawait[39m notificationQueue[33m.[39mclose()[33m;[39m
+     [90m 66 |[39m     } [36mcatch[39m (e) {
+    [31m[1m>[22m[39m[90m 67 |[39m       console[33m.[39mwarn([32m"Failed to close queue in tests:"[39m[33m,[39m e)[33m;[39m
+     [90m    |[39m               [31m[1m^[22m[39m
+     [90m 68 |[39m     }
+     [90m 69 |[39m   })[33m;[39m
+     [90m 70 |[39m[0m
+
+      at Object.<anonymous> (tests/integration/booking.test.ts:67:15)
+
+node.exe : FAIL tests/
+integration/booking.te
+st.ts (7.313 s)
+At C:\Program Files\no
+dejs\npm.ps1:29 char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (FAIL tests   
+ /inte...st.ts (7.    
+313 s):String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+  Booking Integration
+    ΓêÜ should create 
+a new booking (186 ms)
+    ├ù should get 
+user's bookings (27 
+ms)
+    ΓêÜ should fail 
+to create booking for 
+non-existent trip (31 
+ms)
+    ΓêÜ should cancel 
+a booking (30 ms)
+
+  ΓùÅ Booking 
+Integration ΓÇ║ 
+should get user's 
+bookings
+
+    expect(received).t
+oBe(expected) // 
+Object.is equality
+
+    Expected: true
+    Received: false
+
+    [0m [90m  96 
+|[39m
+     [90m  97 |[39m 
+    expect(res[33m.[
+39mstatus)[33m.[39mt
+oBe([35m200[39m)[33
+m;[39m
+    [31m[1m>[22m[3
+9m[90m  98 |[39m    
+ expect([33mArray[39
+m[33m.[39misArray(re
+s[33m.[39mbody[33m.
+[39mdata))[33m.[39m
+toBe([36mtrue[39m)[
+33m;[39m
+     [90m     |[39m 
+                      
+                   
+[31m[1m^[22m[39m
+     [90m  99 |[39m 
+    expect(res[33m.[
+39mbody[33m.[39mdata
+[33m.[39mlength)[33
+m.[39mtoBeGreaterThan
+([35m0[39m)[33m;[3
+9m
+     [90m 100 |[39m 
+    expect(res[33m.[
+39mbody[33m.[39mdata
+[[35m0[39m][33m.[3
+9mtrip[33m.[39mtitle
+)[33m.[39mtoBe([32m
+"Test Expedition"[39m
+)[33m;[39m
+     [90m 101 |[39m 
+  })[33m;[39m[0m
+
+      at 
+Object.<anonymous> (te
+sts/integration/bookin
+g.test.ts:98:42)
+
+Test Suites: 1 
+failed, 1 total
+Tests:       1 
+failed, 3 passed, 4 
+total
+Snapshots:   0 total
+Time:        7.67 s, 
+estimated 9 s
+Ran all test suites 
+matching /tests\\integ
+ration\\booking.test.t
+s/i.
+
+Running global teardown...
+Global teardown complete: Database cleaned.
+Force exiting Jest: 
+Have you considered 
+using 
+`--detectOpenHandles` 
+to detect async 
+operations that kept 
+running after all 
+tests finished?
+npm error Lifecycle 
+script `test` failed 
+with error:
+npm error code 1
+npm error path C:\User
+s\akash\Documents\Para
+m_Adventures_Phase1\ap
+ps\api
+npm error workspace 
+api@1.0.0
+npm error location C:\
+Users\akash\Documents\
+Param_Adventures_Phase
+1\apps\api
+npm error command 
+failed
+npm error command C:\W
+INDOWS\system32\cmd.ex
+e /d /s /c jest 
+--config 
+jest.config.js tests/i
+ntegration/booking.tes
+t.ts

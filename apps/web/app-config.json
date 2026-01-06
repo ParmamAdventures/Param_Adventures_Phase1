@@ -1,0 +1,10 @@
+{
+  "command": "node launcher.js",
+  "build_path": ".",
+  "stack": "node18",
+  "env_variables": {
+    "NODE_ENV": "production",
+    "NEXT_PUBLIC_API_URL": "https://param-api-50037503281.development.catalystappsail.in"
+  },
+  "memory": 1024
+}

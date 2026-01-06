@@ -1,0 +1,10 @@
+{
+  "command": "node server-setup.js",
+  "build_path": ".",
+  "stack": "node18",
+  "env_variables": {
+    "NODE_ENV": "production",
+    "DATABASE_URL": "postgresql://postgres1:emimHme3GNnsmP7kTixZGkMNqKkVeAb9@dpg-d5aco1ali9vc73b3u85g-a.oregon-postgres.render.com/param_adventures"
+  },
+  "memory": 1024
+}

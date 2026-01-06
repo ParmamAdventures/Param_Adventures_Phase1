@@ -1,0 +1,877 @@
+﻿
+> api@1.0.0 test
+> jest --config jest.config.js
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒôí add observability to secrets: https://dotenvx.com/ops
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:31 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:32 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:32 +0000] "POST /trips HTTP/1.1" 401 26 "-" "-"
+2026-01-05 22:26:32 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:32 +0000] "POST /trips HTTP/1.1" 401 26 "-" "-"
+node.exe : FAIL tests/
+integration/trip_creat
+ion.mock.test.ts 
+(6.84 s)
+At C:\Program Files\no
+dejs\npm.ps1:29 char:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (FAIL tests   
+ /inte...est.ts (6    
+.84 s):String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+  Trip Creation Flow 
+(Mocked)
+    ├ù should create 
+a new trip 
+successfully (149 ms)
+    ├ù should fail 
+without permission 
+(11 ms)
+
+  ΓùÅ Trip Creation 
+Flow (Mocked) ΓÇ║ 
+should create a new 
+trip successfully
+
+    expect(received).t
+oBe(expected) // 
+Object.is equality
+
+    Expected: 201
+    Received: 401
+
+    [0m [90m 55 
+|[39m       [33m.[3
+9msend(tripData)[33m;
+[39m
+     [90m 56 |[39m
+    [31m[1m>[22m[3
+9m[90m 57 |[39m     
+expect(res[33m.[39ms
+tatus)[33m.[39mtoBe(
+[35m201[39m)[33m;[
+39m
+     [90m    |[39m  
+                      
+[31m[1m^[22m[39m
+     [90m 58 |[39m  
+   expect(res[33m.[3
+9mbody[33m.[39mdata)
+[33m.[39mtoHavePrope
+rty([32m"id"[39m[33
+m,[39m [32m"trip-123
+"[39m)[33m;[39m
+     [90m 59 |[39m  
+   expect(res[33m.[3
+9mbody[33m.[39mdata
+[33m.[39mtitle)[33m.
+[39mtoBe([32m"Advent
+ure 
+Trip"[39m)[33m;[39m
+     [90m 60 |[39m  
+ })[33m;[39m[0m
+
+      at 
+Object.<anonymous> (te
+sts/integration/trip_c
+reation.mock.test.ts:5
+7:24)
+
+  ΓùÅ Trip Creation 
+Flow (Mocked) ΓÇ║ 
+should fail without 
+permission
+
+    expect(received).t
+oBe(expected) // 
+Object.is equality
+
+    Expected: 403
+    Received: 401
+
+    [0m [90m 73 
+|[39m       
+[33m.[39msend({ 
+title[33m:[39m 
+[32m"No Permission 
+Trip"[39m 
+})[33m;[39m
+     [90m 74 |[39m
+    [31m[1m>[22m[3
+9m[90m 75 |[39m     
+expect(res[33m.[39ms
+tatus)[33m.[39mtoBe(
+[35m403[39m)[33m;[
+39m
+     [90m    |[39m  
+                      
+[31m[1m^[22m[39m
+     [90m 76 |[39m  
+   expect(res[33m.[3
+9mbody[33m.[39merror
+[33m.[39mmessage)[3
+3m.[39mtoContain([32
+m"permission"[39m)[3
+3m;[39m
+     [90m 77 |[39m  
+ })[33m;[39m
+     [90m 78 |[39m 
+})[33m;[39m[0m
+
+      at 
+Object.<anonymous> (te
+sts/integration/trip_c
+reation.mock.test.ts:7
+5:24)
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒ¢á∩╕Å  run anywhere with `dotenvx run -- yourcommand`
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:33 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:34 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:34 +0000] "POST /auth/register HTTP/1.1" 201 167 "-" "-"
+2026-01-05 22:26:34 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:34 +0000] "POST /auth/register HTTP/1.1" 201 173 "-" "-"
+FAIL tests/integration
+/registration.mock.tes
+t.ts
+  User Registration 
+Flow (Mocked)
+    ├ù should 
+register a new user 
+successfully (690 ms)
+    ├ù should fail if 
+email is already 
+registered (494 ms)
+
+  ΓùÅ User 
+Registration Flow 
+(Mocked) ΓÇ║ should 
+register a new user 
+successfully
+
+    expect(received).t
+oHaveProperty(path, 
+value)
+
+    Expected path: 
+"id"
+
+    Expected value: 
+"user-123"
+    Received value: "a
+137b0c5-107f-4a4a-9ca3
+-abfe580452b4"
+
+    [0m [90m 30 
+|[39m
+     [90m 31 |[39m  
+   expect(res[33m.[3
+9mstatus)[33m.[39mto
+Be([35m201[39m)[33m
+;[39m
+    [31m[1m>[22m[3
+9m[90m 32 |[39m     
+expect(res[33m.[39mb
+ody[33m.[39mdata[33
+m.[39muser)[33m.[39
+mtoHaveProperty([32m"
+id"[39m[33m,[39m [
+32m"user-123"[39m)[3
+3m;[39m
+     [90m    |[39m  
+                      
+        
+[31m[1m^[22m[39m
+     [90m 33 |[39m  
+   expect(res[33m.[3
+9mbody[33m.[39mdata
+[33m.[39muser[33m.[
+39memail)[33m.[39mto
+Be([32m"newuser@examp
+le.com"[39m)[33m;[3
+9m
+     [90m 34 |[39m  
+ })[33m;[39m
+     [90m 35 
+|[39m[0m
+
+      at 
+Object.<anonymous> (te
+sts/integration/regist
+ration.mock.test.ts:32
+:32)
+
+  ΓùÅ User 
+Registration Flow 
+(Mocked) ΓÇ║ should 
+fail if email is 
+already registered
+
+    expect(received).t
+oBe(expected) // 
+Object.is equality
+
+    Expected: 409
+    Received: 201
+
+    [0m [90m 43 
+|[39m     
+})[33m;[39m
+     [90m 44 |[39m
+    [31m[1m>[22m[3
+9m[90m 45 |[39m     
+expect(res[33m.[39ms
+tatus)[33m.[39mtoBe(
+[35m409[39m)[33m;[
+39m 
+     [90m    |[39m  
+                      
+[31m[1m^[22m[39m
+     [90m 46 |[39m  
+ })[33m;[39m
+     [90m 47 |[39m 
+})[33m;[39m
+     [90m 48 
+|[39m[0m
+
+      at 
+Object.<anonymous> (te
+sts/integration/regist
+ration.mock.test.ts:45
+:24)
+
+FAIL tests/integration
+/mock_check.test.ts
+  Mock Check
+    ├ù should have a 
+mocked prisma (1 ms)
+
+  ΓùÅ Mock Check ΓÇ║ 
+should have a mocked 
+prisma
+
+    expect(received).t
+oBeDefined()
+
+    Received: 
+undefined
+
+    [0m [90m  5 
+|[39m   
+it([32m"should have 
+a mocked prisma"[39m
+[33m,[39m () 
+[33m=>[39m {
+     [90m  6 |[39m  
+   expect(prisma[33m.
+[39muser[33m.[39mfi
+ndUnique)[33m.[39mto
+BeDefined()[33m;[39m
+    [31m[1m>[22m[3
+9m[90m  7 |[39m     
+expect((prisma[33m.[
+39muser[33m.[39mfind
+Unique [36mas[39m an
+y)[33m.[39mmock)[33
+m.[39mtoBeDefined()[
+33m;[39m
+     [90m    |[39m  
+                      
+                      
+    
+[31m[1m^[22m[39m
+     [90m  8 |[39m  
+ })[33m;[39m
+     [90m  9 |[39m 
+})[33m;[39m
+     [90m 10 
+|[39m[0m
+
+      at 
+Object.<anonymous> (te
+sts/integration/mock_c
+heck.test.ts:7:50)
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöä add secrets lifecycle management: https://dotenvx.com/ops
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:35 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:36 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:36 +0000] "POST /auth/register HTTP/1.1" 201 165 "-" "-"
+  console.warn
+    [AuthService] Registration failed: Email test@example.com already registered
+
+    [0m [90m 19 |[39m     [36mconst[39m existing [33m=[39m [36mawait[39m prisma[33m.[39muser[33m.[39mfindUnique({ where[33m:[39m { email[33m:[39m normalizedEmail } })[33m;[39m
+     [90m 20 |[39m     [36mif[39m (existing) {
+    [31m[1m>[22m[39m[90m 21 |[39m       console[33m.[39mwarn(
+     [90m    |[39m               [31m[1m^[22m[39m
+     [90m 22 |[39m         [32m`[AuthService] Registration failed: Email ${normalizedEmail} already registered`[39m[33m,[39m
+     [90m 23 |[39m       )[33m;[39m
+     [90m 24 |[39m       [36mthrow[39m [36mnew[39m [33mHttpError[39m([35m409[39m[33m,[39m [32m"EMAIL_REGISTERED"[39m[33m,[39m [32m"Email already registered"[39m)[33m;[39m[0m
+
+      at AuthService.register (src/services/auth.service.ts:21:15)
+      at src/controllers/auth.controller.ts:8:16
+
+2026-01-05 22:26:36 [31merror[39m: HttpError: Email already registered
+    at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+    at AuthService.register (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\auth.service.ts:24:13)
+    at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\auth.controller.ts:8:16
+  console.error
+    Global Error Handler Caught: Error [HttpError]: Email already registered
+        at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+        at AuthService.register (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\auth.service.ts:24:13)
+        at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\auth.controller.ts:8:16 {
+      status: 409,
+      code: 'EMAIL_REGISTERED'
+    }
+
+    [0m [90m 12 |[39m   [33mSentry[39m[33m.[39mcaptureException(err)[33m;[39m
+     [90m 13 |[39m
+    [31m[1m>[22m[39m[90m 14 |[39m   console[33m.[39merror([32m"Global Error Handler Caught:"[39m[33m,[39m err)[33m;[39m [90m// Force console log[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 15 |[39m
+     [90m 16 |[39m   [36mif[39m (err [36minstanceof[39m [33mHttpError[39m [33m||[39m err[33m.[39mname [33m===[39m [32m"HttpError"[39m) {
+     [90m 17 |[39m     [36mconst[39m status [33m=[39m (err [36mas[39m any)[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m[0m
+
+      at errorHandler (src/middlewares/error.middleware.ts:14:11)
+      at Layer.handleError (../../node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (../../node_modules/router/index.js:340:13)
+      at ../../node_modules/router/index.js:297:9
+      at processParams (../../node_modules/router/index.js:582:12)
+      at next (../../node_modules/router/index.js:291:5)
+      at ../../node_modules/router/index.js:688:15
+      at next (../../node_modules/router/index.js:276:14)
+      at next (../../node_modules/router/lib/route.js:132:14)
+
+2026-01-05 22:26:36 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:36 +0000] "POST /auth/register HTTP/1.1" 409 74 "-" "-"
+  console.error
+    Validation Error Details: {
+      "body": [
+        "Invalid email format"
+      ]
+    }
+
+    [0m [90m 13 |[39m     } [36mcatch[39m (error) {
+     [90m 14 |[39m       [36mif[39m (error [36minstanceof[39m [33mZodError[39m) {
+    [31m[1m>[22m[39m[90m 15 |[39m         console[33m.[39merror(
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 16 |[39m           [32m"Validation Error Details:"[39m[33m,[39m
+     [90m 17 |[39m           [33mJSON[39m[33m.[39mstringify(error[33m.[39mflatten()[33m.[39mfieldErrors[33m,[39m [36mnull[39m[33m,[39m [35m2[39m)[33m,[39m
+     [90m 18 |[39m         )[33m;[39m[0m
+
+      at src/middlewares/validate.middleware.ts:15:17
+
+2026-01-05 22:26:36 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:36 +0000] "POST /auth/register HTTP/1.1" 400 73 "-" "-"
+2026-01-05 22:26:36 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:36 +0000] "POST /auth/register HTTP/1.1" 201 171 "-" "-"
+  console.log
+    [AuthService] Login successful for: session@example.com
+
+      at AuthService.login (src/services/auth.service.ts:64:13)
+
+2026-01-05 22:26:37 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:37 +0000] "POST /auth/login HTTP/1.1" 200 571 "-" "-"
+2026-01-05 22:26:37 [31merror[39m: HttpError: Invalid credentials
+    at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+    at AuthService.login (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\auth.service.ts:57:15)
+    at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\auth.controller.ts:14:57
+  console.error
+    Global Error Handler Caught: Error [HttpError]: Invalid credentials
+        at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+        at AuthService.login (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\auth.service.ts:57:15)
+        at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\auth.controller.ts:14:57 {
+      status: 401,
+      code: 'INVALID_CREDENTIALS'
+    }
+
+    [0m [90m 12 |[39m   [33mSentry[39m[33m.[39mcaptureException(err)[33m;[39m
+     [90m 13 |[39m
+    [31m[1m>[22m[39m[90m 14 |[39m   console[33m.[39merror([32m"Global Error Handler Caught:"[39m[33m,[39m err)[33m;[39m [90m// Force console log[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 15 |[39m
+     [90m 16 |[39m   [36mif[39m (err [36minstanceof[39m [33mHttpError[39m [33m||[39m err[33m.[39mname [33m===[39m [32m"HttpError"[39m) {
+     [90m 17 |[39m     [36mconst[39m status [33m=[39m (err [36mas[39m any)[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m[0m
+
+      at errorHandler (src/middlewares/error.middleware.ts:14:11)
+      at Layer.handleError (../../node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (../../node_modules/router/index.js:340:13)
+      at ../../node_modules/router/index.js:297:9
+      at processParams (../../node_modules/router/index.js:582:12)
+      at next (../../node_modules/router/index.js:291:5)
+      at ../../node_modules/router/index.js:688:15
+      at next (../../node_modules/router/index.js:276:14)
+      at next (../../node_modules/router/lib/route.js:132:14)
+
+2026-01-05 22:26:37 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:37 +0000] "POST /auth/login HTTP/1.1" 401 72 "-" "-"
+  console.log
+    [AuthService] Login successful for: session@example.com
+
+      at AuthService.login (src/services/auth.service.ts:64:13)
+
+2026-01-05 22:26:38 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:38 +0000] "POST /auth/login HTTP/1.1" 200 571 "-" "-"
+2026-01-05 22:26:38 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:38 +0000] "GET /auth/me HTTP/1.1" 200 361 "-" "-"
+  console.log
+    [AuthService] Login successful for: session@example.com
+
+      at AuthService.login (src/services/auth.service.ts:64:13)
+
+2026-01-05 22:26:38 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:38 +0000] "POST /auth/login HTTP/1.1" 200 571 "-" "-"
+  console.log
+    [AuthService] Token refreshed for user: ea130bd2-b2b7-4958-af47-8fff9d3bc0a9
+
+      at AuthService.refresh (src/services/auth.service.ts:80:15)
+
+2026-01-05 22:26:38 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:38 +0000] "POST /auth/refresh HTTP/1.1" 200 258 "-" "-"
+PASS tests/integration
+/auth.test.ts
+  Auth Integration
+    ΓêÜ should 
+register a new user 
+(543 ms)
+    ΓêÜ should fail 
+on duplicate email 
+(58 ms)
+    ΓêÜ should fail 
+on invalid email 
+(Zod) (9 ms)
+    Session & Refresh
+      ΓêÜ should 
+login successfully 
+and return access 
+token + user (490 ms)
+      ΓêÜ should fail 
+login with wrong 
+password (434 ms)
+      ΓêÜ should get 
+current user profile 
+with valid token (502 
+ms)
+      ΓêÜ should 
+refresh access token 
+using cookie (414 ms)
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:39 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:40 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:40 +0000] "GET /admin/analytics/revenue HTTP/1.1" 200 306 "-" "-"
+2026-01-05 22:26:40 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:40 +0000] "GET /admin/analytics/bookings HTTP/1.1" 200 81 "-" "-"
+2026-01-05 22:26:40 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:40 +0000] "GET /admin/analytics/trips HTTP/1.1" 200 128 "-" "-"
+PASS tests/integration
+/admin_analytics.test.
+ts
+  Admin Analytics 
+Integration
+    GET /admin/analyti
+cs/revenue
+      ΓêÜ should 
+return revenue stats 
+with growth and 
+potential (82 ms)
+    GET /admin/analyti
+cs/bookings
+      ΓêÜ should 
+return booking stats 
+and success rate (62 
+ms)
+    GET 
+/admin/analytics/trips
+      ΓêÜ should 
+return trip 
+performance with 
+impact labels (50 ms)
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒæÑ sync secrets across teammates & machines: https://dotenvx.com/ops
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:40 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:41 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:41 +0000] "GET /admin/users HTTP/1.1" 200 352 "-" "-"
+2026-01-05 22:26:41 [31merror[39m: HttpError: You do not have permission to perform this action (user:list)
+    at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+    at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\middlewares\require-permission.middleware.ts:51:13
+  console.error
+    Global Error Handler Caught: Error [HttpError]: You do not have permission to perform this action (user:list)
+        at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+        at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\middlewares\require-permission.middleware.ts:51:13 {
+      status: 403,
+      code: 'FORBIDDEN'
+    }
+
+    [0m [90m 12 |[39m   [33mSentry[39m[33m.[39mcaptureException(err)[33m;[39m
+     [90m 13 |[39m
+    [31m[1m>[22m[39m[90m 14 |[39m   console[33m.[39merror([32m"Global Error Handler Caught:"[39m[33m,[39m err)[33m;[39m [90m// Force console log[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 15 |[39m
+     [90m 16 |[39m   [36mif[39m (err [36minstanceof[39m [33mHttpError[39m [33m||[39m err[33m.[39mname [33m===[39m [32m"HttpError"[39m) {
+     [90m 17 |[39m     [36mconst[39m status [33m=[39m (err [36mas[39m any)[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m[0m
+
+      at errorHandler (src/middlewares/error.middleware.ts:14:11)
+      at Layer.handleError (../../node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (../../node_modules/router/index.js:340:13)
+      at ../../node_modules/router/index.js:297:9
+      at processParams (../../node_modules/router/index.js:582:12)
+      at next (../../node_modules/router/index.js:291:5)
+      at ../../node_modules/router/index.js:688:15
+      at next (../../node_modules/router/index.js:276:14)
+      at next (../../node_modules/router/lib/route.js:132:14)
+      at Layer.handleError (../../node_modules/router/lib/layer.js:111:12)
+      at next (../../node_modules/router/lib/route.js:155:13)
+      at Layer.handleError (../../node_modules/router/lib/layer.js:111:12)
+      at next (../../node_modules/router/lib/route.js:155:13)
+      at ../../node_modules/router/lib/layer.js:161:9
+
+2026-01-05 22:26:41 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:41 +0000] "GET /admin/users HTTP/1.1" 403 104 "-" "-"
+2026-01-05 22:26:41 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:41 +0000] "GET /admin/users HTTP/1.1" 401 25 "-" "-"
+PASS tests/integration
+/admin.test.ts
+  Admin RBAC 
+Integration
+    ΓêÜ should allow 
+admin to list users 
+(133 ms)
+    ΓêÜ should forbid 
+normal user (32 ms)
+    ΓêÜ should 
+require 
+authentication (9 ms)
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  specify custom .env file path with { path: '/custom/path/.env' }
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:42 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:42 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:42 +0000] "POST /bookings HTTP/1.1" 201 492 "-" "-"
+2026-01-05 22:26:43 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:42 +0000] "GET /bookings/me HTTP/1.1" 200 574 "-" "-"
+2026-01-05 22:26:43 [31merror[39m: HttpError: Trip not found
+    at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+    at BookingService.createBooking (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\booking.service.ts:11:13)
+    at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\bookings\createBooking.controller.ts:14:19
+  console.error
+    Global Error Handler Caught: Error [HttpError]: Trip not found
+        at new HttpError (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\utils\httpError.js:32:24)
+        at BookingService.createBooking (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\services\booking.service.ts:11:13)
+        at C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\src\controllers\bookings\createBooking.controller.ts:14:19 {
+      status: 404,
+      code: 'NOT_FOUND'
+    }
+
+    [0m [90m 12 |[39m   [33mSentry[39m[33m.[39mcaptureException(err)[33m;[39m
+     [90m 13 |[39m
+    [31m[1m>[22m[39m[90m 14 |[39m   console[33m.[39merror([32m"Global Error Handler Caught:"[39m[33m,[39m err)[33m;[39m [90m// Force console log[39m
+     [90m    |[39m           [31m[1m^[22m[39m
+     [90m 15 |[39m
+     [90m 16 |[39m   [36mif[39m (err [36minstanceof[39m [33mHttpError[39m [33m||[39m err[33m.[39mname [33m===[39m [32m"HttpError"[39m) {
+     [90m 17 |[39m     [36mconst[39m status [33m=[39m (err [36mas[39m any)[33m.[39mstatus [33m||[39m [35m500[39m[33m;[39m[0m
+
+      at errorHandler (src/middlewares/error.middleware.ts:14:11)
+      at Layer.handleError (../../node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (../../node_modules/router/index.js:340:13)
+      at ../../node_modules/router/index.js:297:9
+      at processParams (../../node_modules/router/index.js:582:12)
+      at next (../../node_modules/router/index.js:291:5)
+      at ../../node_modules/router/index.js:688:15
+      at next (../../node_modules/router/index.js:276:14)
+      at next (../../node_modules/router/lib/route.js:132:14)
+
+2026-01-05 22:26:43 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:43 +0000] "POST /bookings HTTP/1.1" 404 57 "-" "-"
+2026-01-05 22:26:43 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:43 +0000] "POST /bookings/7832ff39-699d-4526-b7a4-86753399bd56/cancel HTTP/1.1" 200 445 "-" "-"
+  console.warn
+    Failed to close queue in tests: TypeError: queue_1.notificationQueue.close is not a function
+        at Object.<anonymous> (C:\Users\akash\Documents\Param_Adventures_Phase1\apps\api\tests\integration\booking.test.ts:65:31)
+
+    [0m [90m 65 |[39m       [36mawait[39m notificationQueue[33m.[39mclose()[33m;[39m
+     [90m 66 |[39m     } [36mcatch[39m (e) {
+    [31m[1m>[22m[39m[90m 67 |[39m       console[33m.[39mwarn([32m"Failed to close queue in tests:"[39m[33m,[39m e)[33m;[39m
+     [90m    |[39m               [31m[1m^[22m[39m
+     [90m 68 |[39m     }
+     [90m 69 |[39m   })[33m;[39m
+     [90m 70 |[39m[0m
+
+      at Object.<anonymous> (tests/integration/booking.test.ts:67:15)
+
+PASS tests/integration
+/booking.test.ts
+  Booking Integration
+    ΓêÜ should create 
+a new booking (104 ms)
+    ΓêÜ should get 
+user's bookings (26 
+ms)
+    ΓêÜ should fail 
+to create booking for 
+non-existent trip (19 
+ms)
+    ΓêÜ should cancel 
+a booking (33 ms)
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ prevent building .env in docker: https://dotenvx.com/prebuild
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:43 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:43 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:43 +0000] "GET /health HTTP/1.1" 200 83 "-" "-"
+PASS tests/integration
+/health.test.ts
+  GET /health
+    ΓêÜ should return 
+200 OK (104 ms)
+
+  console.log
+    Param Adventures API: Sentry Instrumented ≡ƒö¡
+
+      at Object.<anonymous> (src/instrument.ts:17:9)
+
+  console.log
+    [dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöÉ encrypt with Dotenvx: https://dotenvx.com
+
+      at _log (../../node_modules/dotenv/lib/main.js:142:11)
+
+2026-01-05 22:26:44 [33mwarn[39m: Google OAuth credentials missing. Social login disabled.
+  console.log
+    --> Backend Initialized (v1.2.0) - Restore Route Active <--
+
+      at Object.<anonymous> (src/app.ts:48:9)
+
+  console.log
+    Γ£à Redis connected
+
+      at EventEmitter.<anonymous> (src/lib/redis.ts:16:13)
+
+2026-01-05 22:26:45 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:45 +0000] "PATCH /users/profile HTTP/1.1" 200 344 "-" "-"
+2026-01-05 22:26:45 [32minfo[39m: ::ffff:127.0.0.1 - - [05/Jan/2026:16:56:45 +0000] "PATCH /users/profile HTTP/1.1" 401 25 "-" "-"
+PASS tests/integration
+/user_profile.test.ts
+  User Profile 
+Integration
+    ΓêÜ should update 
+user profile 
+(preferences and bio) 
+(123 ms)
+    ΓêÜ should return 
+401 if unauthorized 
+(4 ms)
+
+PASS tests/integration
+/simple.test.ts
+  Simple Test
+    ΓêÜ should pass 
+(1 ms)
+
+PASS tests/unit/inquir
+y.controller.test.ts
+  InquiryController
+    createInquiry
+      ΓêÜ should 
+return 400 if 
+required fields are 
+missing (2 ms)
+      ΓêÜ should 
+create inquiry and 
+return 201 on success 
+(2 ms)
+
+  console.log
+    [AuthService] Login successful for: a@b.com
+
+      at AuthService.login (src/services/auth.service.ts:64:13)
+
+PASS tests/unit/auth.s
+ervice.test.ts
+  AuthService
+    register
+      ΓêÜ should 
+register successfully 
+(1 ms)
+    login
+      ΓêÜ should 
+login successfully (2 
+ms)
+      ΓêÜ should fail 
+with invalid creds (7 
+ms)
+
+PASS tests/unit/bookin
+g.service.test.ts
+  BookingService
+    createBooking
+      ΓêÜ should 
+create a booking 
+successfully (1 ms)
+      ΓêÜ should 
+throw error if trip 
+not found (6 ms)
+      ΓêÜ should 
+throw error if trip 
+is not published
+    cancelBooking
+      ΓêÜ should 
+cancel a booking 
+successfully (1 ms)
+      ΓêÜ should 
+throw error if 
+unauthorized
+
+Test Suites: 3 
+failed, 10 passed, 13 
+total
+Tests:       5 
+failed, 31 passed, 36 
+total
+Snapshots:   0 total
+Time:        20.404 
+s, estimated 22 s
+Ran all test suites.
+
+Running global teardown...
+Global teardown complete: Database cleaned.
+Force exiting Jest: 
+Have you considered 
+using 
+`--detectOpenHandles` 
+to detect async 
+operations that kept 
+running after all 
+tests finished?
+npm error Lifecycle 
+script `test` failed 
+with error:
+npm error code 1
+npm error path C:\User
+s\akash\Documents\Para
+m_Adventures_Phase1\ap
+ps\api
+npm error workspace 
+api@1.0.0
+npm error location C:\
+Users\akash\Documents\
+Param_Adventures_Phase
+1\apps\api
+npm error command 
+failed
+npm error command C:\W
+INDOWS\system32\cmd.ex
+e /d /s /c jest 
+--config 
+jest.config.js
