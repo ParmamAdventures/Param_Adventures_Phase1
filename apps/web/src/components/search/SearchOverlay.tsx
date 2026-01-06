@@ -49,10 +49,16 @@ export default function SearchOverlay({
           apiFetch(`/blogs/public?search=${encodeURIComponent(query)}`),
         ]);
 
-        const [trips, blogs] = await Promise.all([tripsRes.json(), blogsRes.json()]);
+        const [tripsData, blogsData] = await Promise.all([tripsRes.json(), blogsRes.json()]);
+        
+        // Handle ApiResponse wrapper: { success: true, data: [...] }
+        const trips = Array.isArray(tripsData) ? tripsData : (tripsData.data || []);
+        const blogs = Array.isArray(blogsData) ? blogsData : (blogsData.data || []);
+
         setResults({ trips: trips.slice(0, 5), blogs: blogs.slice(0, 5) });
       } catch (err) {
         console.error("Search failed:", err);
+        setResults({ trips: [], blogs: [] });
       } finally {
         setLoading(false);
       }
