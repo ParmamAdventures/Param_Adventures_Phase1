@@ -19,7 +19,7 @@ const router = Router();
 
 // Public routes
 router.get("/public", getPublicBlogs);
-router.get("/public/:slug", optionalAuth, attachPermissions, getBlogBySlug);
+router.get("/public/:slug", optionalAuth, getBlogBySlug);
 
 // Protected routes
 router.get("/my-blogs", requireAuth, attachPermissions, getMyBlogs);

@@ -573,6 +573,7 @@ async function main() {
       name: "Day-by-Day Journal (Journal Theme)",
       description: "Chronicle your adventure day by day. Perfect for long treks.",
       theme: "journal",
+      image: "/seed/everest.png",
       content: {
         type: "doc",
         content: [
@@ -598,6 +599,7 @@ async function main() {
       name: "Photo Showcase (Minimal Theme)",
       description: "Let the pictures do the talking. Heavy on gallery usage.",
       theme: "minimal",
+      image: "/seed/iceland.png",
       content: {
         type: "doc",
         content: [
@@ -618,6 +620,7 @@ async function main() {
       name: "Culinary Journey (Vibrant Theme)",
       description: "Focus on the local flavors, street food, and mountain meals.",
       theme: "vibrant",
+      image: "/seed/kyoto.png",
       content: {
         type: "doc",
         content: [
@@ -641,16 +644,38 @@ async function main() {
     // --- BLOG SEEDING ---
     console.log("Seeding sample blogs...");
     for (const template of BLOG_TEMPLATES) {
-      const slug = `sample-${template.id}-${Math.random().toString(36).substring(7)}`;
+      // 1. Create Image Record
+      const blogImage = await prisma.image.create({
+        data: {
+          originalUrl: template.image,
+          mediumUrl: template.image,
+          thumbUrl: template.image,
+          width: 800,
+          height: 600,
+          size: 1024,
+          mimeType: "image/png",
+          uploadedById: systemAdminContent.id,
+        }
+      });
+
+      const slug = template.id;
+      // 2. Create Blog linked to Image
       await prisma.blog.upsert({
         where: { slug },
-        update: {},
+        update: {
+           coverImageId: blogImage.id,
+           title: template.name,
+           excerpt: template.description,
+           content: template.content,
+           theme: template.theme,
+        },
         create: {
           title: template.name,
           slug: slug,
           excerpt: template.description,
           content: template.content,
           theme: template.theme,
+          coverImageId: blogImage.id,
           status: "PUBLISHED",
           authorId: systemAdminContent.id,
           tripId: firstTrip.id,
