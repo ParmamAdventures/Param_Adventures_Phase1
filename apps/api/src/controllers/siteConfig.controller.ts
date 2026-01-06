@@ -27,13 +27,15 @@ export const updateSiteConfig = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Key and value are required" });
     }
 
-    const updated = await prisma.siteConfig.update({
+    const updated = await prisma.siteConfig.upsert({
       where: { key },
-      data: { value },
+      update: { value },
+      create: { key, value, label: key },
     });
 
     res.json(updated);
   } catch (error) {
-    res.status(500).json({ message: "Error updating site config" });
+    console.error("Error updating site config:", error);
+    res.status(500).json({ message: "Error updating site config", error: error instanceof Error ? error.message : "Unknown error" });
   }
 };
