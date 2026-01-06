@@ -197,6 +197,7 @@ function SiteConfigEditor() {
     try {
       await apiFetch("/content/config", {
         method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ key, value: config[key] }),
       });
       alert("Updated successfully");
