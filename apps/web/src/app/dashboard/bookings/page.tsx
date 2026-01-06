@@ -30,10 +30,10 @@ export default function MyBookingsPage() {
 
   const fetchBookings = async () => {
     try {
-      const res = await apiFetch("/bookings/my-bookings");
+      const res = await apiFetch("/bookings/me");
       if (res.ok) {
-        const data = await res.json();
-        setBookings(data);
+        const response = await res.json();
+        setBookings(response.data);
       }
     } catch (error) {
       console.error("Failed to load bookings", error);

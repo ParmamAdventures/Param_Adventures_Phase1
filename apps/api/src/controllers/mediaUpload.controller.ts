@@ -21,7 +21,18 @@ export const uploadImage = catchAsync(async (req: Request, res: Response) => {
   // Ideally we store the ID or Base URL. For now, let's just use the Secure URL.
   // We can apply transformations on the fly in Frontend or here.
   
-  if (file.mimetype.startsWith("image/")) {
+  // Handle Local Storage vs Cloudinary
+  if (file.path && !file.path.startsWith("http")) {
+      // It's local path: C:\Users\...\uploads\images\filename.jpg
+      // Convert to URL: http://localhost:3001/uploads/images/filename.jpg
+      const filename = file.filename;
+      const folder = file.mimetype.startsWith("video/") ? "videos" : "images";
+      const localUrl = `${process.env.API_URL || "http://localhost:3001"}/uploads/${folder}/${filename}`;
+      
+      originalUrl = localUrl;
+      mediumUrl = localUrl;
+      thumbUrl = localUrl;
+  } else if (file.mimetype.startsWith("image/")) {
      // Cloudinary URL format: .../upload/{transformations}/v{version}/{id}
      // We can just store the base secure_url.
      // Or mimic old behavior:

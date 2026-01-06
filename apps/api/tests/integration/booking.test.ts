@@ -17,6 +17,15 @@ describe("Booking Integration", () => {
 
     // Clean up
     try {
+      await prisma.review.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.savedTrip.deleteMany();
+    } catch (e) {}
+    try {
+      await prisma.blog.deleteMany();
+    } catch (e) {}
+    try {
       await prisma.payment.deleteMany();
     } catch (e) {}
     try {

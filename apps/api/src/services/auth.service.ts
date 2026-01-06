@@ -81,7 +81,7 @@ export class AuthService {
       return { accessToken: newAccessToken };
     } catch (error) {
       console.error(`[AuthService] Refresh failed:`, error);
-      throw new Error("Invalid refresh token");
+      throw new HttpError(401, "INVALID_REFRESH_TOKEN", "Invalid refresh token");
     }
   }
 

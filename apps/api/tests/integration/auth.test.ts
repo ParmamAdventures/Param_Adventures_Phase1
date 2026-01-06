@@ -33,6 +33,16 @@ describe("Auth Integration", () => {
       console.error("Error clearing trip:", e.message);
     }
     try {
+      await prisma.savedTrip.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing savedTrip:", e.message);
+    }
+    try {
+      await prisma.review.deleteMany();
+    } catch (e: any) {
+      console.error("Error clearing review:", e.message);
+    }
+    try {
       await prisma.image?.deleteMany();
     } catch (e: any) {
       console.error("Error clearing image:", e.message);

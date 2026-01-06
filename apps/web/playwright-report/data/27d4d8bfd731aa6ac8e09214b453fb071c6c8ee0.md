@@ -127,16 +127,7 @@
           - /url: /terms
         - link "Privacy" [ref=e129] [cursor=pointer]:
           - /url: /privacy
-  - generic [ref=e134] [cursor=pointer]:
-    - button "Open Next.js Dev Tools" [ref=e135]:
-      - img [ref=e136]
-    - generic [ref=e139]:
-      - button "Open issues overlay" [ref=e140]:
-        - generic [ref=e141]:
-          - generic [ref=e142]: "0"
-          - generic [ref=e143]: "1"
-        - generic [ref=e144]: Issue
-      - button "Collapse issues badge" [ref=e145]:
-        - img [ref=e146]
-  - alert [ref=e148]
+  - button "Open Next.js Dev Tools" [ref=e135] [cursor=pointer]:
+    - img [ref=e136]
+  - alert [ref=e139]
 ```
