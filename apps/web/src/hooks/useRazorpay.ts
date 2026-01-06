@@ -108,7 +108,8 @@ export function useRazorpay() {
 
         if (!res.ok) {
           const errorData = await res.json();
-          throw new Error(errorData.message || "Failed to create payment intent");
+          const msg = errorData.error?.message || errorData.message || "Failed to create payment intent";
+          throw new Error(msg);
         }
 
         const data = await res.json();

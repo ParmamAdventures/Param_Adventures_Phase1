@@ -114,7 +114,8 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         throw new Error(error.error || "Failed to create booking");
       }
 
-      const booking = await res.json();
+      const response = await res.json();
+      const booking = response.data; // Unwrap API response
       
       // 2. Initiate Payment (Razorpay)
       // This handles opening the modal and verification internally
