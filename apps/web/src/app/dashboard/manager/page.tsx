@@ -16,7 +16,7 @@ export default function ManagerDashboard() {
   useEffect(() => {
     if (!loading && user) {
       // Simple permission check (can accept ADMIN too)
-      const isManager = user.permissions.includes("trip:view:internal");
+      const isManager = user.roles?.includes("TRIP_MANAGER");
       if (!isManager) {
         // router.push("/dashboard");
         // Just show Unauthorized for now to avoid loops
@@ -49,8 +49,8 @@ export default function ManagerDashboard() {
   }
 
   // Guard access
-  if (!user?.permissions.includes("trip:view:internal")) {
-    // TRIP_MANAGER & ADMIN have this
+  if (!user?.roles?.includes("TRIP_MANAGER")) {
+    // TRIP_MANAGER only
     return (
       <div className="text-muted-foreground flex h-64 flex-col items-center justify-center gap-4">
         <ShieldAlert size={48} className="text-red-500" />

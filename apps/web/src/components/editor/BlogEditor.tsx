@@ -121,6 +121,7 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
     // Prevent update loop: Don't set content if editor is focused (user is typing)
     if (
       editor &&
+      !editor.isDestroyed &&
       value &&
       !editor.isFocused &&
       JSON.stringify(value) !== JSON.stringify(editor.getJSON())
@@ -159,7 +160,9 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
         ? `${baseUrl}${data.image.originalUrl}`
         : data.image.originalUrl;
 
-      editor.chain().focus().setImage({ src: imageUrl }).run();
+      if (editor && !editor.isDestroyed) {
+        editor.chain().focus().setImage({ src: imageUrl }).run();
+      }
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -341,55 +344,59 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
             </div>
           </div>
 
-          <BubbleMenu editor={editor} className="bubble-menu">
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              active={editor.isActive("bold")}
-              icon={<Bold size={14} />}
-              title="Bold"
-            />
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              active={editor.isActive("italic")}
-              icon={<Italic size={14} />}
-              title="Italic"
-            />
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleUnderline().run()}
-              active={editor.isActive("underline")}
-              icon={<UnderlineIcon size={14} />}
-              title="Underline"
-            />
-            <ToolbarButton
-              onClick={addLink}
-              active={editor.isActive("link")}
-              icon={<LinkIcon size={14} />}
-              title="Link"
-            />
-          </BubbleMenu>
+          {editor && !editor.isDestroyed && (
+            <>
+              <BubbleMenu editor={editor} className="bubble-menu">
+                <ToolbarButton
+                  onClick={() => editor.chain().focus().toggleBold().run()}
+                  active={editor.isActive("bold")}
+                  icon={<Bold size={14} />}
+                  title="Bold"
+                />
+                <ToolbarButton
+                  onClick={() => editor.chain().focus().toggleItalic().run()}
+                  active={editor.isActive("italic")}
+                  icon={<Italic size={14} />}
+                  title="Italic"
+                />
+                <ToolbarButton
+                  onClick={() => editor.chain().focus().toggleUnderline().run()}
+                  active={editor.isActive("underline")}
+                  icon={<UnderlineIcon size={14} />}
+                  title="Underline"
+                />
+                <ToolbarButton
+                  onClick={addLink}
+                  active={editor.isActive("link")}
+                  icon={<LinkIcon size={14} />}
+                  title="Link"
+                />
+              </BubbleMenu>
 
-          <FloatingMenu editor={editor} className="floating-menu">
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-              icon={<Heading1 size={14} />}
-              title="H1"
-            />
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-              icon={<Heading2 size={14} />}
-              title="H2"
-            />
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleBulletList().run()}
-              icon={<List size={14} />}
-              title="List"
-            />
-            <ToolbarButton
-              onClick={() => fileInputRef.current?.click()}
-              icon={<ImageIcon size={14} />}
-              title="Image"
-            />
-          </FloatingMenu>
+              <FloatingMenu editor={editor} className="floating-menu">
+                <ToolbarButton
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                  icon={<Heading1 size={14} />}
+                  title="H1"
+                />
+                <ToolbarButton
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                  icon={<Heading2 size={14} />}
+                  title="H2"
+                />
+                <ToolbarButton
+                  onClick={() => editor.chain().focus().toggleBulletList().run()}
+                  icon={<List size={14} />}
+                  title="List"
+                />
+                <ToolbarButton
+                  onClick={() => fileInputRef.current?.click()}
+                  icon={<ImageIcon size={14} />}
+                  title="Image"
+                />
+              </FloatingMenu>
+            </>
+          )}
         </>
       )}
 

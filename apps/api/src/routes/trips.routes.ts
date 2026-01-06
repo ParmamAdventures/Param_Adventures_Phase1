@@ -2,6 +2,7 @@ import { Router } from "express";
 import { requireAuth, optionalAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
+import { requireRole } from "../middlewares/require-role.middleware";
 
 import { createTrip } from "../controllers/trips/createTrip.controller";
 import { updateTrip } from "../controllers/trips/updateTrip.controller";
@@ -135,7 +136,7 @@ router.get(
   "/manager",
   requireAuth,
   attachPermissions,
-  requirePermission("trip:view:internal"),
+  requireRole("TRIP_MANAGER"),
   getManagerTrips,
 );
 

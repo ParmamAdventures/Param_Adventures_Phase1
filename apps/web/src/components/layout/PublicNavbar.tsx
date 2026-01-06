@@ -295,7 +295,7 @@ function UserMenu({
             </Link>
           )}
 
-          {user?.permissions?.includes("trip:assign-guide") && (
+          {user?.roles?.includes("TRIP_MANAGER") && (
             <Link
               href="/dashboard/manager"
               onClick={() => setIsOpen(false)}
