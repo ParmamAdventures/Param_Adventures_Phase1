@@ -8,6 +8,7 @@ import { initiatePayment } from "../controllers/payments/initiatePayment.control
 import { verifyPayment } from "../controllers/payments/verifyPayment.controller";
 import { getPaymentStatus } from "../controllers/payments/getPaymentStatus.controller";
 import { getPaymentHistory } from "../controllers/payments/getPaymentHistory.controller";
+import { downloadInvoice } from "../controllers/bookings/downloadInvoice.controller";
 
 const router = Router();
 
@@ -31,6 +32,8 @@ router.post("/:id/initiate-payment", requireAuth, initiatePayment);
 router.post("/:id/verify-payment", requireAuth, verifyPayment);
 // Get Payment Status for a booking
 router.get("/:id/payment-status", requireAuth, getPaymentStatus);
+// Download Invoice
+router.get("/:id/invoice", requireAuth, downloadInvoice);
 
 // Refund booking (Super Admin Only)
 import { refundBooking } from "../controllers/payments/refundBooking.controller";
