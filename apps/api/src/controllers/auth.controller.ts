@@ -3,6 +3,27 @@ import { authService } from "../services/auth.service";
 import { catchAsync } from "../utils/catchAsync";
 import { ApiResponse } from "../utils/ApiResponse";
 
+type UserWithRoles = {
+  id: string;
+  email: string;
+  name: string | null;
+  nickname: string | null;
+  bio: string | null;
+  age: number | null;
+  gender: string | null;
+  phoneNumber: string | null;
+  address: string | null;
+  status: string;
+  createdAt: Date;
+  avatarImage: string | null;
+  preferences: Record<string, unknown> | null;
+  roles: { role: { id: string; name: string } }[];
+};
+
+type RolePermissionRow = {
+  permission: { key: string };
+};
+
 export const register = catchAsync(async (req: Request, res: Response) => {
   const { email, password, name } = req.body;
   const user = await authService.register({ email, password, name });
@@ -16,7 +37,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   // Fetch full user details with roles and permissions
   const { prisma } = await import("../lib/prisma");
 
-  const user = await (prisma.user as any).findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: authUser.id },
     select: {
       id: true,
@@ -43,16 +64,16 @@ export const login = catchAsync(async (req: Request, res: Response) => {
         },
       },
     },
-  });
+  }) as UserWithRoles | null;
 
-  const userRoles = (user?.roles ?? []).map((r: any) => r.role.name);
+  const userRoles = (user?.roles ?? []).map((r) => r.role.name);
 
   const rolePermissions = await prisma.rolePermission.findMany({
     where: { role: { name: { in: userRoles } } },
     include: { permission: true },
   });
 
-  const permissions = Array.from(new Set(rolePermissions.map((rp: any) => rp.permission.key)));
+  const permissions = Array.from(new Set(rolePermissions.map((rp: RolePermissionRow) => rp.permission.key)));
 
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
@@ -89,10 +110,11 @@ export const logout = catchAsync(async (_req: Request, res: Response) => {
 });
 
 export const me = catchAsync(async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userId = (req as any).user?.id;
   const { prisma } = await import("../lib/prisma");
 
-  const user = await (prisma.user as any).findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
@@ -121,14 +143,14 @@ export const me = catchAsync(async (req: Request, res: Response) => {
     },
   });
 
-  const userRoles = (user?.roles ?? []).map((r: any) => r.role.name);
+  const userRoles = (user?.roles ?? []).map((r) => r.role.name);
 
   const rolePermissions = await prisma.rolePermission.findMany({
     where: { role: { name: { in: userRoles } } },
     include: { permission: true },
   });
 
-  const permissions = Array.from(new Set(rolePermissions.map((rp: any) => rp.permission.key)));
+  const permissions = Array.from(new Set(rolePermissions.map((rp: RolePermissionRow) => rp.permission.key)));
 
   res.set("Cache-Control", "no-store");
   return ApiResponse.success(res, "Current user details", {
@@ -152,14 +174,16 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
 
 export const changePassword = catchAsync(async (req: Request, res: Response) => {
   const { currentPassword, newPassword } = req.body;
-  const userId = (req as any).user.id;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userId = (req as any).user?.id;
 
   await authService.changePassword(userId, currentPassword, newPassword);
   return ApiResponse.success(res, "Password changed successfully");
 });
 
 export const googleCallback = catchAsync(async (req: Request, res: Response) => {
-  const user = req.user as any; // User attached by Passport Strategy
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const user = (req as any).user as UserWithRoles | undefined; // User attached by Passport Strategy
   if (!user) {
     return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
   }
