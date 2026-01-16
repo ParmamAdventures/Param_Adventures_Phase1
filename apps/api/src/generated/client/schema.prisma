@@ -1,0 +1,453 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+  output          = "../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//////////////////////
+// ENUMS
+//////////////////////
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+//////////////////////
+// MODELS
+//////////////////////
+
+model User {
+  id          String     @id @default(uuid())
+  email       String     @unique
+  password    String
+  name        String?
+  nickname    String?
+  bio         String?
+  age         Int?
+  gender      String?
+  phoneNumber String?
+  address     String?
+  status       UserStatus @default(ACTIVE)
+  statusReason String?
+  preferences  Json?      @default("{}")
+  
+  // Social Auth
+  googleId     String?    @unique
+  avatarUrl    String?
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  avatarImageId String?
+  avatarImage   Image?  @relation("UserAvatar", fields: [avatarImageId], references: [id])
+
+  roles         UserRole[]
+  // Trip relations
+  createdTrips  Trip[]     @relation("TripCreatedBy")
+  approvedTrips Trip[]     @relation("TripApprovedBy")
+  // Booking relations
+  bookings      Booking[]
+
+  // Media relations
+  uploadedImages Image[] @relation("UserUploadedImages")
+  blogs          Blog[]  @relation("UserBlogs")
+
+  // Trip Management roles
+
+  managedTrips Trip[]          @relation("TripManagedBy")
+  guidedTrips  TripsOnGuides[]
+  
+  reviews      Review[]
+  savedTrips   SavedTrip[]
+  auditLogs    AuditLog[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@index([isSystem])
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  description String?
+  category    String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  action     String
+  targetType String
+  targetId   String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  
+  actor      User?    @relation(fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+enum TripStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  PUBLISHED
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum TripCategory {
+  TREK
+  CAMPING
+  CORPORATE
+  EDUCATIONAL
+  SPIRITUAL
+  CUSTOM
+}
+
+model Trip {
+  id           String       @id @default(uuid())
+  title        String
+  slug         String       @unique
+  description  String
+  itinerary    Json
+  durationDays Int
+  difficulty   String
+  location     String
+  price        Int
+  status       TripStatus   @default(DRAFT)
+  category     TripCategory @default(TREK)
+
+  // New Detailed Fields
+  startPoint   String?
+  endPoint     String?
+  altitude     String?
+  distance     String?
+  itineraryPdf String? // URL to uploaded PDF
+
+  highlights         Json? // Array of strings
+  inclusions         Json? // Array of strings
+  exclusions         Json? // Array of strings
+  cancellationPolicy Json? // Structured policy object
+  thingsToPack       Json? // Array or text
+  faqs               Json? // Array of { question, answer }
+  seasons            Json? // Array of strings
+
+  // Media (Production-grade)
+  // Media (Production-grade)
+  coverImageId String?
+  coverImage   Image?             @relation("TripCoverImage", fields: [coverImageId], references: [id])
+  heroImageId  String?
+  heroImage    Image?             @relation("TripHeroImage", fields: [heroImageId], references: [id])
+  gallery      TripGalleryImage[]
+
+  // Legacy fields (Consider removing after migration)
+  coverImageLegacy String?  @map("coverImage")
+  galleryLegacy    String[] @map("gallery")
+
+  createdById String
+  createdBy   User   @relation("TripCreatedBy", fields: [createdById], references: [id])
+
+  approvedById String?
+  approvedBy   User?   @relation("TripApprovedBy", fields: [approvedById], references: [id])
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  capacity Int       @default(0)
+  bookings Booking[]
+
+  startDate DateTime?
+  endDate   DateTime?
+
+  managerId String?
+  manager   User?   @relation("TripManagedBy", fields: [managerId], references: [id])
+  guides    TripsOnGuides[]
+  
+  documentation Json? // Post-trip proofs (photos, reports)
+
+  blogs Blog[] @relation("TripBlogs")
+
+  isFeatured Boolean @default(false)
+
+  reviews    Review[]
+  savedTrips SavedTrip[]
+
+  @@index([status])
+  @@index([slug])
+  @@index([category])
+  @@index([isFeatured])
+}
+
+model TripGalleryImage {
+  tripId  String
+  imageId String
+  order   Int
+
+  trip  Trip  @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  image Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  @@id([tripId, imageId])
+}
+
+model TripsOnGuides {
+  tripId  String
+  guideId String
+  assignedAt DateTime @default(now())
+
+  trip  Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  guide User @relation(fields: [guideId], references: [id], onDelete: Cascade)
+
+  @@id([tripId, guideId])
+}
+
+enum BlogStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+model Blog {
+  id      String     @id @default(uuid())
+  title   String
+  slug    String     @unique
+  excerpt String?
+  content Json // editor output
+  theme   String?   @default("modern")
+  status  BlogStatus @default(DRAFT)
+
+  authorId String
+  author   User   @relation("UserBlogs", fields: [authorId], references: [id])
+
+  coverImageId String?
+  coverImage   Image?  @relation("BlogCoverImage", fields: [coverImageId], references: [id])
+
+  tripId String?
+  trip   Trip?   @relation("TripBlogs", fields: [tripId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([authorId])
+}
+
+model Image {
+  id          String @id @default(uuid())
+  originalUrl String
+  mediumUrl   String
+  thumbUrl    String
+  width       Int
+  height      Int
+  size        Int
+  mimeType    String
+  type        MediaType @default(IMAGE)
+  duration    Int?      // Duration in seconds for videos
+
+  uploadedById String
+  uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id])
+
+  tripsCover   Trip[]             @relation("TripCoverImage")
+  tripsHero    Trip[]             @relation("TripHeroImage")
+  tripsGallery TripGalleryImage[]
+
+  blogsCover Blog[] @relation("BlogCoverImage")
+  userAvatar User[] @relation("UserAvatar")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum BookingStatus {
+  REQUESTED
+  CONFIRMED
+  REJECTED
+  CANCELLED
+  COMPLETED
+}
+
+enum BookingPaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model Booking {
+  id     String        @id @default(uuid())
+  userId String
+  tripId String
+  status BookingStatus @default(REQUESTED)
+  notes  String?
+
+  startDate  DateTime
+  guests     Int      @default(1)
+  guestDetails Json?  // Array of { name, email, age, gender }
+  totalPrice Int // Stored at time of booking to handle price changes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+  trip Trip @relation(fields: [tripId], references: [id])
+
+  // Payments created for this booking
+  payments Payment[]
+
+  paymentStatus BookingPaymentStatus @default(PENDING)
+
+  // Removed unique constraint to allow multiple bookings (different dates)
+  @@index([tripId])
+  @@index([userId])
+}
+
+enum PaymentStatus {
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String
+  provider          String // "razorpay"
+  providerOrderId   String        @unique
+  providerPaymentId String?       @unique
+  razorpayRefundId  String?       @unique
+  rawPayload        Json?
+  proofUrl          String? // For manual/offline payments (image URL)
+  amount            Int // paise
+  currency          String        @default("INR")
+  method            String?
+  refundedAmount    Int           @default(0) // Track cumulative refunds
+  disputeId         String?       // ID from provider if disputed
+  status            PaymentStatus @default(CREATED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@index([bookingId])
+}
+
+model HeroSlide {
+  id       String  @id @default(uuid())
+  title    String
+  subtitle String?
+  videoUrl String
+  ctaLink  String?
+  order    Int     @default(0)
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}
+
+
+model Review {
+  id        String   @id @default(uuid())
+  rating    Int      // 1-5 stars
+  comment   String?
+  userId    String
+  tripId    String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  trip      Trip     @relation(fields: [tripId], references: [id])
+  
+  @@unique([userId, tripId]) // One review per trip per user
+  @@index([tripId])
+}
+
+model SavedTrip {
+  userId    String
+  tripId    String
+  createdAt DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  @@id([userId, tripId])
+  @@index([userId])
+}
+
+model SiteConfig {
+  key   String @id
+  value String
+  label String
+}
+
+model TripInquiry {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  phoneNumber String?
+  destination String
+  dates       String?
+  budget      String?
+  details     String?
+  status      String   @default("NEW") // NEW, CONTACTED, CONVERTED, CLOSED
+  createdAt   DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

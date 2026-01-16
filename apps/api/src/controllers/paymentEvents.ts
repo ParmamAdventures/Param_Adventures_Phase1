@@ -198,3 +198,57 @@ export async function handleRefundProcessed(event: any) {
       }
   }
 }
+
+export async function handleDisputeCreated(event: any) {
+  const dispute = event.payload?.dispute?.entity;
+  const paymentId = dispute?.payment_id;
+
+  if (!paymentId) return;
+
+  await prisma.payment.updateMany({
+    where: { providerPaymentId: paymentId },
+    data: {
+      status: "DISPUTED",
+      disputeId: dispute.id,
+      rawPayload: event // Log the dispute event
+    }
+  });
+}
+
+export async function handleDisputeLost(event: any) {
+  const dispute = event.payload?.dispute?.entity;
+  const paymentId = dispute?.payment_id;
+
+  if (!paymentId) return;
+
+  await prisma.payment.updateMany({
+    where: { providerPaymentId: paymentId },
+    data: {
+      status: "REFUNDED",
+      rawPayload: event
+    }
+  });
+  
+  const payment = await prisma.payment.findFirst({ where: { providerPaymentId: paymentId } });
+  if (payment) {
+      await prisma.booking.update({
+          where: { id: payment.bookingId },
+          data: { status: "CANCELLED" }
+      });
+  }
+}
+
+export async function handleDisputeWon(event: any) {
+  const dispute = event.payload?.dispute?.entity;
+  const paymentId = dispute?.payment_id;
+
+  if (!paymentId) return;
+
+  await prisma.payment.updateMany({
+    where: { providerPaymentId: paymentId },
+    data: {
+      status: "CAPTURED",
+      rawPayload: event
+    }
+  });
+}

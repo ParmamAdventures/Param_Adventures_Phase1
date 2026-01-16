@@ -307,9 +307,10 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1.5 hours
   - Priority: HIGH
 
-- [ ] **FEAT-012**: Implement partial refund support
-  - Status: Not Started
-  - Location: apps/api/src/services/razorpay.service.ts
+- [x] **FEAT-012**: Implement partial refund support
+  - Status: ✅ COMPLETED
+  - Results: Added `refundedAmount` to Payment model and `PARTIALLY_REFUNDED` status. Updated `refundBooking.controller.ts` to accept partial amounts. Verified logic via manual script.
+  - Location: apps/api/src/services/razorpay.service.ts, apps/api/src/controllers/payments/refundBooking.controller.ts
   - Requirements:
     - Allow partial refunds
     - Track refund amount vs original amount
@@ -317,9 +318,10 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour
   - Priority: HIGH
 
-- [ ] **FEAT-013**: Add payment dispute handling
-  - Status: Not Started
-  - Location: apps/api/src/controllers/payments/
+- [x] **FEAT-013**: Add payment dispute handling
+  - Status: ✅ COMPLETED
+  - Results: Added `disputeId` and `DISPUTED` status to Payment model. Implemented webhook handlers for `payment.dispute.created`, `lost`, and `won`.
+  - Location: apps/api/src/controllers/paymentEvents.ts, apps/api/src/controllers/razorpayWebhook.controller.ts
   - Requirements:
     - Handle chargeback notifications
     - Mark booking as disputed

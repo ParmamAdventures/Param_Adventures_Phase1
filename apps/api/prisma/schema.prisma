@@ -355,6 +355,8 @@ enum PaymentStatus {
   CAPTURED
   FAILED
   REFUNDED
+  PARTIALLY_REFUNDED
+  DISPUTED
 }
 
 model Payment {
@@ -369,6 +371,8 @@ model Payment {
   amount            Int // paise
   currency          String        @default("INR")
   method            String?
+  refundedAmount    Int           @default(0) // Track cumulative refunds
+  disputeId         String?       // ID from provider if disputed
   status            PaymentStatus @default(CREATED)
 
   createdAt DateTime @default(now())

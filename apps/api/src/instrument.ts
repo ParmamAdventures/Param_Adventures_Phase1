@@ -2,7 +2,10 @@ import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
 // Ensure Sentry is initialized as early as possible
-Sentry.init({
+if (!process.env.SENTRY_DSN || process.env.SENTRY_DSN.trim() === "") {
+    console.log("Sentry Disabled (No DSN)");
+} else {
+    Sentry.init({
   dsn: process.env.SENTRY_DSN,
   integrations: [
     nodeProfilingIntegration(),
@@ -13,5 +16,6 @@ Sentry.init({
   // Profiling
   profilesSampleRate: 1.0,
 });
+}
 
 console.log("Param Adventures API: Sentry Instrumented 🔭");

@@ -31,26 +31,46 @@ export const refundBooking = async (req: Request, res: Response) => {
   }
 
   try {
+    const existingRefund = paymentToRefund.refundedAmount || 0;
+    const amountToRefund = req.body.amount || (paymentToRefund.amount - existingRefund);
+    const shouldCancel = req.body.cancelBooking !== false; // Default to true unless explicitly false
+
+    // Validation
+    if (amountToRefund <= 0) throw new HttpError(400, "BAD_REQUEST", "Invalid refund amount");
+    if (existingRefund + amountToRefund > paymentToRefund.amount) {
+        throw new HttpError(400, "BAD_REQUEST", "Refund amount exceeds refundable balance");
+    }
+
     // 1. Process Refund with Razorpay
     const refund = await razorpayService.refundPayment(paymentToRefund.providerPaymentId, {
+      amount: amountToRefund,
       bookingId: booking.id,
-      reason: "Admin initiated refund",
+      reason: req.body.reason || "Admin initiated refund",
     });
 
     // 2. Update Database
+    const newTotalRefunded = existingRefund + parseInt(String(refund.amount || amountToRefund)); // Razorpay returns amount
+    const isFullRefund = newTotalRefunded >= paymentToRefund.amount;
+    const newStatus = isFullRefund ? "REFUNDED" : "PARTIALLY_REFUNDED";
+
     // Update Payment record
     await prisma.payment.update({
       where: { id: paymentToRefund.id },
       data: {
         razorpayRefundId: refund.id,
+        refundedAmount: newTotalRefunded,
+        status: newStatus
       },
     });
 
-    // Update Booking Status to CANCELLED (since we refunded it)
-    const updatedBooking = await prisma.booking.update({
-      where: { id: booking.id },
-      data: { status: "CANCELLED" },
-    });
+    // Update Booking Status
+    let updatedBooking = booking;
+    if (shouldCancel || isFullRefund) {
+        updatedBooking = await prisma.booking.update({
+            where: { id: booking.id },
+            data: { status: "CANCELLED" },
+        });
+    }
 
     // 3. Send Notification
     await notificationQueue.add("SEND_REFUND_EMAIL", {

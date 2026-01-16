@@ -74,12 +74,13 @@ export const razorpayService = {
   /**
    * Refund a payment
    */
-  async refundPayment(paymentId: string, notes?: Record<string, string>) {
+  async refundPayment(paymentId: string, options?: { amount?: number; notes?: Record<string, string> }) {
     try {
       const razorpay = getRazorpayInstance();
       const refund = await razorpay.payments.refund(paymentId, {
+        amount: options?.amount, // Optional amount for partial refund
         speed: "normal",
-        notes,
+        notes: options?.notes,
       });
       return refund;
     } catch (error) {

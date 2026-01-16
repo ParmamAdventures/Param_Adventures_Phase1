@@ -48,6 +48,15 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
       case "refund.processed":
         await handleRefundProcessed(event);
         break;
+      case "payment.dispute.created":
+        await import("./paymentEvents").then(m => m.handleDisputeCreated(event));
+        break;
+      case "payment.dispute.won":
+        await import("./paymentEvents").then(m => m.handleDisputeWon(event));
+        break;
+      case "payment.dispute.lost":
+        await import("./paymentEvents").then(m => m.handleDisputeLost(event));
+        break;
       default:
         logger.info(`Ignoring Razorpay webhook event: ${event.event}`);
         break;

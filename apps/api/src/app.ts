@@ -92,7 +92,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // The request handler must be the first middleware on the app
-Sentry.setupExpressErrorHandler(app);
+// Sentry.setupExpressErrorHandler(app);
 
 // Webhooks must be registered before the JSON parser
 app.use("/webhooks", webhooksRoutes);
