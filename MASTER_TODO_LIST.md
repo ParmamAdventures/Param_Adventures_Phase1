@@ -274,7 +274,6 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 2 hours
   - Priority: HIGH
 
-- [ ] **FEAT-009**: Implement email notifications for payments
   - Status: Not Started
   - Location: apps/api/src/services/email.service.ts
   - Requirements:
