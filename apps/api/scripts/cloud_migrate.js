@@ -1,5 +1,7 @@
-const { execSync } = require('child_process');
-const path = require('path');
+import path from "path";
+import { execSync  } from "child_process";
+
+
 
 const DATABASE_URL = "postgresql://postgres1:emimHme3GNnsmP7kTixZGkMNqKkVeAb9@dpg-d5aco1ali9vc73b3u85g-a.oregon-postgres.render.com/param_adventures";
 

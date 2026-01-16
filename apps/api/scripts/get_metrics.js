@@ -1,6 +1,8 @@
-require("dotenv").config();
+import "dotenv/config.js";
+import fetch from "node-fetch";
+
 (async () => {
-  const fetch = global.fetch || require("node-fetch");
+  
   try {
     // login
     const loginRes = await fetch("http://localhost:3001/auth/login", {

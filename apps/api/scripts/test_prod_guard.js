@@ -1,7 +1,10 @@
-require("dotenv").config();
+import "dotenv/config.js";
+import fetch from "node-fetch";
+import { PrismaClient  } from "@prisma/client";
+
 (async () => {
-  const fetch = global.fetch || require("node-fetch");
-  const { PrismaClient } = require("@prisma/client");
+  
+  
   const prisma = new PrismaClient();
 
   try {
@@ -107,7 +110,7 @@ require("dotenv").config();
     console.error(e);
     try {
       await prisma.$disconnect();
-    } catch {}
+    } catch (_e) { /* ignored */ }
     process.exit(1);
   }
 })();

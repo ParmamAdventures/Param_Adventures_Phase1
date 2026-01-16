@@ -1,6 +1,7 @@
+import { PrismaClient  } from "@prisma/client";
 (async () => {
   try {
-    const { PrismaClient } = require("@prisma/client");
+    
     const prisma = new PrismaClient();
     const tripId = process.argv[2] || process.env.TRIP_ID;
     if (!tripId) {

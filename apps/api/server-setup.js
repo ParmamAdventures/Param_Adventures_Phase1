@@ -1,6 +1,9 @@
-const { spawn } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+import fs from "fs";
+import path from "path";
+import { spawn  } from "child_process";
+
+
+
 
 console.log("🚀 Starting Server Setup...");
 

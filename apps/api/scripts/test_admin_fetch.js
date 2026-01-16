@@ -1,4 +1,5 @@
-require("dotenv").config();
+import "dotenv/config.js";
+
 const fetch = globalThis.fetch;
 (async () => {
   try {

@@ -1,3 +1,4 @@
+import { PrismaClient  } from "@prisma/client";
 // Authenticated lifecycle test for trips
 // Requires API running at http://localhost:3000
 
@@ -109,7 +110,7 @@ function expect(status, got, msg) {
   if (status !== got) throw new Error(`Expected ${status} but got ${got} (${msg || ""})`);
 }
 
-const { PrismaClient } = require("@prisma/client");
+
 
 (async () => {
   console.log("Lifecycle test starting");

@@ -1,9 +1,5 @@
 import { z } from "zod";
-try {
-  require("dotenv").config({ override: true });
-} catch (e) {
-  // Ignore missing dotenv in production
-}
+import "dotenv/config.js";
 
 const envSchema = z.object({
   PORT: z.string().default("3000"),
@@ -34,7 +30,7 @@ const envSchema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   SMTP_FROM: z.string().default("Param Adventures <noreply@paramadventures.com>"),
-  
+
   // OAuth
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
@@ -42,14 +38,13 @@ const envSchema = z.object({
 
 const parsed = envSchema.safeParse(process.env);
 
-
 if (!parsed.success) {
   console.error("❌ Invalid environment variables:");
   const fieldErrors = parsed.error.flatten().fieldErrors;
   Object.entries(fieldErrors).forEach(([field, errors]) => {
     console.error(`  - ${field}: ${errors?.join(", ")}`);
   });
-  
+
   if (process.env.NODE_ENV === "production") {
     console.warn("⚠️ Continuing in production despite invalid env - monitoring health...");
   }

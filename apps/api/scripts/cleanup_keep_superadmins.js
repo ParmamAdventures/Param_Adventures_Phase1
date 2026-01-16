@@ -1,4 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient  } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 // Broad patterns to match common test accounts created by scripts

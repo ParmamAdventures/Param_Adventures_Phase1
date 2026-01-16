@@ -10,7 +10,7 @@ async function ok(path, opts) {
     try {
       const j = await res.json();
       console.log(JSON.stringify(j, null, 2));
-    } catch (e) {}
+    } catch (_e) { /* ignored */ /* empty */ }
   } catch (err) {
     console.error(`Unable to connect to ${base} — is the API server running?`);
     console.error("Start the API in another terminal:");

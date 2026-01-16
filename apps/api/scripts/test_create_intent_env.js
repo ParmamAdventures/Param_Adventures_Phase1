@@ -1,7 +1,10 @@
-require("dotenv").config();
+import "dotenv/config.js";
+import fetch from "node-fetch";
+import { PrismaClient  } from "@prisma/client";
+
 (async () => {
-  const fetch = global.fetch || require("node-fetch");
-  const { PrismaClient } = require("@prisma/client");
+  
+  
   const prisma = new PrismaClient();
 
   try {
@@ -67,7 +70,7 @@ require("dotenv").config();
     let intentBody = intentText;
     try {
       intentBody = JSON.parse(intentText);
-    } catch {}
+    } catch (_e) { /* ignored */ }
 
     console.log("Response status:", intentRes.status);
     console.log("Response body:", intentBody);
@@ -92,7 +95,7 @@ require("dotenv").config();
     console.error(e);
     try {
       await prisma.$disconnect();
-    } catch {}
+    } catch (_e) { /* ignored */ }
     process.exit(1);
   }
 })();
