@@ -368,6 +368,7 @@ model Payment {
   proofUrl          String? // For manual/offline payments (image URL)
   amount            Int // paise
   currency          String        @default("INR")
+  method            String?
   status            PaymentStatus @default(CREATED)
 
   createdAt DateTime @default(now())

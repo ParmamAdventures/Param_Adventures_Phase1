@@ -297,9 +297,10 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour
   - Priority: HIGH
 
-- [ ] **FEAT-011**: Add payment method support (future prep)
-  - Status: Not Started
-  - Location: apps/api/src/types/payment.types.ts
+- [x] **FEAT-011**: Add payment method support
+  - Status: ✅ COMPLETED
+  - Results: Added `method` field to Payment model. Updated `paymentEvents.ts` to extract method from webhook payload. Verified via manual script (stored 'upi' successfully).
+  - Location: apps/api/prisma/schema.prisma, apps/api/src/controllers/paymentEvents.ts
   - Requirements:
     - Store payment method preference
     - Support multiple methods (Razorpay, Stripe, etc.)

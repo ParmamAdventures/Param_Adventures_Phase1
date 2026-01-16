@@ -40,6 +40,7 @@ export async function handlePaymentCaptured(event: any) {
         providerPaymentId: razorpayPaymentId,
         status: "CAPTURED",
         rawPayload: event,
+        method: paymentEntity?.method, // e.g. "upi", "card", "netbanking"
       },
     }),
     prisma.booking.update({
