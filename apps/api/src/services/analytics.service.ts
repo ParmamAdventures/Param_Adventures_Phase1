@@ -48,26 +48,32 @@ export class AnalyticsService {
       growth = 100;
     }
 
-    // Monthly data for chart (Last 6 months)
-    const last6Months = [];
-    for (let i = 5; i >= 0; i--) {
+    // Monthly data for chart (Last 6 months) - parallelized
+    const monthQueries = Array.from({ length: 6 }, (_, idx) => {
+      const i = 5 - idx;
       const date = subMonths(now, i);
       const start = startOfMonth(date);
       const end = endOfMonth(date);
+      return {
+        date,
+        promise: prisma.payment.aggregate({
+          where: {
+            status: "CAPTURED",
+            createdAt: { gte: start, lte: end },
+          },
+          _sum: { amount: true },
+        }),
+      };
+    });
 
-      const monthRev = await prisma.payment.aggregate({
-        where: {
-          status: "CAPTURED",
-          createdAt: { gte: start, lte: end },
-        },
-        _sum: { amount: true },
-      });
-
-      last6Months.push({
+    const results = await Promise.all(monthQueries.map((q) => q.promise));
+    const last6Months = results.map((monthRev, idx) => {
+      const date = monthQueries[idx].date;
+      return {
         month: date.toLocaleString("default", { month: "short", year: "2-digit" }),
         revenue: (monthRev._sum.amount || 0) / 100,
-      });
-    }
+      };
+    });
 
     return {
       currentMonthRevenue: currentRev,

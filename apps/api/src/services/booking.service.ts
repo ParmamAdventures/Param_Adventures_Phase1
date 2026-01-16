@@ -2,8 +2,10 @@ import { prisma } from "../lib/prisma";
 import { notificationQueue } from "../lib/queue";
 import { HttpError } from "../utils/httpError";
 
+import type { Prisma } from "@prisma/client";
+
 export class BookingService {
-  async createBooking(data: { userId: string; tripId: string; startDate: string; guests: number; guestDetails?: any }) {
+  async createBooking(data: { userId: string; tripId: string; startDate: string; guests: number; guestDetails?: Prisma.InputJsonValue }) {
     const { userId, tripId, startDate, guests, guestDetails } = data;
 
     const trip = await prisma.trip.findUnique({ where: { id: tripId } });
