@@ -23,7 +23,7 @@ describe("User Registration Flow (Mocked)", () => {
 
     // Mock finding existing user (null means not found, OK to register)
     prismaMock.user.findUnique.mockResolvedValue(null);
-    
+
     // Mock user creation
     prismaMock.user.create.mockResolvedValue(userData as any);
 
@@ -50,6 +50,6 @@ describe("User Registration Flow (Mocked)", () => {
       name: "Existing User",
     });
 
-    expect(res.status).toBe(409); 
+    expect(res.status).toBe(409);
   });
 });

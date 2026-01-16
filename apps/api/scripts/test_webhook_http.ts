@@ -73,7 +73,9 @@ import fetch from "node-fetch";
     console.error(e);
     try {
       await prisma.$disconnect();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     process.exit(1);
   }
 })();

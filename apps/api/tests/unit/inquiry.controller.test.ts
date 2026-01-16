@@ -10,7 +10,7 @@ jest.mock("../../src/lib/prisma", () => ({
   prisma: prismaMock,
 }));
 
-// 2. Import Controller (Must be after mock definition if using doMock, but jest.mock should hoist. 
+// 2. Import Controller (Must be after mock definition if using doMock, but jest.mock should hoist.
 // However, separating it helps clarity and safety with internal modules)
 import { createInquiry } from "../../src/controllers/inquiry.controller";
 
@@ -61,16 +61,16 @@ describe("InquiryController", () => {
       const res = mockResponse();
 
       const createdInquiry = { id: "1", ...data, status: "NEW", createdAt: new Date() };
-      
-      // Fix: Typescript might complain if prismaMock isn't typed correctly in setup, 
+
+      // Fix: Typescript might complain if prismaMock isn't typed correctly in setup,
       // but assuming prisma.mock.ts is correct:
       // We need to ensure logic in controller matches.
       // Controller uses: prisma.tripInquiry.create({ data: ... })
-      
+
       // We need to cast prismaMock to any or ensure it covers TripInquiry which might be new.
       // If generated client is old in node_modules, tests might fail TS check.
       // But we just moved to `feature/phase-9-testing` and assume generate ran.
-      
+
       (prismaMock.tripInquiry.create as jest.Mock).mockResolvedValue(createdInquiry);
 
       await createInquiry(req, res, jest.fn());

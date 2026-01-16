@@ -13,7 +13,9 @@ describe("User Profile Integration", () => {
     // Clean up
     try {
       await prisma.user.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
 
     // Create user
     const user = await prisma.user.create({

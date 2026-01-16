@@ -1,10 +1,8 @@
 import "dotenv/config.js";
 import fetch from "node-fetch";
-import { PrismaClient  } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 (async () => {
-  
-  
   const prisma = new PrismaClient();
 
   try {
@@ -110,7 +108,9 @@ import { PrismaClient  } from "@prisma/client";
     console.error(e);
     try {
       await prisma.$disconnect();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     process.exit(1);
   }
 })();

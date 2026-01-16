@@ -1,11 +1,7 @@
 import "dotenv/config.js";
 import crypto from "crypto";
 import http from "http";
-import { PrismaClient  } from "@prisma/client";
-
-
-
-
+import { PrismaClient } from "@prisma/client";
 
 (async () => {
   const prisma = new PrismaClient();
@@ -91,7 +87,9 @@ import { PrismaClient  } from "@prisma/client";
     console.error(e);
     try {
       await prisma.$disconnect();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     process.exit(1);
   }
 })();

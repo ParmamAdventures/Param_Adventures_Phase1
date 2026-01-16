@@ -1,5 +1,5 @@
 import "dotenv/config.js";
-import { PrismaClient  } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const fetch = globalThis.fetch;
 

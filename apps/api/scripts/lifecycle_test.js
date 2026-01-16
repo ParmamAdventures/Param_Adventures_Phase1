@@ -1,4 +1,4 @@
-import { PrismaClient  } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 // Authenticated lifecycle test for trips
 // Requires API running at http://localhost:3000
 
@@ -109,8 +109,6 @@ async function login(email, password) {
 function expect(status, got, msg) {
   if (status !== got) throw new Error(`Expected ${status} but got ${got} (${msg || ""})`);
 }
-
-
 
 (async () => {
   console.log("Lifecycle test starting");

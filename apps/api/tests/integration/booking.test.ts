@@ -18,25 +18,39 @@ describe("Booking Integration", () => {
     // Clean up
     try {
       await prisma.review.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     try {
       await prisma.savedTrip.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     try {
       await prisma.blog.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     try {
       await prisma.payment.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     try {
       await prisma.booking.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     try {
       await prisma.trip.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
     try {
       await prisma.user.deleteMany();
-    } catch { /* ignored */ }
+    } catch {
+      /* ignored */
+    }
 
     // Create user
     const user = await prisma.user.create({
@@ -99,9 +113,7 @@ describe("Booking Integration", () => {
   });
 
   it("should get user's bookings", async () => {
-    const res = await request(app)
-      .get("/bookings/me")
-      .set("Authorization", `Bearer ${userToken}`);
+    const res = await request(app).get("/bookings/me").set("Authorization", `Bearer ${userToken}`);
 
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body.data)).toBe(true);
@@ -143,7 +155,7 @@ describe("Booking Integration", () => {
       .set("Authorization", `Bearer ${userToken}`);
 
     expect(res.status).toBe(200);
-    
+
     // Check wrapped response in data
     // The controller returns: { booking: updatedBooking } inside data
     expect(res.body.data.booking.status).toBe("CANCELLED");
