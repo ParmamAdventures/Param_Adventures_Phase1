@@ -119,5 +119,17 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
   } catch {
     // Ignore invalid tokens in optional auth
   }
+// ...existing code...
   next();
+}
+
+export function requireRole(role: string) {
+    return (req: Request, res: Response, next: NextFunction) => {
+        const userRoles = req.user?.roles || [];
+        // Super admin bypass or direct match
+        if (userRoles.includes("SUPER_ADMIN") || userRoles.includes(role)) {
+            return next();
+        }
+        return res.status(403).json({ error: "Insufficient role" });
+    };
 }

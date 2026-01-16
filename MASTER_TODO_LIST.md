@@ -241,9 +241,10 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 45 mins
   - Priority: HIGH
 
-- [ ] **FEAT-006**: Add admin refund history endpoint
-  - Status: Not Started
-  - Location: apps/api/src/controllers/admin/refunds.controller.ts
+- [x] **FEAT-006**: Add admin refund history endpoint
+  - Status: ✅ COMPLETED
+  - Results: Implemented `getRefundHistory` with filters (amount, date) and pagination. Secured with `requireRole("admin")`. Verified via manual script.
+  - Location: apps/api/src/controllers/admin/getRefundHistory.controller.ts, apps/api/src/routes/admin/refunds.routes.ts
   - Requirements:
     - GET /admin/refunds (paginated)
     - GET /admin/refunds/:id

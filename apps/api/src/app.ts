@@ -37,6 +37,7 @@ import reviewRoutes from "./routes/review.routes";
 import wishlistRoutes from "./routes/wishlist.routes";
 import inquiryRoutes from "./routes/inquiry.routes";
 import newsletterRoutes from "./routes/newsletter.routes";
+import adminRefundRoutes from "./routes/admin/refunds.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
 
@@ -139,6 +140,7 @@ app.use("/admin/audit-logs", adminAuditRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
 app.use("/admin/trip-assignments", tripAssignmentRoutes);
 app.use("/admin/inquiries", adminInquiryRoutes);
+app.use("/admin/refunds", adminRefundRoutes);
 
 // must be LAST
 app.use(errorHandler);
