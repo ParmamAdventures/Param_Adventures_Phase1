@@ -157,7 +157,10 @@ describe("RazorpayService", () => {
 
     it("should process refund with notes", async () => {
       const paymentId = "pay_test123";
-      const notes = { reason: "Customer request" };
+      const options = {
+        amount: 50000,
+        notes: { reason: "Customer request" },
+      };
 
       const mockRefund = {
         id: "rfnd_test789",
@@ -168,10 +171,10 @@ describe("RazorpayService", () => {
 
       (razorpayService.refundPayment as jest.Mock).mockResolvedValue(mockRefund);
 
-      const result = await razorpayService.refundPayment(paymentId, notes);
+      const result = await razorpayService.refundPayment(paymentId, options);
 
       expect(result).toEqual(mockRefund);
-      expect(razorpayService.refundPayment).toHaveBeenCalledWith(paymentId, notes);
+      expect(razorpayService.refundPayment).toHaveBeenCalledWith(paymentId, options);
     });
 
     it("should handle refund errors", async () => {

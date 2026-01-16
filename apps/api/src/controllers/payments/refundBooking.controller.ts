@@ -32,20 +32,22 @@ export const refundBooking = async (req: Request, res: Response) => {
 
   try {
     const existingRefund = paymentToRefund.refundedAmount || 0;
-    const amountToRefund = req.body.amount || (paymentToRefund.amount - existingRefund);
+    const amountToRefund = req.body.amount || paymentToRefund.amount - existingRefund;
     const shouldCancel = req.body.cancelBooking !== false; // Default to true unless explicitly false
 
     // Validation
     if (amountToRefund <= 0) throw new HttpError(400, "BAD_REQUEST", "Invalid refund amount");
     if (existingRefund + amountToRefund > paymentToRefund.amount) {
-        throw new HttpError(400, "BAD_REQUEST", "Refund amount exceeds refundable balance");
+      throw new HttpError(400, "BAD_REQUEST", "Refund amount exceeds refundable balance");
     }
 
     // 1. Process Refund with Razorpay
     const refund = await razorpayService.refundPayment(paymentToRefund.providerPaymentId, {
       amount: amountToRefund,
-      bookingId: booking.id,
-      reason: req.body.reason || "Admin initiated refund",
+      notes: {
+        reason: req.body.reason || "Admin initiated refund",
+        bookingId: booking.id,
+      },
     });
 
     // 2. Update Database
@@ -59,17 +61,18 @@ export const refundBooking = async (req: Request, res: Response) => {
       data: {
         razorpayRefundId: refund.id,
         refundedAmount: newTotalRefunded,
-        status: newStatus
+        status: newStatus,
       },
     });
 
     // Update Booking Status
-    let updatedBooking = booking;
+    let bookingStatus = booking.status;
     if (shouldCancel || isFullRefund) {
-        updatedBooking = await prisma.booking.update({
-            where: { id: booking.id },
-            data: { status: "CANCELLED" },
-        });
+      await prisma.booking.update({
+        where: { id: booking.id },
+        data: { status: "CANCELLED" },
+      });
+      bookingStatus = "CANCELLED";
     }
 
     // 3. Send Notification
@@ -79,13 +82,17 @@ export const refundBooking = async (req: Request, res: Response) => {
         tripTitle: booking.trip.title,
         amount: refund.amount,
         bookingId: booking.id,
-        refundId: refund.id
-      }
+        refundId: refund.id,
+      },
     });
 
     return ApiResponse.success(res, "Refund processed successfully", {
       refund,
-      booking: updatedBooking,
+      booking: {
+        id: booking.id,
+        status: bookingStatus,
+        paymentStatus: booking.paymentStatus,
+      },
     });
   } catch (error: any) {
     console.error("Refund Controller Error:", error);
