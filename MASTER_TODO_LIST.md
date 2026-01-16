@@ -14,7 +14,7 @@
 | ------------------------------ | ----- | ------------ | ----------- |
 | 🔴 Critical Bugs               | 8     | MUST DO      | 8/8 Done ✅ |
 | 🟠 High Priority (Features)    | 12    | MUST DO      | Queued      |
-| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 2/24 Done   |
+| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 3/24 Done   |
 | 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | Not Started |
 | 📋 Documentation               | 15    | IMPORTANT    | Not Started |
 
@@ -39,7 +39,7 @@
 
 ```
 ESLint: 252 problems (0 ERRORS ✅, 252 warnings)
-Tests: 15/15 suites passing, 65/65 tests passing
+Tests: 16/16 suites passing, 70/70 tests passing
 Code Quality: 89/100 maintained
 Files Changed: 44 code files + 31 supporting files (documentation, scripts, tests)
 ```
@@ -58,7 +58,7 @@ e5af6da FIX-006: Standardize error handling responses
 
 ### ⏭️ Next Steps
 
-1. **Medium Tests**: Move to webhook tests (TEST-003) and notification tests (TEST-004)
+1. **Medium Tests**: Continue with notification tests (TEST-004) and trip service tests (TEST-005/006)
 2. **Docs**: Start payment integration guide and API docs updates (DOC-001/002)
 3. **Optional**: Additional type safety improvements (reduce remaining `any` types)
 
@@ -477,11 +477,10 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour (after implementation)
   - Priority: MEDIUM
 
-- [ ] **TEST-003**: Write webhook tests
-  - Status: Not Started
+- [x] **TEST-003**: Write webhook tests
+  - Status: ✅ COMPLETED (Razorpay webhook integration)
   - Location: apps/api/tests/integration/webhooks.test.ts
-  - Test cases: 10+
-  - Estimated time: 1.5 hours
+  - Cases: missing signature, invalid signature, payment.captured, payment.failed, refund.processed
   - Priority: MEDIUM
 
 - [ ] **TEST-004**: Write email notification tests
