@@ -14,7 +14,7 @@
 | ------------------------------ | ----- | ------------ | ----------- |
 | 🔴 Critical Bugs               | 8     | MUST DO      | 8/8 Done ✅ |
 | 🟠 High Priority (Features)    | 12    | MUST DO      | Queued      |
-| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 3/24 Done   |
+| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 7/24 Done   |
 | 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | Not Started |
 | 📋 Documentation               | 15    | IMPORTANT    | Not Started |
 
@@ -39,7 +39,7 @@
 
 ```
 ESLint: 252 problems (0 ERRORS ✅, 252 warnings)
-Tests: 20/20 suites passing, 115/115 tests passing ✅
+Tests: 21/21 suites passing, 130/130 tests passing ✅
 Code Quality: 89/100 maintained
 Files Changed: 44 code files + 31 supporting files (documentation, scripts, tests)
 ```
@@ -484,59 +484,46 @@ e5af6da FIX-006: Standardize error handling responses
   - Priority: MEDIUM
 
 - [x] **TEST-004**: Write email notification tests
-  - Status: Not Started
-  - Location: apps/api/tests/unit/email.service.test.ts
-  - Test cases: 15+
-  - Estimated time: 1.5 hours
+  - Status: ✅ COMPLETED (9 tests passing)
+  - Location: apps/api/tests/unit/notification.service.test.ts
+  - Test cases: 9 (sendEmail: 2, templates: 7)
+  - Time taken: 1 hour
+  - Git Commit: 3765786
   - Priority: MEDIUM
 
 ## Trip Service Tests
 
 - [x] **TEST-005**: Write unit tests for trip service
-  - Status: Not Started
+  - Status: ✅ COMPLETED (14 tests passing)
   - Location: apps/api/tests/unit/trip.service.test.ts
-  - Current coverage: ~7%
-  - Target coverage: 80%
-  - Test cases: 30+
-  - Estimated time: 3 hours
+  - Test cases: 14 (createTrip: 5, getTripBySlug: 4, updateTrip: 5)
+  - Time taken: 1.5 hours
+  - Git Commit: 3d60b84
   - Priority: MEDIUM
-  - Details:
-    - Trip creation
-    - Trip update
-    - Trip deletion
-    - Trip publishing/unpublishing
-    - Trip filtering and search
 
 - [x] **TEST-006**: Write integration tests for trip endpoints
-  - Status: Not Started
+  - Status: ✅ COMPLETED (16 tests passing)
   - Location: apps/api/tests/integration/trips.test.ts
-  - Test cases: 25+
-  - Estimated time: 2.5 hours
+  - Test cases: 16 (POST/GET/PUT/DELETE with RBAC)
+  - Time taken: 2 hours
+  - Git Commit: 6ff094d
   - Priority: MEDIUM
-  - Details:
-    - Create trip (with auth)
-    - Get all trips (with filters)
-    - Get trip details
-    - Update trip (with auth)
-    - Delete trip (with auth)
-    - Publish/unpublish trip
-    - Admin trip approval
 
 ## User Service Tests
 
-- [ ] **TEST-007**: Write unit tests for user service
-  - Status: Not Started
+- [x] **TEST-007**: Write unit tests for user service
+  - Status: ✅ COMPLETED (15 tests passing)
   - Location: apps/api/tests/unit/user.service.test.ts
-  - Current coverage: 0%
-  - Target coverage: 80%
-  - Test cases: 20+
-  - Estimated time: 2 hours
+  - Current coverage: 80%+
+  - Test cases: 15 (getUserWithPermissions: 4, hasPermission: 3, updateProfile: 8)
+  - Time taken: 1.5 hours
+  - Git Commit: 00298f7
   - Priority: MEDIUM
-  - Details:
-    - User profile updates
-    - Password changes
-    - Avatar upload
-    - Preference updates
+  - Tests:
+    - User profile updates (all fields, partial, avatar)
+    - Permission checks (roles, deduplication)
+    - Audit logging
+    - Error propagation
 
 - [ ] **TEST-008**: Write integration tests for user endpoints
   - Status: Not Started
