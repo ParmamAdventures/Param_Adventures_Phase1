@@ -3,10 +3,23 @@ import crypto from "crypto";
 import { env } from "../config/env";
 import { logger } from "../lib/logger";
 
-const razorpay = new Razorpay({
-  key_id: env.RAZORPAY_KEY_ID,
-  key_secret: env.RAZORPAY_KEY_SECRET,
-});
+// Lazy initialization for better testability
+let razorpayInstance: Razorpay | null = null;
+
+function getRazorpayInstance(): Razorpay {
+  if (!razorpayInstance) {
+    razorpayInstance = new Razorpay({
+      key_id: env.RAZORPAY_KEY_ID,
+      key_secret: env.RAZORPAY_KEY_SECRET,
+    });
+  }
+  return razorpayInstance;
+}
+
+// For testing: allow resetting the instance
+export function resetRazorpayInstance() {
+  razorpayInstance = null;
+}
 
 export const razorpayService = {
   /**
@@ -16,6 +29,7 @@ export const razorpayService = {
    */
   async createOrder(amount: number, receipt: string) {
     try {
+      const razorpay = getRazorpayInstance();
       const order = await razorpay.orders.create({
         amount,
         currency: "INR",
@@ -61,16 +75,17 @@ export const razorpayService = {
    * Refund a payment
    */
   async refundPayment(paymentId: string, notes?: Record<string, string>) {
-     try {
-       const refund = await razorpay.payments.refund(paymentId, {
-         speed: "normal",
-         notes,
-       });
-       return refund;
-     } catch (error) {
-       logger.error("Razorpay refund failed", { error, paymentId });
-       throw error;
-     }
+    try {
+      const razorpay = getRazorpayInstance();
+      const refund = await razorpay.payments.refund(paymentId, {
+        speed: "normal",
+        notes,
+      });
+      return refund;
+    } catch (error) {
+      logger.error("Razorpay refund failed", { error, paymentId });
+      throw error;
+    }
   },
 };
 

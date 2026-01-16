@@ -20,7 +20,6 @@ const updateHeroSlideSchema = z.object({
 // Update a hero slide (Admin)
 export async function updateHeroSlide(req: Request, res: Response) {
   const { id } = req.params;
-  console.log(`[UpdateSlide] ID: ${id}, Body:`, req.body); // Debug log
 
   const result = updateHeroSlideSchema.safeParse(req.body);
 

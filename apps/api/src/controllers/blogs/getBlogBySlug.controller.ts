@@ -7,26 +7,19 @@ export async function getBlogBySlug(req: Request, res: Response) {
   const user = req.user; // Types verified in express.d.ts
   const permissions = req.permissions || [];
 
-  const canViewInternal = permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
-
-  console.log(`[getBlogBySlug] Request for slug: ${slug}`);
-  console.log(`[getBlogBySlug] User: ${user?.id} (CanViewInternal: ${canViewInternal})`);
+  const canViewInternal =
+    permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 
   const whereCondition: any = { slug };
-  
+
   if (!canViewInternal) {
     if (user) {
       // Allow if PUBLISHED or if the user is the author
-      whereCondition.OR = [
-        { status: "PUBLISHED" },
-        { authorId: user.id }
-      ];
+      whereCondition.OR = [{ status: "PUBLISHED" }, { authorId: user.id }];
     } else {
       whereCondition.status = "PUBLISHED";
     }
   }
-
-  console.log(`[getBlogBySlug] Query: ${JSON.stringify(whereCondition)}`);
 
   const blog = await prisma.blog.findFirst({
     // where: whereCondition,

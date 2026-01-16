@@ -11,18 +11,6 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
   const user = await userService.updateProfile(userId, req.body);
 
   return ApiResponse.success(res, "Profile updated successfully", {
-    user: {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      nickname: user.nickname,
-      bio: user.bio,
-      age: user.age,
-      gender: user.gender,
-      phoneNumber: user.phoneNumber,
-      address: user.address,
-      avatarImage: user.avatarImage,
-      preferences: user.preferences,
-    },
+    user,
   });
 });

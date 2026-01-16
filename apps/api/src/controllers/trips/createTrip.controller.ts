@@ -4,8 +4,6 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 
 export const createTrip = catchAsync(async (req: Request, res: Response) => {
-  console.log("DEBUG: createTrip controller hit with body:", JSON.stringify(req.body, null, 2));
-
   const user = (req as any).user;
 
   const trip = await prisma.trip.create({

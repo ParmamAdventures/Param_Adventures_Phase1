@@ -61,7 +61,6 @@ export class AuthService {
     const accessToken = signAccessToken(user.id);
     const refreshToken = signRefreshToken(user.id);
 
-    console.log(`[AuthService] Login successful for: ${email}`);
     await auditService.logAudit({
       actorId: user.id,
       action: "USER_LOGIN",
@@ -77,7 +76,6 @@ export class AuthService {
     try {
       const payload = verifyRefreshToken(token);
       const newAccessToken = signAccessToken(payload.sub);
-      console.log(`[AuthService] Token refreshed for user: ${payload.sub}`);
       return { accessToken: newAccessToken };
     } catch (error) {
       console.error(`[AuthService] Refresh failed:`, error);
@@ -106,7 +104,7 @@ export class AuthService {
         where: { id: payload.sub },
         data: { password: hashedPassword },
       });
-    } catch (error) {
+    } catch {
       throw new Error("Invalid or expired reset token");
     }
   }
