@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { processMedia } from "../../utils/mediaProcessor";
 import { HttpError } from "../../utils/httpError";
 
 export async function uploadTripCover(req: Request, res: Response) {

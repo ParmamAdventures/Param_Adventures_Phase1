@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
-import { ApiResponse } from "../../utils/ApiResponse";
 
 export const checkReviewEligibility = catchAsync(async (req: Request, res: Response) => {
   const { tripId } = req.params;
@@ -19,7 +18,7 @@ export const checkReviewEligibility = catchAsync(async (req: Request, res: Respo
     },
   });
   */
- 
+
   // For stabilization/testing phase, we relax this or check just Booking existence
   const booking = await prisma.booking.findFirst({
     where: {
@@ -38,13 +37,9 @@ export const checkReviewEligibility = catchAsync(async (req: Request, res: Respo
     return res.json({ eligible: false, reason: "You have already reviewed this trip." });
   }
 
-  // If strict: if (!booking) return res.json({ eligible: false, reason: "You haven't booked this trip." });
-  
-  // For now, return eligible = true to allow testing (or strictly check booking if user prefers)
-  // Given user asked "add reviews by users", likely wants to test it easily.
-  // But I will simulate "true" for all users for now to remove friction, or strictly check booking if needed.
-  // Let's check booking existance at least.
-  
-  // Actually, let's allow it for now for any logged in user to facilitate testing
+  if (!booking) {
+    return res.json({ eligible: false, reason: "You need a booking for this trip." });
+  }
+
   return res.json({ eligible: true });
 });

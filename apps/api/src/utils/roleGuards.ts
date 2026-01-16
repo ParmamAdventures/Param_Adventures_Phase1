@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 
-export async function isLastSuperAdmin(userId: string) {
+export async function isLastSuperAdmin(_userId: string) {
   const superAdminRole = await prisma.role.findUnique({
     where: { name: "SUPER_ADMIN" },
   });

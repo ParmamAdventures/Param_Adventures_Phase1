@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { mockDeep, DeepMockProxy } from "jest-mock-extended";
+import { mockDeep } from "jest-mock-extended";
 import { PrismaClient } from "@prisma/client";
 
 // 1. Setup Mock

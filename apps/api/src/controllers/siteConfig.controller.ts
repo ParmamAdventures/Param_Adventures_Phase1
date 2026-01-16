@@ -14,7 +14,7 @@ export const getSiteConfigs = async (req: Request, res: Response) => {
     );
 
     res.json(configMap);
-  } catch (error) {
+  } catch {
     res.status(500).json({ message: "Error fetching site configs" });
   }
 };
@@ -36,6 +36,11 @@ export const updateSiteConfig = async (req: Request, res: Response) => {
     res.json(updated);
   } catch (error) {
     console.error("Error updating site config:", error);
-    res.status(500).json({ message: "Error updating site config", error: error instanceof Error ? error.message : "Unknown error" });
+    res
+      .status(500)
+      .json({
+        message: "Error updating site config",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
   }
 };

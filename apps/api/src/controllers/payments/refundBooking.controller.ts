@@ -17,16 +17,17 @@ export const refundBooking = async (req: Request, res: Response) => {
   }
 
   // Find a captured payment to refund (Assuming single payment for now)
-  const paymentToRefund = booking.payments.find(p => p.status === "CAPTURED" || p.status === "AUTHORIZED");
+  const paymentToRefund = booking.payments.find(
+    (p) => p.status === "CAPTURED" || p.status === "AUTHORIZED",
+  );
 
   if (!paymentToRefund || !paymentToRefund.providerPaymentId) {
     throw new HttpError(400, "BAD_REQUEST", "No refundable payment found for this booking");
   }
 
   if (booking.status === "CANCELLED" && paymentToRefund.status === "REFUNDED") {
-     throw new HttpError(400, "BAD_REQUEST", "Booking is already cancelled and refunded");
+    throw new HttpError(400, "BAD_REQUEST", "Booking is already cancelled and refunded");
   }
-
 
   try {
     // 1. Process Refund with Razorpay
@@ -37,7 +38,7 @@ export const refundBooking = async (req: Request, res: Response) => {
 
     // 2. Update Database
     // Update Payment record
-    const updatedPayment = await prisma.payment.update({
+    await prisma.payment.update({
       where: { id: paymentToRefund.id },
       data: {
         status: "REFUNDED",
@@ -51,9 +52,16 @@ export const refundBooking = async (req: Request, res: Response) => {
       data: { status: "CANCELLED" },
     });
 
-    return ApiResponse.success(res, "Refund processed successfully", { refund, booking: updatedBooking });
+    return ApiResponse.success(res, "Refund processed successfully", {
+      refund,
+      booking: updatedBooking,
+    });
   } catch (error: any) {
     console.error("Refund Controller Error:", error);
-     throw new HttpError(502, "GATEWAY_ERROR", error.error?.description || "Refund processing failed");
+    throw new HttpError(
+      502,
+      "GATEWAY_ERROR",
+      error.error?.description || "Refund processing failed",
+    );
   }
 };

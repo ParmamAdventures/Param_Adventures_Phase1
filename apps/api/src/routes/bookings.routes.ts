@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { requireAuth } from "../middlewares/auth.middleware";
-import { attachPermissions } from "../middlewares/permission.middleware";
-import { requirePermission } from "../middlewares/require-permission.middleware";
 import { getBookings } from "../controllers/bookings/getBookings.controller";
 import { getBookingById } from "../controllers/bookings/getBookingById.controller";
 import { cancelBooking } from "../controllers/bookings/cancelBooking.controller";
@@ -17,8 +15,6 @@ router.get("/me", requireAuth, getBookings);
 
 // Get single booking details
 router.get("/:id", requireAuth, getBookingById);
-
-
 // Cancel booking
 router.post("/:id/cancel", requireAuth, cancelBooking);
 

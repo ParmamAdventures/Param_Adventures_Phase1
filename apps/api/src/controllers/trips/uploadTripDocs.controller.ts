@@ -60,7 +60,7 @@ export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => 
 
   const updatedDocs = [...existingDocs, newDoc];
 
-  const updatedTrip = await prisma.trip.update({
+  await prisma.trip.update({
     where: { id },
     data: { documentation: updatedDocs } as any, // Cast for stale client
   });

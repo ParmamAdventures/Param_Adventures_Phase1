@@ -44,7 +44,7 @@ export async function updateHeroSlide(req: Request, res: Response) {
       },
     });
     return res.json(updatedSlide);
-  } catch (error) {
+  } catch {
     return res.status(404).json({ error: "Slide not found" });
   }
 }

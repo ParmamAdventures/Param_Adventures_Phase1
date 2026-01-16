@@ -64,10 +64,10 @@ async function run() {
     },
   });
 
-  const b1 = await prisma.booking.create({
+  await prisma.booking.create({
     data: { userId: u1.id, tripId: trip.id, status: "REQUESTED" },
   });
-  const b2 = await prisma.booking.create({
+  await prisma.booking.create({
     data: { userId: u2.id, tripId: trip.id, status: "REQUESTED" },
   });
 

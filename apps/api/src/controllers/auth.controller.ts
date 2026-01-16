@@ -192,7 +192,7 @@ export const googleCallback = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Generate Session
-  const { accessToken, refreshToken } = await authService.login(user.email);
+  const { refreshToken } = await authService.login(user.email);
 
   // Set Refresh Cookie
   res.cookie("refresh_token", refreshToken, {

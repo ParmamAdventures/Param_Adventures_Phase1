@@ -18,25 +18,25 @@ describe("Booking Integration", () => {
     // Clean up
     try {
       await prisma.review.deleteMany();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     try {
       await prisma.savedTrip.deleteMany();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     try {
       await prisma.blog.deleteMany();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     try {
       await prisma.payment.deleteMany();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     try {
       await prisma.booking.deleteMany();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     try {
       await prisma.trip.deleteMany();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     try {
       await prisma.user.deleteMany();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
 
     // Create user
     const user = await prisma.user.create({

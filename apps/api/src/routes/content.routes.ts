@@ -4,7 +4,6 @@ import { getPublicStats } from "../controllers/content/stats.controller";
 import * as SiteConfigController from "../controllers/siteConfig.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
-import { requirePermission } from "../middlewares/require-permission.middleware";
 
 const router = Router();
 

@@ -33,7 +33,7 @@ import fetch from "node-fetch";
       data: { userId: user.id, tripId: trip.id, status: "CONFIRMED" },
     });
     const orderId = `order_test_${Date.now()}`;
-    const payment = await prisma.payment.create({
+    await prisma.payment.create({
       data: {
         bookingId: booking.id,
         provider: "razorpay",
@@ -73,7 +73,7 @@ import fetch from "node-fetch";
     console.error(e);
     try {
       await prisma.$disconnect();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     process.exit(1);
   }
 })();

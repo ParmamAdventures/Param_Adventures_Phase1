@@ -13,9 +13,6 @@ async function main() {
 
   // 2a. Handle Image
   console.log("Ensuring cover image exists...");
-  const admin = await prisma.user.findFirst({
-    where: { roles: { some: { role: { name: "SUPER_ADMIN" } } } },
-  }); // Need an uploader
 
   const coverImage = await prisma.image.create({
     data: {

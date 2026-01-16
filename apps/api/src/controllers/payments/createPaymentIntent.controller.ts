@@ -57,7 +57,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
       receipt: booking.id,
     });
     finalOrder = order;
-  } catch (e: any) {
+  } catch {
     if (!razorpayConfigured) {
       if (env.NODE_ENV === "production") {
         throw new HttpError(

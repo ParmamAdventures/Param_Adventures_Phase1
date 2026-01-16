@@ -18,7 +18,7 @@ export async function approveBooking(req: Request, res: Response) {
 
       try {
         assertBookingTransition(booking.status as any, "approve");
-      } catch (err: any) {
+      } catch {
         throw new HttpError(
           403,
           "INVALID_BOOKING_TRANSITION",

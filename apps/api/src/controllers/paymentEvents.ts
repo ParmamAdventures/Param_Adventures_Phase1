@@ -26,7 +26,7 @@ export async function handlePaymentCaptured(event: any) {
     try {
       const { incReplay } = await import("../metrics/webhookMetrics");
       incReplay();
-    } catch (e) {
+    } catch {
       // non-fatal
     }
     return;
@@ -76,7 +76,7 @@ export async function handlePaymentFailed(event: any) {
     try {
       const { incReplay } = await import("../metrics/webhookMetrics");
       incReplay();
-    } catch (e) {
+    } catch {
       // non-fatal
     }
     return;

@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import { requireAuth } from "../../middlewares/auth.middleware";
 
 export async function getBlogById(req: Request, res: Response) {
   const { id } = req.params;

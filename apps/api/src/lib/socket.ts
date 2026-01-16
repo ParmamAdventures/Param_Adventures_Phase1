@@ -39,7 +39,7 @@ export function initSocket(httpServer: any) {
       const payload = verifyAccessToken(actualToken);
       (socket as any).userId = payload.sub;
       next();
-    } catch (err) {
+    } catch {
       next(new Error("Authentication error: Invalid token"));
     }
   });

@@ -1,5 +1,5 @@
 import { prisma } from "../src/lib/prisma";
-import { forgotPassword, resetPassword } from "../src/controllers/auth.controller";
+import { resetPassword } from "../src/controllers/auth.controller";
 import { Request, Response } from "express";
 
 // Mock Express Request/Response

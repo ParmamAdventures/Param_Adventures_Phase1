@@ -28,7 +28,7 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
   let event: any;
   try {
     event = JSON.parse(payloadString);
-  } catch (err) {
+  } catch {
     throw new HttpError(400, "INVALID_PAYLOAD", "Invalid JSON payload");
   }
 

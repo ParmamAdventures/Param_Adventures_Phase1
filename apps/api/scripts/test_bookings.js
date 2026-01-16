@@ -53,7 +53,7 @@ async function main() {
         notes: "Duplicate booking attempt",
       },
     });
-  } catch (err) {
+  } catch {
     duplicateErrored = true;
     console.log("Duplicate booking rejected as expected");
   }

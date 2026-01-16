@@ -42,7 +42,7 @@ import { PrismaClient  } from "@prisma/client";
     let loginBody = null;
     try {
       loginBody = JSON.parse(loginText);
-    } catch (e) {
+    } catch {
       console.error("Login failed or returned non-json:", loginRes.status, loginText);
       process.exit(3);
     }
@@ -67,7 +67,7 @@ import { PrismaClient  } from "@prisma/client";
     let intentBody = null;
     try {
       intentBody = JSON.parse(intentText);
-    } catch (e) {
+    } catch {
       intentBody = intentText;
     }
 
@@ -110,7 +110,7 @@ import { PrismaClient  } from "@prisma/client";
     console.error(e);
     try {
       await prisma.$disconnect();
-    } catch (_e) { /* ignored */ }
+    } catch { /* ignored */ }
     process.exit(1);
   }
 })();

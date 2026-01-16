@@ -3,7 +3,6 @@ import { prisma } from "../../src/lib/prisma";
 import { hashPassword, verifyPassword } from "../../src/utils/password";
 import { signAccessToken, signRefreshToken } from "../../src/utils/jwt";
 import { auditService } from "../../src/services/audit.service";
-import { notificationService } from "../../src/services/notification.service";
 
 jest.mock("../../src/lib/prisma", () => ({
   prisma: {

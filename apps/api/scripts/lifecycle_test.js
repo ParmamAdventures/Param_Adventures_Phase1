@@ -10,7 +10,7 @@ async function req(path, opts = {}) {
   let body = null;
   try {
     body = JSON.parse(text);
-  } catch (e) {
+  } catch {
     body = text;
   }
   return { status: res.status, body };

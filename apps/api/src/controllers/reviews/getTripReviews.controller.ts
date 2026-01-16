@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
-import { ApiResponse } from "../../utils/ApiResponse";
 
 export const getTripReviews = catchAsync(async (req: Request, res: Response) => {
   const { tripId } = req.params;

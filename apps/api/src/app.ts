@@ -5,7 +5,6 @@ import "./instrument"; // Must be imported before other imports potentially
 import express from "express";
 import cors from "cors";
 import * as Sentry from "@sentry/node"; // Still needed for error handler types
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import path from "path";

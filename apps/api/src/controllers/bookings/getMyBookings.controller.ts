@@ -6,7 +6,7 @@ export async function getMyBookings(req: Request, res: Response) {
     const userId = (req as any).user.id;
     const bookings = await bookingService.getMyBookings(userId);
     res.json(bookings);
-  } catch (error: any) {
+  } catch {
     res.status(500).json({ error: "Failed to load bookings" });
   }
 }

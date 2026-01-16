@@ -25,7 +25,7 @@ async function start() {
         try {
             require.resolve('debug');
             console.log("✅ 'debug' module found!");
-        } catch (e) {
+        } catch {
             console.error("❌ 'debug' module NOT found even after install!");
         }
 

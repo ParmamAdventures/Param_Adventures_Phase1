@@ -22,7 +22,7 @@ function fixCatchBlocks(content) {
     content
       // catch (/* comment only */) {} -> catch (/* comment only */) {}
       // Need to add underscore parameter
-      .replace(/catch\s*\(\s*\/\*[^*]*\*\/\s*\)\s*\{\s*\}/g, (match) => {
+      .replace(/catch\s*\(\s*\/\*[^*]*\*\/\s*\)\s*\{\s*\}/g, (_match) => {
         return "catch (/* ignored */) {}"; // Keep as is for now
       })
       // But the actual issue seems to be the missing parameter - let's use _e instead
