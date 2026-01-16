@@ -4,6 +4,7 @@ import { razorpayService } from "../../services/razorpay.service";
 import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
 import { env } from "../../config/env";
+import { notificationQueue } from "../../lib/queue";
 
 export async function initiatePayment(req: Request, res: Response) {
   const userId = (req.user as any).id;
@@ -70,6 +71,21 @@ export async function initiatePayment(req: Request, res: Response) {
         rawPayload: order as any,
       },
     });
+
+    // Send Payment Initiated Notification (Async)
+    try {
+      await notificationQueue.add("SEND_PAYMENT_INITIATED", {
+        userId: booking.userId,
+        details: {
+          tripTitle: booking.trip.title,
+          amount: amountInPaise,
+          orderId: order.id
+        }
+      });
+    } catch (err) {
+      logger.error("Failed to queue initiation email", { error: err });
+      // Non-blocking, continue
+    }
 
     res.status(200).json({
       success: true,

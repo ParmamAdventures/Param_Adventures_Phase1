@@ -285,14 +285,15 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1.5 hours
   - Priority: MEDIUM
 
-- [ ] **FEAT-010**: Implement email notifications for payments
-  - Status: Not Started
-  - Location: apps/api/src/services/email.service.ts
+- [x] **FEAT-010**: Implement email notifications for payments
+  - Status: ✅ COMPLETED
+  - Results: Added `sendPaymentInitiated` and `sendPaymentFailed` to `notificationService`. Updated Queue to handle these jobs. integrated triggers in `initiatePayment` and `paymentEvents` webhook handler. Verified via manual script.
+  - Location: apps/api/src/services/notification.service.ts, apps/api/src/lib/queue.ts, apps/api/src/controllers/payments/initiatePayment.controller.ts
   - Requirements:
     - Payment initiated email
-    - Payment confirmed email
+    - Payment confirmed email (Already existed)
     - Payment failed email
-    - Refund processed email
+    - Refund processed email (Already existed)
   - Estimated time: 1 hour
   - Priority: HIGH
 

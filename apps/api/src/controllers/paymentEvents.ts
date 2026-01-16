@@ -121,6 +121,30 @@ export async function handlePaymentFailed(event: any) {
       },
     }),
   ]);
+
+  // Send Notification (Async)
+  const booking = await prisma.booking.findUnique({
+    where: { id: payment.bookingId },
+    include: { trip: true }
+  });
+
+  if (booking) {
+    const payload = event.payload?.payment?.entity;
+    const reason = payload?.error_description || payload?.error_code || "Transaction failed";
+    
+    try {
+      await notificationQueue.add("SEND_PAYMENT_FAILED", {
+          userId: booking.userId,
+          details: {
+              tripTitle: booking.trip.title,
+              amount: payment.amount,
+              reason: reason
+          }
+      });
+    } catch (err) {
+      console.error("Failed to queue failure notification:", err);
+    }
+  }
 }
 
 export async function handleRefundProcessed(event: any) {

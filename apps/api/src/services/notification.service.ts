@@ -163,6 +163,42 @@ class NotificationService {
     `;
     return this.sendEmail({ to: email, subject: "Refund Processed: " + refundDetails.tripTitle, html });
   }
+
+  async sendPaymentInitiated(email: string, details: any) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+        <h2 style="color: #3b82f6;">Payment Initiated 💳</h2>
+        <p>Hi <strong>${details.userName}</strong>,</p>
+        <p>You have initiated a payment of <strong>₹${details.amount / 100}</strong> for <strong>${details.tripTitle}</strong>.</p>
+        <div style="background: #eff6ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0;"><strong>Order ID:</strong> ${details.orderId}</p>
+          <p style="margin: 5px 0 0 0;"><strong>Status:</strong> PENDING</p>
+        </div>
+        <p>If you haven't completed the payment yet, please do so via your dashboard.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
+      </div>
+    `;
+    return this.sendEmail({ to: email, subject: "Payment Initiated: " + details.tripTitle, html });
+  }
+
+  async sendPaymentFailed(email: string, details: any) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+        <h2 style="color: #ef4444;">Payment Failed ❌</h2>
+        <p>Hi <strong>${details.userName}</strong>,</p>
+        <p>We encountered an issue processing your payment for <strong>${details.tripTitle}</strong>.</p>
+        <div style="background: #fef2f2; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0;"><strong>Amount:</strong> ₹${details.amount / 100}</p>
+           <p style="margin: 5px 0 0 0;"><strong>Reason:</strong> ${details.reason || "Transaction declined"}</p>
+        </div>
+        <p>Please try again or contact support if the issue persists.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
+      </div>
+    `;
+    return this.sendEmail({ to: email, subject: "Action Required: Payment Failed", html });
+  }
 }
 
 export const notificationService = new NotificationService();
