@@ -2,10 +2,11 @@ import { Queue, Worker, Job } from "bullmq";
 import { redisConnection } from "./redis";
 import { prisma } from "./prisma";
 import { notificationService } from "../services/notification.service";
+import { paymentService } from "../services/payment.service";
 import { emitToUser } from "./socket";
 
 // Define Job Data Types
-export type JobType = "SEND_BOOKING_EMAIL" | "SEND_PAYMENT_EMAIL" | "SEND_ASSIGNMENT_EMAIL" | "SEND_REFUND_EMAIL";
+export type JobType = "SEND_BOOKING_EMAIL" | "SEND_PAYMENT_EMAIL" | "SEND_ASSIGNMENT_EMAIL" | "SEND_REFUND_EMAIL" | "RECONCILE_PAYMENT";
 
 interface JobData {
   type: JobType;
@@ -30,8 +31,9 @@ export const notificationQueue = new Queue(QUEUE_NAME, {
 // 2. Create the Worker
 export const notificationWorker = new Worker(
   QUEUE_NAME,
-  async (job: Job<JobData>) => {
-    const { type, payload } = job.data;
+  async (job: Job<any>) => { // Relaxed type to allow flexible data
+    const type = job.name as JobType; 
+    const payload = job.data;
     console.log(`👷 Processing job ${job.id} of type ${type}...`);
 
     try {
@@ -88,6 +90,10 @@ export const notificationWorker = new Worker(
             message: "Refund processed successfully",
             amount: payload.details.amount
           });
+          break;
+        case "RECONCILE_PAYMENT":
+          // Payload: { paymentId: string }
+          await paymentService.reconcilePayment(payload.paymentId);
           break;
         default:
           console.warn(`❓ Unknown job type: ${type}`);

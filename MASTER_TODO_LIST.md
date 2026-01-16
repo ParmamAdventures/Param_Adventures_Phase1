@@ -252,9 +252,10 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour
   - Priority: HIGH
 
-- [ ] **FEAT-007**: Implement payment retry logic
-  - Status: Not Started
-  - Location: apps/api/src/services/payment.service.ts
+- [x] **FEAT-007**: Implement payment retry logic
+  - Status: ✅ COMPLETED
+  - Results: Implemented `paymentService.reconcilePayment` to fetch status from Razorpay. Added `RECONCILE_PAYMENT` job to Queue with exponential backoff. Integrated into verification failure flow.
+  - Location: apps/api/src/services/payment.service.ts, apps/api/src/lib/queue.ts
   - Requirements:
     - Retry failed payments up to 3 times
     - Exponential backoff

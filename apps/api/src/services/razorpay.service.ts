@@ -87,6 +87,20 @@ export const razorpayService = {
       throw error;
     }
   },
+
+  /**
+   * Fetch payment details from Razorpay
+   */
+  async fetchPayment(paymentId: string) {
+    try {
+      const razorpay = getRazorpayInstance();
+      const payment = await razorpay.payments.fetch(paymentId);
+      return payment;
+    } catch (error) {
+       logger.error("Razorpay fetch payment failed", { error, paymentId });
+       throw error;
+    }
+  }
 };
 
 // Also export individual functions for backward compatibility with existing stubs

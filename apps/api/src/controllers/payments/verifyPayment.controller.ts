@@ -19,6 +19,13 @@ export async function verifyPayment(req: Request, res: Response) {
   const isValid = razorpayService.verifyPaymentSignature(orderId, paymentId, signature);
 
   if (!isValid) {
+    logger.warn("Signature verification failed. Enqueuing reconciliation.", { orderId });
+    // Attempt to reconcile: maybe it succeeded but our secret was wrong/rotated?
+    // Often invalid signature means tampering, but sometimes safe to check remote status.
+    const payRec = await prisma.payment.findUnique({ where: { providerOrderId: orderId } });
+    if (payRec) {
+        await notificationQueue.add("RECONCILE_PAYMENT", { paymentId: payRec.id });
+    }
     throw new HttpError(400, "INVALID_SIGNATURE", "Payment verification failed");
   }
 
