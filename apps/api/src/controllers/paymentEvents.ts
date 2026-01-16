@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { logWebhookReplay } from "../utils/webhookLogger";
+import { notificationQueue } from "../lib/queue";
 
 export async function handlePaymentCaptured(event: any) {
   const paymentEntity = event.payload?.payment?.entity;
@@ -49,6 +50,28 @@ export async function handlePaymentCaptured(event: any) {
       },
     }),
   ]);
+
+  // Send Notification (Async, non-blocking)
+  const booking = await prisma.booking.findUnique({
+      where: { id: payment.bookingId },
+      include: { trip: true }
+  });
+
+  if (booking) {
+      try {
+        await notificationQueue.add("SEND_PAYMENT_EMAIL", {
+            userId: booking.userId,
+            details: {
+                tripTitle: booking.trip.title,
+                amount: payment.amount,
+                bookingId: booking.id,
+                paymentId: payment.id
+            }
+        });
+      } catch (err) {
+        console.error("Failed to queue notification:", err);
+      }
+  }
 }
 
 export async function handlePaymentFailed(event: any) {
@@ -127,4 +150,26 @@ export async function handleRefundProcessed(event: any) {
       },
     }),
   ]);
+
+  // Send Notification (Async, non-blocking)
+  const booking = await prisma.booking.findUnique({
+      where: { id: payment.bookingId },
+      include: { trip: true }
+  });
+
+  if (booking) {
+      try {
+        await notificationQueue.add("SEND_REFUND_EMAIL", {
+            userId: booking.userId,
+            details: {
+                tripTitle: booking.trip.title,
+                amount: refundEntity?.amount || 0,
+                bookingId: booking.id,
+                refundId: refundEntity?.id
+            }
+        });
+      } catch (err) {
+        console.error("Failed to queue refund notification:", err);
+      }
+  }
 }
