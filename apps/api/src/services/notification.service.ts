@@ -144,6 +144,25 @@ class NotificationService {
     `;
     return this.sendEmail({ to: email, subject: "Reset Your Password", html });
   }
+
+  async sendRefundEmail(email: string, refundDetails: any) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+        <h2 style="color: #6366f1;">Refund Processed 💸</h2>
+        <p>Hi <strong>${refundDetails.userName}</strong>,</p>
+        <p>A refund has been processed for your booking <strong>${refundDetails.tripTitle}</strong>.</p>
+        <div style="background: #eef2ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <p style="margin: 0;"><strong>Amount Refunded:</strong> ₹${refundDetails.amount / 100}</p>
+          <p style="margin: 5px 0 0 0;"><strong>Booking Status:</strong> CANCELLED</p>
+          <p style="margin: 5px 0 0 0;"><strong>Reference ID:</strong> ${refundDetails.refundId}</p>
+        </div>
+        <p>The amount should reflect in your account within 5-7 business days.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
+      </div>
+    `;
+    return this.sendEmail({ to: email, subject: "Refund Processed: " + refundDetails.tripTitle, html });
+  }
 }
 
 export const notificationService = new NotificationService();

@@ -5,7 +5,7 @@ import { notificationService } from "../services/notification.service";
 import { emitToUser } from "./socket";
 
 // Define Job Data Types
-export type JobType = "SEND_BOOKING_EMAIL" | "SEND_PAYMENT_EMAIL" | "SEND_ASSIGNMENT_EMAIL";
+export type JobType = "SEND_BOOKING_EMAIL" | "SEND_PAYMENT_EMAIL" | "SEND_ASSIGNMENT_EMAIL" | "SEND_REFUND_EMAIL";
 
 interface JobData {
   type: JobType;
@@ -76,6 +76,17 @@ export const notificationWorker = new Worker(
           emitToUser(payload.userId, "assignment_update", {
             role: payload.role,
             tripTitle: payload.details.tripTitle,
+          });
+          break;
+        case "SEND_REFUND_EMAIL":
+          await notificationService.sendRefundEmail(user!.email, {
+             ...payload.details,
+             userName: user!.name || user!.email,
+          });
+          emitToUser(payload.userId, "refund_update", {
+            status: "REFUNDED",
+            message: "Refund processed successfully",
+            amount: payload.details.amount
           });
           break;
         default:

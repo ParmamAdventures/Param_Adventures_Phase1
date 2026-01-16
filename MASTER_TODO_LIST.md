@@ -205,8 +205,9 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour
   - Priority: HIGH
 
-- [ ] **FEAT-003**: Implement POST /bookings/:id/refund
-  - Status: Not Started
+- [x] **FEAT-003**: Implement POST /bookings/:id/refund
+  - Status: ✅ COMPLETED
+  - Results: Implemented refund controller with Admin check, confirmed Razorpay refund call, DB updates (Payment: REFUNDED, Booking: CANCELLED), and added email notification. Verified via manual test (Admin success, User denied).
   - Location: apps/api/src/controllers/payments/refundBooking.controller.ts
   - Requirements:
     - Check admin permission

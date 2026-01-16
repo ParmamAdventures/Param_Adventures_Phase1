@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { razorpayService } from "../../services/razorpay.service";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { notificationQueue } from "../../lib/queue";
 import { HttpError } from "../../utils/httpError";
 
 export const refundBooking = async (req: Request, res: Response) => {
@@ -9,7 +10,7 @@ export const refundBooking = async (req: Request, res: Response) => {
 
   const booking = await prisma.booking.findUnique({
     where: { id },
-    include: { payments: true },
+    include: { payments: true, trip: true }, // Include trip for email details
   });
 
   if (!booking) {
@@ -41,15 +42,25 @@ export const refundBooking = async (req: Request, res: Response) => {
     await prisma.payment.update({
       where: { id: paymentToRefund.id },
       data: {
-        status: "REFUNDED",
         razorpayRefundId: refund.id,
-      } as any,
+      },
     });
 
     // Update Booking Status to CANCELLED (since we refunded it)
     const updatedBooking = await prisma.booking.update({
       where: { id: booking.id },
       data: { status: "CANCELLED" },
+    });
+
+    // 3. Send Notification
+    await notificationQueue.add("SEND_REFUND_EMAIL", {
+      userId: booking.userId,
+      details: {
+        tripTitle: booking.trip.title,
+        amount: refund.amount,
+        bookingId: booking.id,
+        refundId: refund.id
+      }
     });
 
     return ApiResponse.success(res, "Refund processed successfully", {
