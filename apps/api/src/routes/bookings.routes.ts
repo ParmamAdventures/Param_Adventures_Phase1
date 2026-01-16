@@ -4,6 +4,7 @@ import { getBookings } from "../controllers/bookings/getBookings.controller";
 import { getBookingById } from "../controllers/bookings/getBookingById.controller";
 import { cancelBooking } from "../controllers/bookings/cancelBooking.controller";
 import { createBooking } from "../controllers/bookings/createBooking.controller";
+import { initiatePayment } from "../controllers/payments/initiatePayment.controller";
 
 const router = Router();
 
@@ -17,6 +18,9 @@ router.get("/me", requireAuth, getBookings);
 router.get("/:id", requireAuth, getBookingById);
 // Cancel booking
 router.post("/:id/cancel", requireAuth, cancelBooking);
+
+// Initiate Payment
+router.post("/:id/initiate-payment", requireAuth, initiatePayment);
 
 // Refund booking (Super Admin Only)
 import { refundBooking } from "../controllers/payments/refundBooking.controller";

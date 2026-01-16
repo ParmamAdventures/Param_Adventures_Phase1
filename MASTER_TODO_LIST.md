@@ -179,8 +179,8 @@ e5af6da FIX-006: Standardize error handling responses
 
 ## Payment Integration
 
-- [ ] **FEAT-001**: Implement POST /bookings/:id/initiate-payment
-  - Status: Not Started
+- [x] **FEAT-001**: Implement POST /bookings/:id/initiate-payment
+  - Status: ✅ COMPLETED
   - Location: apps/api/src/controllers/payments/initiatePayment.controller.ts
   - Requirements:
     - Validate booking exists and is PENDING
