@@ -31,7 +31,7 @@
 | **FIX-003** | `2b4bf4f`  | Any types + require fixes         | 265 → 255 (0 ERRORS!)                                                          | ✅     |
 | **FIX-004** | `87a303f`  | Query optimization + JSON types   | Parallelized monthly aggregates; `guestDetails` typed as Prisma.InputJsonValue | ✅     |
 | **FIX-005** | `7228986`  | Validation logging + error typing | Preserved legacy validation response; standardized logger usage                | ✅     |
-| **FIX-006** | (pending)  | Error handling standardization    | Unified error responses, Prisma known error mapping, headers-sent guard        | ✅     |
+| **FIX-006** | `e5af6da`  | Error handling standardization    | Unified error responses, Prisma known error mapping, headers-sent guard        | ✅     |
 
 ### 📊 Final Metrics
 
@@ -51,7 +51,7 @@ Files Changed: 44 code files + 31 supporting files (documentation, scripts, test
 f8d9418 FIX-001: Convert 43+ JavaScript files to ES6 imports
 87a303f FIX-004: Analytics optimization and JSON typing fix
 7228986 FIX-005: Validation logging and error handler typing; preserved response shape
-<pending> FIX-006: Error handling standardization
+e5af6da FIX-006: Standardize error handling responses
 ```
 
 ### ⏭️ Next Steps (FIX-004+)
@@ -139,7 +139,7 @@ f8d9418 FIX-001: Convert 43+ JavaScript files to ES6 imports
   - Tests verified: 1 failed suite (payments) — baseline unchanged
   - ESLint: 0 errors; warnings unchanged
   - Time taken: 20 mins
-  - Git Commit: <pending>
+  - Git Commit: e5af6da
   - Priority: CRITICAL
 
 - [ ] **FIX-007**: Standardize validation in all controllers
