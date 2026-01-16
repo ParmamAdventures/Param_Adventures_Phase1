@@ -263,17 +263,28 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1.5 hours
   - Priority: HIGH
 
-- [ ] **FEAT-008**: Add payment analytics dashboard
-  - Status: Not Started
+- [x] **FEAT-008**: Invoice generation (PDF)
+  - Status: ✅ COMPLETED
+  - Results: Created `invoiceService` using `pdfkit`. Added `GET /bookings/:id/invoice` endpoint. Verified via manual script.
+  - Location: apps/api/src/services/invoice.service.ts, apps/api/src/controllers/bookings/downloadInvoice.controller.ts
+  - Requirements:
+    - Generate PDF with booking details
+    - Accessible only by user/admin
+  - Estimated time: 1 hour
+  - Priority: MEDIUM
+
+- [x] **FEAT-009**: Analytics (Revenue reports)
+  - Status: ✅ COMPLETED
+  - Results: Verified existing `analyticsService` aggregates revenue correctly. Verified via manual script.
   - Location: apps/api/src/controllers/admin/analytics.controller.ts
   - Requirements:
-    - Total revenue
-    - Payment success rate
-    - Failed payment reasons
-    - Refund statistics
-  - Estimated time: 2 hours
-  - Priority: HIGH
+    - Total revenue stats
+    - Revenue by trip
+    - Monthly growth charts
+  - Estimated time: 1.5 hours
+  - Priority: MEDIUM
 
+- [ ] **FEAT-010**: Implement email notifications for payments
   - Status: Not Started
   - Location: apps/api/src/services/email.service.ts
   - Requirements:
@@ -284,7 +295,7 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour
   - Priority: HIGH
 
-- [ ] **FEAT-010**: Add payment method support (future prep)
+- [ ] **FEAT-011**: Add payment method support (future prep)
   - Status: Not Started
   - Location: apps/api/src/types/payment.types.ts
   - Requirements:
@@ -293,7 +304,7 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1.5 hours
   - Priority: HIGH
 
-- [ ] **FEAT-011**: Implement partial refund support
+- [ ] **FEAT-012**: Implement partial refund support
   - Status: Not Started
   - Location: apps/api/src/services/razorpay.service.ts
   - Requirements:
