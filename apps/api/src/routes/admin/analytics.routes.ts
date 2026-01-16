@@ -3,6 +3,7 @@ import {
   getRevenueSummary,
   getTripPerformance,
   getBookingStats,
+  getPaymentStats,
   getModerationSummary,
 } from "../../controllers/admin/analytics.controller";
 import { requireAuth } from "../../middlewares/auth.middleware";
@@ -18,6 +19,7 @@ router.use(requirePermission("analytics:view"));
 router.get("/revenue", getRevenueSummary);
 router.get("/trips", getTripPerformance);
 router.get("/bookings", getBookingStats);
+router.get("/payments", getPaymentStats);
 router.get("/moderation-summary", getModerationSummary);
 
 export default router;

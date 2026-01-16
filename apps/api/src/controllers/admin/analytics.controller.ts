@@ -1,3 +1,4 @@
+
 import { Request, Response } from "express";
 import { analyticsService } from "../../services/analytics.service";
 
@@ -27,6 +28,16 @@ export async function getBookingStats(req: Request, res: Response) {
     res.json(stats);
   } catch (error) {
     console.error("Failed to fetch booking stats", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export async function getPaymentStats(req: Request, res: Response) {
+  try {
+    const stats = await analyticsService.getPaymentStats();
+    res.json(stats);
+  } catch (error) {
+    console.error("Failed to fetch payment stats", error);
     res.status(500).json({ error: "Internal server error" });
   }
 }

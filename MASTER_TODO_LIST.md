@@ -275,12 +275,13 @@ e5af6da FIX-006: Standardize error handling responses
 
 - [x] **FEAT-009**: Analytics (Revenue reports)
   - Status: ✅ COMPLETED
-  - Results: Implemented `analyticsService` with `getRevenueStats` (Current/Prev/Growth), `getTripPerformance`. Verified correctly aggregates revenue from `Payment` table.
+  - Results: Implemented `analyticsService` with `getRevenueStats`, `getTripPerformance`, and `getPaymentStats`. Verified correctly aggregates revenue, success rates, failure reasons (from raw payloads), and refund stats.
   - Location: apps/api/src/controllers/admin/analytics.controller.ts, apps/api/src/services/analytics.service.ts
   - Requirements:
     - Total revenue stats
     - Revenue by trip
     - Monthly growth charts
+    - Payment Success Rate & Failure Reasons
   - Estimated time: 1.5 hours
   - Priority: MEDIUM
 
