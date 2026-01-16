@@ -6,11 +6,16 @@ import { cancelBooking } from "../controllers/bookings/cancelBooking.controller"
 import { createBooking } from "../controllers/bookings/createBooking.controller";
 import { initiatePayment } from "../controllers/payments/initiatePayment.controller";
 import { verifyPayment } from "../controllers/payments/verifyPayment.controller";
+import { getPaymentStatus } from "../controllers/payments/getPaymentStatus.controller";
+import { getPaymentHistory } from "../controllers/payments/getPaymentHistory.controller";
 
 const router = Router();
 
 // Create a new booking
 router.post("/", requireAuth, createBooking);
+
+// Get User's Payment History (Must be before /:id)
+router.get("/payments/history", requireAuth, getPaymentHistory);
 
 // Get user's bookings
 router.get("/me", requireAuth, getBookings);
@@ -24,6 +29,8 @@ router.post("/:id/cancel", requireAuth, cancelBooking);
 router.post("/:id/initiate-payment", requireAuth, initiatePayment);
 // Verify Payment
 router.post("/:id/verify-payment", requireAuth, verifyPayment);
+// Get Payment Status for a booking
+router.get("/:id/payment-status", requireAuth, getPaymentStatus);
 
 // Refund booking (Super Admin Only)
 import { refundBooking } from "../controllers/payments/refundBooking.controller";

@@ -231,9 +231,10 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1.5 hours
   - Priority: HIGH
 
-- [ ] **FEAT-005**: Add payment status endpoints
-  - Status: Not Started
-  - Location: apps/api/src/controllers/payments/
+- [x] **FEAT-005**: Add payment status endpoints
+  - Status: ✅ COMPLETED
+  - Results: Implemented `getPaymentStatus` and `getPaymentHistory`. Verified pagination, ownership security checks, and data accuracy via manual test script.
+  - Location: apps/api/src/controllers/payments/getPaymentStatus.controller.ts, apps/api/src/controllers/payments/getPaymentHistory.controller.ts
   - Requirements:
     - GET /bookings/:id/payment-status
     - GET /bookings/payments/history
