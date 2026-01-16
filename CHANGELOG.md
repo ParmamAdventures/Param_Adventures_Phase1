@@ -2,6 +2,14 @@
 
 All notable changes to the Param Adventures project will be documented in this file.
 
+## [Phase 12] - 2026-01-16 (Critical Fixes Wrap)
+### Fixed
+- Completed **FIX-007**: Removed all unused imports/variables and unused catch bindings across API source, scripts, and tests (ESLint `no-unused-vars` now 0 warnings).
+- Completed **FIX-008**: Reviewed service-layer error handling; confirmed HttpError propagation and controller `catchAsync` coverage are consistent (no code changes required).
+
+### Notes
+- All 8 critical fixes are done; next focus is HIGH priority payment features (FEAT-001–FEAT-004) and stabilizing payment test suites.
+
 ## [Phase 8] - 2025-12-31
 ### Added
 - **Dynamic Testimonials**: API endpoint and frontend component for real-time customer feedback.

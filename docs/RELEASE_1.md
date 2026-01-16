@@ -62,3 +62,8 @@ Param Adventures is a premium adventure travel platform enabling users to discov
 - **Social Network**: User-to-user messaging or social feeds are not part of Phase 1.
 - **Native Apps**: iOS and Android applications are out of scope.
 - **Multi-tenant SaaS**: The platform is a single-tenant instance for Param Adventures.
+
+## Maintenance Update (2026-01-16)
+- Completed critical fixes **FIX-001 → FIX-008** (lint clean: 0 `no-unused-vars`).
+- Service-layer error handling reviewed; patterns are consistent (no changes required).
+- Next focus: Payment feature endpoints (FEAT-001 to FEAT-004) and stabilizing payment test suite.
