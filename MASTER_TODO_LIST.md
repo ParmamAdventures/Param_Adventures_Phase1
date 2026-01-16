@@ -181,6 +181,7 @@ e5af6da FIX-006: Standardize error handling responses
 
 - [x] **FEAT-001**: Implement POST /bookings/:id/initiate-payment
   - Status: ✅ COMPLETED
+  - Results: Created initiatePayment controller, linked to bookings route, verified with manual test script (Razorpay order creation success), added error handling for invalid states.
   - Location: apps/api/src/controllers/payments/initiatePayment.controller.ts
   - Requirements:
     - Validate booking exists and is PENDING
@@ -191,8 +192,9 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour
   - Priority: HIGH
 
-- [ ] **FEAT-002**: Implement POST /bookings/:id/verify-payment
-  - Status: Not Started
+- [x] **FEAT-002**: Implement POST /bookings/:id/verify-payment
+  - Status: ✅ COMPLETED
+  - Results: Verified payment signature logic, confirmed booking status updates to CONFIRMED, payment status to CAPTURED. Integrated email notifications. Verified via manual simulation script.
   - Location: apps/api/src/controllers/payments/verifyPayment.controller.ts
   - Requirements:
     - Verify Razorpay signature

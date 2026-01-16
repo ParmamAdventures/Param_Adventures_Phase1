@@ -5,6 +5,7 @@ import { getBookingById } from "../controllers/bookings/getBookingById.controlle
 import { cancelBooking } from "../controllers/bookings/cancelBooking.controller";
 import { createBooking } from "../controllers/bookings/createBooking.controller";
 import { initiatePayment } from "../controllers/payments/initiatePayment.controller";
+import { verifyPayment } from "../controllers/payments/verifyPayment.controller";
 
 const router = Router();
 
@@ -21,6 +22,8 @@ router.post("/:id/cancel", requireAuth, cancelBooking);
 
 // Initiate Payment
 router.post("/:id/initiate-payment", requireAuth, initiatePayment);
+// Verify Payment
+router.post("/:id/verify-payment", requireAuth, verifyPayment);
 
 // Refund booking (Super Admin Only)
 import { refundBooking } from "../controllers/payments/refundBooking.controller";
