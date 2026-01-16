@@ -5,18 +5,29 @@ import { logger } from "../lib/logger";
 
 import * as Sentry from "@sentry/node";
 
-export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
-  logger.error(err.message, { stack: err.stack });
+type MaybeHttpError = {
+  status?: number;
+  code?: string;
+  message?: string;
+};
 
-  // Send error to Sentry
+export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction) {
+  // Structured error logging
+  logger.error("Unhandled error", {
+    name: err.name,
+    message: err.message,
+    stack: err.stack,
+  });
+
+  // Send error to Sentry (non-blocking)
   Sentry.captureException(err);
 
-  console.error("Global Error Handler Caught:", err); // Force console log
-
+  // HttpError: typed path without any-casts
   if (err instanceof HttpError || err.name === "HttpError") {
-    const status = (err as any).status || 500;
-    const code = (err as any).code || "INTERNAL_ERROR";
-    const message = err.message || "Internal Server Error";
+    const httpErr = err as HttpError;
+    const status = httpErr.status ?? 500;
+    const code = httpErr.code ?? "INTERNAL_ERROR";
+    const message = httpErr.message ?? "Internal Server Error";
     return res.status(status).json({ error: { code, message } });
   }
 
@@ -40,12 +51,18 @@ export function errorHandler(err: Error, _req: Request, res: Response, _next: Ne
     });
   }
 
-  res.status(500).json({
+  // Fallback: try read status/code if present on unknown error
+  const maybe = err as MaybeHttpError;
+  const status = typeof maybe.status === "number" ? maybe.status : 500;
+  const code = typeof maybe.code === "string" ? maybe.code : "INTERNAL_ERROR";
+  const message = err.message || "Internal Server Error";
+
+  res.status(status).json({
     error: {
-      code: "INTERNAL_ERROR",
-      message: process.env.NODE_ENV === "development" 
-        ? (err.message || "Internal Server Error") 
-        : "Internal Server Error", // Always generic for non-dev
+      code,
+      message: process.env.NODE_ENV === "development"
+        ? message
+        : "Internal Server Error",
       ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
     },
   });
