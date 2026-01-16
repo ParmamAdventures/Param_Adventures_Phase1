@@ -37,7 +37,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   // Fetch full user details with roles and permissions
   const { prisma } = await import("../lib/prisma");
 
-  const user = await prisma.user.findUnique({
+  const user = (await prisma.user.findUnique({
     where: { id: authUser.id },
     select: {
       id: true,
@@ -64,7 +64,7 @@ export const login = catchAsync(async (req: Request, res: Response) => {
         },
       },
     },
-  }) as UserWithRoles | null;
+  })) as UserWithRoles | null;
 
   const userRoles = (user?.roles ?? []).map((r) => r.role.name);
 
@@ -73,7 +73,9 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     include: { permission: true },
   });
 
-  const permissions = Array.from(new Set(rolePermissions.map((rp: RolePermissionRow) => rp.permission.key)));
+  const permissions = Array.from(
+    new Set(rolePermissions.map((rp: RolePermissionRow) => rp.permission.key)),
+  );
 
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
@@ -87,7 +89,6 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     user: { ...user, roles: userRoles, permissions },
   });
 });
-
 
 export const refresh = catchAsync(async (req: Request, res: Response) => {
   const token = req.cookies?.refresh_token;
@@ -150,7 +151,9 @@ export const me = catchAsync(async (req: Request, res: Response) => {
     include: { permission: true },
   });
 
-  const permissions = Array.from(new Set(rolePermissions.map((rp: RolePermissionRow) => rp.permission.key)));
+  const permissions = Array.from(
+    new Set(rolePermissions.map((rp: RolePermissionRow) => rp.permission.key)),
+  );
 
   res.set("Cache-Control", "no-store");
   return ApiResponse.success(res, "Current user details", {
@@ -202,7 +205,7 @@ export const googleCallback = catchAsync(async (req: Request, res: Response) => 
   // Redirect to Frontend
   // Note: We can't pass AccessToken easily in URL hash/query securely without exposing it.
   // Strategy: Redirect to /dashboard.
-  // Frontend's Middleware/Effect checks "Refresh Token" cookie? 
+  // Frontend's Middleware/Effect checks "Refresh Token" cookie?
   // OR Frontend calls "/auth/refresh" immediately on mount if no access token.
   // This is the standard pattern.
   res.redirect(`${process.env.FRONTEND_URL}/dashboard`);

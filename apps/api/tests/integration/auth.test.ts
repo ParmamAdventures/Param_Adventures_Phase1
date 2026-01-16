@@ -93,10 +93,7 @@ describe("Auth Integration", () => {
     });
 
     if (res.status !== 201) {
-      writeFileSync(
-        "auth-debug.log",
-        `Status: ${res.status}, Body: ${JSON.stringify(res.body)}`,
-      );
+      writeFileSync("auth-debug.log", `Status: ${res.status}, Body: ${JSON.stringify(res.body)}`);
     }
 
     expect(res.status).toBe(201);
