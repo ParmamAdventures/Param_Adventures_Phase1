@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./types/express.d.ts" />
 import "express-async-errors";
 import "./instrument"; // Must be imported before other imports potentially
@@ -74,7 +75,8 @@ app.use(
       if (!origin) return callback(null, true);
 
       const isAllowedVercel = origin.endsWith(".vercel.app");
-      const isAllowedFrontend = origin === process.env.FRONTEND_URL || process.env.FRONTEND_URL === "*";
+      const isAllowedFrontend =
+        origin === process.env.FRONTEND_URL || process.env.FRONTEND_URL === "*";
 
       if (isAllowedFrontend || isAllowedVercel || process.env.NODE_ENV === "development") {
         callback(null, true);
@@ -88,7 +90,6 @@ app.use(
 );
 app.use(cookieParser());
 app.use(passport.initialize());
-
 
 // The request handler must be the first middleware on the app
 Sentry.setupExpressErrorHandler(app);

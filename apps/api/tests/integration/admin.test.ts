@@ -14,36 +14,36 @@ describe("Admin RBAC Integration", () => {
     // Check for dependent models and delete safely
     try {
       await prisma.payment?.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     try {
       await prisma.booking?.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     // tripGalleryImage is cascade deleted by Trip
     try {
       await prisma.blog?.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     try {
       await prisma.trip?.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     try {
       await prisma.image?.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
 
     try {
       await prisma.rolePermission?.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     try {
       await prisma.role.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     try {
       await prisma.auditLog.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     try {
       await prisma.userRole?.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
     try {
       await prisma.user.deleteMany();
-    } catch (e) {}
+    } catch (_e) { /* ignored */ }
 
     // Create Admin Role & Perms
     const perm = await prisma.permission.create({

@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../src/app";
 import { PrismaClient } from "@prisma/client";
+import { writeFileSync } from "fs";
 
 const prisma = new PrismaClient();
 
@@ -92,7 +93,7 @@ describe("Auth Integration", () => {
     });
 
     if (res.status !== 201) {
-      require("fs").writeFileSync(
+      writeFileSync(
         "auth-debug.log",
         `Status: ${res.status}, Body: ${JSON.stringify(res.body)}`,
       );
