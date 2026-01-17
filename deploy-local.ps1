@@ -1,11 +1,9 @@
-#!/usr/bin/env pwsh
-
 # Local Deployment Script for Param Adventures
 # This script automates the setup process
 
-Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║    Param Adventures - Local Deployment Setup Script        ║" -ForegroundColor Cyan
-Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host "================================================" -ForegroundColor Cyan
+Write-Host "Param Adventures - Local Deployment Setup Script" -ForegroundColor Cyan
+Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
 
 # Configuration
@@ -21,10 +19,10 @@ function Check-Command {
     )
     
     if (Get-Command $CommandName -ErrorAction SilentlyContinue) {
-        Write-Host "✅ $DisplayName found" -ForegroundColor Green
+        Write-Host "[OK] $DisplayName found" -ForegroundColor Green
         return $true
     } else {
-        Write-Host "❌ $DisplayName NOT found" -ForegroundColor Red
+        Write-Host "[ERROR] $DisplayName NOT found" -ForegroundColor Red
         Write-Host "   Please install $DisplayName to continue" -ForegroundColor Yellow
         return $false
     }
@@ -32,15 +30,15 @@ function Check-Command {
 
 function Start-Infrastructure {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-    Write-Host "📦 Starting Infrastructure (Docker)" -ForegroundColor Cyan
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
+    Write-Host "Starting Infrastructure (Docker)" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
     
     Write-Host "Starting Docker containers..." -ForegroundColor Yellow
     docker-compose -f $DOCKER_COMPOSE_FILE up -d
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✅ Infrastructure started" -ForegroundColor Green
+        Write-Host "[OK] Infrastructure started" -ForegroundColor Green
         Write-Host "   PostgreSQL: localhost:5433" -ForegroundColor Cyan
         Write-Host "   Redis: localhost:6379" -ForegroundColor Cyan
         
@@ -50,16 +48,16 @@ function Start-Infrastructure {
         
         return $true
     } else {
-        Write-Host "❌ Failed to start infrastructure" -ForegroundColor Red
+        Write-Host "[ERROR] Failed to start infrastructure" -ForegroundColor Red
         return $false
     }
 }
 
 function Setup-Backend {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-    Write-Host "🔧 Setting up Backend (API)" -ForegroundColor Cyan
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
+    Write-Host "Setting up Backend (API)" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
     
     Push-Location $API_DIR
     
@@ -76,9 +74,9 @@ function Setup-Backend {
     npx prisma migrate deploy
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✅ Database migrations applied" -ForegroundColor Green
+        Write-Host "[OK] Database migrations applied" -ForegroundColor Green
     } else {
-        Write-Host "⚠️  Migration warning - continuing..." -ForegroundColor Yellow
+        Write-Host "[WARN] Migration warning - continuing..." -ForegroundColor Yellow
     }
     
     Pop-Location
@@ -87,9 +85,9 @@ function Setup-Backend {
 
 function Seed-DummyData {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-    Write-Host "🌱 Seeding Dummy Data" -ForegroundColor Cyan
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
+    Write-Host "Seeding Dummy Data" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
     
     Push-Location $API_DIR
     
@@ -104,9 +102,9 @@ function Seed-DummyData {
 
 function Setup-Frontend {
     Write-Host ""
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
-    Write-Host "🎨 Setting up Frontend (Web)" -ForegroundColor Cyan
-    Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
+    Write-Host "Setting up Frontend (Web)" -ForegroundColor Cyan
+    Write-Host "================================================" -ForegroundColor Cyan
     
     Push-Location $WEB_DIR
     
@@ -117,9 +115,9 @@ function Setup-Frontend {
     npm run build
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✅ Frontend build successful" -ForegroundColor Green
+        Write-Host "[OK] Frontend build successful" -ForegroundColor Green
     } else {
-        Write-Host "❌ Frontend build failed" -ForegroundColor Red
+        Write-Host "[ERROR] Frontend build failed" -ForegroundColor Red
         Pop-Location
         return $false
     }
@@ -130,42 +128,39 @@ function Setup-Frontend {
 
 function Show-Summary {
     Write-Host ""
-    Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Green
-    Write-Host "║              ✅ SETUP COMPLETED SUCCESSFULLY              ║" -ForegroundColor Green
-    Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Green
+    Write-Host "================================================" -ForegroundColor Green
+    Write-Host "SETUP COMPLETED SUCCESSFULLY" -ForegroundColor Green
+    Write-Host "================================================" -ForegroundColor Green
     Write-Host ""
-    Write-Host "📊 Next Steps:" -ForegroundColor Cyan
+    Write-Host "Next Steps:" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "1️⃣  Start API server (in terminal 1):" -ForegroundColor Yellow
-    Write-Host "   cd apps/api && npm run dev" -ForegroundColor White
+    Write-Host "1. Start API server (in terminal 1):" -ForegroundColor Yellow
+    Write-Host "   cd apps/api" -ForegroundColor White
+    Write-Host "   npm run dev" -ForegroundColor White
     Write-Host ""
-    Write-Host "2️⃣  Start Frontend (in terminal 2):" -ForegroundColor Yellow
-    Write-Host "   cd apps/web && npm run dev" -ForegroundColor White
+    Write-Host "2. Start Frontend (in terminal 2):" -ForegroundColor Yellow
+    Write-Host "   cd apps/web" -ForegroundColor White
+    Write-Host "   npm run dev" -ForegroundColor White
     Write-Host ""
-    Write-Host "🌐 Access Points:" -ForegroundColor Cyan
-    Write-Host "   • Frontend:  http://localhost:3000" -ForegroundColor Green
-    Write-Host "   • API:       http://localhost:3001" -ForegroundColor Green
-    Write-Host "   • API Docs:  http://localhost:3001/api-docs" -ForegroundColor Green
+    Write-Host "Access Points:" -ForegroundColor Cyan
+    Write-Host "   - Frontend:  http://localhost:3000" -ForegroundColor Green
+    Write-Host "   - API:       http://localhost:3001" -ForegroundColor Green
+    Write-Host "   - API Docs:  http://localhost:3001/api-docs" -ForegroundColor Green
     Write-Host ""
-    Write-Host "🔐 Test Credentials:" -ForegroundColor Cyan
-    Write-Host "   • Admin:     admin@test.com / AdminPass123" -ForegroundColor White
-    Write-Host "   • User:      user1@test.com / UserPass123" -ForegroundColor White
+    Write-Host "Test Credentials:" -ForegroundColor Cyan
+    Write-Host "   - Admin:     admin@test.com / AdminPass123" -ForegroundColor White
+    Write-Host "   - User:      user1@test.com / UserPass123" -ForegroundColor White
     Write-Host ""
-    Write-Host "📚 Documentation:" -ForegroundColor Cyan
-    Write-Host "   • Backend Guide:        docs/BACKEND_GUIDE.md" -ForegroundColor White
-    Write-Host "   • Frontend Guide:       docs/FRONTEND_GUIDE.md" -ForegroundColor White
-    Write-Host "   • Deployment Guide:     docs/DEPLOYMENT.md" -ForegroundColor White
-    Write-Host "   • Troubleshooting:      docs/TROUBLESHOOTING.md" -ForegroundColor White
+    Write-Host "Documentation:" -ForegroundColor Cyan
+    Write-Host "   - Backend Guide:        docs/BACKEND_GUIDE.md" -ForegroundColor White
+    Write-Host "   - Frontend Guide:       docs/FRONTEND_GUIDE.md" -ForegroundColor White
+    Write-Host "   - Deployment Guide:     docs/DEPLOYMENT.md" -ForegroundColor White
+    Write-Host "   - Troubleshooting:      docs/TROUBLESHOOTING.md" -ForegroundColor White
     Write-Host ""
-    Write-Host "💾 Database:" -ForegroundColor Cyan
-    Write-Host "   • Type:       PostgreSQL (Docker)" -ForegroundColor White
-    Write-Host "   • Host:       localhost:5433" -ForegroundColor White
-    Write-Host "   • Database:   param_adventures" -ForegroundColor White
-    Write-Host ""
-    Write-Host "🔄 Useful Commands:" -ForegroundColor Cyan
-    Write-Host "   • View database:  cd apps/api && npx prisma studio" -ForegroundColor White
-    Write-Host "   • Run tests:      cd apps/api && npm test" -ForegroundColor White
-    Write-Host "   • Lint code:      npm run lint" -ForegroundColor White
+    Write-Host "Database:" -ForegroundColor Cyan
+    Write-Host "   - Type:       PostgreSQL (Docker)" -ForegroundColor White
+    Write-Host "   - Host:       localhost:5433" -ForegroundColor White
+    Write-Host "   - Database:   param_adventures" -ForegroundColor White
     Write-Host ""
 }
 
@@ -173,15 +168,15 @@ function Show-Error {
     param([string]$Message)
     
     Write-Host ""
-    Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Red
-    Write-Host "║                    ❌ SETUP FAILED                        ║" -ForegroundColor Red
-    Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Red
+    Write-Host "================================================" -ForegroundColor Red
+    Write-Host "SETUP FAILED" -ForegroundColor Red
+    Write-Host "================================================" -ForegroundColor Red
     Write-Host ""
     Write-Host $Message -ForegroundColor Yellow
     Write-Host ""
 }
 
-# ===== Main Execution =====
+# Main Execution
 
 Write-Host "Checking prerequisites..." -ForegroundColor Cyan
 Write-Host ""
@@ -197,7 +192,7 @@ if (-not $allGood) {
 }
 
 Write-Host ""
-Write-Host "✅ All prerequisites found" -ForegroundColor Green
+Write-Host "[OK] All prerequisites found" -ForegroundColor Green
 
 # Execute setup steps
 if (-not (Start-Infrastructure)) {
@@ -211,7 +206,7 @@ if (-not (Setup-Backend)) {
 }
 
 if (-not (Seed-DummyData)) {
-    Write-Host "⚠️  Warning: Dummy data seeding had issues, but setup continues..." -ForegroundColor Yellow
+    Write-Host "[WARN] Dummy data seeding had issues, but setup continues..." -ForegroundColor Yellow
 }
 
 if (-not (Setup-Frontend)) {
@@ -220,4 +215,4 @@ if (-not (Setup-Frontend)) {
 }
 
 Show-Summary
-Write-Host "✨ Happy coding! ✨" -ForegroundColor Cyan
+Write-Host "Setup complete!" -ForegroundColor Cyan
