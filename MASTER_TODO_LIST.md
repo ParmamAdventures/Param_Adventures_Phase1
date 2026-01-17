@@ -884,11 +884,13 @@ e5af6da FIX-006: Standardize error handling responses
 
 ## Documentation & JSDoc
 
-- [ ] **OPT-005**: Add JSDoc to all service public methods
-  - Status: Not Started
+- [x] **OPT-005**: Add JSDoc to all service public methods
+  - Status: ✅ COMPLETED (Already done during service creation)
   - Scope: apps/api/src/services/
-  - Details: Every public method needs JSDoc with params, returns, throws
-  - Estimated time: 2.5 hours
+  - Details: All 8 services (admin, auth, blog, booking, media, review, trip, user) have comprehensive JSDoc with @param, @returns, @throws annotations
+  - Coverage: 100% of public service methods documented
+  - Time taken: N/A (completed during development)
+  - Date Completed: January 17, 2026
   - Priority: LOW
 
 - [ ] **OPT-006**: Add JSDoc to all controller functions
