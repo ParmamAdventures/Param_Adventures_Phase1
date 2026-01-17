@@ -573,7 +573,10 @@ async function main() {
         status: paymentStatus,
         provider: "razorpay",
         providerOrderId: providerOrderId,
-        providerPaymentId: paymentStatus === "CAPTURED" ? `pay_${Date.now()}${Math.random().toString(36).substr(2, 9)}` : null,
+        providerPaymentId:
+          paymentStatus === "CAPTURED"
+            ? `pay_${Date.now()}${Math.random().toString(36).substr(2, 9)}`
+            : null,
         method: paymentStatus === "CAPTURED" ? "card" : null,
       },
     });
