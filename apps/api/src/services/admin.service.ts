@@ -109,7 +109,7 @@ export class AdminService {
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
-        status,
+        status: status as "ACTIVE" | "SUSPENDED" | "BANNED",
         statusReason: reason,
       },
       select: {

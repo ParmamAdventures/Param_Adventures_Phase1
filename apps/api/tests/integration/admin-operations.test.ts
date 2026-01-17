@@ -265,7 +265,7 @@ describe("Admin Operations", () => {
   describe("GET /admin/dashboard - Dashboard stats", () => {
     it("returns dashboard statistics", async () => {
       const response = await request(app)
-        .get("/admin/dashboard")
+        .get("/admin/dashboard/stats")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -276,14 +276,14 @@ describe("Admin Operations", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/admin/dashboard");
+      const response = await request(app).get("/admin/dashboard/stats");
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without permission", async () => {
       const response = await request(app)
-        .get("/admin/dashboard")
+        .get("/admin/dashboard/stats")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -342,15 +342,15 @@ describe("Admin Operations", () => {
     });
   });
 
-  describe("GET /admin/audit - Audit logs", () => {
+  describe("GET /admin/audit-logs - Audit logs", () => {
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/admin/audit");
+      const response = await request(app).get("/admin/audit-logs");
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without permission", async () => {
-      const response = await request(app).get("/admin/audit").set("Authorization", `Bearer ${userToken}`);
+      const response = await request(app).get("/admin/audit-logs").set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
     });

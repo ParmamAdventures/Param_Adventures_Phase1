@@ -18,13 +18,13 @@ describe("RBAC & Permission Integration", () => {
   let userId: string;
 
   beforeAll(async () => {
-    // Clean up
+    // Clean up in proper order
     try {
-      await prisma.rolePermission.deleteMany();
       await prisma.userRole.deleteMany();
+      await prisma.rolePermission.deleteMany();
       await prisma.user.deleteMany();
       await prisma.permission.deleteMany();
-      await prisma.role.deleteMany();
+      // Don't delete roles - they're system-wide, keep them for reuse
     } catch {
       /* ignored */
     }
@@ -45,38 +45,52 @@ describe("RBAC & Permission Integration", () => {
       { key: "admin:access", description: "Access admin panel" },
     ];
 
-    const createdPermissions: any = {};
+    const createdPermissions: Record<string, { id: string }> = {};
     for (const perm of permissions) {
-      const p = await prisma.permission.create({ data: perm });
+      const p = await prisma.permission.upsert({
+        where: { key: perm.key },
+        update: {},
+        create: perm,
+      });
       createdPermissions[perm.key] = p;
     }
 
-    // Create roles
-    const superAdminRole = await prisma.role.create({
-      data: { name: "SUPER_ADMIN", description: "Super Administrator", isSystem: true },
+    // Create or get roles (use upsert to avoid unique constraint issues)
+    const superAdminRole = await prisma.role.upsert({
+      where: { name: "SUPER_ADMIN" },
+      update: {},
+      create: { name: "SUPER_ADMIN", description: "Super Administrator", isSystem: true },
     });
 
-    const adminRole = await prisma.role.create({
-      data: { name: "ADMIN", description: "Administrator", isSystem: true },
+    const adminRole = await prisma.role.upsert({
+      where: { name: "ADMIN" },
+      update: {},
+      create: { name: "ADMIN", description: "Administrator", isSystem: true },
     });
 
-    const tripManagerRole = await prisma.role.create({
-      data: { name: "TRIP_MANAGER", description: "Trip Manager", isSystem: true },
+    const tripManagerRole = await prisma.role.upsert({
+      where: { name: "TRIP_MANAGER" },
+      update: {},
+      create: { name: "TRIP_MANAGER", description: "Trip Manager", isSystem: true },
     });
 
-    const guideRole = await prisma.role.create({
-      data: { name: "TRIP_GUIDE", description: "Trip Guide", isSystem: true },
+    const guideRole = await prisma.role.upsert({
+      where: { name: "TRIP_GUIDE" },
+      update: {},
+      create: { name: "TRIP_GUIDE", description: "Trip Guide", isSystem: true },
     });
 
-    const userRole = await prisma.role.create({
-      data: { name: "USER", description: "Regular User", isSystem: false },
+    const userRole = await prisma.role.upsert({
+      where: { name: "USER" },
+      update: { isSystem: false }, // Ensure it's not marked as system
+      create: { name: "USER", description: "Regular User", isSystem: false },
     });
 
     // Assign permissions to roles
     // SUPER_ADMIN: all permissions
     for (const perm of Object.values(createdPermissions)) {
       await prisma.rolePermission.create({
-        data: { roleId: superAdminRole.id, permissionId: (perm as any).id },
+        data: { roleId: superAdminRole.id, permissionId: perm.id },
       });
     }
 
@@ -308,9 +322,7 @@ describe("RBAC & Permission Integration", () => {
     });
 
     it("should deny unauthenticated users from updating profile", async () => {
-      const res = await request(app)
-        .patch("/users/profile")
-        .send({ bio: "Hack attempt" });
+      const res = await request(app).patch("/users/profile").send({ bio: "Hack attempt" });
 
       expect(res.status).toBe(401);
     });
@@ -320,7 +332,11 @@ describe("RBAC & Permission Integration", () => {
     it("should have SUPER_ADMIN with most permissions", async () => {
       const superAdmin = await prisma.user.findUnique({
         where: { id: superAdminId },
-        include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
+        include: {
+          roles: {
+            include: { role: { include: { permissions: { include: { permission: true } } } } },
+          },
+        },
       });
 
       const permissions = new Set<string>();
@@ -336,7 +352,11 @@ describe("RBAC & Permission Integration", () => {
     it("should have ADMIN with significant permissions", async () => {
       const admin = await prisma.user.findUnique({
         where: { id: adminId },
-        include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
+        include: {
+          roles: {
+            include: { role: { include: { permissions: { include: { permission: true } } } } },
+          },
+        },
       });
 
       const permissions = new Set<string>();
@@ -353,7 +373,11 @@ describe("RBAC & Permission Integration", () => {
     it("should have TRIP_GUIDE with limited permissions", async () => {
       const guide = await prisma.user.findUnique({
         where: { id: guideId },
-        include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
+        include: {
+          roles: {
+            include: { role: { include: { permissions: { include: { permission: true } } } } },
+          },
+        },
       });
 
       const permissions = new Set<string>();
@@ -369,7 +393,11 @@ describe("RBAC & Permission Integration", () => {
     it("should have USER with no special permissions", async () => {
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
+        include: {
+          roles: {
+            include: { role: { include: { permissions: { include: { permission: true } } } } },
+          },
+        },
       });
 
       const permissions = new Set<string>();
@@ -388,7 +416,11 @@ describe("RBAC & Permission Integration", () => {
       // Admin already has TRIP_MANAGER role, so should have combined permissions
       const admin = await prisma.user.findUnique({
         where: { id: adminId },
-        include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
+        include: {
+          roles: {
+            include: { role: { include: { permissions: { include: { permission: true } } } } },
+          },
+        },
       });
 
       const permissions = new Set<string>();
@@ -406,7 +438,11 @@ describe("RBAC & Permission Integration", () => {
     it("should aggregate permissions without duplicates", async () => {
       const admin = await prisma.user.findUnique({
         where: { id: adminId },
-        include: { roles: { include: { role: { include: { permissions: { include: { permission: true } } } } } } },
+        include: {
+          roles: {
+            include: { role: { include: { permissions: { include: { permission: true } } } } },
+          },
+        },
       });
 
       const permissions = new Set<string>();

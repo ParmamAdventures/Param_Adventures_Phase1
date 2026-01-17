@@ -5,7 +5,7 @@ import { signAccessToken } from "../../src/utils/jwt";
 
 describe("Trip Endpoints", () => {
   let adminToken: string;
-  let adminId: string;
+  let _adminId: string;
   let tripId: string;
 
   beforeAll(async () => {
@@ -19,7 +19,7 @@ describe("Trip Endpoints", () => {
       await prisma.user?.deleteMany();
       await prisma.role?.deleteMany();
       await prisma.permission?.deleteMany();
-    } catch (e) {
+    } catch (_e) {
       /* cleanup errors ignored */
     }
 
@@ -80,7 +80,7 @@ describe("Trip Endpoints", () => {
         name: "Admin User",
       },
     });
-    adminId = admin.id;
+    _adminId = admin.id;
 
     await prisma.userRole.create({
       data: { userId: admin.id, roleId: adminRole.id },
@@ -128,9 +128,7 @@ describe("Trip Endpoints", () => {
         category: "TREK",
       };
 
-      const response = await request(app)
-        .post("/trips")
-        .send(tripData);
+      const response = await request(app).post("/trips").send(tripData);
 
       expect(response.status).toBe(401);
     });
@@ -138,16 +136,14 @@ describe("Trip Endpoints", () => {
 
   describe("GET /trips/public - Get public trips", () => {
     it("returns published trips without authentication", async () => {
-      const response = await request(app)
-        .get("/trips/public");
+      const response = await request(app).get("/trips/public");
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
     });
 
     it("returns metadata for filtering", async () => {
-      const response = await request(app)
-        .get("/trips/public/meta");
+      const response = await request(app).get("/trips/public/meta");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("minPrice");
@@ -157,8 +153,7 @@ describe("Trip Endpoints", () => {
 
   describe("GET /trips/public/:slug - Get trip by slug", () => {
     it("returns 404 for non-existent trip", async () => {
-      const response = await request(app)
-        .get("/trips/public/non-existent-slug-123");
+      const response = await request(app).get("/trips/public/non-existent-slug-123");
 
       expect(response.status).toBe(404);
     });
@@ -207,9 +202,7 @@ describe("Trip Endpoints", () => {
     it("returns 401 without authentication", async () => {
       if (!tripId) return; // Skip if no tripId
 
-      const response = await request(app)
-        .put(`/trips/${tripId}`)
-        .send({ title: "New Title" });
+      const response = await request(app).put(`/trips/${tripId}`).send({ title: "New Title" });
 
       expect(response.status).toBe(401);
     });
@@ -235,12 +228,12 @@ describe("Trip Endpoints", () => {
           slug: `delete-${Date.now()}`,
           category: "TREK",
         });
-      
+
       if (!createRes.body || !createRes.body.data || !createRes.body.data.id) {
         // Skip if we couldn't create a trip
         return;
       }
-      
+
       const deleteId = createRes.body.data.id;
 
       const response = await request(app)
@@ -253,8 +246,7 @@ describe("Trip Endpoints", () => {
     it("returns 401 without authentication", async () => {
       if (!tripId) return; // Skip if no tripId
 
-      const response = await request(app)
-        .delete(`/trips/${tripId}`);
+      const response = await request(app).delete(`/trips/${tripId}`);
 
       expect(response.status).toBe(401);
     });
@@ -279,8 +271,7 @@ describe("Trip Endpoints", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app)
-        .get("/trips/internal");
+      const response = await request(app).get("/trips/internal");
 
       expect(response.status).toBe(401);
     });
@@ -318,8 +309,7 @@ describe("Trip Endpoints", () => {
     it("returns 401 without authentication", async () => {
       if (!tripId) return; // Skip if no tripId
 
-      const response = await request(app)
-        .get(`/trips/${tripId}`);
+      const response = await request(app).get(`/trips/${tripId}`);
 
       expect(response.status).toBe(401);
     });

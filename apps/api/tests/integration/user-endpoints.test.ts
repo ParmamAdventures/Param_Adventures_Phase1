@@ -10,7 +10,7 @@ describe("User Endpoints Integration", () => {
   let userId: string;
   let guideToken: string;
   let guideId: string;
-  let adminToken: string;
+  let _adminToken: string;
   let adminId: string;
   let testTripId: string;
 
@@ -74,7 +74,7 @@ describe("User Endpoints Integration", () => {
       },
     });
     adminId = admin.id;
-    adminToken = signAccessToken(adminId);
+    _adminToken = signAccessToken(adminId);
 
     // Assign roles
     await prisma.userRole.create({

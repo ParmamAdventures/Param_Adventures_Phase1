@@ -64,7 +64,9 @@ describe("MediaService", () => {
     it("throws error when no file is provided", async () => {
       const userId = "user_123";
 
-      await expect(mediaService.createImage(null as any, userId)).rejects.toThrow("No file uploaded");
+      await expect(mediaService.createImage(null as any, userId)).rejects.toThrow(
+        "No file uploaded",
+      );
     });
 
     it("creates image with custom media type", async () => {
@@ -76,18 +78,18 @@ describe("MediaService", () => {
       };
 
       const mockImage = {
-        id: "doc_123",
-        type: "DOCUMENT",
+        id: "video_123",
+        type: "VIDEO",
       };
 
       (prisma.image.create as jest.Mock).mockResolvedValue(mockImage);
 
-      await mediaService.createImage(file, userId, "DOCUMENT");
+      await mediaService.createImage(file, userId, "VIDEO");
 
       expect(prisma.image.create as jest.Mock).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            type: "DOCUMENT",
+            type: "VIDEO",
           }),
         }),
       );

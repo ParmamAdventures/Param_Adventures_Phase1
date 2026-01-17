@@ -9,13 +9,13 @@ describe("notificationService", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Reset the cached transporter
     (notificationService as any).transporter = null;
-    
+
     mockSendMail = jest.fn().mockResolvedValue({ messageId: "msg_123" });
     mockTransporter = { sendMail: mockSendMail };
-    
+
     // Mock nodemailer methods
     (nodemailer.createTestAccount as jest.Mock).mockResolvedValue({
       user: "test@ethereal.email",

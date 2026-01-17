@@ -11,11 +11,12 @@ export class ReviewService {
   async createReview(data: any, userId: string) {
     const { tripId, rating, comment } = data;
 
-    // Validate rating
-    if (!tripId || !rating) {
+    // Validate required fields
+    if (!tripId || rating === undefined || rating === null) {
       throw new HttpError(400, "INVALID_REQUEST", "Trip ID and rating are required");
     }
 
+    // Validate rating range
     if (rating < 1 || rating > 5) {
       throw new HttpError(400, "INVALID_REQUEST", "Rating must be between 1 and 5");
     }

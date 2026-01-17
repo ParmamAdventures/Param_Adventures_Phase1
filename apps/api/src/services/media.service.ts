@@ -23,7 +23,11 @@ export class MediaService {
    * @param mediaType The type of media (IMAGE, VIDEO, DOCUMENT).
    * @returns The created image record.
    */
-  async createImage(file: UploadedFile, uploadedById: string, mediaType: string = "IMAGE") {
+  async createImage(
+    file: UploadedFile,
+    uploadedById: string,
+    mediaType: "IMAGE" | "VIDEO" = "IMAGE",
+  ) {
     if (!file) {
       throw new HttpError(400, "NO_FILE", "No file uploaded");
     }

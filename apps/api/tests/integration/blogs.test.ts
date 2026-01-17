@@ -456,7 +456,7 @@ describe("Blog Endpoints", () => {
         .post(`/blogs/${testBlog.id}/reject`)
         .set("Authorization", `Bearer ${adminToken}`);
 
-      expect([200, 201]).toContain(response.status);
+      expect(response.status).toBe(200);
       expect(response.body.status).toBe("REJECTED");
     });
 
