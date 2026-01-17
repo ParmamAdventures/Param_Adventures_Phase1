@@ -7,7 +7,7 @@ interface SiteConfig {
 
 export function useSiteConfig() {
   const [config, setConfig] = useState<SiteConfig>({});
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchConfig() {
@@ -20,12 +20,12 @@ export function useSiteConfig() {
       } catch (error) {
         console.error("Failed to fetch site config", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
 
     fetchConfig();
   }, []);
 
-  return { config, loading };
+  return { config, isLoading };
 }

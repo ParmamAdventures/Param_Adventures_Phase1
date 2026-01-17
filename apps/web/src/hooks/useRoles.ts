@@ -10,7 +10,7 @@ export type Role = {
 
 export function useRoles() {
   const [roles, setRoles] = useState<Role[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let mounted = true;
@@ -20,12 +20,12 @@ export function useRoles() {
         if (mounted) setRoles(data || []);
       })
       .catch(() => {})
-      .finally(() => mounted && setLoading(false));
+      .finally(() => mounted && setIsLoading(false));
 
     return () => {
       mounted = false;
     };
   }, []);
 
-  return { roles, loading };
+  return { roles, isLoading };
 }

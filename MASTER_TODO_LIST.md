@@ -26,15 +26,15 @@
 
 ### ✅ E2E Test Suite - COMPLETE! (7 new test files, 25+ tests)
 
-| Test File          | Tests | Coverage                                               | Status |
-| ------------------ | ----- | ------------------------------------------------------ | ------ |
-| **auth.spec.ts**   | 3     | Register, login, logout                                | ✅     |
-| **trips.spec.ts**  | 1     | Book trip with modal flow                              | ✅     |
-| **admin.spec.ts**  | 2     | Create trip, suspend user                              | ✅     |
-| **guides.spec.ts** | 5     | Registration, profile, dashboard, bookings             | ✅     |
-| **payments.spec.ts** | 3   | Initiate payment, view bookings, access dashboard      | ✅     |
-| **reviews.spec.ts** | 4    | View trips, access dashboard/bookings/profile          | ✅     |
-| **search.spec.ts** | 8     | Filter by category/difficulty/price, search, sort      | ✅     |
+| Test File            | Tests | Coverage                                          | Status |
+| -------------------- | ----- | ------------------------------------------------- | ------ |
+| **auth.spec.ts**     | 3     | Register, login, logout                           | ✅     |
+| **trips.spec.ts**    | 1     | Book trip with modal flow                         | ✅     |
+| **admin.spec.ts**    | 2     | Create trip, suspend user                         | ✅     |
+| **guides.spec.ts**   | 5     | Registration, profile, dashboard, bookings        | ✅     |
+| **payments.spec.ts** | 3     | Initiate payment, view bookings, access dashboard | ✅     |
+| **reviews.spec.ts**  | 4     | View trips, access dashboard/bookings/profile     | ✅     |
+| **search.spec.ts**   | 8     | Filter by category/difficulty/price, search, sort | ✅     |
 
 ### 📊 E2E Test Metrics
 
@@ -845,11 +845,14 @@ e5af6da FIX-006: Standardize error handling responses
 
 ## Naming Conventions & Code Style
 
-- [ ] **OPT-001**: Add `is/has/should` prefixes to boolean variables
-  - Status: Not Started
+- [-] **OPT-001**: Add `is/has/should` prefixes to boolean variables
+  - Status: 🔄 IN PROGRESS (2/50+ files, 4%)
+  - Progress: Completed hooks (useSiteConfig, useRoles)
+  - Location: See [OPT-001_BOOLEAN_RENAMES.md](OPT-001_BOOLEAN_RENAMES.md) for detailed plan
   - Scope: Entire codebase (API + Web)
   - Examples: `loading` → `isLoading`, `enabled` → `isEnabled`
-  - Estimated time: 2 hours
+  - Remaining: AuthContext, useRazorpay, 48 components, 35+ pages
+  - Time taken: 30 mins / Estimated: 3 hours total
   - Priority: LOW
 
 - [ ] **OPT-002**: Standardize Zod validation schemas
