@@ -23,47 +23,47 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
   try {
     const payload = verifyAccessToken(token);
-    
+
     // Fetch user with roles and permissions
     const user = await prisma.user.findUnique({
-        where: { id: payload.sub },
-        include: { 
-            roles: {
-                include: { 
-                    role: {
-                        include: {
-                            permissions: {
-                                include: { permission: true }
-                            }
-                        }
-                    } 
-                }
-            } 
-        }
+      where: { id: payload.sub },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: { permission: true },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!user) return res.status(401).json({ error: "User not found" });
 
     // Flatten unique permissions
     const permissions = new Set<string>();
-    user.roles.forEach(ur => {
-        ur.role.permissions.forEach(rp => {
-            if(rp.permission?.key) permissions.add(rp.permission.key);
-        });
-        // Failsafe: Ensure SUPER_ADMIN has critical permissions even if DB seed is stale
-        if (ur.role.name === 'SUPER_ADMIN') {
-            permissions.add('trip:delete');
-            permissions.add('trip:view:internal');
-            permissions.add('blog:view:internal');
-            // Add other critical ones as needed or rely on DB for the rest
-        }
+    user.roles.forEach((ur) => {
+      ur.role.permissions.forEach((rp) => {
+        if (rp.permission?.key) permissions.add(rp.permission.key);
+      });
+      // Failsafe: Ensure SUPER_ADMIN has critical permissions even if DB seed is stale
+      if (ur.role.name === "SUPER_ADMIN") {
+        permissions.add("trip:delete");
+        permissions.add("trip:view:internal");
+        permissions.add("blog:view:internal");
+        // Add other critical ones as needed or rely on DB for the rest
+      }
     });
 
     req.user = {
       id: user.id,
       email: user.email,
       name: user.name || "User",
-      roles: user.roles.map(ur => ur.role.name),
+      roles: user.roles.map((ur) => ur.role.name),
       permissions: Array.from(permissions),
     };
     req.permissions = Array.from(permissions); // Populate Request-level permissions
@@ -84,60 +84,60 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
 
   try {
     const payload = verifyAccessToken(token);
-    
+
     // Optional Auth: If token is valid, try to fetch full user to get permissions
     // This allows mixed Views (Public vs Draft) to work correctly
     const user = await prisma.user.findUnique({
-        where: { id: payload.sub },
-        include: { 
-            roles: {
-                include: { 
-                    role: {
-                        include: {
-                            permissions: {
-                                include: { permission: true }
-                            }
-                        }
-                    } 
-                }
-            } 
-        }
+      where: { id: payload.sub },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: { permission: true },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (user) {
-         const permissions = new Set<string>();
-        user.roles.forEach(ur => {
-            ur.role.permissions.forEach(rp => {
-                if(rp.permission?.key) permissions.add(rp.permission.key);
-            });
+      const permissions = new Set<string>();
+      user.roles.forEach((ur) => {
+        ur.role.permissions.forEach((rp) => {
+          if (rp.permission?.key) permissions.add(rp.permission.key);
         });
+      });
 
-        req.user = {
-            id: user.id,
-            email: user.email,
-            name: user.name || "User",
-            roles: user.roles.map(ur => ur.role.name),
-            permissions: Array.from(permissions),
-        };
-        req.permissions = Array.from(permissions);
+      req.user = {
+        id: user.id,
+        email: user.email,
+        name: user.name || "User",
+        roles: user.roles.map((ur) => ur.role.name),
+        permissions: Array.from(permissions),
+      };
+      req.permissions = Array.from(permissions);
     } else {
-        // Token valid but user not found? Fallback or ignore.
-        // Usually safe to ignore in optional auth or treat as guest.
+      // Token valid but user not found? Fallback or ignore.
+      // Usually safe to ignore in optional auth or treat as guest.
     }
   } catch {
     // Ignore invalid tokens in optional auth
   }
-// ...existing code...
+  // ...existing code...
   next();
 }
 
 export function requireRole(role: string) {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const userRoles = req.user?.roles || [];
-        // Super admin bypass or direct match
-        if (userRoles.includes("SUPER_ADMIN") || userRoles.includes(role)) {
-            return next();
-        }
-        return res.status(403).json({ error: "Insufficient role" });
-    };
+  return (req: Request, res: Response, next: NextFunction) => {
+    const userRoles = req.user?.roles || [];
+    // Super admin bypass or direct match
+    if (userRoles.includes("SUPER_ADMIN") || userRoles.includes(role)) {
+      return next();
+    }
+    return res.status(403).json({ error: "Insufficient role" });
+  };
 }

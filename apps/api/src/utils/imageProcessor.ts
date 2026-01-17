@@ -5,6 +5,17 @@ import crypto from "crypto";
 
 const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 
+/**
+ * Processed image metadata and URLs.
+ * @typedef {Object} ProcessedImage
+ * @property {string} originalUrl - URL to original image
+ * @property {string} mediumUrl - URL to medium-sized image
+ * @property {string} thumbUrl - URL to thumbnail image
+ * @property {number} width - Image width in pixels
+ * @property {number} height - Image height in pixels
+ * @property {number} size - File size in bytes
+ * @property {string} mimeType - Image MIME type
+ */
 export type ProcessedImage = {
   originalUrl: string;
   mediumUrl: string;
@@ -15,6 +26,14 @@ export type ProcessedImage = {
   mimeType: string;
 };
 
+/**
+ * Process image buffer to create multiple sizes (original, medium, thumb).
+ * Generates unique file IDs and stores locally or via Cloudinary.
+ * @param {Buffer} buffer - Image file buffer
+ * @param {string} mimeType - Image MIME type
+ * @returns {Promise<ProcessedImage>} - Processed image metadata and URLs
+ * @throws {Error} - If image is invalid or not an image file
+ */
 export async function processImage(buffer: Buffer, mimeType: string): Promise<ProcessedImage> {
   if (!mimeType.startsWith("image/")) {
     throw new Error("INVALID_IMAGE_TYPE");

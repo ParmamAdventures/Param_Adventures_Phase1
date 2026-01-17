@@ -1,5 +1,11 @@
 import { prisma } from "../lib/prisma";
 
+/**
+ * Check if a user is the last super admin in the system.
+ * Prevents removal of the last super admin role to avoid locking out administration.
+ * @param {string} _userId - User ID to check (unused, can be used for optimization)
+ * @returns {Promise<boolean>} - True if user is the last super admin, false otherwise
+ */
 export async function isLastSuperAdmin(_userId: string) {
   const superAdminRole = await prisma.role.findUnique({
     where: { name: "SUPER_ADMIN" },

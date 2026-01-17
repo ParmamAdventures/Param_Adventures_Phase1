@@ -1,6 +1,19 @@
 import { cloudinary } from "../config/cloudinary";
 import stream from "stream";
 
+/**
+ * Processed media metadata and URLs for images and videos.
+ * @typedef {Object} ProcessedMedia
+ * @property {string} originalUrl - URL to original media
+ * @property {string} mediumUrl - URL to medium-quality media
+ * @property {string} thumbUrl - URL to thumbnail
+ * @property {number} width - Media width in pixels
+ * @property {number} height - Media height in pixels
+ * @property {number} size - File size in bytes
+ * @property {string} mimeType - Media MIME type
+ * @property {('IMAGE'|'VIDEO')} type - Media type
+ * @property {number} duration - Duration in seconds (0 if unknown)
+ */
 export type ProcessedMedia = {
   originalUrl: string;
   mediumUrl: string;
@@ -13,7 +26,15 @@ export type ProcessedMedia = {
   duration: number; // in seconds, 0 if unknown
 };
 
-// Helper: Upload Buffer to Cloudinary
+/**
+ * Upload buffer stream to Cloudinary.
+ * Handles both image and video uploads with automatic resource type detection.
+ * @param {Buffer} buffer - File buffer to upload
+ * @param {string} folder - Cloudinary folder path
+ * @param {('image'|'video')} [resourceType='image'] - Resource type
+ * @returns {Promise<any>} - Cloudinary upload response
+ * @private
+ */
 function uploadBuffer(buffer: Buffer, folder: string, resourceType: "image" | "video" = "image"): Promise<any> {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(

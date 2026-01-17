@@ -1,3 +1,9 @@
+/**
+ * Convert text string to URL-friendly slug.
+ * Converts to lowercase, replaces spaces and special characters with hyphens.
+ * @param {string} text - Text to slugify
+ * @returns {string} - URL-friendly slug
+ */
 export function slugify(text: string): string {
   return text
     .toString()
