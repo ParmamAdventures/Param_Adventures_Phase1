@@ -944,11 +944,14 @@ e5af6da FIX-006: Standardize error handling responses
 
 ## Database Optimization
 
-- [ ] **OPT-014**: Add missing database indexes
-  - Status: Not Started
+- [x] **OPT-014**: Add missing database indexes
+  - Status: ✅ COMPLETED
   - Location: apps/api/prisma/schema.prisma
-  - Indexes needed: email, status, createdAt, tripId, userId
-  - Estimated time: 30 mins
+  - Added indexes: User (status, createdAt)
+  - Existing indexes: Role (isSystem), AuditLog (actorId, targetType+targetId, createdAt), Trip (status, slug, category, isFeatured), Blog (status, authorId), Booking (tripId, userId), Payment (bookingId), TripMedia (order), Review (tripId), SavedTrip (userId)
+  - Note: Schema already has 16 indexes covering key queries
+  - Time taken: 15 mins
+  - Date Completed: January 17, 2026
   - Priority: LOW
 
 - [ ] **OPT-015**: Optimize Prisma queries for N+1 prevention
