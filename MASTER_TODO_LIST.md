@@ -14,7 +14,7 @@
 | ------------------------------ | ----- | ------------ | ----------- |
 | 🔴 Critical Bugs               | 8     | MUST DO      | 8/8 Done ✅ |
 | 🟠 High Priority (Features)    | 12    | MUST DO      | Queued      |
-| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 7/24 Done   |
+| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 9/24 Done   |
 | 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | Not Started |
 | 📋 Documentation               | 15    | IMPORTANT    | Not Started |
 
@@ -39,7 +39,7 @@
 
 ```
 ESLint: 252 problems (0 ERRORS ✅, 252 warnings)
-Tests: 21/21 suites passing, 130/130 tests passing ✅
+Tests: 23/23 suites passing, 178/178 tests passing ✅
 Code Quality: 89/100 maintained
 Files Changed: 44 code files + 31 supporting files (documentation, scripts, tests)
 ```
@@ -181,7 +181,7 @@ e5af6da FIX-006: Standardize error handling responses
 
 **Verification Date**: January 17, 2026
 
-**Test Status**: 15/15 test suites passing (100%), 65/65 tests passing (100%)  
+**Test Status**: 23/23 test suites passing (100%), 178/178 tests passing (100%)  
 **Payment Tests**: Integration suite green (all 14 cases) with queue and Prisma setup fixed.
 
 **Verification Report**: See [FEAT_VERIFICATION_REPORT.md](FEAT_VERIFICATION_REPORT.md) for detailed analysis.
@@ -525,24 +525,36 @@ e5af6da FIX-006: Standardize error handling responses
     - Audit logging
     - Error propagation
 
-- [ ] **TEST-008**: Write integration tests for user endpoints
-  - Status: Not Started
-  - Location: apps/api/tests/integration/user-profile.test.ts
-  - Test cases: 15+
-  - Estimated time: 1.5 hours
+- [x] **TEST-008**: Write integration tests for user endpoints
+  - Status: ✅ COMPLETED (22 tests passing)
+  - Location: apps/api/tests/integration/user-endpoints.test.ts
+  - Test cases: 22 (profile: 3, patch profile: 8, guide trips: 6, security: 2, validation: 3)
+  - Time taken: 1.5 hours
+  - Git Commit: 03151ea
   - Priority: MEDIUM
+  - Tests:
+    - GET /users/profile (authentication, 401 errors)
+    - PATCH /users/profile (full/partial updates, preferences, validation)
+    - GET /users/guide/trips (trip retrieval with role filtering)
+    - Profile security (isolation, password protection)
+    - Profile validation (email format, long text, special characters)
 
-- [ ] **TEST-009**: Write role and permission tests
-  - Status: Not Started
+- [x] **TEST-009**: Write role and permission tests
+  - Status: ✅ COMPLETED (26 tests passing)
   - Location: apps/api/tests/integration/rbac.test.ts
-  - Test cases: 20+
-  - Estimated time: 2 hours
+  - Test cases: 26 (role assignment: 3, permission auth: 4, trip perms: 3, profile perms: 4, hierarchy: 4, multi-role: 2, verification: 2, edge cases: 3, system roles: 1)
+  - Time taken: 1 hour
+  - Git Commit: 846a991
   - Priority: MEDIUM
-  - Details:
-    - Role assignment
-    - Permission checking
-    - Admin actions
-    - Unauthorized access
+  - Tests:
+    - Role assignment and listing
+    - Permission authorization for endpoints
+    - Trip permission authorization
+    - User profile permissions
+    - Permission hierarchy (SUPER_ADMIN > ADMIN > TRIP_MANAGER > TRIP_GUIDE > USER)
+    - Multiple role scenarios (permission aggregation)
+    - Permission verification and error handling
+    - Edge cases (orphaned users, revoked permissions)
 
 ## Blog Service Tests
 
