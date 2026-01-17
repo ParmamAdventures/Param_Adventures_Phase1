@@ -4,6 +4,12 @@ import { HttpError } from "../../utils/httpError";
 import { slugify } from "../../utils/slugify";
 import { auditService } from "../../services/audit.service";
 
+/**
+ * Update Blog
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function updateBlog(req: Request, res: Response) {
   const { id } = req.params;
   const user = req.user!;

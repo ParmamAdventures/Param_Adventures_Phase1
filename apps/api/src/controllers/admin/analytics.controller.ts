@@ -2,6 +2,12 @@
 import { Request, Response } from "express";
 import { analyticsService } from "../../services/analytics.service";
 
+/**
+ * Get Revenue Summary
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getRevenueSummary(req: Request, res: Response) {
   try {
     const stats = await analyticsService.getRevenueStats();
@@ -12,6 +18,12 @@ export async function getRevenueSummary(req: Request, res: Response) {
   }
 }
 
+/**
+ * Get Trip Performance
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getTripPerformance(req: Request, res: Response) {
   try {
     const performance = await analyticsService.getTripPerformance();
@@ -22,6 +34,12 @@ export async function getTripPerformance(req: Request, res: Response) {
   }
 }
 
+/**
+ * Get Booking Stats
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getBookingStats(req: Request, res: Response) {
   try {
     const stats = await analyticsService.getBookingStats();
@@ -32,6 +50,12 @@ export async function getBookingStats(req: Request, res: Response) {
   }
 }
 
+/**
+ * Get Payment Stats
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getPaymentStats(req: Request, res: Response) {
   try {
     const stats = await analyticsService.getPaymentStats();
@@ -42,6 +66,12 @@ export async function getPaymentStats(req: Request, res: Response) {
   }
 }
 
+/**
+ * Get Moderation Summary
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getModerationSummary(req: Request, res: Response) {
   // Keeping this simple/direct as it's just counts
   try {

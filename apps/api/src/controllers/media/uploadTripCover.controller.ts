@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 
+/**
+ * Upload Trip Cover
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function uploadTripCover(req: Request, res: Response) {
   if (!req.file) {
     throw new HttpError(400, "NO_FILE", "No image uploaded");

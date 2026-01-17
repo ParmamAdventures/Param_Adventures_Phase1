@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 
+/**
+ * Get Blog By Id
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getBlogById(req: Request, res: Response) {
   const { id } = req.params;
   // Assuming req.user is added by a middleware like requireAuth

@@ -3,6 +3,12 @@ import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { auditService } from "../../services/audit.service";
 
+/**
+ * Reject Blog
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function rejectBlog(req: Request, res: Response) {
   try {
     const { id } = req.params;

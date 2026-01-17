@@ -3,6 +3,12 @@ import { prisma } from "../../lib/prisma";
 import { z } from "zod";
 
 // Get all hero slides (Public)
+/**
+ * Get Hero Slides
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getHeroSlides(req: Request, res: Response) {
   const slides = await prisma.heroSlide.findMany({
     orderBy: { order: "asc" },
@@ -18,6 +24,12 @@ const updateHeroSlideSchema = z.object({
 });
 
 // Update a hero slide (Admin)
+/**
+ * Update Hero Slide
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function updateHeroSlide(req: Request, res: Response) {
   const { id } = req.params;
 

@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 
+/**
+ * Set Trip Gallery
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function setTripGallery(req: Request, res: Response) {
   const { tripId } = req.params;
   const { imageIds } = req.body; // ordered array of image IDs

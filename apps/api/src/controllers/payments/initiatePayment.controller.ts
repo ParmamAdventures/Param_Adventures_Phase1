@@ -6,6 +6,12 @@ import { logger } from "../../lib/logger";
 import { env } from "../../config/env";
 import { notificationQueue } from "../../lib/queue";
 
+/**
+ * Initiate Payment
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function initiatePayment(req: Request, res: Response) {
   const userId = (req.user as any).id;
   const { id: bookingId } = req.params;

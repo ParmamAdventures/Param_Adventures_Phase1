@@ -3,6 +3,12 @@ import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { auditService } from "../../services/audit.service";
 
+/**
+ * Publish Blog
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function publishBlog(req: Request, res: Response) {
   const { id } = req.params;
   const user = req.user!;

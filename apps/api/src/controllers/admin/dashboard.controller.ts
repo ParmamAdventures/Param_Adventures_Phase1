@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { analyticsService } from "../../services/analytics.service";
 
+/**
+ * Get Dashboard Stats
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getDashboardStats(req: Request, res: Response) {
   try {
     const [pendingBlogs, totalUsers, activeTrips, recentActivity, revenueStats] = await prisma

@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
+/**
+ * List All Bookings
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function listAllBookings(req: Request, res: Response) {
   const bookings = await prisma.booking.findMany({
     orderBy: { createdAt: "desc" },

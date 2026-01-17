@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
+/**
+ * List Users
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function listUsers(req: Request, res: Response) {
   const { role } = req.query;
 
@@ -49,6 +55,12 @@ export async function listUsers(req: Request, res: Response) {
     })),
   );
 }
+/**
+ * Update User Status
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function updateUserStatus(req: Request, res: Response) {
   const { id } = req.params;
   const { status, reason } = req.body;
@@ -83,6 +95,12 @@ export async function updateUserStatus(req: Request, res: Response) {
   res.json(user);
 }
 
+/**
+ * Delete User
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function deleteUser(req: Request, res: Response) {
   const { id } = req.params;
 
@@ -105,6 +123,12 @@ export async function deleteUser(req: Request, res: Response) {
   res.json({ message: "User deleted successfully" });
 }
 
+/**
+ * Unsuspend User
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function unsuspendUser(req: Request, res: Response) {
   const { id } = req.params;
 

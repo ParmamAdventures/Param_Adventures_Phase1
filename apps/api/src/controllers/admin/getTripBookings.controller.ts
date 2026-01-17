@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 
+/**
+ * Get Trip Bookings
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getTripBookings(req: Request, res: Response) {
   const { tripId } = req.params;
 

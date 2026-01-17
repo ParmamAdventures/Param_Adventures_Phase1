@@ -3,6 +3,12 @@ import { prisma } from "../../lib/prisma";
 import { processMedia } from "../../utils/mediaProcessor";
 import { HttpError } from "../../utils/httpError";
 
+/**
+ * Upload Trip Gallery
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function uploadTripGallery(req: Request, res: Response) {
   if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
     throw new HttpError(400, "NO_FILES", "No images uploaded");

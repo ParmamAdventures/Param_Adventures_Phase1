@@ -4,6 +4,12 @@ import { createRazorpayOrder } from "../../services/razorpay.service";
 import { HttpError } from "../../utils/httpError";
 import { env } from "../../config/env";
 
+/**
+ * Create Payment Intent
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function createPaymentIntent(req: Request, res: Response) {
   const userId = (req.user as any).id; // Using non-null assertion as it's a protected route
   const { bookingId } = req.body;

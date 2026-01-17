@@ -6,6 +6,12 @@ import { env } from "../config/env";
 import { incTotal, incFailed, incProcessed, setLatency } from "../metrics/webhookMetrics";
 import { logger } from "../lib/logger";
 
+/**
+ * Razorpay Webhook Handler
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function razorpayWebhookHandler(req: Request, res: Response) {
   const signature = (req.headers["x-razorpay-signature"] as string) || "";
   const secret = env.RAZORPAY_WEBHOOK_SECRET;

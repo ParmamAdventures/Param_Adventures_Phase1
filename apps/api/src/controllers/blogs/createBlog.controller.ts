@@ -3,6 +3,12 @@ import { prisma } from "../../lib/prisma";
 import { slugify } from "../../utils/slugify";
 import { auditService } from "../../services/audit.service";
 
+/**
+ * Create Blog
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function createBlog(req: Request, res: Response) {
   const { title, content, excerpt, tripId, coverImageId } = req.body;
   const user = (req as any).user;

@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
+/**
+ * List Audit Logs
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function listAuditLogs(req: Request, res: Response) {
   const { action, actorId, targetType, page = 1, limit = 50 } = req.query;
   const skip = (Number(page) - 1) * Number(limit);

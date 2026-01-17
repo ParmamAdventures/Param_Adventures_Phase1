@@ -5,6 +5,12 @@ import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
 import { notificationQueue } from "../../lib/queue";
 
+/**
+ * Verify Payment
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function verifyPayment(req: Request, res: Response) {
   const { orderId, paymentId, signature } = req.body;
 

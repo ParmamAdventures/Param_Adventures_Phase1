@@ -4,6 +4,12 @@ import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
 import { notificationQueue } from "../../lib/queue";
 
+/**
+ * Create Manual Payment
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function createManualPayment(req: Request, res: Response) {
   const { bookingId, amount, method, transactionId, proofUrl } = req.body;
   const adminId = (req.user as any).id;

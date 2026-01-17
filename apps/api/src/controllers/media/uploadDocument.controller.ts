@@ -5,6 +5,12 @@ import crypto from "crypto";
 
 const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 
+/**
+ * Upload Document
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function uploadDocument(req: Request, res: Response) {
   if (!req.file) {
     return res.status(400).json({ error: "NO_FILE_UPLOADED" });

@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { bookingService } from "../../services/booking.service";
 
+/**
+ * Get My Bookings
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getMyBookings(req: Request, res: Response) {
   try {
     const userId = (req as any).user.id;

@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
+/**
+ * Get Guide Trips
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getGuideTrips(req: Request, res: Response) {
   const userId = (req as any).user.id;
 

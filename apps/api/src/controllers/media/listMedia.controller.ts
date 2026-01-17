@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
+/**
+ * List Media
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function listMedia(req: Request, res: Response) {
   const { type, page = 1, limit = 50 } = req.query;
   const skip = (Number(page) - 1) * Number(limit);
@@ -55,6 +61,12 @@ export async function listMedia(req: Request, res: Response) {
   }
 }
 
+/**
+ * Delete Media
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function deleteMedia(req: Request, res: Response) {
   const { id } = req.params;
   try {

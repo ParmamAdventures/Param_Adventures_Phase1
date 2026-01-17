@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { isLastSuperAdmin } from "../../utils/roleGuards";
 
+/**
+ * List Roles
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function listRoles(req: Request, res: Response) {
   const roles = await prisma.role.findMany({
     include: {
@@ -23,6 +29,12 @@ export async function listRoles(req: Request, res: Response) {
   );
 }
 
+/**
+ * Update Role Permissions
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function updateRolePermissions(req: Request, res: Response) {
   const { id } = req.params;
   const { permissions } = req.body; // array of permission keys
@@ -64,6 +76,12 @@ export async function updateRolePermissions(req: Request, res: Response) {
   res.json({ success: true });
 }
 
+/**
+ * Assign Role
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function assignRole(req: Request, res: Response) {
   const actor = (req as any).user;
   const { userId, roleName } = req.body;
@@ -105,6 +123,12 @@ export async function assignRole(req: Request, res: Response) {
   res.json({ message: "Role assigned" });
 }
 
+/**
+ * Revoke Role
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function revokeRole(req: Request, res: Response) {
   const actor = (req as any).user;
   const { userId, roleName } = req.body;

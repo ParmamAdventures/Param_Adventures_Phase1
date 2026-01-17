@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 
+/**
+ * Get Blog By Slug
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function getBlogBySlug(req: Request, res: Response) {
   const { slug } = req.params;
   const user = req.user; // Types verified in express.d.ts

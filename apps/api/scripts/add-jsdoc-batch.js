@@ -160,7 +160,7 @@ const processFile = (filePath) => {
   // Apply replacements in reverse order to maintain indices
   for (let i = replacements.length - 1; i >= 0; i--) {
     const r = replacements[i];
-    content = content.substring(0, r.startIndex) + jsdoc + "\n" + content.substring(r.endIndex);
+    content = content.substring(0, r.startIndex) + r.jsdoc + "\n" + content.substring(r.endIndex);
   }
 
   if (content !== originalContent) {

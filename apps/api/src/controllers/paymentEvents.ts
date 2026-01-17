@@ -2,6 +2,12 @@ import { prisma } from "../lib/prisma";
 import { logWebhookReplay } from "../utils/webhookLogger";
 import { notificationQueue } from "../lib/queue";
 
+/**
+ * Handle Payment Captured
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function handlePaymentCaptured(event: any) {
   const paymentEntity = event.payload?.payment?.entity;
   const razorpayPaymentId = paymentEntity?.id;
@@ -75,6 +81,12 @@ export async function handlePaymentCaptured(event: any) {
   }
 }
 
+/**
+ * Handle Payment Failed
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function handlePaymentFailed(event: any) {
   const paymentEntity = event.payload?.payment?.entity;
   const razorpayPaymentId = paymentEntity?.id;
@@ -148,6 +160,12 @@ export async function handlePaymentFailed(event: any) {
   }
 }
 
+/**
+ * Handle Refund Processed
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function handleRefundProcessed(event: any) {
   const refundEntity = event.payload?.refund?.entity;
   const razorpayPaymentId = refundEntity?.payment_id;
@@ -199,6 +217,12 @@ export async function handleRefundProcessed(event: any) {
   }
 }
 
+/**
+ * Handle Dispute Created
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function handleDisputeCreated(event: any) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
@@ -215,6 +239,12 @@ export async function handleDisputeCreated(event: any) {
   });
 }
 
+/**
+ * Handle Dispute Lost
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function handleDisputeLost(event: any) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
@@ -238,6 +268,12 @@ export async function handleDisputeLost(event: any) {
   }
 }
 
+/**
+ * Handle Dispute Won
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function handleDisputeWon(event: any) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;

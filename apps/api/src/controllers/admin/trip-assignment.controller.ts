@@ -4,6 +4,12 @@ import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
 import { notificationQueue } from "../../lib/queue";
 
+/**
+ * Assign Manager
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function assignManager(req: Request, res: Response) {
   const { tripId } = req.params;
   const { managerId } = req.body;
@@ -50,6 +56,12 @@ export async function assignManager(req: Request, res: Response) {
   res.json({ success: true, trip: updatedTrip });
 }
 
+/**
+ * Assign Guide
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function assignGuide(req: Request, res: Response) {
   const { tripId } = req.params;
   const { guideId } = req.body;
@@ -106,6 +118,12 @@ export async function assignGuide(req: Request, res: Response) {
   res.json({ success: true, message: "Guide assigned successfully" });
 }
 
+/**
+ * Remove Guide
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function removeGuide(req: Request, res: Response) {
   const { tripId, guideId } = req.params;
   const userId = req.user!.id;
@@ -133,6 +151,12 @@ export async function removeGuide(req: Request, res: Response) {
   res.json({ success: true, message: "Guide removed successfully" });
 }
 
+/**
+ * List Eligible Users
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function listEligibleUsers(req: Request, res: Response) {
   const { role } = req.query; // 'TRIP_MANAGER' or 'TRIP_GUIDE'
 

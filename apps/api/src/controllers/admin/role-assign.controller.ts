@@ -1,6 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 
+/**
+ * Assign Role
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function assignRole(req: Request, res: Response) {
   const actor = (req as any).user;
   const { userId, roleName } = req.body;

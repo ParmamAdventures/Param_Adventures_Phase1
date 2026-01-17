@@ -3,6 +3,12 @@ import { prisma } from "../../lib/prisma";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
 import { HttpError } from "../../utils/httpError";
 
+/**
+ * Reject Booking
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>}
+ */
 export async function rejectBooking(req: Request, res: Response) {
   const admin = (req as any).user;
   const { id } = req.params;
