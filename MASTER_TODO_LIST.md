@@ -657,7 +657,7 @@ e5af6da FIX-006: Standardize error handling responses
   - Location: apps/api/tests/integration/media.test.ts
   - Test cases: 14 (met 15+ target)
   - Time taken: 30 mins
-  - Git Commit: Pending
+  - Git Commit: ✅ Committed (commit: e5b4555)
   - Priority: MEDIUM
   - Test breakdown:
     - GET /media: 4 tests (list, auth, pagination, type filtering)
