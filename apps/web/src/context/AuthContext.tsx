@@ -6,7 +6,7 @@ import { User } from "../types/auth";
 
 interface AuthContextValue {
   user: User | null;
-  loading: boolean;
+  isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -16,7 +16,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function hydrate() {
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = getAccessToken();
         if (!token) {
           setUser(null);
-          setLoading(false);
+          setIsLoading(false);
           return;
         }
 
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch {
         setUser(null);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
 
@@ -102,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ user, isLoading, login, logout, refreshUser }}>{children}</AuthContext.Provider>
   );
 }
 

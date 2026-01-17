@@ -11,7 +11,7 @@ import Spinner from "../../components/ui/Spinner";
 import BookingList from "../../components/bookings/BookingList";
 
 export default function MyBookingsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [bookings, setBookings] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
