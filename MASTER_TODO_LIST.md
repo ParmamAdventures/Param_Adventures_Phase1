@@ -935,11 +935,8 @@ e5af6da FIX-006: Standardize error handling responses
   - Estimated time: 1 hour
   - Priority: LOW
 
-- [ ] **OPT-013**: Create custom hooks for common logic
-  - Status: Not Started
-  - Location: apps/web/src/hooks/
-  - Examples: useApi, usePagination, useForm
-  - Estimated time: 2 hours
+- [-] **OPT-013**: Create custom hooks for common logic
+  - Status: 🔄 DEFERRED (Post-launch improvement)
   - Priority: LOW
 
 ## Database Optimization
@@ -954,104 +951,74 @@ e5af6da FIX-006: Standardize error handling responses
   - Date Completed: January 17, 2026
   - Priority: LOW
 
-- [ ] **OPT-015**: Optimize Prisma queries for N+1 prevention
-  - Status: Not Started
-  - Scope: All services
-  - Details: Add `select` and `include` to queries
-  - Estimated time: 1.5 hours
+- [x] **OPT-015**: Optimize Prisma queries for N+1 prevention
+  - Status: ✅ COMPLETED (Already implemented)
+  - Scope: All services already use select/include
+  - Date Completed: January 17, 2026
   - Priority: LOW
 
-- [ ] **OPT-016**: Create database query performance tests
-  - Status: Not Started
-  - Location: apps/api/tests/performance/
-  - Details: Test slow queries, measure improvements
-  - Estimated time: 1.5 hours
+- [-] **OPT-016**: Create database query performance tests
+  - Status: 🔄 DEFERRED (Post-launch with real traffic data)
   - Priority: LOW
 
 ## Caching & Performance
 
-- [ ] **OPT-017**: Implement Redis caching for trips
-  - Status: Not Started
-  - Location: apps/api/src/services/trip.service.ts
-  - Details: Cache popular trips, search results
-  - Estimated time: 2 hours
+- [-] **OPT-017**: Implement Redis caching for trips
+  - Status: 🔄 DEFERRED (Implement when traffic metrics show need)
   - Priority: LOW
 
-- [ ] **OPT-018**: Implement Redis caching for user data
-  - Status: Not Started
-  - Location: apps/api/src/services/user.service.ts
-  - Details: Cache user profile, preferences
-  - Estimated time: 1.5 hours
+- [-] **OPT-018**: Implement Redis caching for user data
+  - Status: 🔄 DEFERRED (Implement with OPT-017 if needed)
   - Priority: LOW
 
-- [ ] **OPT-019**: Add cache invalidation logic
-  - Status: Not Started
-  - Location: apps/api/src/lib/redis.ts
-  - Details: Invalidate cache on updates
-  - Estimated time: 1.5 hours
+- [-] **OPT-019**: Add cache invalidation logic
+  - Status: 🔄 DEFERRED (Needed only with caching implementation)
   - Priority: LOW
 
-- [ ] **OPT-020**: Implement query result pagination optimization
-  - Status: Not Started
-  - Details: Optimize large result sets
-  - Estimated time: 1 hour
+- [-] **OPT-020**: Implement query result pagination optimization
+  - Status: 🔄 DEFERRED (Cursor pagination already in use)
   - Priority: LOW
 
 ## Security Hardening
 
-- [ ] **OPT-021**: Add rate limiting for sensitive endpoints
-  - Status: Not Started
+- [x] **OPT-021**: Add rate limiting for sensitive endpoints
+  - Status: ✅ COMPLETED (Already implemented)
   - Location: apps/api/src/config/rate-limit.ts
-  - Details: Stricter limits for login, payment, refund
-  - Estimated time: 1 hour
+  - Details: Implemented authLimiter (15/15min), paymentLimiter (10/hour), mediaLimiter (50/15min), globalLimiter (1000/15min)
+  - Date Completed: January 17, 2026
   - Priority: LOW
 
-- [ ] **OPT-022**: Add request validation middleware
-  - Status: Not Started
+- [x] **OPT-022**: Add request validation middleware
+  - Status: ✅ COMPLETED (Already implemented)
   - Location: apps/api/src/middlewares/validate.middleware.ts
-  - Details: Validate all inputs against Zod schemas
-  - Estimated time: 1.5 hours
+  - Details: Zod-based validation middleware in use across routes
+  - Date Completed: January 17, 2026
   - Priority: LOW
 
-- [ ] **OPT-023**: Add CSRF protection
-  - Status: Not Started
-  - Details: Implement CSRF tokens for state-changing operations
-  - Estimated time: 1.5 hours
+- [-] **OPT-023**: Add CSRF protection
+  - Status: 🔄 DEFERRED (API-first architecture, lower priority)
   - Priority: LOW
 
-- [ ] **OPT-024**: Add request logging for auditing
-  - Status: Not Started
-  - Location: apps/api/src/middlewares/audit.middleware.ts
-  - Details: Log all admin actions, payment operations
-  - Estimated time: 1.5 hours
+- [-] **OPT-024**: Add request logging for auditing
+  - Status: 🔄 DEFERRED (Audit system already exists for critical operations)
   - Priority: LOW
 
 ## Monitoring & Logging
 
-- [ ] **OPT-025**: Enhanced error logging with context
-  - Status: Not Started
-  - Location: apps/api/src/lib/logger.ts
-  - Details: Add request context, user info to logs
-  - Estimated time: 1.5 hours
+- [-] **OPT-025**: Enhanced error logging with context
+  - Status: 🔄 DEFERRED (Basic Winston logging in place)
   - Priority: LOW
 
-- [ ] **OPT-026**: Add performance monitoring
-  - Status: Not Started
-  - Details: Monitor API response times, database queries
-  - Estimated time: 2 hours
+- [-] **OPT-026**: Add performance monitoring
+  - Status: 🔄 DEFERRED (Use external tools like Sentry/Datadog)
   - Priority: LOW
 
-- [ ] **OPT-027**: Create monitoring dashboard
-  - Status: Not Started
-  - Location: apps/api/src/controllers/admin/monitoring.controller.ts
-  - Details: View logs, performance metrics, errors
-  - Estimated time: 2 hours
+- [-] **OPT-027**: Create monitoring dashboard
+  - Status: 🔄 DEFERRED (Use external monitoring tools)
   - Priority: LOW
 
-- [ ] **OPT-028**: Setup alerting for critical issues
-  - Status: Not Started
-  - Details: Alert on payment failures, database errors, etc.
-  - Estimated time: 1.5 hours
+- [-] **OPT-028**: Setup alerting for critical issues
+  - Status: 🔄 DEFERRED (Use external alerting services)
   - Priority: LOW
 
 ---
