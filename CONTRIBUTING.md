@@ -106,6 +106,7 @@ git commit -m "docs: update payment integration guide"
 ```
 
 **Common types**:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation
@@ -132,6 +133,7 @@ git push origin feat/your-feature
 ### Backend (TypeScript/Express)
 
 **Project Structure**:
+
 ```
 apps/api/src/
 ├── controllers/      # Request handlers
@@ -145,6 +147,7 @@ apps/api/src/
 ```
 
 **Controller Pattern**:
+
 ```typescript
 export async function createTrip(req: Request, res: Response) {
   try {
@@ -167,6 +170,7 @@ export async function createTrip(req: Request, res: Response) {
 ```
 
 **Service Pattern**:
+
 ```typescript
 export class TripService {
   static async create(data: TripCreateInput, userId: string) {
@@ -178,7 +182,7 @@ export class TripService {
     // ✅ Database operation
     const trip = await prisma.trip.create({
       data: { ...data, createdById: userId },
-      include: { media: true }
+      include: { media: true },
     });
 
     // ✅ Queue async jobs
@@ -190,7 +194,7 @@ export class TripService {
   static async getById(id: string) {
     const trip = await prisma.trip.findUnique({
       where: { id },
-      include: { guides: true, reviews: true }
+      include: { guides: true, reviews: true },
     });
 
     if (!trip) throw new NotFoundError("Trip not found");
@@ -200,6 +204,7 @@ export class TripService {
 ```
 
 **Validation Schema**:
+
 ```typescript
 import { z } from "zod";
 
@@ -215,6 +220,7 @@ export type CreateTripInput = z.infer<typeof createTripSchema>;
 ```
 
 **Error Handling**:
+
 ```typescript
 // ✅ GOOD: Throw specific errors
 throw new ValidationError("Invalid email");
@@ -227,18 +233,19 @@ throw new Error("Something went wrong");
 ```
 
 **Database Queries**:
+
 ```typescript
 // ✅ GOOD: Include related data
 const booking = await prisma.booking.findUnique({
   where: { id },
-  include: { payment: true, guestDetails: true, trip: true }
+  include: { payment: true, guestDetails: true, trip: true },
 });
 
 // ✅ GOOD: Use pagination
 const bookings = await prisma.booking.findMany({
   skip: (page - 1) * limit,
   take: limit,
-  orderBy: { createdAt: "desc" }
+  orderBy: { createdAt: "desc" },
 });
 
 // ❌ BAD: N+1 queries
@@ -250,6 +257,7 @@ for (const trip of trips) {
 ### Frontend (TypeScript/React)
 
 **Component Pattern**:
+
 ```typescript
 import { FC, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -278,6 +286,7 @@ export const UserProfile: FC<UserProfileProps> = ({ userId }) => {
 ```
 
 **Custom Hook Pattern**:
+
 ```typescript
 import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -290,11 +299,19 @@ export function useTrips(filters?: TripFilters) {
     queryFn: () => fetchTrips({ page, ...filters }),
   });
 
-  return { trips: data?.trips, total: data?.total, isLoading, error, page, setPage };
+  return {
+    trips: data?.trips,
+    total: data?.total,
+    isLoading,
+    error,
+    page,
+    setPage,
+  };
 }
 ```
 
 **Styling**:
+
 ```typescript
 // ✅ GOOD: Use Tailwind classes
 <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
@@ -316,6 +333,7 @@ const buttonClass = "px-4 py-2 rounded font-medium";
 ### Backend Tests
 
 **Test Structure**:
+
 ```typescript
 describe("TripService", () => {
   // ✅ Setup/teardown
@@ -340,13 +358,16 @@ describe("TripService", () => {
     it("should throw NotFoundError when trip doesn't exist", async () => {
       jest.spyOn(prisma.trip, "findUnique").mockResolvedValue(null);
 
-      await expect(TripService.getById("invalid")).rejects.toThrow(NotFoundError);
+      await expect(TripService.getById("invalid")).rejects.toThrow(
+        NotFoundError
+      );
     });
   });
 });
 ```
 
 **Run Tests**:
+
 ```bash
 cd apps/api
 
@@ -364,6 +385,7 @@ npm test -- --coverage
 ```
 
 **Test Guidelines**:
+
 - ✅ One concept per test
 - ✅ Clear test names
 - ✅ Mock external dependencies
@@ -379,12 +401,14 @@ See [TESTING_DEVELOPER_GUIDE.md](docs/TESTING_DEVELOPER_GUIDE.md) for detailed e
 ### Before Creating PR
 
 1. **Update your branch** with latest changes:
+
    ```bash
    git fetch origin
    git rebase origin/main
    ```
 
 2. **Run full test suite**:
+
    ```bash
    npm test
    npm run lint
@@ -400,23 +424,28 @@ See [TESTING_DEVELOPER_GUIDE.md](docs/TESTING_DEVELOPER_GUIDE.md) for detailed e
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] New feature
 - [ ] Bug fix
 - [ ] Breaking change
 - [ ] Documentation
 
 ## Related Issues
+
 Closes #123
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] Manual testing completed
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Comments added for complex logic
@@ -498,19 +527,23 @@ We appreciate your contributions to Param Adventures! 🎉
 Happy coding! 🚀
 
 ## 4. Testing ✅
+
 - **Unit Tests**: Required for new Backend Services/Controllers.
 - **E2E**: Critical user flows must be verified in `apps/e2e`.
 
 ## 5. Pull Requests (PR) 🔀
+
 1. Push your branch.
 2. Create PR to `main` (or active feature branch).
 3. Ensure CI checks pass (Lint + Test).
 4. Request review from a team member.
 
 ## 6. Issue Reporting 🐛
+
 - Use the **Bug Report** template for defects.
 - Use the **Feature Request** template for new ideas.
 - All PRs must follow the **Pull Request Template** to ensure quality checks.
 
 ## 7. Development Tools 🛠️
+
 - **Vercel Preview**: Every branch push generates a unique Preview URL. Use this to verify your changes in a live environment before merging.
