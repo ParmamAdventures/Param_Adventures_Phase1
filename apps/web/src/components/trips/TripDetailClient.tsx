@@ -219,7 +219,7 @@ export default function TripDetailClient({
   slug: string;
 }) {
   const [trip, setTrip] = useState<TripFull | null>(initialTrip as TripFull);
-  const [loading, setLoading] = useState(!initialTrip);
+  const [isLoading, setIsLoading] = useState(!initialTrip);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -242,10 +242,10 @@ export default function TripDetailClient({
         console.error("Client fetch failed:", err);
         setError(true);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setIsLoading(false));
   }, [initialTrip, slug]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4">
         <Loader2 className="text-accent h-12 w-12 animate-spin" />
