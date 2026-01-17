@@ -156,7 +156,8 @@ describe("RBAC & Permission Integration", () => {
     // (intentionally empty)
 
     // Create users and assign roles
-    const superAdmin = await prisma.user.create({      data: { email: "rbac_superadmin@test.com", password: "password123", name: "Super Admin" },
+    const superAdmin = await prisma.user.create({
+      data: { email: "rbac_superadmin@test.com", password: "password123", name: "Super Admin" },
     });
     superAdminId = superAdmin.id;
     superAdminToken = signAccessToken(superAdminId);
