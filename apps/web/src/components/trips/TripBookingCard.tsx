@@ -17,7 +17,7 @@ interface Props {
 export default function TripBookingCard({ trip }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { initiatePayment, simulateDevSuccess, loading: paymentLoading, message } = useRazorpay();
+  const { initiatePayment, simulateDevSuccess, isLoading: paymentLoading, message } = useRazorpay();
 
   const [loading, setLoading] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);

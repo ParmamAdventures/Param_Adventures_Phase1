@@ -28,7 +28,7 @@ interface WindowWithRazorpay extends Window {
 }
 
 export function useRazorpay() {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { showToast } = useToast();
@@ -73,18 +73,18 @@ export function useRazorpay() {
           if (booking?.paymentStatus === "PAID") {
             clearPolling();
             setMessage("Payment successful! 🎉");
-            setLoading(false);
+            setIsLoading(false);
             showToast("Payment verified successfully", "success");
             router.refresh();
           } else if (booking?.paymentStatus === "FAILED") {
             clearPolling();
             setMessage("Payment failed. Please try again.");
-            setLoading(false);
+            setIsLoading(false);
             showToast("Payment verification failed", "error");
           } else if (attempts >= maxAttempts) {
             clearPolling();
             setMessage("Verification taking longer than expected. Please refresh.");
-            setLoading(false);
+            setIsLoading(false);
           }
         } catch (error) {
           console.error("Polling error:", error);
@@ -96,7 +96,7 @@ export function useRazorpay() {
 
   const initiatePayment = useCallback(
     async (bookingId: string, user?: { name?: string; email?: string }) => {
-      setLoading(true);
+      setIsLoading(true);
       setMessage("Initializing payment...");
 
       try {
@@ -118,7 +118,7 @@ export function useRazorpay() {
         // Handle dev fallback
         if (orderId.startsWith("order_test_")) {
           setMessage("Dev order created. Click 'Simulate' to finish.");
-          setLoading(false);
+          setIsLoading(false);
           return { isDev: true, orderId };
         }
 
@@ -148,7 +148,7 @@ export function useRazorpay() {
           },
           handler: async (response: any) => {
             setMessage("Payment received. Verifying...");
-            setLoading(true);
+            setIsLoading(true);
             try {
               const verifyRes = await apiFetch("/payments/verify", {
                 method: "POST",
@@ -162,7 +162,7 @@ export function useRazorpay() {
 
               if (verifyRes.ok) {
                 setMessage("Payment successful! 🎉");
-                setLoading(false);
+                setIsLoading(false);
                 showToast("Payment verified successfully", "success");
                 router.refresh();
               } else {
@@ -176,7 +176,7 @@ export function useRazorpay() {
           modal: {
             ondismiss: () => {
               setMessage("Payment cancelled");
-              setLoading(false);
+              setIsLoading(false);
             },
           },
         };
@@ -187,7 +187,7 @@ export function useRazorpay() {
         console.error("Payment error:", error);
         setMessage(error.message || "Payment failed to start");
         showToast(error.message || "Payment failed", "error");
-        setLoading(false);
+        setIsLoading(false);
       }
       return { isDev: false };
     },
@@ -197,7 +197,7 @@ export function useRazorpay() {
   const simulateDevSuccess = useCallback(
     async (bookingId: string, orderId?: string) => {
       setMessage("Simulating success. Verifying...");
-      setLoading(true);
+      setIsLoading(true);
 
       if (orderId) {
         try {
@@ -209,7 +209,7 @@ export function useRazorpay() {
 
           if (verifyRes.ok) {
             setMessage("Payment successful! 🎉");
-            setLoading(false);
+            setIsLoading(false);
             showToast("Payment verified successfully", "success");
             router.refresh();
             return;
@@ -227,7 +227,7 @@ export function useRazorpay() {
   return {
     initiatePayment,
     simulateDevSuccess,
-    loading,
+    isLoading,
     message,
     setMessage,
   };

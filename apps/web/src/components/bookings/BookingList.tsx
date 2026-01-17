@@ -30,7 +30,7 @@ interface Props {
 }
 
 export default function BookingList({ bookings, loading }: Props) {
-  const { initiatePayment, simulateDevSuccess, loading: paymentLoading, message } = useRazorpay();
+  const { initiatePayment, simulateDevSuccess, isLoading: paymentLoading, message } = useRazorpay();
   const { user } = useAuth();
 
   if (loading) {
