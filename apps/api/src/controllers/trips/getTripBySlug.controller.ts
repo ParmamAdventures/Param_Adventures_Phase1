@@ -3,25 +3,13 @@ import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { TripCacheService } from "../../services/trip-cache.service";
 
 export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   const { slug } = req.params;
 
-  const trip = await prisma.trip.findUnique({
-    where: { slug },
-    include: {
-      coverImage: true,
-      heroImage: true,
-      gallery: {
-        include: {
-          image: true,
-        },
-        orderBy: {
-          order: "asc",
-        },
-      },
-    },
-  });
+  // Try cache first for public published trips
+  const trip = await TripCacheService.getTripBySlug(slug);
 
   if (!trip) {
     throw new HttpError(404, "NOT_FOUND", "Trip not found");

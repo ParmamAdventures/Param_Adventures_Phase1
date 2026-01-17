@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { TripCacheService } from "../../services/trip-cache.service";
 
 export const getPublicTrips = catchAsync(async (req: Request, res: Response) => {
 
@@ -20,6 +21,22 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     sortOrder = "desc",
   } = req.query;
 
+  // If filtering is applied (not just basic category), skip cache
+  const hasFilters = search || difficulty || maxPrice || minPrice || minDays || maxDays || startDate || endDate || capacity;
+
+  if (!hasFilters && !category) {
+    // Use cache for basic public trips request
+    const trips = await TripCacheService.getPublicTrips();
+    return ApiResponse.success(res, "Trips fetched", trips);
+  }
+
+  if (!hasFilters && category) {
+    // Use cache for category-filtered trips
+    const trips = await TripCacheService.getPublicTrips({ category: String(category) });
+    return ApiResponse.success(res, "Trips fetched", trips);
+  }
+
+  // For complex filters, fetch from database directly (bypass cache)
   const where: any = { status: "PUBLISHED" };
 
   if (search) {

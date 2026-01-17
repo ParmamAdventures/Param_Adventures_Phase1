@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { TripCacheService } from "../../services/trip-cache.service";
 
 export const updateTrip = catchAsync(async (req: Request, res: Response) => {
   const user = (req as any).user;
@@ -74,6 +75,9 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
       },
     },
   });
+
+  // Invalidate cache after update
+  await TripCacheService.invalidateTrip(updated);
 
   await prisma.auditLog.create({
     data: {
