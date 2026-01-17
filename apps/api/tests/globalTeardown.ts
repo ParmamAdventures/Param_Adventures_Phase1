@@ -1,5 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 
+// Ensure DATABASE_URL is available for teardown even though Jest spawns a new process
+const TEST_DB_URL =
+  process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5433/param_adventures_test";
+process.env.DATABASE_URL = TEST_DB_URL;
+
 const prisma = new PrismaClient();
 
 export default async function globalTeardown() {

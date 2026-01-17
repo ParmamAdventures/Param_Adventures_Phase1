@@ -35,7 +35,8 @@ describe("Payment Integration Tests", () => {
   let bookingId: string;
 
   beforeAll(async () => {
-    // Clean up database
+    // Clean up database in proper order (images before users due to FK)
+    await prisma.image.deleteMany();
     await prisma.payment.deleteMany();
     await prisma.booking.deleteMany();
     await prisma.trip.deleteMany();
@@ -103,6 +104,7 @@ describe("Payment Integration Tests", () => {
   });
 
   afterAll(async () => {
+    await prisma.image.deleteMany();
     await prisma.payment.deleteMany();
     await prisma.booking.deleteMany();
     await prisma.trip.deleteMany();

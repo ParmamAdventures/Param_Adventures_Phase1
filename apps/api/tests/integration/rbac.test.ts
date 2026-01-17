@@ -18,13 +18,25 @@ describe("RBAC & Permission Integration", () => {
   let userId: string;
 
   beforeAll(async () => {
-    // Clean up in proper order
+    // Clean up in proper order (comprehensive to avoid collisions)
     try {
+      await prisma.payment.deleteMany();
+      await prisma.booking.deleteMany();
+      await prisma.review.deleteMany();
+      await prisma.savedTrip.deleteMany();
+      await prisma.tripInquiry.deleteMany();
+      await prisma.newsletterSubscriber.deleteMany();
+      await prisma.tripGalleryImage.deleteMany();
+      await prisma.blog.deleteMany();
+      await prisma.trip.deleteMany();
+      await prisma.image.deleteMany();
+      await prisma.tripsOnGuides.deleteMany();
       await prisma.userRole.deleteMany();
       await prisma.rolePermission.deleteMany();
       await prisma.user.deleteMany();
       await prisma.permission.deleteMany();
-      // Don't delete roles - they're system-wide, keep them for reuse
+      await prisma.role.deleteMany();
+      await prisma.auditLog.deleteMany();
     } catch {
       /* ignored */
     }
@@ -144,8 +156,7 @@ describe("RBAC & Permission Integration", () => {
     // (intentionally empty)
 
     // Create users and assign roles
-    const superAdmin = await prisma.user.create({
-      data: { email: "superadmin@test.com", password: "password123", name: "Super Admin" },
+    const superAdmin = await prisma.user.create({      data: { email: "rbac_superadmin@test.com", password: "password123", name: "Super Admin" },
     });
     superAdminId = superAdmin.id;
     superAdminToken = signAccessToken(superAdminId);
@@ -154,7 +165,7 @@ describe("RBAC & Permission Integration", () => {
     });
 
     const admin = await prisma.user.create({
-      data: { email: "admin@test.com", password: "password123", name: "Admin User" },
+      data: { email: "rbac_admin@test.com", password: "password123", name: "Admin User" },
     });
     adminId = admin.id;
     adminToken = signAccessToken(adminId);
@@ -163,7 +174,7 @@ describe("RBAC & Permission Integration", () => {
     });
 
     const tripManager = await prisma.user.create({
-      data: { email: "manager@test.com", password: "password123", name: "Trip Manager" },
+      data: { email: "rbac_manager@test.com", password: "password123", name: "Trip Manager" },
     });
     tripManagerId = tripManager.id;
     tripManagerToken = signAccessToken(tripManagerId);
@@ -172,7 +183,7 @@ describe("RBAC & Permission Integration", () => {
     });
 
     const guide = await prisma.user.create({
-      data: { email: "guide@test.com", password: "password123", name: "Guide" },
+      data: { email: "rbac_guide@test.com", password: "password123", name: "Guide" },
     });
     guideId = guide.id;
     guideToken = signAccessToken(guideId);
@@ -181,7 +192,7 @@ describe("RBAC & Permission Integration", () => {
     });
 
     const regularUser = await prisma.user.create({
-      data: { email: "user@test.com", password: "password123", name: "Regular User" },
+      data: { email: "rbac_user@test.com", password: "password123", name: "Regular User" },
     });
     userId = regularUser.id;
     userToken = signAccessToken(regularUser.id);

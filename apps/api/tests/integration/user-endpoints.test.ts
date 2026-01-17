@@ -15,11 +15,23 @@ describe("User Endpoints Integration", () => {
   let testTripId: string;
 
   beforeAll(async () => {
-    // Clean up
+    // Clean up (safe order to avoid FK issues between suites)
     try {
-      await prisma.tripsOnGuides.deleteMany();
+      await prisma.payment.deleteMany();
       await prisma.booking.deleteMany();
+      await prisma.review.deleteMany();
+      await prisma.savedTrip.deleteMany();
+      await prisma.tripInquiry.deleteMany();
+      await prisma.newsletterSubscriber.deleteMany();
+      await prisma.tripGalleryImage.deleteMany();
+      await prisma.blog.deleteMany();
       await prisma.trip.deleteMany();
+      await prisma.image.deleteMany();
+      await prisma.tripsOnGuides.deleteMany();
+      await prisma.rolePermission.deleteMany();
+      await prisma.permission.deleteMany();
+      await prisma.role.deleteMany();
+      await prisma.auditLog.deleteMany();
       await prisma.userRole.deleteMany();
       await prisma.user.deleteMany();
     } catch {

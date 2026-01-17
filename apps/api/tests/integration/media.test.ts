@@ -139,7 +139,9 @@ describe("Media Endpoints", () => {
 
   describe("GET /media - List media", () => {
     it("returns media list with authentication", async () => {
-      const response = await request(app).get("/media").set("Authorization", `Bearer ${adminToken}`);
+      const response = await request(app)
+        .get("/media")
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("media");

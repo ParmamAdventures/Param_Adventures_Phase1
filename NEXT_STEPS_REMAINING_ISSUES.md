@@ -8,6 +8,7 @@
 ## Issue #1: admin-operations.test.ts - Analytics Permission Errors
 
 ### Problem
+
 ```
 admin-operations.test.ts (Line 323)
 GET /admin/analytics/bookings
@@ -22,6 +23,7 @@ GET /admin/analytics/moderation (Line 331)
 ### Investigation Steps
 
 #### Step 1: Check Permission Exists
+
 ```bash
 # In database, run:
 SELECT * FROM "Permission" WHERE key = 'analytics:view';
@@ -31,6 +33,7 @@ SELECT * FROM "Permission" WHERE key = 'analytics:view';
 **If Missing**: Create it in beforeAll() of test
 
 #### Step 2: Check Admin Role Has Permission
+
 ```bash
 # In database, run:
 SELECT rp.*, r.name, p.key
@@ -44,21 +47,28 @@ WHERE r.name = 'ADMIN' AND p.key = 'analytics:view';
 **If Missing**: Add to test setup
 
 #### Step 3: Check Test Setup
+
 Look at **admin-operations.test.ts** line 1-100 (beforeAll):
 
 **Should have**:
+
 ```typescript
 // In beforeAll():
 const analyticsPermission = await prisma.permission.upsert({
-  where: { key: 'analytics:view' },
+  where: { key: "analytics:view" },
   update: {},
-  create: { key: 'analytics:view', description: 'View analytics' }
+  create: { key: "analytics:view", description: "View analytics" },
 });
 
 await prisma.rolePermission.upsert({
-  where: { roleId_permissionId: { roleId: adminRole.id, permissionId: analyticsPermission.id } },
+  where: {
+    roleId_permissionId: {
+      roleId: adminRole.id,
+      permissionId: analyticsPermission.id,
+    },
+  },
   update: {},
-  create: { roleId: adminRole.id, permissionId: analyticsPermission.id }
+  create: { roleId: adminRole.id, permissionId: analyticsPermission.id },
 });
 ```
 
@@ -69,32 +79,32 @@ Add this to **admin-operations.test.ts** beforeAll():
 ```typescript
 beforeAll(async () => {
   // ... existing role creation ...
-  
+
   // Create analytics permission
   const analyticsPermission = await prisma.permission.upsert({
-    where: { key: 'analytics:view' },
+    where: { key: "analytics:view" },
     update: {},
-    create: { 
-      key: 'analytics:view',
-      description: 'View analytics dashboards'
-    }
+    create: {
+      key: "analytics:view",
+      description: "View analytics dashboards",
+    },
   });
-  
+
   // Assign to admin role
   await prisma.rolePermission.upsert({
-    where: { 
-      roleId_permissionId: { 
-        roleId: adminRole.id, 
-        permissionId: analyticsPermission.id 
-      } 
+    where: {
+      roleId_permissionId: {
+        roleId: adminRole.id,
+        permissionId: analyticsPermission.id,
+      },
     },
     update: {},
     create: {
       roleId: adminRole.id,
-      permissionId: analyticsPermission.id
-    }
+      permissionId: analyticsPermission.id,
+    },
   });
-  
+
   // ... rest of setup ...
 });
 ```
@@ -104,6 +114,7 @@ beforeAll(async () => {
 ## Issue #2: blogs.test.ts - Reject Blog Returns 500
 
 ### Problem
+
 ```
 blogs.test.ts (Line 459)
 POST /blogs/:id/reject
@@ -115,6 +126,7 @@ POST /blogs/:id/reject
 ### Investigation Steps
 
 #### Step 1: Add Debug Logging
+
 Modify **rejectBlog.controller.ts**:
 
 ```typescript
@@ -123,26 +135,30 @@ export async function rejectBlog(req: Request, res: Response) {
   const user = req.user!;
   const { reason } = req.body;
 
-  console.log('[DEBUG] Rejecting blog:', { id, userId: user.id, reason });
+  console.log("[DEBUG] Rejecting blog:", { id, userId: user.id, reason });
 
   try {
     const blog = await prisma.blog.findUnique({ where: { id } });
-    console.log('[DEBUG] Found blog:', blog);
+    console.log("[DEBUG] Found blog:", blog);
 
     if (!blog) {
       throw new HttpError(404, "NOT_FOUND", "Blog not found");
     }
 
     if (blog.status !== "PENDING_REVIEW") {
-      console.log('[DEBUG] Invalid status:', blog.status);
-      throw new HttpError(403, "INVALID_STATE", `Only blogs in review can be rejected, current: ${blog.status}`);
+      console.log("[DEBUG] Invalid status:", blog.status);
+      throw new HttpError(
+        403,
+        "INVALID_STATE",
+        `Only blogs in review can be rejected, current: ${blog.status}`
+      );
     }
 
     const updated = await prisma.blog.update({
       where: { id },
       data: { status: "REJECTED" },
     });
-    console.log('[DEBUG] Blog updated:', updated);
+    console.log("[DEBUG] Blog updated:", updated);
 
     await auditService.logAudit({
       actorId: user.id,
@@ -154,10 +170,10 @@ export async function rejectBlog(req: Request, res: Response) {
 
     res.json(updated);
   } catch (error: any) {
-    console.error('[ERROR] Reject blog failed:', {
+    console.error("[ERROR] Reject blog failed:", {
       error: error.message,
       stack: error.stack,
-      name: error.name
+      name: error.name,
     });
     throw error;
   }
@@ -165,6 +181,7 @@ export async function rejectBlog(req: Request, res: Response) {
 ```
 
 #### Step 2: Run Test with Logging
+
 ```bash
 npm test -- tests/integration/blogs.test.ts --verbose 2>&1 | grep -A5 "DEBUG\|ERROR"
 ```
@@ -172,6 +189,7 @@ npm test -- tests/integration/blogs.test.ts --verbose 2>&1 | grep -A5 "DEBUG\|ER
 #### Step 3: Check Common Issues
 
 **Check 1: Audit Service**
+
 ```typescript
 // Does auditService.logAudit throw?
 // Add try-catch:
@@ -185,6 +203,7 @@ try {
 
 **Check 2: Blog Status**
 Verify test creates blog with correct status:
+
 ```typescript
 const testBlog = await prisma.blog.create({
   data: {
@@ -193,13 +212,14 @@ const testBlog = await prisma.blog.create({
     content: {},
     authorId: userId,
     tripId,
-    status: "PENDING_REVIEW",  // THIS MUST MATCH
+    status: "PENDING_REVIEW", // THIS MUST MATCH
   },
 });
 ```
 
 **Check 3: Database Constraints**
 Check if any required fields are missing:
+
 ```bash
 # In database:
 SELECT column_name, is_nullable, data_type
@@ -214,18 +234,18 @@ Replace catch block in **rejectBlog.controller.ts**:
 ```typescript
 } catch (error: any) {
   console.error('[REJECT_BLOG_ERROR]:', error.message);
-  
+
   if (error.code === 'P2025') {
     return res.status(404).json({ error: 'Blog not found' });
   }
-  
+
   if (error.status) {
     // HttpError
     return res.status(error.status).json({ error: error.message });
   }
-  
+
   // Unexpected error
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Failed to reject blog',
     details: process.env.NODE_ENV === 'test' ? error.message : undefined
   });
@@ -237,15 +257,17 @@ Replace catch block in **rejectBlog.controller.ts**:
 ## Debugging Commands
 
 ### Run Only Failing Tests
+
 ```bash
 # admin-operations failures
 npm test -- tests/integration/admin-operations.test.ts --testNamePattern="analytics"
 
-# blogs failures  
+# blogs failures
 npm test -- tests/integration/blogs.test.ts --testNamePattern="reject"
 ```
 
 ### Get Detailed Error Output
+
 ```bash
 # Run with all output
 npm test -- tests/integration/admin-operations.test.ts 2>&1 | tail -200
@@ -255,6 +277,7 @@ npm test -- tests/integration/admin-operations.test.ts --testNamePattern="return
 ```
 
 ### Check Database State
+
 ```bash
 # Connect to test database
 psql postgresql://user:password@localhost:5433/param_adventures_test
@@ -263,7 +286,7 @@ psql postgresql://user:password@localhost:5433/param_adventures_test
 SELECT * FROM "Permission" WHERE key LIKE '%analytics%';
 
 # Check role-permission mappings
-SELECT r.name, p.key 
+SELECT r.name, p.key
 FROM "RolePermission" rp
 JOIN "Role" r ON rp."roleId" = r.id
 JOIN "Permission" p ON rp."permissionId" = p.id
@@ -278,17 +301,19 @@ SELECT id, status FROM "Blog" WHERE slug LIKE '%reject%';
 ## Expected Behavior After Fixes
 
 ### admin-operations.test.ts
+
 ```
 ✅ GET /admin/analytics/bookings
   - With permission: 200 (returns data)
   - Without permission: 403 (denied)
 
-✅ GET /admin/analytics/moderation  
+✅ GET /admin/analytics/moderation
   - With permission: 200 (returns data)
   - Without permission: 403 (denied)
 ```
 
 ### blogs.test.ts
+
 ```
 ✅ POST /blogs/:id/reject
   - Valid blog: 200 (rejected)
@@ -300,14 +325,14 @@ SELECT id, status FROM "Blog" WHERE slug LIKE '%reject%';
 
 ## Estimated Effort
 
-| Task | Time | Difficulty |
-|------|------|-----------|
-| Add analytics permission | 5 min | ⭐ Easy |
-| Test permission setup | 5 min | ⭐ Easy |
-| Add debug logging | 10 min | ⭐ Easy |
-| Debug 500 error | 10-20 min | ⭐⭐ Medium |
-| Fix found issue | 5-15 min | ⭐ Easy |
-| **Total** | **35-55 min** | **Easy to Medium** |
+| Task                     | Time          | Difficulty         |
+| ------------------------ | ------------- | ------------------ |
+| Add analytics permission | 5 min         | ⭐ Easy            |
+| Test permission setup    | 5 min         | ⭐ Easy            |
+| Add debug logging        | 10 min        | ⭐ Easy            |
+| Debug 500 error          | 10-20 min     | ⭐⭐ Medium        |
+| Fix found issue          | 5-15 min      | ⭐ Easy            |
+| **Total**                | **35-55 min** | **Easy to Medium** |
 
 ---
 
@@ -335,4 +360,3 @@ SELECT id, status FROM "Blog" WHERE slug LIKE '%reject%';
 3. Add error handler middleware with detailed logging
 4. Create test fixtures for common setups
 5. Document permission matrix for endpoints
-

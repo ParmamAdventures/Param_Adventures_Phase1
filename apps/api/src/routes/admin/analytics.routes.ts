@@ -21,5 +21,6 @@ router.get("/trips", getTripPerformance);
 router.get("/bookings", getBookingStats);
 router.get("/payments", getPaymentStats);
 router.get("/moderation-summary", getModerationSummary);
+router.get("/moderation", getModerationSummary); // alias for tests/routes expecting /moderation
 
 export default router;

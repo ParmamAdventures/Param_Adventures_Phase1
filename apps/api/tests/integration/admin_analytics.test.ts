@@ -8,13 +8,19 @@ describe("Admin Analytics Integration", () => {
   let userId: string;
 
   beforeAll(async () => {
-    // Clean and setup
-    await prisma.payment.deleteMany();
-    await prisma.booking.deleteMany();
-    await prisma.trip.deleteMany();
-    await prisma.userRole.deleteMany();
-    await prisma.user.deleteMany();
-
+    // Clean and setup - delete in proper order to avoid FK constraints
+    try {
+      await prisma.review.deleteMany();
+      await prisma.blog.deleteMany();
+      await prisma.image.deleteMany();
+      await prisma.payment.deleteMany();
+      await prisma.booking.deleteMany();
+      await prisma.trip.deleteMany();
+      await prisma.userRole.deleteMany();
+      await prisma.user.deleteMany();
+    } catch (e) {
+      /* cleanup errors ignored */
+    }
     // Create roles and permissions
     const adminRole = await prisma.role.upsert({
       where: { name: "SUPER_ADMIN" },

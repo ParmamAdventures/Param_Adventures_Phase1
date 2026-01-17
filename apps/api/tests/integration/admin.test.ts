@@ -45,6 +45,11 @@ describe("Admin RBAC Integration", () => {
       /* ignored */
     }
     try {
+      await prisma.permission?.deleteMany();
+    } catch {
+      /* ignored */
+    }
+    try {
       await prisma.role.deleteMany();
     } catch {
       /* ignored */
@@ -66,11 +71,15 @@ describe("Admin RBAC Integration", () => {
     }
 
     // Create Admin Role & Perms
-    const perm = await prisma.permission.create({
-      data: { key: "user:list", description: "Read users" },
+    const perm = await prisma.permission.upsert({
+      where: { key: "user:list" },
+      update: {},
+      create: { key: "user:list", description: "Read users" },
     });
-    const adminRole = await prisma.role.create({
-      data: { name: "admin" },
+    const adminRole = await prisma.role.upsert({
+      where: { name: "admin" },
+      update: {},
+      create: { name: "admin" },
     });
     // Create RolePermission
     await prisma.rolePermission.create({

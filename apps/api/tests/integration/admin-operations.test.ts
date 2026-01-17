@@ -41,7 +41,8 @@ describe("Admin Operations", () => {
       { key: "user:edit", description: "Edit users" },
       { key: "user:delete", description: "Delete users" },
       { key: "admin:dashboard", description: "View admin dashboard" },
-      { key: "admin:analytics", description: "View analytics" },
+      { key: "analytics:view", description: "View analytics" },
+      { key: "audit:view", description: "View audit logs" },
     ];
 
     for (const perm of permissions) {
@@ -116,7 +117,9 @@ describe("Admin Operations", () => {
 
   describe("GET /admin/users - List users", () => {
     it("returns users list when user has permission", async () => {
-      const response = await request(app).get("/admin/users").set("Authorization", `Bearer ${adminToken}`);
+      const response = await request(app)
+        .get("/admin/users")
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
@@ -130,7 +133,9 @@ describe("Admin Operations", () => {
     });
 
     it("returns 403 without permission", async () => {
-      const response = await request(app).get("/admin/users").set("Authorization", `Bearer ${userToken}`);
+      const response = await request(app)
+        .get("/admin/users")
+        .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
     });
@@ -350,7 +355,9 @@ describe("Admin Operations", () => {
     });
 
     it("returns 403 without permission", async () => {
-      const response = await request(app).get("/admin/audit-logs").set("Authorization", `Bearer ${userToken}`);
+      const response = await request(app)
+        .get("/admin/audit-logs")
+        .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
     });
