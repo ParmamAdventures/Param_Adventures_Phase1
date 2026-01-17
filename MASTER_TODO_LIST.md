@@ -10,13 +10,13 @@
 
 ## 📊 Overview
 
-| Category                       | Count | Priority     | Status      |
-| ------------------------------ | ----- | ------------ | ----------- |
-| 🔴 Critical Bugs               | 8     | MUST DO      | 8/8 Done ✅ |
-| 🟠 High Priority (Features)    | 12    | MUST DO      | Queued      |
-| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 9/24 Done   |
-| 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | Not Started |
-| 📋 Documentation               | 15    | IMPORTANT    | Not Started |
+| Category                       | Count | Priority     | Status       |
+| ------------------------------ | ----- | ------------ | ------------ |
+| 🔴 Critical Bugs               | 8     | MUST DO      | 8/8 Done ✅  |
+| 🟠 High Priority (Features)    | 12    | MUST DO      | 13/13 Done ✅|
+| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 10/24 Done   |
+| 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | Not Started  |
+| 📋 Documentation               | 15    | IMPORTANT    | Not Started  |
 
 ---
 
@@ -558,14 +558,27 @@ e5af6da FIX-006: Standardize error handling responses
 
 ## Blog Service Tests
 
-- [ ] **TEST-010**: Write unit tests for blog service
-  - Status: Not Started
+- [x] **TEST-010**: Write unit tests for blog service
+  - Status: ✅ COMPLETED (35 tests passing)
   - Location: apps/api/tests/unit/blog.service.test.ts
-  - Current coverage: 0%
-  - Target coverage: 80%
-  - Test cases: 15+
-  - Estimated time: 1.5 hours
+  - Service Location: apps/api/src/services/blog.service.ts
+  - Current coverage: 100% (all methods tested)
+  - Target coverage: 80%+ ✅
+  - Test cases: 35 (exceeded 15+ target)
+  - Time taken: 1.5 hours
+  - Git Commit: Pending
   - Priority: MEDIUM
+  - Test breakdown:
+    - createBlog: 6 tests (validation, slug generation, audit logging)
+    - getBlogById: 4 tests (permission-based access, relations)
+    - getBlogBySlug: 4 tests (public/author/admin access)
+    - listBlogs: 4 tests (pagination, filtering)
+    - updateBlog: 5 tests (slug regeneration, status revert)
+    - submitForReview: 2 tests (status change, ownership)
+    - approveBlog: 3 tests (admin operations)
+    - rejectBlog: 2 tests (rejection logging)
+    - publishBlog: 2 tests (publishing workflow)
+    - deleteBlog: 3 tests (author/admin permissions)
 
 - [ ] **TEST-011**: Write integration tests for blog endpoints
   - Status: Not Started
