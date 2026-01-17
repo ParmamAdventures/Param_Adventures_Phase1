@@ -873,11 +873,13 @@ e5af6da FIX-006: Standardize error handling responses
   - Date Completed: January 17, 2026
   - Priority: LOW
 
-- [ ] **OPT-004**: Standardize response format
-  - Status: Not Started
+- [x] **OPT-004**: Standardize response format
+  - Status: ✅ COMPLETED
   - Location: apps/api/src/utils/ApiResponse.ts
-  - Details: Ensure consistent response structure across all endpoints
-  - Estimated time: 1 hour
+  - Details: Enhanced ApiResponse with comprehensive helpers (success, error, paginated, created, updated, deleted, badRequest, unauthorized, forbidden, notFound, conflict, serverError)
+  - Features: Pagination metadata, timestamps, consistent structure, TypeScript generics
+  - Time taken: 20 mins
+  - Date Completed: January 17, 2026
   - Priority: LOW
 
 ## Documentation & JSDoc
