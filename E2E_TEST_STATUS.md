@@ -49,7 +49,9 @@ Test User 2:
 ## How to Run Tests
 
 ### Prerequisites
+
 Make sure servers are running:
+
 ```bash
 # Terminal 1: API
 cd apps/api && npm run dev
@@ -87,15 +89,18 @@ npx playwright show-report
 **Status:** 4 Failed / 2 Skipped (Server connection issues)
 
 **Failures:** Connection refused to http://localhost:3000
+
 - Frontend server was not fully initialized when tests started
 
 **Solution:** Tests work perfectly when servers have time to fully start
+
 - Wait 5-10 seconds after starting servers
 - Then run: `npm test`
 
 ### Expected Results (Normal Run)
 
 When servers are stable, expect:
+
 - ✅ 6/6 tests passing
 - ✅ ~2-3 minutes total runtime
 - ✅ Screenshots for each step
@@ -104,12 +109,14 @@ When servers are stable, expect:
 ## Infrastructure Status
 
 ### Servers
+
 - ✅ API Server: Operational on localhost:3001
 - ✅ Frontend Server: Operational on localhost:3000
 - ✅ Database: PostgreSQL running in Docker
 - ✅ Cache: Redis running in Docker
 
 ### Dummy Data
+
 - ✅ 4 Test Users created
 - ✅ 3 Sample Trips available
 - ✅ 2 Bookings in database
@@ -118,37 +125,41 @@ When servers are stable, expect:
 
 ## Test Coverage Matrix
 
-| Feature | Unit Tests | E2E Tests | Status |
-|---------|-----------|-----------|--------|
-| Authentication | ✅ | ✅ | Ready |
-| User Registration | ✅ | ✅ | Ready |
-| Trip Management | ✅ | ✅ | Ready |
-| Bookings | ✅ | ✅ | Ready |
-| Payments | ✅ | ✅ | Ready |
-| Admin Dashboard | ✅ | ✅ | Ready |
-| Reviews | ✅ | ✅ | Ready |
+| Feature           | Unit Tests | E2E Tests | Status |
+| ----------------- | ---------- | --------- | ------ |
+| Authentication    | ✅         | ✅        | Ready  |
+| User Registration | ✅         | ✅        | Ready  |
+| Trip Management   | ✅         | ✅        | Ready  |
+| Bookings          | ✅         | ✅        | Ready  |
+| Payments          | ✅         | ✅        | Ready  |
+| Admin Dashboard   | ✅         | ✅        | Ready  |
+| Reviews           | ✅         | ✅        | Ready  |
 
 ## Next Steps
 
 ### Phase 1: Stabilization ✅ DONE
+
 - [x] Set up Playwright
 - [x] Create test files
 - [x] Configure test environment
 - [x] Create E2E Testing Guide
 
 ### Phase 2: Execution (NEXT)
+
 - [ ] Run full test suite with stable servers
 - [ ] Capture all test results
 - [ ] Fix any failing tests
 - [ ] Document failures and fixes
 
 ### Phase 3: Integration (AFTER)
+
 - [ ] Integrate with CI/CD pipeline
 - [ ] Add visual regression testing
 - [ ] Set up performance testing
 - [ ] Create load testing suite
 
 ### Phase 4: Maintenance (ONGOING)
+
 - [ ] Update tests as features change
 - [ ] Monitor test stability
 - [ ] Add new test scenarios
@@ -201,25 +212,33 @@ npx playwright test --reporter=json --output-file=results.json
 ## Troubleshooting
 
 ### Connection Refused
+
 ```
 Error: page.goto: net::ERR_CONNECTION_REFUSED
 ```
+
 **Fix:** Wait 10 seconds after starting servers, then run tests
 
 ### Timeout Errors
+
 ```
 TimeoutError: page.goto: Timeout
 ```
+
 **Fix:** Increase timeout in playwright.config.ts:
+
 ```typescript
-timeout: 30000  // 30 seconds instead of default
+timeout: 30000; // 30 seconds instead of default
 ```
 
 ### Database Issues
+
 ```
 Error: Unique constraint violation
 ```
+
 **Fix:** Reseed database:
+
 ```bash
 cd apps/api
 npm run seed:dummy
@@ -237,6 +256,7 @@ npm run seed:dummy
 ✅ **E2E Testing:** READY FOR CI/CD
 
 The E2E test suite is production-ready and can be integrated into:
+
 - GitHub Actions
 - GitLab CI
 - Jenkins
@@ -251,7 +271,7 @@ The E2E test suite is production-ready and can be integrated into:
     cd apps/e2e
     npm ci
     npm test
-    
+
 - name: Upload Test Results
   if: always()
   uses: actions/upload-artifact@v3
