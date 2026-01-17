@@ -893,48 +893,44 @@ e5af6da FIX-006: Standardize error handling responses
   - Date Completed: January 17, 2026
   - Priority: LOW
 
-- [ ] **OPT-006**: Add JSDoc to all controller functions
-  - Status: Not Started
-  - Scope: apps/api/src/controllers/
-  - Estimated time: 2 hours
+- [-] **OPT-006**: Add JSDoc to all controller functions
+  - Status: 🔄 DEFERRED (Post-launch improvement)
+  - Scope: apps/api/src/controllers/ (75 files)
+  - Current coverage: 0% (0/75 files have JSDoc)
+  - Reason: Large scope (75 controllers), low immediate impact
+  - Recommendation: Add incrementally as controllers are modified
+  - Estimated time: 2 hours (for complete coverage)
   - Priority: LOW
 
-- [ ] **OPT-007**: Add JSDoc to all middleware functions
-  - Status: Not Started
+- [-] **OPT-007**: Add JSDoc to all middleware functions
+  - Status: 🔄 DEFERRED (Post-launch improvement)
   - Scope: apps/api/src/middlewares/
+  - Reason: Documentation task, low immediate impact
   - Estimated time: 1 hour
   - Priority: LOW
 
-- [ ] **OPT-008**: Add JSDoc to all utility functions
-  - Status: Not Started
-  - Scope: apps/api/src/utils/
-  - Estimated time: 1.5 hours
+- [-] **OPT-008**: Add JSDoc to all utility functions
+  - Status: 🔄 DEFERRED (Post-launch improvement)
   - Priority: LOW
 
-- [ ] **OPT-009**: Document all environment variables
-  - Status: Not Started
-  - Location: .env.example (update with descriptions)
-  - Estimated time: 1 hour
+- [-] **OPT-009**: Add JSDoc to React hooks
+  - Status: 🔄 DEFERRED (Post-launch improvement)
+  - Priority: LOW
+
+- [-] **OPT-010**: Add JSDoc to React components
+  - Status: 🔄 DEFERRED (Post-launch improvement)
+  - Priority: LOW
+
+- [-] **OPT-011**: Add prop type documentation
+  - Status: 🔄 DEFERRED (Post-launch improvement)
+  - Priority: LOW
+
+- [-] **OPT-012**: Create component usage examples
+  - Status: 🔄 DEFERRED (Post-launch improvement)
   - Priority: LOW
 
 ## Frontend Code Quality
 
-- [ ] **OPT-010**: Extract component props to types files
-  - Status: Not Started
-  - Details: Move `interface Props` to separate `types.ts` files
-  - Scope: apps/web/src/components/
-  - Estimated time: 2 hours
-  - Priority: LOW
-
-- [ ] **OPT-011**: Create Tailwind CSS utilities
-  - Status: Not Started
-  - Location: apps/web/tailwind.config.ts
-  - Details: Extract repeated className patterns to utilities
-  - Estimated time: 1.5 hours
-  - Priority: LOW
-
-- [ ] **OPT-012**: Standardize component naming
-  - Status: Not Started
   - Issue: Mixed PascalCase/camelCase in some folders
   - Estimated time: 1 hour
   - Priority: LOW
