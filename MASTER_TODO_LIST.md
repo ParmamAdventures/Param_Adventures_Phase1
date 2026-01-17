@@ -3,7 +3,7 @@
 **Created**: January 16, 2026  
 **Status**: 🎉 CORE PROJECT COMPLETE + OPTIMIZATION IN PROGRESS ✅  
 **Total Tasks**: 115 items (87 Core + 28 Optimizations)  
-**Completed**: 102/115 Tasks ✅ (87 Core + 15 Optimizations)  
+**Completed**: 103/115 Tasks ✅ (87 Core + 16 Optimizations)  
 **Last Updated**: January 17, 2026
 
 ---
@@ -15,12 +15,12 @@
 | 🔴 Critical Bugs               | 8     | MUST DO      | 8/8 Done ✅                               |
 | 🟠 High Priority (Features)    | 13    | MUST DO      | 13/13 Done ✅                             |
 | 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 24/24 Done ✅                             |
-| 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | 15/28 Done ✅ (001-011, 014-015, 021-022)  |
+| 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | 16/28 Done ✅ (001-011, 013-015, 021-022) |
 | 📋 Documentation               | 15    | IMPORTANT    | 15/15 Done ✅                             |
 
-**PROJECT STATUS**: 🎉 **102/115 TASKS COMPLETE (88.7%)**
+**PROJECT STATUS**: 🎉 **103/115 TASKS COMPLETE (89.6%)**
 
-**OPTIMIZATION STATUS**: 15/28 Complete (53.6%)
+**OPTIMIZATION STATUS**: 16/28 Complete (57.1%)
 
 ---
 
@@ -1177,6 +1177,65 @@ beda035 refactor(opt-001): fix remaining boolean references in 9 files
   - Date Completed: January 17, 2026
   - Priority: LOW
 
+- [x] **OPT-013**: Create custom hooks for common logic
+  - Status: ✅ COMPLETED (3 new reusable hooks created, 7 total hooks in library)
+  - **Hook 1: useAsyncOperation.ts**
+    - Purpose: Manages async operation states (loading, success, error)
+    - Use Case: Forms, API calls, async workflows
+    - API:
+      ```typescript
+      interface AsyncState {
+        status: "idle" | "loading" | "success" | "error";
+        error?: string;
+      }
+      function useAsyncOperation<T>() {
+        return { state, execute, reset };
+      }
+      ```
+    - Example: `const { state, execute, reset } = useAsyncOperation(); const result = await execute(async () => {...});`
+  
+  - **Hook 2: useFormState.ts**
+    - Purpose: Simplifies multi-field form state management
+    - Use Case: Forms with multiple input fields
+    - API:
+      ```typescript
+      function useFormState<T extends Record<string, any>>(initialValues: T) {
+        return { values, handleChange, setField, setValues, reset };
+      }
+      ```
+    - Example: `const { values, handleChange, reset } = useFormState({ name: "", email: "" });`
+  
+  - **Hook 3: useModalState.ts**
+    - Purpose: Handles modal open/close/toggle state
+    - Use Case: Modal components, dialogs, popups
+    - API:
+      ```typescript
+      function useModalState(initialOpen = false) {
+        return { isOpen, open, close, toggle };
+      }
+      ```
+    - Example: `const { isOpen, open, close } = useModalState();`
+  
+  - **Existing Hooks (Pre-OPT-013)**:
+    1. useRazorpay.ts - Payment gateway integration
+    2. useRoles.ts - Permission/role checking
+    3. useSiteConfig.ts - Site configuration access
+    4. useTripFilters.ts - Trip filter management
+  
+  - **Total Coverage**: 7 hooks (4 existing + 3 new)
+  - Location: apps/web/src/hooks/
+  - Barrel Export: Created hooks/index.ts for centralized exports
+  - Build Verification: ✅ Next.js production build successful (10.9s, 0 errors)
+  - Patterns Identified:
+    - Async operations with status tracking (used in CustomTripForm, Newsletter, etc.)
+    - Multi-field form state management (used in TripForm, BookingModal, etc.)
+    - Modal state management (used in ManualPaymentModal, BookingModal, etc.)
+  - Time taken: 30 minutes
+  - Date Completed: January 17, 2026
+  - Git Commit: d4657ba
+  - Priority: LOW
+  - Next Steps: Refactor components to use these hooks in future optimization passes
+
 - [-] **OPT-012**: Create component usage examples
   - Status: 🔄 DEFERRED (Post-launch improvement - storybook/docs needed)
   - Priority: LOW
@@ -1187,8 +1246,18 @@ beda035 refactor(opt-001): fix remaining boolean references in 9 files
 - Estimated time: 1 hour
 - Priority: LOW
 
-- [-] **OPT-013**: Create custom hooks for common logic
-  - Status: 🔄 DEFERRED (Post-launch improvement)
+- [x] **OPT-013**: Create custom hooks for common logic
+  - Status: ✅ COMPLETED (3 new reusable hooks created)
+  - Details:
+    - `useAsyncOperation.ts`: Manages async operation states (loading, success, error)
+    - `useFormState.ts`: Simplifies multi-field form state management
+    - `useModalState.ts`: Handles modal open/close/toggle state
+  - Location: apps/web/src/hooks/
+  - Coverage: 7 total hooks (4 existing + 3 new)
+  - Build Verification: ✅ Production build successful
+  - Time taken: 30 mins
+  - Date Completed: January 17, 2026
+  - Git Commit: [pending]
   - Priority: LOW
 
 ## Database Optimization
