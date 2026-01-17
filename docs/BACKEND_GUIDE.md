@@ -144,7 +144,7 @@ Response ← ← ← ← ← ← ← ← ← ← ←
 
 ```typescript
 // src/services/trip.service.ts
-import { prisma } from '@/config/database';
+import { prisma } from "@/config/database";
 
 export class TripService {
   async getTrips(filters: {
@@ -154,14 +154,14 @@ export class TripService {
     limit?: number;
   }) {
     const { category, location, page = 1, limit = 20 } = filters;
-    
+
     const skip = (page - 1) * limit;
-    
+
     const trips = await prisma.trip.findMany({
       where: {
         category,
         location,
-        published: true,  // Always filter published trips
+        published: true, // Always filter published trips
       },
       select: {
         id: true,
@@ -175,7 +175,7 @@ export class TripService {
       skip,
       take: limit,
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
 
@@ -208,7 +208,7 @@ export class TripService {
     });
 
     if (!trip) {
-      throw new Error('Trip not found');
+      throw new Error("Trip not found");
     }
 
     return trip;
@@ -225,7 +225,7 @@ export class TripService {
   }) {
     // Validate input
     if (data.price < 0) {
-      throw new Error('Price must be positive');
+      throw new Error("Price must be positive");
     }
 
     // Create trip
@@ -239,7 +239,7 @@ export class TripService {
         category: data.category,
         image: data.image,
         creatorId: data.creatorId,
-        published: false,  // Default unpublished
+        published: false, // Default unpublished
       },
     });
 
@@ -249,9 +249,9 @@ export class TripService {
   private generateSlug(title: string): string {
     return title
       .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-');
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
   }
 }
 
@@ -266,9 +266,9 @@ export const tripService = new TripService();
 
 ```typescript
 // src/controllers/trips.controller.ts
-import { Request, Response, NextFunction } from 'express';
-import { tripService } from '@/services/trip.service';
-import { ApiResponse } from '@/types/api';
+import { Request, Response, NextFunction } from "express";
+import { tripService } from "@/services/trip.service";
+import { ApiResponse } from "@/types/api";
 
 export class TripsController {
   async getTrips(req: Request, res: Response, next: NextFunction) {
@@ -310,11 +310,11 @@ export class TripsController {
   async createTrip(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
-      
+
       if (!userId) {
         return res.status(401).json({
           success: false,
-          error: 'Unauthorized',
+          error: "Unauthorized",
         });
       }
 
@@ -340,22 +340,22 @@ export const tripsController = new TripsController();
 
 ```typescript
 // src/routes/trips.routes.ts
-import { Router } from 'express';
-import { tripsController } from '@/controllers/trips.controller';
-import { requireAuth, requireRole } from '@/middleware/auth.middleware';
-import { validateTrip } from '@/validators/trip.validator';
+import { Router } from "express";
+import { tripsController } from "@/controllers/trips.controller";
+import { requireAuth, requireRole } from "@/middleware/auth.middleware";
+import { validateTrip } from "@/validators/trip.validator";
 
 const router = Router();
 
 // Public routes
-router.get('/', tripsController.getTrips);
-router.get('/:slug', tripsController.getTripBySlug);
+router.get("/", tripsController.getTrips);
+router.get("/:slug", tripsController.getTripBySlug);
 
 // Protected routes (require authentication)
 router.post(
-  '/',
+  "/",
   requireAuth,
-  requireRole('admin', 'organizer'),
+  requireRole("admin", "organizer"),
   validateTrip,
   tripsController.createTrip
 );
@@ -367,27 +367,27 @@ export default router;
 
 ```typescript
 // src/app.ts
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import tripsRoutes from '@/routes/trips.routes';
-import authRoutes from '@/routes/auth.routes';
-import { errorHandler } from '@/middleware/errorHandler.middleware';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import tripsRoutes from "@/routes/trips.routes";
+import authRoutes from "@/routes/auth.routes";
+import { errorHandler } from "@/middleware/errorHandler.middleware";
 
 const app = express();
 
 // Middleware
 app.use(helmet());
 app.use(cors());
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: "10kb" }));
 
 // Routes
-app.use('/api/trips', tripsRoutes);
-app.use('/api/auth', authRoutes);
+app.use("/api/trips", tripsRoutes);
+app.use("/api/auth", authRoutes);
 
 // Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date() });
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date() });
 });
 
 // Error handler (must be last)
@@ -405,10 +405,7 @@ export default app;
 ```typescript
 // ✅ Good: Batch operations
 const users = await prisma.user.createMany({
-  data: [
-    { email: 'user1@test.com' },
-    { email: 'user2@test.com' },
-  ],
+  data: [{ email: "user1@test.com" }, { email: "user2@test.com" }],
   skipDuplicates: true,
 });
 
@@ -437,7 +434,7 @@ const users = await prisma.user.findMany();
 // ❌ Bad: N+1 query problem
 const trips = await prisma.trip.findMany();
 const bookings = await Promise.all(
-  trips.map(t => prisma.booking.findMany({ where: { tripId: t.id } }))
+  trips.map((t) => prisma.booking.findMany({ where: { tripId: t.id } }))
 );
 
 // ✅ Good: Use include to avoid N+1
@@ -455,7 +452,7 @@ async function completeBooking(bookingId: string) {
     // 1. Update booking status
     const booking = await tx.booking.update({
       where: { id: bookingId },
-      data: { status: 'confirmed' },
+      data: { status: "confirmed" },
     });
 
     // 2. Decrement available spots
@@ -468,7 +465,7 @@ async function completeBooking(bookingId: string) {
     const notification = await tx.notification.create({
       data: {
         userId: booking.userId,
-        type: 'booking_confirmed',
+        type: "booking_confirmed",
         data: { bookingId },
       },
     });
@@ -495,25 +492,25 @@ export class ApiError extends Error {
     public code?: string
   ) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
 export class ValidationError extends ApiError {
   constructor(message: string) {
-    super(400, message, 'VALIDATION_ERROR');
+    super(400, message, "VALIDATION_ERROR");
   }
 }
 
 export class NotFoundError extends ApiError {
   constructor(resource: string) {
-    super(404, `${resource} not found`, 'NOT_FOUND');
+    super(404, `${resource} not found`, "NOT_FOUND");
   }
 }
 
 export class UnauthorizedError extends ApiError {
   constructor() {
-    super(401, 'Unauthorized', 'UNAUTHORIZED');
+    super(401, "Unauthorized", "UNAUTHORIZED");
   }
 }
 ```
@@ -522,9 +519,9 @@ export class UnauthorizedError extends ApiError {
 
 ```typescript
 // src/middleware/errorHandler.middleware.ts
-import { Request, Response, NextFunction } from 'express';
-import { ApiError } from '@/types/errors';
-import { logger } from '@/utils/logger';
+import { Request, Response, NextFunction } from "express";
+import { ApiError } from "@/types/errors";
+import { logger } from "@/utils/logger";
 
 export function errorHandler(
   error: Error,
@@ -532,7 +529,7 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ) {
-  logger.error('Error:', error);
+  logger.error("Error:", error);
 
   if (error instanceof ApiError) {
     return res.status(error.statusCode).json({
@@ -543,17 +540,17 @@ export function errorHandler(
   }
 
   // Prisma errors
-  if (error.name === 'PrismaClientKnownRequestError') {
-    if ((error as any).code === 'P2025') {
+  if (error.name === "PrismaClientKnownRequestError") {
+    if ((error as any).code === "P2025") {
       return res.status(404).json({
         success: false,
-        error: 'Resource not found',
+        error: "Resource not found",
       });
     }
-    if ((error as any).code === 'P2002') {
+    if ((error as any).code === "P2002") {
       return res.status(409).json({
         success: false,
-        error: 'Unique constraint violation',
+        error: "Unique constraint violation",
       });
     }
   }
@@ -561,7 +558,7 @@ export function errorHandler(
   // Default error
   res.status(500).json({
     success: false,
-    error: 'Internal server error',
+    error: "Internal server error",
   });
 }
 ```
@@ -574,22 +571,29 @@ export function errorHandler(
 
 ```typescript
 // src/validators/booking.validator.ts
-import { body, validationResult } from 'express-validator';
-import { Request, Response, NextFunction } from 'express';
+import { body, validationResult } from "express-validator";
+import { Request, Response, NextFunction } from "express";
 
 export const validateBooking = [
-  body('tripId')
-    .notEmpty().withMessage('Trip ID is required')
-    .isString().withMessage('Trip ID must be string'),
-  body('numPeople')
-    .notEmpty().withMessage('Number of people is required')
-    .isInt({ min: 1, max: 50 }).withMessage('Must be 1-50 people'),
-  body('startDate')
-    .notEmpty().withMessage('Start date is required')
-    .isISO8601().withMessage('Invalid date format'),
-  body('specialRequests')
+  body("tripId")
+    .notEmpty()
+    .withMessage("Trip ID is required")
+    .isString()
+    .withMessage("Trip ID must be string"),
+  body("numPeople")
+    .notEmpty()
+    .withMessage("Number of people is required")
+    .isInt({ min: 1, max: 50 })
+    .withMessage("Must be 1-50 people"),
+  body("startDate")
+    .notEmpty()
+    .withMessage("Start date is required")
+    .isISO8601()
+    .withMessage("Invalid date format"),
+  body("specialRequests")
     .optional()
-    .isString().withMessage('Special requests must be string')
+    .isString()
+    .withMessage("Special requests must be string")
     .trim(),
   // Middleware to handle validation errors
   (req: Request, res: Response, next: NextFunction) => {
@@ -597,7 +601,7 @@ export const validateBooking = [
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        errors: errors.array().map(e => ({
+        errors: errors.array().map((e) => ({
           field: e.param,
           message: e.msg,
         })),
@@ -608,7 +612,7 @@ export const validateBooking = [
 ];
 
 // Usage in routes
-router.post('/bookings', validateBooking, createBookingController);
+router.post("/bookings", validateBooking, createBookingController);
 ```
 
 ---
@@ -619,9 +623,9 @@ router.post('/bookings', validateBooking, createBookingController);
 
 ```typescript
 // src/middleware/auth.middleware.ts
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
-import { UnauthorizedError } from '@/types/errors';
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { UnauthorizedError } from "@/types/errors";
 
 declare global {
   namespace Express {
@@ -637,7 +641,7 @@ declare global {
 
 export function requireAuth(req: Request, res: Response, next: NextFunction) {
   try {
-    const token = req.headers.authorization?.split(' ')[1];
+    const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
       throw new UnauthorizedError();
@@ -658,10 +662,10 @@ export function requireRole(...roles: string[]) {
       return next(new UnauthorizedError());
     }
 
-    if (!roles.some(role => req.user!.roles.includes(role))) {
+    if (!roles.some((role) => req.user!.roles.includes(role))) {
       return res.status(403).json({
         success: false,
-        error: 'Insufficient permissions',
+        error: "Insufficient permissions",
       });
     }
 
@@ -674,7 +678,7 @@ export function requireRole(...roles: string[]) {
 
 ```typescript
 // src/utils/jwt.ts
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
 export function generateToken(payload: {
   id: string;
@@ -682,13 +686,13 @@ export function generateToken(payload: {
   roles: string[];
 }) {
   return jwt.sign(payload, process.env.JWT_SECRET!, {
-    expiresIn: '1h',
+    expiresIn: "1h",
   });
 }
 
 export function generateRefreshToken(payload: { id: string }) {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
-    expiresIn: '7d',
+    expiresIn: "7d",
   });
 }
 ```
@@ -701,12 +705,12 @@ export function generateRefreshToken(payload: { id: string }) {
 
 ```typescript
 // src/services/__tests__/trip.service.test.ts
-import { TripService } from '../trip.service';
-import { prisma } from '@/config/database';
+import { TripService } from "../trip.service";
+import { prisma } from "@/config/database";
 
-jest.mock('@/config/database');
+jest.mock("@/config/database");
 
-describe('TripService', () => {
+describe("TripService", () => {
   let tripService: TripService;
 
   beforeEach(() => {
@@ -714,11 +718,11 @@ describe('TripService', () => {
     jest.clearAllMocks();
   });
 
-  describe('getTrips', () => {
-    it('returns paginated trips', async () => {
+  describe("getTrips", () => {
+    it("returns paginated trips", async () => {
       const mockTrips = [
-        { id: '1', title: 'Trip 1', price: 1000 },
-        { id: '2', title: 'Trip 2', price: 2000 },
+        { id: "1", title: "Trip 1", price: 1000 },
+        { id: "2", title: "Trip 2", price: 2000 },
       ];
 
       (prisma.trip.findMany as jest.Mock).mockResolvedValue(mockTrips);
@@ -730,11 +734,11 @@ describe('TripService', () => {
       expect(result.pagination.total).toBe(2);
     });
 
-    it('throws error when trip not found', async () => {
+    it("throws error when trip not found", async () => {
       (prisma.trip.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(tripService.getTripBySlug('invalid')).rejects.toThrow(
-        'Trip not found'
+      await expect(tripService.getTripBySlug("invalid")).rejects.toThrow(
+        "Trip not found"
       );
     });
   });
@@ -745,25 +749,23 @@ describe('TripService', () => {
 
 ```typescript
 // src/controllers/__tests__/trips.controller.test.ts
-import request from 'supertest';
-import app from '@/app';
-import { tripService } from '@/services/trip.service';
+import request from "supertest";
+import app from "@/app";
+import { tripService } from "@/services/trip.service";
 
-jest.mock('@/services/trip.service');
+jest.mock("@/services/trip.service");
 
-describe('Trips API', () => {
-  describe('GET /api/trips', () => {
-    it('returns list of trips', async () => {
-      const mockTrips = [
-        { id: '1', title: 'Trip 1' },
-      ];
+describe("Trips API", () => {
+  describe("GET /api/trips", () => {
+    it("returns list of trips", async () => {
+      const mockTrips = [{ id: "1", title: "Trip 1" }];
 
       (tripService.getTrips as jest.Mock).mockResolvedValue({
         data: mockTrips,
         pagination: { page: 1, limit: 20, total: 1, pages: 1 },
       });
 
-      const res = await request(app).get('/api/trips');
+      const res = await request(app).get("/api/trips");
 
       expect(res.status).toBe(200);
       expect(res.body.data).toEqual(mockTrips);
@@ -814,11 +816,11 @@ router.post('/', requireAuth, validateComment, createComment);
 
 ```typescript
 // 1. Define queue: src/config/redis.ts
-export const emailQueue = new Queue('email', {
+export const emailQueue = new Queue("email", {
   connection: redis,
   defaultJobOptions: {
     attempts: 3,
-    backoff: { type: 'exponential', delay: 2000 },
+    backoff: { type: "exponential", delay: 2000 },
   },
 });
 
@@ -832,7 +834,7 @@ emailQueue.process(async (job) => {
 await emailQueue.add(
   {
     to: user.email,
-    template: 'booking-confirmation',
+    template: "booking-confirmation",
     variables: { bookingId },
   },
   { delay: 1000 }

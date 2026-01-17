@@ -10,7 +10,9 @@
     "start": "node dist/server.js",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "jest --config jest.config.js"
+    "test": "jest --config jest.config.js",
+    "seed": "npx ts-node scripts/seed-dummy-data.ts",
+    "seed:dummy": "npx ts-node scripts/seed-dummy-data.ts"
   },
   "keywords": [],
   "author": "",

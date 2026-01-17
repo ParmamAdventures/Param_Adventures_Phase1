@@ -221,7 +221,7 @@ import { AuthContext } from '@/context/AuthContext';
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  
+
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');
   }
@@ -233,9 +233,9 @@ export function useAuth() {
 'use client';
 export default function Profile() {
   const { user, logout } = useAuth();
-  
+
   if (!user) return <div>Loading...</div>;
-  
+
   return (
     <div>
       <h1>Welcome, {user.name}</h1>
@@ -249,8 +249,8 @@ export default function Profile() {
 
 ```typescript
 // hooks/useTrips.ts
-import { useState, useEffect } from 'react';
-import { getTrips } from '@/lib/api';
+import { useState, useEffect } from "react";
+import { getTrips } from "@/lib/api";
 
 export function useTrips() {
   const [trips, setTrips] = useState([]);
@@ -264,7 +264,7 @@ export function useTrips() {
         const data = await getTrips();
         setTrips(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch trips');
+        setError(err instanceof Error ? err.message : "Failed to fetch trips");
       } finally {
         setLoading(false);
       }
@@ -281,7 +281,7 @@ export function useTrips() {
 
 ```typescript
 // hooks/useForm.ts
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useForm<T extends Record<string, any>>(
   initialValues: T,
@@ -291,9 +291,11 @@ export function useForm<T extends Record<string, any>>(
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setValues(prev => ({ ...prev, [name]: value }));
+    setValues((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -314,7 +316,7 @@ export function useForm<T extends Record<string, any>>(
 
 // Usage
 const { values, handleChange, handleSubmit } = useForm(
-  { email: '', password: '' },
+  { email: "", password: "" },
   async (values) => {
     await loginUser(values);
   }
@@ -397,10 +399,10 @@ async function fetchAPI<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const token = localStorage.getItem('token');
-  
+  const token = localStorage.getItem("token");
+
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...options.headers,
   };
 
@@ -415,23 +417,23 @@ async function fetchAPI<T>(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'API request failed');
+    throw new Error(error.message || "API request failed");
   }
 
   return response.json();
 }
 
 export const api = {
-  getTrips: () => fetchAPI<Trip[]>('/trips'),
+  getTrips: () => fetchAPI<Trip[]>("/trips"),
   getTrip: (slug: string) => fetchAPI<Trip>(`/trips/${slug}`),
-  createBooking: (data: BookingInput) => 
-    fetchAPI<Booking>('/bookings', {
-      method: 'POST',
+  createBooking: (data: BookingInput) =>
+    fetchAPI<Booking>("/bookings", {
+      method: "POST",
       body: JSON.stringify(data),
     }),
   updateUser: (data: UserInput) =>
-    fetchAPI<User>('/users/me', {
-      method: 'PUT',
+    fetchAPI<User>("/users/me", {
+      method: "PUT",
       body: JSON.stringify(data),
     }),
 };
@@ -446,7 +448,7 @@ import { getTrip } from '@/lib/api';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const trip = await getTrip(params.slug);
-  
+
   return {
     title: trip.title,
     description: trip.description,
@@ -568,7 +570,7 @@ describe('Button', () => {
   it('calls onClick handler when clicked', async () => {
     const handleClick = jest.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     await userEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -589,20 +591,20 @@ describe('Button', () => {
 
 ```typescript
 // hooks/__tests__/useAuth.test.ts
-import { renderHook, act } from '@testing-library/react';
-import { useAuth } from '../useAuth';
+import { renderHook, act } from "@testing-library/react";
+import { useAuth } from "../useAuth";
 
-describe('useAuth', () => {
-  it('returns user data', () => {
+describe("useAuth", () => {
+  it("returns user data", () => {
     const { result } = renderHook(() => useAuth());
-    
+
     expect(result.current.user).toBeDefined();
     expect(result.current.isLoading).toBe(false);
   });
 
-  it('logs out user', async () => {
+  it("logs out user", async () => {
     const { result } = renderHook(() => useAuth());
-    
+
     await act(async () => {
       await result.current.logout();
     });
@@ -632,20 +634,20 @@ export default function BlogsPage() {
 
 ```typescript
 // 1. Create middleware: middleware.ts
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get('token');
+  const token = request.cookies.get("token");
 
   if (!token) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/bookings/:path*'],
+  matcher: ["/admin/:path*", "/bookings/:path*"],
 };
 
 // 2. Routes under /admin will require token
@@ -675,7 +677,7 @@ export default function BookingForm({ tripId }: { tripId: string }) {
         onChange={handleChange}
       />
       {errors.email && <span className="text-red-600">{errors.email}</span>}
-      
+
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Booking...' : 'Book Trip'}
       </button>
