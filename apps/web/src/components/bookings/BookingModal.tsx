@@ -1,19 +1,21 @@
 ﻿"use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import { apiFetch } from "../../lib/api";
 import { useToast } from "../ui/ToastProvider";
 import { useRazorpay } from "../../hooks/useRazorpay";
+import { useAsyncOperation } from "../../hooks/useAsyncOperation";
+import { useFormState } from "../../hooks/useFormState";
 
 interface Trip {
   id: string;
   title: string;
   price: number;
   durationDays: number;
-  startDate?: string | Date; // Added for auto-fill
+  startDate?: string | Date;
 }
 
 interface Props {
@@ -24,30 +26,38 @@ interface Props {
 }
 
 /**
- * BookingModal - Modal dialog component for user interactions.
- * @param {Object} props - Component props
- * @param {boolean} [props.isOpen] - Whether modal is open
- * @param {Function} [props.onClose] - Callback when modal closes
- * @param {string} [props.title] - Modal title
- * @param {React.ReactNode} [props.children] - Modal content
- * @returns {React.ReactElement} Modal component
+ * BookingModal - Modal for booking trips with guest details.
+ * Uses useAsyncOperation for submission state and useFormState for form management.
+ *
+ * @param {Props} props - Component props
+ * @param {boolean} props.isOpen - Whether modal is open
+ * @param {Function} props.onClose - Callback when modal closes
+ * @param {Trip} props.trip - Trip to book
+ * @param {Function} props.onBookingSuccess - Success callback
+ * @returns {React.ReactElement} Booking modal component
+ *
+ * @example
+ * <BookingModal isOpen={true} trip={trip} onClose={() => {}} onBookingSuccess={() => {}} />
  */
 export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
-
-  const [isLoading, setIsLoading] = useState(false);
-  const [guests, setGuests] = useState(1);
-  const [startDate, setStartDate] = useState("");
-  const [guestDetails, setGuestDetails] = useState<any[]>([]);
+  const { state, execute } = useAsyncOperation();
+  const { values: formData, setField } = useFormState({
+    guests: 1,
+    startDate: "",
+    guestDetails: [] as any[],
+  });
 
   // Update guest details when guest count changes
   useEffect(() => {
-    setGuestDetails((prev) => {
-      const newDetails = [...prev];
-      if (guests > prev.length) {
+    if (!formData.guestDetails) formData.guestDetails = [];
+
+    setField("guestDetails", (prev: any[]) => {
+      const newDetails = [...(prev || [])];
+      if (formData.guests > newDetails.length) {
         // Add new guests
-        for (let i = prev.length; i < guests; i++) {
+        for (let i = newDetails.length; i < formData.guests; i++) {
           if (i === 0 && user) {
             // Auto-fill primary user
             newDetails.push({
@@ -63,58 +73,52 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         }
       } else {
         // Remove guests
-        newDetails.splice(guests);
+        newDetails.splice(formData.guests);
       }
       return newDetails;
     });
-  }, [guests, user]);
+  }, [formData.guests, user, setField]);
 
   const updateGuestDetail = (index: number, field: string, value: string) => {
-    setGuestDetails((prev) => {
-      const newDetails = [...prev];
-      newDetails[index] = { ...newDetails[index], [field]: value };
-      return newDetails;
-    });
+    const updated = [...(formData.guestDetails || [])];
+    updated[index] = { ...updated[index], [field]: value };
+    setField("guestDetails", updated);
   };
 
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
-      setGuests(1);
+      setField("guests", 1);
 
       // Auto-fill date if trip has a fixed start date
       if (trip.startDate) {
-        // Format to YYYY-MM-DD for input[type="date"]
         const dateObj = new Date(trip.startDate);
         const formattedDate = dateObj.toISOString().split("T")[0];
-        setStartDate(formattedDate);
+        setField("startDate", formattedDate);
       } else {
-        setStartDate("");
+        setField("startDate", "");
       }
-
-      setIsLoading(false);
     }
-  }, [isOpen, trip.startDate]);
+  }, [isOpen, trip.startDate, setField]);
 
-  const { initiatePayment, message: paymentMessage } = useRazorpay();
+  const { initiatePayment } = useRazorpay();
 
   const handleBooking = async () => {
-    if (!startDate) {
+    if (!formData.startDate) {
       showToast("Please select a start date", "error");
       return;
     }
 
-    setIsLoading(true);
-    try {
+    await execute(async () => {
       // 1. Create Booking
       const res = await apiFetch("/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tripId: trip.id,
-          startDate: new Date(startDate).toISOString(),
-          guests,
-          guestDetails,
+          startDate: new Date(formData.startDate).toISOString(),
+          guests: formData.guests,
+          guestDetails: formData.guestDetails,
         }),
       });
 
@@ -124,29 +128,23 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
       }
 
       const response = await res.json();
-      const booking = response.data; // Unwrap API response
+      const booking = response.data;
 
       // 2. Initiate Payment (Razorpay)
-      // This handles opening the modal and verification internally
       const result = await initiatePayment(booking.id, {
-        name: user?.name || guestDetails[0]?.name,
-        email: user?.email || guestDetails[0]?.email,
+        name: user?.name || formData.guestDetails[0]?.name,
+        email: user?.email || formData.guestDetails[0]?.email,
       });
 
-      // 3. Success (Only if we get here without error)
+      // 3. Success
       showToast("Booking & Payment Successful!", "success");
       onBookingSuccess(booking);
       onClose();
-    } catch (err: any) {
-      // If booking was created but payment failed/cancelled, we still show error
-      // The user can pay later from "My Bookings" (Future feature)
-      showToast(err.message, "error");
-    } finally {
-      setIsLoading(false);
-    }
+      return booking;
+    });
   };
 
-  const totalPrice = trip.price * guests;
+  const totalPrice = trip.price * formData.guests;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -174,9 +172,9 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
               <label className="text-sm font-medium">Select Start Date</label>
               <div className="relative">
                 <div className="border-input bg-background text-muted-foreground ring-offset-background flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm">
-                  {startDate ? (
+                  {formData.startDate ? (
                     <span className="text-foreground font-medium">
-                      {new Date(startDate).toLocaleDateString("en-GB", {
+                      {new Date(formData.startDate).toLocaleDateString("en-GB", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
@@ -207,8 +205,8 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                   type="date"
                   min={new Date().toISOString().split("T")[0]}
                   className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  value={formData.startDate}
+                  onChange={(e) => setField("startDate", e.target.value)}
                 />
               </div>
             </div>
@@ -218,16 +216,16 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
               <div className="flex items-center gap-4">
                 <Button
                   variant="subtle"
-                  onClick={() => setGuests(Math.max(1, guests - 1))}
-                  disabled={guests <= 1}
+                  onClick={() => setField("guests", Math.max(1, formData.guests - 1))}
+                  disabled={formData.guests <= 1}
                   className="h-8 w-8 p-0"
                 >
                   -
                 </Button>
-                <span className="w-8 text-center font-medium">{guests}</span>
+                <span className="w-8 text-center font-medium">{formData.guests}</span>
                 <Button
                   variant="subtle"
-                  onClick={() => setGuests(guests + 1)}
+                  onClick={() => setField("guests", formData.guests + 1)}
                   className="h-8 w-8 p-0"
                 >
                   +
@@ -237,7 +235,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
 
             {/* Guest Details Forms */}
             <div className="max-h-[300px] space-y-4 overflow-y-auto pr-2">
-              {Array.from({ length: guests }).map((_, index) => (
+              {Array.from({ length: formData.guests }).map((_, index) => (
                 <div key={index} className="bg-muted/20 rounded-xl border p-4">
                   <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
                     {index === 0 ? "Primary Traveler (You)" : `Guest ${index + 1}`}
@@ -246,7 +244,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                     <input
                       placeholder="Full Name"
                       className="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                      value={guestDetails[index]?.name || ""}
+                      value={formData.guestDetails[index]?.name || ""}
                       onChange={(e) => updateGuestDetail(index, "name", e.target.value)}
                     />
                     <div className="grid grid-cols-2 gap-3">
@@ -254,14 +252,14 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                         placeholder="Email"
                         type="email"
                         className="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                        value={guestDetails[index]?.email || ""}
+                        value={formData.guestDetails[index]?.email || ""}
                         onChange={(e) => updateGuestDetail(index, "email", e.target.value)}
                       />
                       <input
                         placeholder="Phone"
                         type="tel"
                         className="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                        value={guestDetails[index]?.phone || ""}
+                        value={formData.guestDetails[index]?.phone || ""}
                         onChange={(e) => updateGuestDetail(index, "phone", e.target.value)}
                       />
                     </div>
@@ -270,12 +268,12 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                         placeholder="Age"
                         type="number"
                         className="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                        value={guestDetails[index]?.age || ""}
+                        value={formData.guestDetails[index]?.age || ""}
                         onChange={(e) => updateGuestDetail(index, "age", e.target.value)}
                       />
                       <select
                         className="bg-background w-full rounded-md border px-3 py-2 text-sm"
-                        value={guestDetails[index]?.gender || ""}
+                        value={formData.guestDetails[index]?.gender || ""}
                         onChange={(e) => updateGuestDetail(index, "gender", e.target.value)}
                       >
                         <option value="">Gender</option>
@@ -295,17 +293,17 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
             <div className="flex flex-col">
               <span className="text-muted-foreground text-sm">Total Payment</span>
               <span className="text-2xl font-bold">₹{totalPrice.toLocaleString()}</span>
-              {isLoading && paymentMessage && (
-                <span className="animate-pulse text-xs text-blue-500">{paymentMessage}</span>
+              {state.status === "loading" && (
+                <span className="animate-pulse text-xs text-blue-500">Processing...</span>
               )}
             </div>
             <Button
               onClick={handleBooking}
-              disabled={isLoading || !startDate}
-              loading={isLoading}
+              disabled={state.status === "loading" || !formData.startDate}
+              loading={state.status === "loading"}
               className="px-8"
             >
-              {isLoading ? "Processing..." : "Confirm & Pay"}
+              {state.status === "loading" ? "Processing..." : "Confirm & Pay"}
             </Button>
           </div>
         </div>

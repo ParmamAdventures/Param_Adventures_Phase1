@@ -1,22 +1,28 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "../ui/Button";
 import { Select } from "../ui/Select";
 import { motion } from "framer-motion";
 import { apiFetch } from "../../lib/api";
+import { useAsyncOperation } from "../../hooks/useAsyncOperation";
+import { useFormState } from "../../hooks/useFormState";
 
 /**
- * CustomTripForm - Form component with validation.
- * @param {Object} props - Component props
- * @param {Array} [props.fields] - Form fields
- * @param {Function} [props.onSubmit] - Form submission handler
- * @param {Object} [props.initialValues] - Initial field values
- * @returns {React.ReactElement} Form component
+ * CustomTripForm - Form component for custom trip inquiries.
+ * Uses useAsyncOperation for submission state and useFormState for form management.
+ *
+ * @returns {React.ReactElement} Custom trip form component
+ *
+ * @example
+ * <CustomTripForm />
  */
 export function CustomTripForm() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [formData, setFormData] = useState({
+  const { state, execute, reset: resetAsync } = useAsyncOperation();
+  const {
+    values: formData,
+    handleChange,
+    reset: resetForm,
+  } = useFormState({
     name: "",
     email: "",
     phoneNumber: "",
@@ -26,37 +32,27 @@ export function CustomTripForm() {
     details: "",
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.destination) {
       alert("Please select a destination");
       return;
     }
-    setStatus("loading");
-    try {
+
+    await execute(async () => {
       const res = await apiFetch("/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      if (res.ok) {
-        setStatus("success");
-        setFormData({ name: "", email: "", phoneNumber: "", destination: "", dates: "", budget: "", details: "" });
-      } else {
-        setStatus("error");
-        alert("Something went wrong. Please try again.");
+      if (!res.ok) {
+        throw new Error("Failed to submit inquiry");
       }
-    } catch {
-      setStatus("error");
-      alert("Failed to submit inquiry.");
-    }
+
+      resetForm();
+      return res.json();
+    });
   };
 
   return (
@@ -80,7 +76,7 @@ export function CustomTripForm() {
             </p>
           </div>
 
-          {status === "success" ? (
+          {state.status === "success" ? (
             <div className="py-12 text-center">
               <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-green-600">
                 <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +92,7 @@ export function CustomTripForm() {
               <p className="text-muted-foreground">
                 Our travel experts will contact you within 24 hours.
               </p>
-              <Button variant="ghost" className="mt-6" onClick={() => setStatus("idle")}>
+              <Button variant="ghost" className="mt-6" onClick={() => resetAsync()}>
                 Submit another request
               </Button>
             </div>
@@ -194,7 +190,7 @@ export function CustomTripForm() {
                 type="submit"
                 variant="primary"
                 className="shadow-accent/20 h-14 w-full text-lg font-bold shadow-xl"
-                loading={status === "loading"}
+                loading={state.status === "loading"}
               >
                 Make It Happen
               </Button>

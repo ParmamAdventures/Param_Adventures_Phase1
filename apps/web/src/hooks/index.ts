@@ -10,5 +10,5 @@ export { useModalState } from "./useModalState";
 // Context hooks are exported from their respective files
 export { useAuth } from "../context/AuthContext";
 export { useSocket } from "../context/SocketContext";
-export { useTheme } from "../context/ThemeProvider";
+export { useTheme } from "../components/theme/ThemeProvider";
 export { useToast } from "../components/ui/ToastProvider";

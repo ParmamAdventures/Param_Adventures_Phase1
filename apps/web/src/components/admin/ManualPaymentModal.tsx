@@ -1,9 +1,11 @@
-﻿import React, { useState } from "react";
+﻿import React, { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
 import { useToast } from "../ui/ToastProvider";
 import { ImageUploader } from "../media/ImageUploader";
+import { useAsyncOperation } from "../../hooks/useAsyncOperation";
+import { useFormState } from "../../hooks/useFormState";
 
 interface Props {
   isOpen: boolean;
@@ -19,72 +21,70 @@ interface Props {
 }
 
 /**
- * ManualPaymentModal - Modal dialog component for user interactions.
- * @param {Object} props - Component props
- * @param {boolean} [props.isOpen] - Whether modal is open
- * @param {Function} [props.onClose] - Callback when modal closes
- * @param {string} [props.title] - Modal title
- * @param {React.ReactNode} [props.children] - Modal content
+ * ManualPaymentModal - Modal for recording manual payments.
+ * Uses useAsyncOperation for submission state and useFormState for form management.
+ *
+ * @param {Props} props - Component props
+ * @param {boolean} props.isOpen - Whether modal is open
+ * @param {Function} props.onClose - Callback when modal closes
+ * @param {Object} props.booking - Booking details
+ * @param {Function} props.onSuccess - Success callback
  * @returns {React.ReactElement} Modal component
+ *
+ * @example
+ * <ManualPaymentModal isOpen={true} booking={booking} onClose={() => {}} onSuccess={() => {}} />
  */
 export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess }: Props) {
   const { showToast } = useToast();
-  const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState("UPI");
-  const [transactionId, setTransactionId] = useState("");
-  const [proofUrl, setProofUrl] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { state, execute } = useAsyncOperation();
+  const {
+    values: formData,
+    setField,
+    reset: resetForm,
+  } = useFormState({
+    amount: "",
+    method: "UPI",
+    transactionId: "",
+    proofUrl: "",
+  });
 
   // Auto-fill amount when booking opens
-  React.useEffect(() => {
-    if (booking) {
-      setAmount(booking.totalPrice.toString());
-      setProofUrl("");
-      setTransactionId("");
+  useEffect(() => {
+    if (booking && isOpen) {
+      setField("amount", booking.totalPrice.toString());
+      setField("proofUrl", "");
+      setField("transactionId", "");
     }
-  }, [booking]);
+  }, [booking, isOpen, setField]);
 
   const handleSubmit = async () => {
     if (!booking) return;
-    if (!amount || !method) {
+    if (!formData.amount || !formData.method) {
       showToast("Please fill required fields", "error");
       return;
     }
 
-    setIsLoading(true);
-    try {
+    await execute(async () => {
       const res = await apiFetch("/payments/manual", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingId: booking.id,
-          amount: Number(amount) * 100, // Convert to paise expected by backend?
-          // Wait, backend expects amount. If Razorpay used paise, manual might use Rupees in UI but backend implementation should be consistent.
-          // Let's check backend: createManualPayment.ts says: "amount: Number(amount)".
-          // Razorpay expects paise. If Admin enters 5000, backend sees 5000.
-          // IMPORTANT: If `Booking.totalPrice` is in Rupees, fine. If it's in Paisa, divide.
-          // `Booking` model says `totalPrice Int` (usually we stored rupees in earlier implementation, checking schema: `price Int`).
-          // Wait, Razorpay creates order with `booking.trip.price * 100`. So DB stores Rupees.
-          // So if Admin enters Rupees, we should multiply by 100 if we want consistency with Razorpay (which uses paise).
-          // BUT `createManualPayment` saves `amount` directly.
-          // Let's assume Backend stores PAISE for consistency with Razorpay schema `amount Int // paise`.
-          // So I should multiply by 100 here.
-          method,
-          transactionId,
-          proofUrl,
+          amount: Number(formData.amount) * 100,
+          method: formData.method,
+          transactionId: formData.transactionId,
+          proofUrl: formData.proofUrl,
         }),
       });
 
       if (!res.ok) throw new Error("Failed to record payment");
 
       showToast("Payment recorded successfully", "success");
+      resetForm();
       onSuccess();
       onClose();
-    } catch (err) {
-      showToast("Failed to record payment", "error");
-    } finally {
-      setIsLoading(false);
-    }
+      return res.json();
+    });
   };
 
   if (!booking) return null;
@@ -113,8 +113,8 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
             <label className="text-sm font-medium">Payment Method</label>
             <select
               className="bg-background w-full rounded-md border p-2 text-sm"
-              value={method}
-              onChange={(e) => setMethod(e.target.value)}
+              value={formData.method}
+              onChange={(e) => setField("method", e.target.value)}
             >
               <option value="UPI">UPI</option>
               <option value="CASH">Cash</option>
@@ -127,8 +127,8 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
             <input
               type="number"
               className="bg-background w-full rounded-md border p-2 text-sm"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              value={formData.amount}
+              onChange={(e) => setField("amount", e.target.value)}
             />
           </div>
 
@@ -137,8 +137,8 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
             <input
               type="text"
               className="bg-background w-full rounded-md border p-2 text-sm"
-              value={transactionId}
-              onChange={(e) => setTransactionId(e.target.value)}
+              value={formData.transactionId}
+              onChange={(e) => setField("transactionId", e.target.value)}
               placeholder="e.g. UPI/UTR Number"
             />
           </div>
@@ -146,17 +146,17 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
           <div className="grid gap-2">
             <label className="text-sm font-medium">Upload Proof (Screenshot)</label>
             <div className="h-32">
-              {proofUrl ? (
+              {formData.proofUrl ? (
                 <div className="relative h-full w-full">
                   <img
-                    src={proofUrl}
+                    src={formData.proofUrl}
                     alt="Proof"
                     className="h-full w-auto rounded-lg object-cover"
                   />
                   <Button
                     variant="danger"
                     size="sm"
-                    onClick={() => setProofUrl("")}
+                    onClick={() => setField("proofUrl", "")}
                     className="absolute top-2 right-2 h-6 px-2 text-xs"
                   >
                     Remove
@@ -164,7 +164,7 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
                 </div>
               ) : (
                 <ImageUploader
-                  onUpload={(img) => setProofUrl(img.originalUrl)}
+                  onUpload={(img) => setField("proofUrl", img.originalUrl)}
                   label="Upload Screenshot"
                 />
               )}
@@ -172,10 +172,14 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button variant="ghost" onClick={onClose} disabled={isLoading}>
+            <Button variant="ghost" onClick={onClose} disabled={state.status === "loading"}>
               Cancel
             </Button>
-            <Button onClick={handleSubmit} loading={isLoading} disabled={isLoading}>
+            <Button
+              onClick={handleSubmit}
+              loading={state.status === "loading"}
+              disabled={state.status === "loading"}
+            >
               Confirm Payment
             </Button>
           </div>

@@ -1193,7 +1193,6 @@ beda035 refactor(opt-001): fix remaining boolean references in 9 files
       }
       ```
     - Example: `const { state, execute, reset } = useAsyncOperation(); const result = await execute(async () => {...});`
-  
   - **Hook 2: useFormState.ts**
     - Purpose: Simplifies multi-field form state management
     - Use Case: Forms with multiple input fields
@@ -1204,7 +1203,6 @@ beda035 refactor(opt-001): fix remaining boolean references in 9 files
       }
       ```
     - Example: `const { values, handleChange, reset } = useFormState({ name: "", email: "" });`
-  
   - **Hook 3: useModalState.ts**
     - Purpose: Handles modal open/close/toggle state
     - Use Case: Modal components, dialogs, popups
@@ -1215,13 +1213,11 @@ beda035 refactor(opt-001): fix remaining boolean references in 9 files
       }
       ```
     - Example: `const { isOpen, open, close } = useModalState();`
-  
   - **Existing Hooks (Pre-OPT-013)**:
     1. useRazorpay.ts - Payment gateway integration
     2. useRoles.ts - Permission/role checking
     3. useSiteConfig.ts - Site configuration access
     4. useTripFilters.ts - Trip filter management
-  
   - **Total Coverage**: 7 hooks (4 existing + 3 new)
   - Location: apps/web/src/hooks/
   - Barrel Export: Created hooks/index.ts for centralized exports
