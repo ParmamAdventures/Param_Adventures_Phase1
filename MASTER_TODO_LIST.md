@@ -1,7 +1,7 @@
 # Master Todo List - Param Adventures Phase 2
 
 **Created**: January 16, 2026  
-**Status**: WEEK 1 DAY 1 - ALL CRITICAL FIXES COMPLETE ✅  
+**Status**: WEEK 1 DAY 2 - Regression triage in progress (admin RBAC + teardown env)  
 **Total Tasks**: 87 items  
 **Completed**: 8/8 Critical Fixes (FIX-001 through FIX-008) ✅  
 **Estimated Completion**: 2-3 weeks (8 days elapsed)
@@ -19,6 +19,13 @@
 | 📋 Documentation               | 15    | IMPORTANT    | Not Started  |
 
 ---
+
+## 🚨 Current Regressions (January 17, 2026)
+
+- Jest: 4 failing suites / 34 tests; unique constraint on permission `user:list` in admin RBAC integration (tests/integration/admin.test.ts) indicates existing test data; fix by cleaning `permission`/`role` before inserts or using upsert.
+- Global teardown failing: `DATABASE_URL` missing during tests/globalTeardown.ts; set env for teardown so Prisma cleanup can run (booking deleteMany currently throws).
+- Next actions: set test `DATABASE_URL`, add cleanup for RBAC fixtures, rerun `npm test --no-coverage`.
+
 
 ## 🎯 WEEK 1 DAY 1 COMPLETION SUMMARY (January 16, 2026)
 
