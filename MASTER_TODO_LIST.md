@@ -14,7 +14,7 @@
 | ------------------------------ | ----- | ------------ | ------------ |
 | 🔴 Critical Bugs               | 8     | MUST DO      | 8/8 Done ✅  |
 | 🟠 High Priority (Features)    | 12    | MUST DO      | 13/13 Done ✅|
-| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 12/24 Done   |
+| 🟡 Medium Priority (Tests)     | 24    | SHOULD DO    | 13/24 Done   |
 | 🟢 Low Priority (Optimization) | 28    | NICE TO HAVE | Not Started  |
 | 📋 Documentation               | 15    | IMPORTANT    | Not Started  |
 
@@ -620,12 +620,19 @@ e5af6da FIX-006: Standardize error handling responses
     - checkEligibility: 3 tests (eligible, no booking, already reviewed)
   - Note: 1 test has minor execution issue, but all critical functionality verified ✅
 
-- [ ] **TEST-013**: Write integration tests for review endpoints
-  - Status: Not Started
+- [x] **TEST-013**: Write integration tests for review endpoints
+  - Status: ✅ COMPLETED (18/18 tests passing - 100%)
   - Location: apps/api/tests/integration/reviews.test.ts
-  - Test cases: 15+
-  - Estimated time: 1.5 hours
+  - Test cases: 18 (exceeded 15+ target)
+  - Time taken: 45 mins
+  - Git Commit: Pending
   - Priority: MEDIUM
+  - Test breakdown:
+    - POST /reviews: 6 tests (auth, validation, completion, duplicate, rating bounds)
+    - GET /reviews/:tripId: 2 tests (retrieval, empty array)
+    - GET /reviews/featured: 2 tests (public access, high-rated filtering)
+    - GET /reviews/check/:tripId: 4 tests (eligible, not completed, already reviewed, auth)
+    - DELETE /reviews/:id: 4 tests (author delete, admin delete, auth, not found)
 
 ## Media Service Tests
 
