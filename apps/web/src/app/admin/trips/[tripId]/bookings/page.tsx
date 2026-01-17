@@ -38,7 +38,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<{ code: string; message: string } | null>(null);
   const [processingIds, setProcessingIds] = useState<string[]>([]);
-  const { loading: authLoading, user: currentUser } = useAuth();
+  const { isLoading: authLoading, user: currentUser } = useAuth();
   const { showToast } = useToast();
 
   const perms: string[] = (currentUser as { permissions?: string[] } | null)?.permissions || [];

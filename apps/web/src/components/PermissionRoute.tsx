@@ -11,11 +11,11 @@ export default function PermissionRoute({
   permission: string | string[];
   children: React.ReactNode;
 }) {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
   React.useEffect(() => {
-    if (!loading) {
+    if (!isLoading) {
       if (!user) router.replace("/login");
       else {
         const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];
@@ -27,9 +27,9 @@ export default function PermissionRoute({
         if (!hasPermission) router.replace("/dashboard");
       }
     }
-  }, [loading, user, permission, router]);
+  }, [isLoading, user, permission, router]);
 
-  if (loading) return <p>Loading...</p>;
+  if (isLoading) return <p>Loading...</p>;
   if (!user) return null;
 
   const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];

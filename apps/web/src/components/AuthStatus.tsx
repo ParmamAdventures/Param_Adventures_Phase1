@@ -5,9 +5,9 @@ import { useAuth } from "../context/AuthContext";
 import Button from "./ui/Button";
 
 export default function AuthStatus() {
-  const { user, loading, logout } = useAuth();
+  const { user, isLoading, logout } = useAuth();
 
-  if (loading) return <p>Loading session...</p>;
+  if (isLoading) return <p>Loading session...</p>;
   if (!user) return <p>Not logged in</p>;
 
   return (

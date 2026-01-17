@@ -846,13 +846,13 @@ e5af6da FIX-006: Standardize error handling responses
 ## Naming Conventions & Code Style
 
 - [-] **OPT-001**: Add `is/has/should` prefixes to boolean variables
-  - Status: 🔄 IN PROGRESS (8/50+ files, 16%)
-  - Progress: Completed hooks (useSiteConfig, useRoles), AuthContext + 6 dependent files
+  - Status: 🔄 IN PROGRESS (11/50+ files, 22%)
+  - Progress: Completed hooks (2), AuthContext + ALL dependent files (9)
   - Location: See [OPT-001_BOOLEAN_RENAMES.md](OPT-001_BOOLEAN_RENAMES.md) for detailed plan
   - Scope: Entire codebase (API + Web)
-  - High-impact completed: AuthContext (affects 50+ files)
-  - Remaining: 42+ components, 35+ pages
-  - Time taken: 1 hour / Estimated: 2 hours remaining
+  - High-impact completed: AuthContext + all useAuth() consumers (NO breaking changes)
+  - Remaining: useRazorpay + 40+ components, 35+ pages
+  - Time taken: 1.5 hours / Estimated: 1.5 hours remaining
   - Priority: LOW
 
 - [x] **OPT-002**: Standardize Zod validation schemas

@@ -8,13 +8,13 @@ import ManagerTripCard from "../../../components/manager/ManagerTripCard";
 import { useRouter } from "next/navigation";
 
 export default function ManagerDashboard() {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [trips, setTrips] = useState<any[]>([]);
   const [fetching, setFetching] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && user) {
+    if (!isLoading && user) {
       // Simple permission check (can accept ADMIN too)
       const isManager = user.roles?.includes("TRIP_MANAGER");
       if (!isManager) {
@@ -24,7 +24,7 @@ export default function ManagerDashboard() {
         fetchTrips();
       }
     }
-  }, [user, loading]);
+  }, [user, isLoading]);
 
   const fetchTrips = async () => {
     try {
@@ -40,7 +40,7 @@ export default function ManagerDashboard() {
     }
   };
 
-  if (loading || fetching) {
+  if (isLoading || fetching) {
     return (
       <div className="flex h-64 w-full items-center justify-center">
         <Loader2 className="text-accent animate-spin" size={32} />
