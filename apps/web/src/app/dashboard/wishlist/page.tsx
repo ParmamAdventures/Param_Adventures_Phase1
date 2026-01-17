@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
@@ -21,7 +21,7 @@ interface SavedTrip {
 
 export default function WishlistPage() {
   const [trips, setTrips] = useState<SavedTrip[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchWishlist();
@@ -37,7 +37,7 @@ export default function WishlistPage() {
     } catch (error) {
       console.error("Failed to fetch wishlist", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -46,7 +46,7 @@ export default function WishlistPage() {
     setTrips((current) => current.filter((t) => t.id !== tripId));
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
         <Loader2 className="text-accent h-8 w-8 animate-spin" />
@@ -91,3 +91,4 @@ export default function WishlistPage() {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -16,13 +16,13 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       await login(email, password);
@@ -30,7 +30,7 @@ export default function LoginPage() {
     } catch (err: any) {
       setError(err.message || "Invalid email or password");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -134,7 +134,7 @@ export default function LoginPage() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    disabled={loading}
+                    disabled={isLoading}
                     className="border-input placeholder:text-muted-foreground focus-visible:ring-accent flex h-12 w-full rounded-md border bg-transparent px-3 py-2 pl-10 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none md:pl-10"
                     required
                     suppressHydrationWarning
@@ -160,7 +160,7 @@ export default function LoginPage() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading}
+                    disabled={isLoading}
                     className="border-input placeholder:text-muted-foreground focus-visible:ring-accent flex h-12 w-full rounded-md border bg-transparent px-3 py-2 pl-10 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none md:pl-10"
                     required
                     suppressHydrationWarning
@@ -178,10 +178,10 @@ export default function LoginPage() {
             <Button
               variant="primary"
               className="h-12 w-full text-base font-semibold"
-              disabled={loading}
+              disabled={isLoading}
               suppressHydrationWarning
             >
-              {loading ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Signing in...

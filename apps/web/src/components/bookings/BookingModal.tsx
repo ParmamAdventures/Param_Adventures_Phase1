@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
@@ -27,7 +27,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
   const { user } = useAuth();
   const { showToast } = useToast();
 
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [guests, setGuests] = useState(1);
   const [startDate, setStartDate] = useState("");
   const [guestDetails, setGuestDetails] = useState<any[]>([]);
@@ -83,7 +83,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         setStartDate("");
       }
       
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [isOpen, trip.startDate]);
 
@@ -95,7 +95,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       // 1. Create Booking
       const res = await apiFetch("/bookings", {
@@ -134,7 +134,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
       // The user can pay later from "My Bookings" (Future feature)
       showToast(err.message, "error");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -287,17 +287,17 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
             <div className="flex flex-col">
               <span className="text-muted-foreground text-sm">Total Payment</span>
               <span className="text-2xl font-bold">₹{totalPrice.toLocaleString()}</span>
-              {loading && paymentMessage && (
+              {isLoading && paymentMessage && (
                 <span className="text-xs text-blue-500 animate-pulse">{paymentMessage}</span>
               )}
             </div>
             <Button
               onClick={handleBooking}
-              disabled={loading || !startDate}
-              loading={loading}
+              disabled={isLoading || !startDate}
+              isLoading={isLoading}
               className="px-8"
             >
-              {loading ? "Processing..." : "Confirm & Pay"}
+              {isLoading ? "Processing..." : "Confirm & Pay"}
             </Button>
           </div>
         </div>
@@ -305,3 +305,4 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     </Dialog>
   );
 }
+

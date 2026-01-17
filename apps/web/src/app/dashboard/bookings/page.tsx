@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -16,7 +16,7 @@ import ReviewBookingModal from "@/components/reviews/ReviewBookingModal";
 export default function MyBookingsPage() {
   const { user } = useAuth();
   const [bookings, setBookings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Modal States
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function MyBookingsPage() {
     } catch (error) {
       console.error("Failed to load bookings", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -78,7 +78,7 @@ export default function MyBookingsPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner size={32} />
@@ -265,3 +265,4 @@ export default function MyBookingsPage() {
     </div>
   );
 }
+

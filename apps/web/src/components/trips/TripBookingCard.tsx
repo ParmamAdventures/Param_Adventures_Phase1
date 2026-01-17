@@ -19,7 +19,7 @@ export default function TripBookingCard({ trip }: Props) {
   const { showToast } = useToast();
   const { initiatePayment, simulateDevSuccess, isLoading: paymentLoading, message } = useRazorpay();
 
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [paymentInitiated, setPaymentInitiated] = useState(false);

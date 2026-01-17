@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { apiFetch } from "../../lib/api";
@@ -19,7 +19,7 @@ type Review = {
 
 export function Testimonials({ tripId }: { tripId?: string }) {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchReviews() {
@@ -33,13 +33,13 @@ export function Testimonials({ tripId }: { tripId?: string }) {
       } catch (error) {
         console.error("Failed to fetch reviews", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     fetchReviews();
   }, [tripId]);
 
-  if (!loading && reviews.length === 0) {
+  if (!isLoading && reviews.length === 0) {
     if (tripId) return null; // Don't show empty section on trip page
     // For home page, keep it hidden or show empty state? Let's hide it for now or keep hardcoded fallback if preferred.
     // User requested dynamic, so hidden if empty is better than fake data.
@@ -102,3 +102,4 @@ export function Testimonials({ tripId }: { tripId?: string }) {
     </section>
   );
 }
+

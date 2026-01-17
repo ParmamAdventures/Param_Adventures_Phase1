@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import { apiFetch } from "@/lib/api";
@@ -26,13 +26,13 @@ type Media = {
 
 export default function AdminMediaPage() {
   const [media, setMedia] = useState<Media[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<"ALL" | "IMAGE" | "VIDEO">("ALL");
   const [uploading, setUploading] = useState(false);
   const { showToast } = useToast();
 
   const loadMedia = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await apiFetch(`/media?type=${filter}&limit=100`);
       if (res.ok) {
@@ -43,7 +43,7 @@ export default function AdminMediaPage() {
       console.error(e);
       showToast("Failed to load media", "error");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [filter, showToast]);
 
@@ -163,7 +163,7 @@ export default function AdminMediaPage() {
         ))}
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="flex justify-center p-20">
           <Spinner size={40} />
         </div>

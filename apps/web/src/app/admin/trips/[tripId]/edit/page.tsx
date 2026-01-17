@@ -12,7 +12,7 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
   const { tripId } = use(params);
 
   const [initialData, setInitialData] = useState<Partial<TripFormData> | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +31,7 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
         console.error("Fetch trip error", err);
         setError("Network error");
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     })();
   }, [tripId]);
@@ -75,7 +75,7 @@ export default function AdminEditTripPage({ params }: { params: Promise<{ tripId
     }
   };
 
-  if (loading) return <p>Loading trip details…</p>;
+  if (isLoading) return <p>Loading trip details…</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (

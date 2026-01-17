@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import {
@@ -25,12 +25,12 @@ export default function CancelBookingDialog({
   onConfirm,
   bookingTitle,
 }: CancelBookingDialogProps) {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
-    setLoading(true);
+    setIsLoading(true);
     await onConfirm();
-    setLoading(false);
+    setIsLoading(false);
     onClose();
   };
 
@@ -49,16 +49,16 @@ export default function CancelBookingDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4 gap-2">
-          <Button variant="ghost" onClick={onClose} disabled={loading}>
+          <Button variant="ghost" onClick={onClose} disabled={isLoading}>
             Keep Booking
           </Button>
           <Button
             variant="danger"
             onClick={handleConfirm}
-            disabled={loading}
+            disabled={isLoading}
             className="bg-red-500 text-white hover:bg-red-600"
           >
-            {loading ? <Loader2 className="mr-2 animate-spin" size={16} /> : null}
+            {isLoading ? <Loader2 className="mr-2 animate-spin" size={16} /> : null}
             Yes, Cancel It
           </Button>
         </DialogFooter>
@@ -66,3 +66,4 @@ export default function CancelBookingDialog({
     </Dialog>
   );
 }
+

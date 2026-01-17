@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, Suspense } from "react";
 import Link from "next/link";
@@ -14,7 +14,7 @@ function ResetPasswordForm() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +39,7 @@ function ResetPasswordForm() {
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     setMessage(null);
     setError(null);
 
@@ -60,7 +60,7 @@ function ResetPasswordForm() {
     } catch (err: any) {
       setError(err.message || "An error occurred");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -131,7 +131,7 @@ function ResetPasswordForm() {
         </div>
       )}
 
-      <Button type="submit" loading={loading} className="w-full">
+      <Button type="submit" loading={isLoading} className="w-full">
         Reset Password
       </Button>
     </form>
@@ -162,3 +162,5 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../../lib/api";
@@ -44,7 +44,7 @@ const ALL_SYSTEM_PERMISSIONS = [
 
 export default function RolesPage() {
   const [roles, setRoles] = useState<Role[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
   const { user } = useAuth();
@@ -55,7 +55,7 @@ export default function RolesPage() {
     let mounted = true;
     const fetchRoles = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         const res = await apiFetch("/admin/roles");
         if (!res.ok) throw new Error("Failed to fetch roles");
         const data = await res.json();
@@ -66,7 +66,7 @@ export default function RolesPage() {
           showToast(err.message, "error");
         }
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setIsLoading(false);
       }
     };
 
@@ -124,7 +124,7 @@ export default function RolesPage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
         <Spinner size={32} />
@@ -264,3 +264,4 @@ export default function RolesPage() {
     </div>
   );
 }
+

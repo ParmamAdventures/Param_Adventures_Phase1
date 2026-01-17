@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
@@ -11,11 +11,11 @@ import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function Page() {
   const [blogs, setBlogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadBlogs = useCallback(async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const res = await apiFetch("/blogs/my-blogs");
       if (res.ok) {
         setBlogs(await res.json());
@@ -23,7 +23,7 @@ export default function Page() {
     } catch (error) {
       console.error("Failed to load blogs", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -54,7 +54,7 @@ export default function Page() {
         </Link>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="text-muted-foreground py-10 text-center">
           Loading specific adventures...
         </div>

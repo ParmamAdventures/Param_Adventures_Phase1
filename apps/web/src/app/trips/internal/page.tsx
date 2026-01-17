@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import PermissionRoute from "../../../components/PermissionRoute";
@@ -15,7 +15,7 @@ type Trip = {
 
 export default function InternalTripsPage() {
   const [trips, setTrips] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function InternalTripsPage() {
         setError("Network error");
         setTrips([]);
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setIsLoading(false);
       }
     })();
 
@@ -45,7 +45,7 @@ export default function InternalTripsPage() {
     };
   }, []);
 
-  if (loading) return <p>Loading trips…</p>;
+  if (isLoading) return <p>Loading trips…</p>;
   if (error) return <p>{error}</p>;
 
   return (
@@ -93,3 +93,4 @@ export default function InternalTripsPage() {
     </PermissionRoute>
   );
 }
+

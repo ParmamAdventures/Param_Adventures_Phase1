@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import PermissionRoute from "../../../components/PermissionRoute";
@@ -11,7 +11,7 @@ import AssignManagerModal from "../../../components/admin/AssignManagerModal";
 
 export default function AdminTripsPage() {
   const [trips, setTrips] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assignTripId, setAssignTripId] = useState<string | null>(null);
 
@@ -29,7 +29,7 @@ export default function AdminTripsPage() {
   } | null>(null);
 
   const fetchTrips = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     try {
       const queryParams = new URLSearchParams({
@@ -53,7 +53,7 @@ export default function AdminTripsPage() {
       setError("Network error: Could not reach the server.");
       setTrips([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [page, sortBy, sortOrder]);
 
@@ -128,7 +128,7 @@ export default function AdminTripsPage() {
         ) : (
           <TripListTable
             trips={trips}
-            loading={loading}
+            loading={isLoading}
             onRefresh={fetchTrips}
             onAction={handleAction}
             onAssignGuide={setAssignTripId}
@@ -165,3 +165,5 @@ export default function AdminTripsPage() {
     </PermissionRoute>
   );
 }
+
+

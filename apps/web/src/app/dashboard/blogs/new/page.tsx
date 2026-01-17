@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { BlogEditor } from "@/components/editor/BlogEditor";
@@ -15,7 +15,7 @@ export default function NewBlogPage() {
   const [excerpt, setExcerpt] = useState("");
   const [coverImage, setCoverImage] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -68,7 +68,7 @@ export default function NewBlogPage() {
     }
 
     if (tripIdParam) {
-      setLoading(true);
+      setIsLoading(true);
       // Verify trip exists and (optimally) valid booking
       apiFetch(`/trips/${tripIdParam}`)
         .then((res) => {
@@ -80,14 +80,14 @@ export default function NewBlogPage() {
           alert("Invalid Trip");
           router.push("/dashboard/bookings");
         })
-        .finally(() => setLoading(false));
+        .finally(() => setIsLoading(false));
     }
   }, [tripIdParam, router]); // Dependency array updated
 
   async function handleSave(status: "DRAFT" | "SUBMIT") {
     if (!title) return alert("Title is required");
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       const response = await apiFetch("/blogs", {
         method: "POST",
@@ -123,7 +123,7 @@ export default function NewBlogPage() {
     } catch (error) {
       console.error("Error saving blog", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -245,7 +245,7 @@ export default function NewBlogPage() {
         <Button
           variant="subtle"
           onClick={() => handleSave("DRAFT")}
-          loading={loading}
+          loading={isLoading}
           className="px-8"
         >
           Save Draft
@@ -253,7 +253,7 @@ export default function NewBlogPage() {
         <Button
           variant="primary"
           onClick={() => handleSave("SUBMIT")}
-          loading={loading}
+          loading={isLoading}
           className="px-10"
         >
           Submit for Review
@@ -262,3 +262,5 @@ export default function NewBlogPage() {
     </div>
   );
 }
+
+

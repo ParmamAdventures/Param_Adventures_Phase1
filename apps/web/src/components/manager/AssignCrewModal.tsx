@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/Dialog";
@@ -23,7 +23,7 @@ export default function AssignCrewModal({
   currentGuides = [],
 }: AssignCrewModalProps) {
   const [guides, setGuides] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [assigningId, setAssigningId] = useState<string | null>(null);
 
@@ -34,7 +34,7 @@ export default function AssignCrewModal({
   }, [isOpen]);
 
   const fetchEligibleGuides = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await apiFetch("/admin/trip-assignments/eligible-users?role=TRIP_GUIDE");
       if (res.ok) {
@@ -44,7 +44,7 @@ export default function AssignCrewModal({
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -157,7 +157,7 @@ export default function AssignCrewModal({
             <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
               Available Guides
             </p>
-            {loading ? (
+            {isLoading ? (
               <div className="flex justify-center p-4">
                 <Loader2 className="text-muted-foreground animate-spin" />
               </div>
@@ -204,3 +204,4 @@ export default function AssignCrewModal({
     </Dialog>
   );
 }
+

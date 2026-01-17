@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
@@ -18,14 +18,14 @@ import Link from "next/link";
 
 export default function GuideViewPage() {
   const [assignments, setAssignments] = useState<any[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const loadAssignments = useCallback(async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const res = await apiFetch("/users/guide/trips");
       if (!res.ok) throw new Error("Failed to load guide assignments");
       const data = await res.json();
@@ -33,7 +33,7 @@ export default function GuideViewPage() {
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -41,7 +41,7 @@ export default function GuideViewPage() {
     loadAssignments();
   }, [loadAssignments]);
 
-  if (loading)
+  if (isLoading)
     return (
       <div className="flex h-96 items-center justify-center">
         <Spinner size={40} />
@@ -228,3 +228,4 @@ export default function GuideViewPage() {
 import { Button } from "@/components/ui/Button";
 import UploadDocsModal from "@/components/guide/UploadDocsModal";
 import { FileText } from "lucide-react";
+

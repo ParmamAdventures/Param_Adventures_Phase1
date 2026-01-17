@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
@@ -29,14 +29,14 @@ export default function AssignManagerModal({
 }: Props) {
   const [query, setQuery] = useState("");
   const [managers, setManagers] = useState<Manager[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedManagerId, setSelectedManagerId] = useState<string | null>(null);
   const [assigning, setAssigning] = useState(false);
 
   // Fetch eligible managers
   useEffect(() => {
     if (isOpen) {
-      setLoading(true);
+      setIsLoading(true);
       // We need an endpoint for this, or reuse users list with role filter.
       // For now, assuming we have a specialized endpoint or generic user search
       // Since we don't have a perfect "list managers" endpoint yet, let's use the generic User List endpoint with a query param if supported,
@@ -53,7 +53,7 @@ export default function AssignManagerModal({
             setManagers(Array.isArray(data) ? data : []);
           }
         })
-        .finally(() => setLoading(false));
+        .finally(() => setIsLoading(false));
     }
   }, [isOpen]);
 
@@ -101,7 +101,7 @@ export default function AssignManagerModal({
           />
 
           <div className="max-h-[200px] space-y-2 overflow-y-auto rounded-md border p-2">
-            {loading ? (
+            {isLoading ? (
               <Spinner size={20} />
             ) : filteredManagers.length === 0 ? (
               <p className="text-muted-foreground py-4 text-center text-sm">No managers found.</p>
@@ -142,7 +142,7 @@ export default function AssignManagerModal({
           <Button
             variant="primary"
             onClick={handleAssign}
-            loading={assigning}
+            isLoading={assigning}
             disabled={!selectedManagerId}
           >
             Assign Manager
@@ -152,3 +152,4 @@ export default function AssignManagerModal({
     </Dialog>
   );
 }
+

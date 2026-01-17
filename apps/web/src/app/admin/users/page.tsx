@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../../../lib/api";
@@ -8,13 +8,13 @@ import { useToast } from "../../../components/ui/ToastProvider";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
 
   const fetchUsers = useCallback(() => {
     let mounted = true;
-    setLoading(true);
+    setIsLoading(true);
 
     apiFetch("/admin/users")
       .then(async (r) => {
@@ -42,7 +42,7 @@ export default function UsersPage() {
         }
       })
       .finally(() => {
-        if (mounted) setLoading(false);
+        if (mounted) setIsLoading(false);
       });
 
     return () => {
@@ -75,8 +75,10 @@ export default function UsersPage() {
           </button>
         </div>
       ) : (
-        <UserListTable users={users} loading={loading} onRefresh={fetchUsers} />
+        <UserListTable users={users} loading={isLoading} onRefresh={fetchUsers} />
       )}
     </div>
   );
 }
+
+

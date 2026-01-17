@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -18,7 +18,7 @@ export default function SignupPage() {
 
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   function validatePassword(pwd: string): string | null {
@@ -40,7 +40,7 @@ export default function SignupPage() {
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       const res = await apiFetch("/auth/register", {
@@ -67,7 +67,7 @@ export default function SignupPage() {
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -193,7 +193,7 @@ export default function SignupPage() {
                     placeholder="John Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    disabled={loading}
+                    disabled={isLoading}
                     className="border-input placeholder:text-muted-foreground focus-visible:ring-accent flex h-12 w-full rounded-md border bg-transparent px-3 py-2 pl-10 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none md:pl-10"
                     required
                     suppressHydrationWarning
@@ -211,7 +211,7 @@ export default function SignupPage() {
                     placeholder="name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    disabled={loading}
+                    disabled={isLoading}
                     className="border-input placeholder:text-muted-foreground focus-visible:ring-accent flex h-12 w-full rounded-md border bg-transparent px-3 py-2 pl-10 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none md:pl-10"
                     required
                     suppressHydrationWarning
@@ -229,7 +229,7 @@ export default function SignupPage() {
                     placeholder="Create a strong password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    disabled={loading}
+                    disabled={isLoading}
                     className="border-input placeholder:text-muted-foreground focus-visible:ring-accent flex h-12 w-full rounded-md border bg-transparent px-3 py-2 pl-10 text-sm shadow-sm focus-visible:ring-1 focus-visible:outline-none md:pl-10"
                     required
                     suppressHydrationWarning
@@ -247,10 +247,10 @@ export default function SignupPage() {
             <Button
               variant="primary"
               className="h-12 w-full text-base font-semibold"
-              disabled={loading}
+              disabled={isLoading}
               suppressHydrationWarning
             >
-              {loading ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating account...

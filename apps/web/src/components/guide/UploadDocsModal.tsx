@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/Dialog";
@@ -28,7 +28,7 @@ export default function UploadDocsModal({
   tripId,
   onSuccess,
 }: UploadDocsModalProps) {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState("GROUP_PHOTO");
   const [url, setUrl] = useState("");
   const [description, setDescription] = useState("");
@@ -37,7 +37,7 @@ export default function UploadDocsModal({
     e.preventDefault();
     if (!url) return;
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await apiFetch(`/trips/${tripId}/docs`, {
         method: "POST",
@@ -55,7 +55,7 @@ export default function UploadDocsModal({
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -113,11 +113,11 @@ export default function UploadDocsModal({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading || !url} className="gap-2">
-              {loading ? <Loader2 className="animate-spin" size={16} /> : <UploadCloud size={16} />}
+            <Button type="submit" disabled={isLoading || !url} className="gap-2">
+              {isLoading ? <Loader2 className="animate-spin" size={16} /> : <UploadCloud size={16} />}
               Submit Document
             </Button>
           </div>
@@ -126,3 +126,4 @@ export default function UploadDocsModal({
     </Dialog>
   );
 }
+

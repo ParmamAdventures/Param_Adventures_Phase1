@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../../lib/api";
@@ -21,11 +21,11 @@ interface TripInquiry {
 
 export default function AdminInquiriesPage() {
   const [inquiries, setInquiries] = useState<TripInquiry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchInquiries = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const res = await apiFetch("/admin/inquiries");
       if (res.ok) {
         const data = await res.json();
@@ -36,7 +36,7 @@ export default function AdminInquiriesPage() {
     } catch (error) {
       console.error("Failed to fetch inquiries", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -62,7 +62,7 @@ export default function AdminInquiriesPage() {
     fetchInquiries();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex h-96 items-center justify-center">
         <Spinner size="lg" />
@@ -147,3 +147,4 @@ export default function AdminInquiriesPage() {
     </div>
   );
 }
+

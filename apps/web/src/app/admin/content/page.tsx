@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -51,7 +51,7 @@ export default function AdminContentPage() {
 
 function HeroSlidesEditor() {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => {
@@ -67,7 +67,7 @@ function HeroSlidesEditor() {
       } catch (e) {
         console.error(e);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     fetchSlides();
@@ -99,7 +99,7 @@ function HeroSlidesEditor() {
     setSlides((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   }
 
-  if (loading) return <div>Loading slides...</div>;
+  if (isLoading) return <div>Loading slides...</div>;
 
   return (
     <div className="animate-in fade-in space-y-6">
@@ -172,7 +172,7 @@ function HeroSlidesEditor() {
 
 function SiteConfigEditor() {
   const [config, setConfig] = useState<SiteConfig>({});
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => {
@@ -186,7 +186,7 @@ function SiteConfigEditor() {
       } catch (e) {
         console.error(e);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     fetchConfig();
@@ -208,7 +208,7 @@ function SiteConfigEditor() {
     }
   }
 
-  if (loading) return <div>Loading settings...</div>;
+  if (isLoading) return <div>Loading settings...</div>;
 
   const definitions = [
     { key: "auth_login_image", label: "Login Page Image URL" },
@@ -252,3 +252,4 @@ function SiteConfigEditor() {
     </div>
   );
 }
+

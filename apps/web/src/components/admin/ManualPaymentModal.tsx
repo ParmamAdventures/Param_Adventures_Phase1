@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
@@ -24,7 +24,7 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
   const [method, setMethod] = useState("UPI");
   const [transactionId, setTransactionId] = useState("");
   const [proofUrl, setProofUrl] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Auto-fill amount when booking opens
   React.useEffect(() => {
@@ -42,7 +42,7 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await apiFetch("/payments/manual", {
         method: "POST",
@@ -74,7 +74,7 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
     } catch (err) {
       showToast("Failed to record payment", "error");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -153,8 +153,8 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button variant="ghost" onClick={onClose} disabled={loading}>Cancel</Button>
-            <Button onClick={handleSubmit} loading={loading} disabled={loading}>
+            <Button variant="ghost" onClick={onClose} disabled={isLoading}>Cancel</Button>
+            <Button onClick={handleSubmit} isLoading={isLoading} disabled={isLoading}>
               Confirm Payment
             </Button>
           </div>
@@ -163,3 +163,4 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
     </Dialog>
   );
 }
+

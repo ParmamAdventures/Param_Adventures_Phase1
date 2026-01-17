@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -34,7 +34,7 @@ interface DashboardStats {
 
 export default function DashboardOverview() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadStats() {
@@ -46,13 +46,13 @@ export default function DashboardOverview() {
       } catch (e) {
         console.error("Failed to load dashboard stats", e);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     loadStats();
   }, []);
 
-  if (loading)
+  if (isLoading)
     return (
       <div className="flex h-64 items-center justify-center">
         <Spinner size={40} />
@@ -240,3 +240,4 @@ export default function DashboardOverview() {
     </div>
   );
 }
+

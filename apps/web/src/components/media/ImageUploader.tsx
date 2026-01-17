@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -21,7 +21,7 @@ type Props = {
 export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
 
@@ -43,7 +43,7 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
   async function upload() {
     if (!file) return;
 
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
 
     try {
@@ -76,7 +76,7 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
     } catch (e: any) {
       setError(e.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -137,10 +137,10 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
       {file && (
         <Button
           onClick={upload}
-          disabled={loading}
+          disabled={isLoading}
           className="w-full bg-blue-600 text-white shadow-md shadow-blue-100 hover:bg-blue-700"
         >
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center gap-2">
               <Spinner className="h-4 w-4" />
               <span>Uploading...</span>
@@ -153,3 +153,4 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
     </div>
   );
 }
+

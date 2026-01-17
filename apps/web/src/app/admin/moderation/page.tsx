@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import PermissionRoute from "../../../components/PermissionRoute";
@@ -12,11 +12,11 @@ export default function AdminModerationPage() {
   const [activeTab, setActiveTab] = useState<"trips" | "blogs">("trips");
   const [data, setData] = useState<{ trips: any[]; blogs: any[] }>({ trips: [], blogs: [] });
   const [summary, setSummary] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchModerationData = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     try {
       const [summaryRes, tripsRes, blogsRes] = await Promise.all([
@@ -40,7 +40,7 @@ export default function AdminModerationPage() {
       console.error("Moderation fetch error", err);
       setError("Failed to load moderation data.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -136,14 +136,14 @@ export default function AdminModerationPage() {
             {activeTab === "trips" ? (
               <TripListTable
                 trips={data.trips}
-                loading={loading}
+                loading={isLoading}
                 onRefresh={fetchModerationData}
                 onAction={(id, action) => handleModeration(id, "trips", action)}
               />
             ) : (
               <BlogListTable
                 blogs={data.blogs}
-                loading={loading}
+                loading={isLoading}
                 onRefresh={fetchModerationData}
                 onAction={(id, action) => handleModeration(id, "blogs", action)}
               />
@@ -154,3 +154,5 @@ export default function AdminModerationPage() {
     </PermissionRoute>
   );
 }
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -8,13 +8,13 @@ import { ArrowLeft, Mail } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     setMessage(null);
     setError(null);
 
@@ -33,7 +33,7 @@ export default function ForgotPasswordPage() {
       // Fallback error, though API usually returns success
       setError("An error occurred. Please try again.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
               </div>
             )}
 
-            <Button type="submit" loading={loading} className="w-full">
+            <Button type="submit" loading={isLoading} className="w-full">
               Send Reset Link
             </Button>
           </form>
@@ -96,3 +96,5 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
+
+

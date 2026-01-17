@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
@@ -9,14 +9,14 @@ import Modal from "@/components/ui/Modal";
 
 export default function AuditLogsPage() {
   const [logs, setLogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
   const [selectedLog, setSelectedLog] = useState<any>(null);
 
   useEffect(() => {
     async function loadLogs() {
-      setLoading(true);
+      setIsLoading(true);
       try {
         const query = new URLSearchParams();
         if (filter) query.append("action", filter);
@@ -28,7 +28,7 @@ export default function AuditLogsPage() {
       } catch (e) {
         console.error("Failed to load audit logs", e);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     loadLogs();
@@ -81,7 +81,7 @@ export default function AuditLogsPage() {
       </header>
 
       <div className="overflow-hidden rounded-[48px] border border-[var(--border)] bg-[var(--card)]/50 shadow-2xl shadow-indigo-500/5 backdrop-blur-2xl">
-        {loading ? (
+        {isLoading ? (
           <div className="flex justify-center p-20">
             <Spinner size={40} />
           </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../../../lib/api";
@@ -7,10 +7,10 @@ import BlogListTable from "../../../components/admin/BlogListTable";
 
 export default function AdminBlogsPage() {
   const [blogs, setBlogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const load = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const response = await apiFetch("/blogs?status=PENDING_REVIEW");
       if (response.ok) {
@@ -20,7 +20,7 @@ export default function AdminBlogsPage() {
     } catch (error) {
       console.error("Failed to load blogs", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -59,13 +59,15 @@ export default function AdminBlogsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="subtle" onClick={load} loading={loading} className="rounded-full px-6">
+          <Button variant="subtle" onClick={load} loading={isLoading} className="rounded-full px-6">
             Refresh Queue
           </Button>
         </div>
       </div>
 
-      <BlogListTable blogs={blogs} loading={loading} onAction={handleAction} onRefresh={load} />
+      <BlogListTable blogs={blogs} loading={isLoading} onAction={handleAction} onRefresh={load} />
     </div>
   );
 }
+
+

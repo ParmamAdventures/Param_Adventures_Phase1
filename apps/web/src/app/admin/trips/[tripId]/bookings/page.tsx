@@ -35,7 +35,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
   const { tripId } = use(params);
   const [trip, setTrip] = useState<Trip | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<{ code: string; message: string } | null>(null);
   const [processingIds, setProcessingIds] = useState<string[]>([]);
   const { isLoading: authLoading, user: currentUser } = useAuth();
@@ -66,7 +66,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
         message: ERROR_MESSAGES.NETWORK_ERROR,
       });
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [tripId]);
 
@@ -157,7 +157,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
     }
   };
 
-  if (loading || authLoading) return <p>Loading bookings...</p>;
+  if (isLoading || authLoading) return <p>Loading bookings...</p>;
 
   return (
     <div>
@@ -191,7 +191,9 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
               <tr key={b.id}>
                 <td className="border p-3">{new Date(b.createdAt).toLocaleString()}</td>
                 <td className="border p-3">{b.status}</td>
-                <td className="border p-3">{b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}</td>
+                <td className="border p-3">
+                  {b.user ? `${b.user.name ?? "-"} (${b.user.email})` : "-"}
+                </td>
                 <td className="border p-3">
                   {needsAction ? (
                     showActions ? (
@@ -217,7 +219,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
                         <Button disabled variant="subtle">
                           Approve
                         </Button>
-                        <div className="mt-1.5 text-xs text-muted-foreground">
+                        <div className="text-muted-foreground mt-1.5 text-xs">
                           You don’t have permission to approve this
                         </div>
                       </div>

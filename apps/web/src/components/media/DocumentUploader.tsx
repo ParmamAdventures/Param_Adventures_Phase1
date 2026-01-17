@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
@@ -13,7 +13,7 @@ type Props = {
 
 export function DocumentUploader({ onUpload, label = "Upload Document", existingUrl }: Props) {
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(existingUrl || null);
 
@@ -36,7 +36,7 @@ export function DocumentUploader({ onUpload, label = "Upload Document", existing
   async function upload() {
     if (!file) return;
 
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
 
     const form = new FormData();
@@ -61,7 +61,7 @@ export function DocumentUploader({ onUpload, label = "Upload Document", existing
     } catch (e: any) {
       setError(e.message);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -139,10 +139,10 @@ export function DocumentUploader({ onUpload, label = "Upload Document", existing
             e.stopPropagation();
             upload();
           }}
-          disabled={loading}
+          disabled={isLoading}
           className="w-full bg-blue-600 text-white shadow-md shadow-blue-100 hover:bg-blue-700"
         >
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center gap-2">
               <Spinner className="h-4 w-4" />
               <span>Uploading...</span>
@@ -155,3 +155,4 @@ export function DocumentUploader({ onUpload, label = "Upload Document", existing
     </div>
   );
 }
+

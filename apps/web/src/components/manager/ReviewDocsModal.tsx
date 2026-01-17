@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import {
@@ -26,7 +26,7 @@ export default function ReviewDocsModal({
   trip,
   onSuccess,
 }: ReviewDocsModalProps) {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const docs = (trip.documentation as any[]) || [];
 
@@ -34,7 +34,7 @@ export default function ReviewDocsModal({
     if (!confirm("Are you sure you want to close this trip? This will mark it as Completed."))
       return;
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await apiFetch(`/trips/${trip.id}/complete`, {
         method: "POST",
@@ -47,7 +47,7 @@ export default function ReviewDocsModal({
     } catch (e) {
       console.error(e);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -106,10 +106,10 @@ export default function ReviewDocsModal({
             </Button>
             <Button
               onClick={handleComplete}
-              disabled={loading}
+              disabled={isLoading}
               className="bg-green-600 text-white hover:bg-green-700"
             >
-              {loading ? (
+              {isLoading ? (
                 <Loader2 className="mr-2 animate-spin" />
               ) : (
                 <CheckCircle2 className="mr-2" size={16} />
@@ -122,3 +122,4 @@ export default function ReviewDocsModal({
     </Dialog>
   );
 }
+

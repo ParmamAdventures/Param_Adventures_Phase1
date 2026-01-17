@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
@@ -44,7 +44,7 @@ export default function ProfilePage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,7 +64,7 @@ export default function ProfilePage() {
   }, [user]);
 
   async function handleSave() {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await apiFetch("/users/profile", {
         method: "PATCH",
@@ -89,7 +89,7 @@ export default function ProfilePage() {
       console.error(e);
       alert("Failed to update profile.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -184,7 +184,7 @@ export default function ProfilePage() {
       alert("New passwords do not match");
       return;
     }
-    setLoading(true);
+    setIsLoading(true);
     try {
       const res = await apiFetch("/auth/change-password", {
         method: "POST",
@@ -204,7 +204,7 @@ export default function ProfilePage() {
       console.error(e);
       alert("An error occurred");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
@@ -552,7 +552,7 @@ export default function ProfilePage() {
                 <Button
                   type="submit"
                   variant="subtle"
-                  loading={loading}
+                  loading={isLoading}
                   disabled={!currentPassword || !newPassword || !confirmPassword}
                   className="h-10 text-xs font-bold tracking-wider uppercase"
                 >
@@ -596,7 +596,7 @@ export default function ProfilePage() {
             <Button
               variant="primary"
               onClick={handleSave}
-              loading={loading}
+              loading={isLoading}
               className="h-14 rounded-2xl px-12 shadow-[var(--accent)]/20 shadow-2xl"
             >
               Update Preferences & Profile
@@ -607,3 +607,5 @@ export default function ProfilePage() {
     </div>
   );
 }
+
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
@@ -27,7 +27,7 @@ export default function HeartButton({
   const [isSaved, setIsSaved] = useState(initialSaved);
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Sync with prop if provided
   useEffect(() => {
@@ -63,12 +63,12 @@ export default function HeartButton({
       return;
     }
 
-    if (loading) return;
+    if (isLoading) return;
 
     // Optimistic Update
     const newState = !isSaved;
     setIsSaved(newState);
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       const res = await apiFetch("/wishlist/toggle", {
@@ -91,7 +91,7 @@ export default function HeartButton({
       setIsSaved(!newState);
       showToast("Something went wrong", "error");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -112,3 +112,4 @@ export default function HeartButton({
     </button>
   );
 }
+

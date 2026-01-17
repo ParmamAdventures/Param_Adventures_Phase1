@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import Card from "../ui/Card";
@@ -8,7 +8,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function LatestBlogsSection() {
   const [blogs, setBlogs] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchLatest() {
@@ -21,13 +21,13 @@ export default function LatestBlogsSection() {
       } catch (err) {
         console.error("Failed to fetch latest blogs:", err);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     fetchLatest();
   }, []);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <section className="space-y-6 py-12">
         <h2 className="text-2xl font-semibold">Latest Stories</h2>
@@ -73,3 +73,4 @@ export default function LatestBlogsSection() {
     </section>
   );
 }
+

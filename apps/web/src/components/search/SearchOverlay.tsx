@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef } from "react";
 import { Search, X, Loader2, MapPin, Calendar, ArrowRight } from "lucide-react";
@@ -20,7 +20,7 @@ export default function SearchOverlay({
 }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult>({ trips: [], blogs: [] });
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -37,12 +37,12 @@ export default function SearchOverlay({
   useEffect(() => {
     if (!query.trim()) {
       setResults({ trips: [], blogs: [] });
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
 
     const delay = setTimeout(async () => {
-      setLoading(true);
+      setIsLoading(true);
       try {
         const [tripsRes, blogsRes] = await Promise.all([
           apiFetch(`/trips/public?search=${encodeURIComponent(query)}`),
@@ -60,7 +60,7 @@ export default function SearchOverlay({
         console.error("Search failed:", err);
         setResults({ trips: [], blogs: [] });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }, 300);
 
@@ -102,7 +102,7 @@ export default function SearchOverlay({
             >
               <X size={28} />
             </button>
-            {loading && <Loader2 className="text-accent shrink-0 animate-spin" size={20} />}
+            {isLoading && <Loader2 className="text-accent shrink-0 animate-spin" size={20} />}
           </div>
 
           {/* Results Area */}
@@ -215,3 +215,4 @@ export default function SearchOverlay({
     </AnimatePresence>
   );
 }
+

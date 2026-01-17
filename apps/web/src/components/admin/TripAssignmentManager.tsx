@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../../lib/api";
@@ -27,12 +27,12 @@ export default function TripAssignmentManager({
 }: TripAssignmentManagerProps) {
   const [managers, setManagers] = useState<User[]>([]);
   const [guides, setGuides] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { showToast } = useToast();
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const [mRes, gRes] = await Promise.all([
         apiFetch("/admin/trip-assignments/eligible-users?role=TRIP_MANAGER"),
@@ -44,7 +44,7 @@ export default function TripAssignmentManager({
     } catch (error) {
       console.error("Failed to fetch assignment data", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
@@ -116,7 +116,7 @@ export default function TripAssignmentManager({
     }
   };
 
-  if (loading) return <Spinner size={24} />;
+  if (isLoading) return <Spinner size={24} />;
 
   return (
     <div className="bg-card space-y-8 rounded-2xl border p-6 shadow-sm">
@@ -205,3 +205,4 @@ export default function TripAssignmentManager({
     </div>
   );
 }
+

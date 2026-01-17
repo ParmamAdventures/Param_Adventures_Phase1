@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState, useCallback } from "react";
 import BlogCard from "./BlogCard";
@@ -9,11 +9,11 @@ import Card from "../ui/Card";
 export default function BlogsClient() {
   const [blogs, setBlogs] = useState<any[] | null>(null);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const loadBlogs = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     try {
       const params = new URLSearchParams();
@@ -28,7 +28,7 @@ export default function BlogsClient() {
       setError(err.message);
       setBlogs([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [search]);
 
@@ -55,7 +55,7 @@ export default function BlogsClient() {
             onChange={(e) => setSearch(e.target.value)}
             className="placeholder:text-muted-foreground/30 flex-1 border-none bg-transparent px-4 py-3 text-sm font-bold outline-none"
           />
-          {loading ? (
+          {isLoading ? (
             <div className="animate-spin pr-4 text-[var(--accent)]">
               <Loader2 size={20} />
             </div>
@@ -89,7 +89,7 @@ export default function BlogsClient() {
           </div>
         ) : error ? (
           <Card className="border-red-500/20 bg-red-500/5 py-20 text-center">
-            <h3 className="text-xl font-bold text-red-500">Error Loading Stories</h3>
+            <h3 className="text-xl font-bold text-red-500">Error isLoading Stories</h3>
             <p className="text-muted-foreground mt-2">{error}</p>
             <button
               onClick={loadBlogs}
@@ -119,3 +119,4 @@ export default function BlogsClient() {
     </div>
   );
 }
+

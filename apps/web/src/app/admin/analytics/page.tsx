@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
@@ -24,7 +24,7 @@ export default function AnalyticsPage() {
   const [revenue, setRevenue] = useState<RevenueData | null>(null);
   const [trips, setTrips] = useState<any[]>([]);
   const [stats, setStats] = useState<AnalyticsStats | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
@@ -41,13 +41,13 @@ export default function AnalyticsPage() {
       } catch (e) {
         console.error("Failed to load analytics", e);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     loadData();
   }, []);
 
-  if (loading)
+  if (isLoading)
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <Spinner size={40} />
@@ -243,3 +243,4 @@ export default function AnalyticsPage() {
     </div>
   );
 }
+

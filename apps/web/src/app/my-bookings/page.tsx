@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -13,19 +13,19 @@ import BookingList from "../../components/bookings/BookingList";
 export default function MyBookingsPage() {
   const { user, isLoading: authLoading } = useAuth();
   const [bookings, setBookings] = useState<any[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
-      setLoading(false);
+      setIsLoading(false);
       return;
     }
 
     async function load() {
       try {
-        setLoading(true);
+        setIsLoading(true);
         const res = await apiFetch("/bookings/me");
         if (!res.ok) {
           setError("Failed to load your adventures");
@@ -36,14 +36,14 @@ export default function MyBookingsPage() {
       } catch (err) {
         setError("Network connectivity issue. Please try again.");
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
 
     load();
   }, [authLoading, user]);
 
-  if (authLoading || (loading && !bookings)) {
+  if (authLoading || (isLoading && !bookings)) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <Spinner size={32} />
@@ -164,7 +164,7 @@ export default function MyBookingsPage() {
             </Link>
           </Card>
         ) : (
-          <BookingList bookings={bookings || []} loading={loading} />
+          <BookingList bookings={bookings || []} loading={isLoading} />
         )}
       </div>
 

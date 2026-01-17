@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../ui/Dialog";
@@ -24,7 +24,7 @@ type Guide = {
 
 export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) {
   const [guides, setGuides] = useState<Guide[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
   const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
 
@@ -41,7 +41,7 @@ export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) 
       } catch (error) {
         console.error("Failed to fetch guides", error);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -80,7 +80,7 @@ export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) 
         </DialogHeader>
 
         <div className="max-h-[60vh] space-y-4 overflow-y-auto py-4">
-          {loading ? (
+          {isLoading ? (
             <div className="flex justify-center p-4">
               <Spinner size={24} />
             </div>
@@ -134,3 +134,4 @@ export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) 
     </Dialog>
   );
 }
+

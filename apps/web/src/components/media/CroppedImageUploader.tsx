@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
@@ -39,7 +39,7 @@ export default function CroppedImageUploader({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +65,7 @@ export default function CroppedImageUploader({
   const handleUpload = async () => {
     if (!imageSrc || !croppedAreaPixels) return;
 
-    setLoading(true);
+    setIsLoading(true);
 
 
 // ... inside handleUpload ...
@@ -106,7 +106,7 @@ export default function CroppedImageUploader({
       console.error(e);
       alert("Failed to upload image");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -189,8 +189,8 @@ export default function CroppedImageUploader({
             <Button variant="ghost" onClick={() => setImageSrc(null)}>
               Cancel
             </Button>
-            <Button onClick={handleUpload} disabled={loading}>
-              {loading ? (
+            <Button onClick={handleUpload} disabled={isLoading}>
+              {isLoading ? (
                 <Loader2 className="mr-2 animate-spin" />
               ) : (
                 <CropIcon className="mr-2" size={16} />
@@ -203,3 +203,4 @@ export default function CroppedImageUploader({
     </div>
   );
 }
+

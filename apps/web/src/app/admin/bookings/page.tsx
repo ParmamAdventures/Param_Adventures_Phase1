@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import PermissionRoute from "../../../components/PermissionRoute";
@@ -9,13 +9,13 @@ import { useToast } from "../../../components/ui/ToastProvider";
 
 export default function AdminBookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
 
   const fetchBookings = useCallback(async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
       const res = await apiFetch("/admin/bookings");
       if (!res.ok) throw new Error("Failed to load global bookings");
@@ -25,7 +25,7 @@ export default function AdminBookingsPage() {
       setError(err.message);
       showToast(err.message, "error");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }, [showToast]);
 
@@ -61,9 +61,11 @@ export default function AdminBookingsPage() {
             </button>
           </div>
         ) : (
-          <GlobalBookingList bookings={bookings} loading={loading} onRefresh={fetchBookings} />
+          <GlobalBookingList bookings={bookings} loading={isLoading} onRefresh={fetchBookings} />
         )}
       </div>
     </PermissionRoute>
   );
 }
+
+
