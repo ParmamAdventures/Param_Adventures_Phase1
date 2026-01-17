@@ -51,11 +51,7 @@ await cacheService.set(key, value, ttl);
 const value = await cacheService.get<T>(key);
 
 // Cache-aside pattern
-const value = await cacheService.getOrSet(
-  key,
-  async () => fetchFromDB(),
-  ttl
-);
+const value = await cacheService.getOrSet(key, async () => fetchFromDB(), ttl);
 
 // Delete specific key
 await cacheService.delete(key);
@@ -103,9 +99,9 @@ trips:featured                     - Featured trips (30 min)
 
 ```typescript
 const TTL = {
-  TRIP: 3600,           // Single trip: 1 hour
-  TRIPS_LIST: 1800,     // Trip lists: 30 minutes
-  FEATURED: 1800,       // Featured trips: 30 minutes
+  TRIP: 3600, // Single trip: 1 hour
+  TRIPS_LIST: 1800, // Trip lists: 30 minutes
+  FEATURED: 1800, // Featured trips: 30 minutes
 };
 ```
 
@@ -197,12 +193,12 @@ if (!cacheService.isHealthy()) {
 
 ### Expected Improvements
 
-| Query Type | Cache Hits | Before | After | Improvement |
-| --- | --- | --- | --- | --- |
-| Get all public trips | 95%+ | 250ms | 15ms | **16.7x faster** |
-| Get trip by slug | 90%+ | 180ms | 8ms | **22.5x faster** |
-| Get featured trips | 95%+ | 200ms | 12ms | **16.7x faster** |
-| Homepage loads | 80%+ | 600ms | 120ms | **5x faster** |
+| Query Type           | Cache Hits | Before | After | Improvement      |
+| -------------------- | ---------- | ------ | ----- | ---------------- |
+| Get all public trips | 95%+       | 250ms  | 15ms  | **16.7x faster** |
+| Get trip by slug     | 90%+       | 180ms  | 8ms   | **22.5x faster** |
+| Get featured trips   | 95%+       | 200ms  | 12ms  | **16.7x faster** |
+| Homepage loads       | 80%+       | 600ms  | 120ms | **5x faster**    |
 
 ### Database Load Reduction
 
@@ -300,17 +296,20 @@ curl -w "\nTime: %{time_total}s\n" http://localhost:3001/api/trips/public
 ### Cache Not Working?
 
 1. **Verify Redis running**:
+
    ```bash
    redis-cli ping
    ```
 
 2. **Check logs for connection errors**:
+
    ```bash
    # Look for "Redis connection error"
    tail -f logs/app.log | grep Redis
    ```
 
 3. **Verify environment variables**:
+
    ```bash
    echo $REDIS_HOST $REDIS_PORT $REDIS_DB
    ```
@@ -323,6 +322,7 @@ curl -w "\nTime: %{time_total}s\n" http://localhost:3001/api/trips/public
 ### High Memory Usage?
 
 1. **Check cache size**:
+
    ```bash
    redis-cli INFO memory
    ```
@@ -344,16 +344,19 @@ curl -w "\nTime: %{time_total}s\n" http://localhost:3001/api/trips/public
 ## 📈 Next Steps (OPT-018-020)
 
 ### OPT-018: User Data Caching
+
 - Cache user profiles
 - Cache permission checks
 - TTL: 1 hour
 
 ### OPT-019: Cache Invalidation Logic
+
 - Implement more sophisticated invalidation
 - Event-based cache updates
 - Cross-service invalidation
 
 ### OPT-020: Query Result Pagination
+
 - Cache paginated results
 - Implement cursor-based caching
 - Optimize list queries
@@ -365,14 +368,14 @@ curl -w "\nTime: %{time_total}s\n" http://localhost:3001/api/trips/public
 ### Example 1: Using Trip Cache in Controller
 
 ```typescript
-import { TripCacheService } from '../../services/trip-cache.service';
+import { TripCacheService } from "../../services/trip-cache.service";
 
 export const getTripBySlug = catchAsync(async (req, res) => {
   const { slug } = req.params;
-  
+
   // Automatically uses cache
   const trip = await TripCacheService.getTripBySlug(slug);
-  
+
   return ApiResponse.success(res, "Trip fetched", trip);
 });
 ```

@@ -1,7 +1,7 @@
-import { prisma } from '../utils/prisma';
-import { cacheService } from './cache.service';
-import { logger } from '../utils/logger';
-import { Trip, User } from '@prisma/client';
+import { prisma } from "../lib/prisma";
+import { cacheService } from "./cache.service";
+import { logger } from "../lib/logger";
+import { Trip, User } from "@prisma/client";
 
 /**
  * Trip Cache Service - Specialized caching for trip data
@@ -14,10 +14,10 @@ export class TripCacheService {
   private static readonly KEYS = {
     TRIP: (id: string) => `trip:${id}`,
     TRIP_SLUG: (slug: string) => `trip:slug:${slug}`,
-    TRIPS_PUBLIC: () => 'trips:public:all',
+    TRIPS_PUBLIC: () => "trips:public:all",
     TRIPS_CATEGORY: (category: string) => `trips:category:${category}`,
-    TRIPS_FEATURED: () => 'trips:featured',
-    TRIPS_PATTERN: () => 'trip:*',
+    TRIPS_FEATURED: () => "trips:featured",
+    TRIPS_PATTERN: () => "trip:*",
   };
 
   /**
@@ -66,15 +66,15 @@ export class TripCacheService {
             },
             skip: filters?.skip || 0,
             take: filters?.take || 20,
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: "desc" },
           });
 
           return trips;
         },
-        this.TTL.TRIPS_LIST
+        this.TTL.TRIPS_LIST,
       );
     } catch (error) {
-      logger.error('Error fetching public trips:', error);
+      logger.error("Error fetching public trips:", error);
       throw error;
     }
   }
@@ -87,7 +87,7 @@ export class TripCacheService {
       return await cacheService.getOrSet(
         this.KEYS.TRIPS_FEATURED(),
         async () => {
-          logger.debug('Fetching featured trips from database');
+          logger.debug("Fetching featured trips from database");
 
           const trips = await prisma.trip.findMany({
             where: {
@@ -105,15 +105,15 @@ export class TripCacheService {
               },
             },
             take: 6,
-            orderBy: { createdAt: 'desc' },
+            orderBy: { createdAt: "desc" },
           });
 
           return trips;
         },
-        this.TTL.FEATURED
+        this.TTL.FEATURED,
       );
     } catch (error) {
-      logger.error('Error fetching featured trips:', error);
+      logger.error("Error fetching featured trips:", error);
       throw error;
     }
   }
@@ -152,7 +152,7 @@ export class TripCacheService {
                     },
                   },
                 },
-                orderBy: { createdAt: 'desc' },
+                orderBy: { createdAt: "desc" },
                 take: 10,
               },
             },
@@ -160,7 +160,7 @@ export class TripCacheService {
 
           return trip;
         },
-        this.TTL.TRIP
+        this.TTL.TRIP,
       );
     } catch (error) {
       logger.error(`Error fetching trip by slug ${slug}:`, error);
@@ -194,7 +194,7 @@ export class TripCacheService {
             },
           });
         },
-        this.TTL.TRIP
+        this.TTL.TRIP,
       );
     } catch (error) {
       logger.error(`Error fetching trip by ID ${tripId}:`, error);
@@ -222,7 +222,7 @@ export class TripCacheService {
    * Invalidate all trip caches
    */
   static async invalidateAllTrips() {
-    logger.info('Invalidating all trip caches');
+    logger.info("Invalidating all trip caches");
     await cacheService.invalidatePattern(this.KEYS.TRIPS_PATTERN());
   }
 
@@ -237,7 +237,7 @@ export class TripCacheService {
    * Clear all trip caches
    */
   static async clearCache() {
-    logger.info('Clearing all trip caches');
+    logger.info("Clearing all trip caches");
     await this.invalidateAllTrips();
   }
 }

@@ -72,12 +72,12 @@
 
 **Performance Improvements**:
 
-| Query | Before | After | Improvement |
-| --- | --- | --- | --- |
-| Get all public trips (cached) | 250ms | 15ms | **16.7x faster** |
-| Get trip by slug (cached) | 180ms | 8ms | **22.5x faster** |
-| Get featured trips (cached) | 200ms | 12ms | **16.7x faster** |
-| Homepage load (80%+ cache hit) | 600ms | 120ms | **5x faster** |
+| Query                          | Before | After | Improvement      |
+| ------------------------------ | ------ | ----- | ---------------- |
+| Get all public trips (cached)  | 250ms  | 15ms  | **16.7x faster** |
+| Get trip by slug (cached)      | 180ms  | 8ms   | **22.5x faster** |
+| Get featured trips (cached)    | 200ms  | 12ms  | **16.7x faster** |
+| Homepage load (80%+ cache hit) | 600ms  | 120ms | **5x faster**    |
 
 **Database Load Reduction**:
 

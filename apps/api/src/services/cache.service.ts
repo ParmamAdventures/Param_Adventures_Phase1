@@ -1,5 +1,5 @@
-import Redis from 'ioredis';
-import { logger } from '../utils/logger';
+import Redis from "ioredis";
+import { logger } from "../lib/logger";
 
 /**
  * Cache Service - Unified caching interface using Redis
@@ -11,9 +11,9 @@ class CacheService {
 
   constructor() {
     this.redis = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379', 10),
-      db: parseInt(process.env.REDIS_DB || '0', 10),
+      host: process.env.REDIS_HOST || "localhost",
+      port: parseInt(process.env.REDIS_PORT || "6379", 10),
+      db: parseInt(process.env.REDIS_DB || "0", 10),
       retryStrategy: (times) => {
         const delay = Math.min(times * 50, 2000);
         return delay;
@@ -22,19 +22,19 @@ class CacheService {
       enableOfflineQueue: false,
     });
 
-    this.redis.on('connect', () => {
+    this.redis.on("connect", () => {
       this.isConnected = true;
-      logger.info('Redis cache service connected');
+      logger.info("Redis cache service connected");
     });
 
-    this.redis.on('error', (err) => {
-      logger.error('Redis connection error:', err);
+    this.redis.on("error", (err) => {
+      logger.error("Redis connection error:", err);
       this.isConnected = false;
     });
 
-    this.redis.on('close', () => {
+    this.redis.on("close", () => {
       this.isConnected = false;
-      logger.warn('Redis connection closed');
+      logger.warn("Redis connection closed");
     });
   }
 
@@ -149,11 +149,7 @@ class CacheService {
    * @param factory Function to fetch data if not in cache
    * @param ttl Time to live in seconds
    */
-  async getOrSet<T>(
-    key: string,
-    factory: () => Promise<T>,
-    ttl: number = 3600
-  ): Promise<T> {
+  async getOrSet<T>(key: string, factory: () => Promise<T>, ttl: number = 3600): Promise<T> {
     // Try to get from cache
     const cached = await this.get<T>(key);
     if (cached !== null) {
@@ -179,9 +175,9 @@ class CacheService {
 
     try {
       await this.redis.flushdb();
-      logger.info('Cache flushed completely');
+      logger.info("Cache flushed completely");
     } catch (error) {
-      logger.error('Cache flush error:', error);
+      logger.error("Cache flush error:", error);
     }
   }
 
@@ -194,11 +190,11 @@ class CacheService {
     }
 
     try {
-      const info = await this.redis.info('stats');
+      const info = await this.redis.info("stats");
       const dbSize = await this.redis.dbsize();
       return { info, dbSize, connected: true };
     } catch (error) {
-      logger.error('Cache stats error:', error);
+      logger.error("Cache stats error:", error);
       return { error: error.message };
     }
   }
@@ -217,9 +213,9 @@ class CacheService {
     try {
       await this.redis.quit();
       this.isConnected = false;
-      logger.info('Redis connection closed gracefully');
+      logger.info("Redis connection closed gracefully");
     } catch (error) {
-      logger.error('Error closing Redis connection:', error);
+      logger.error("Error closing Redis connection:", error);
     }
   }
 }
