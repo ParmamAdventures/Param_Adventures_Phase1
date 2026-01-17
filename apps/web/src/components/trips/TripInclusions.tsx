@@ -1,3 +1,9 @@
+/**
+ * TripInclusions - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function TripInclusions({
   inclusions = [],
   exclusions = [],

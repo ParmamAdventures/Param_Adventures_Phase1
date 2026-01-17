@@ -7,6 +7,12 @@ interface DialogProps {
   children: React.ReactNode;
 }
 
+/**
+ * Dialog - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -32,6 +38,12 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   );
 }
 
+/**
+ * DialogContent - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function DialogContent({
   children,
   className,
@@ -48,6 +60,12 @@ export function DialogContent({
   );
 }
 
+/**
+ * DialogHeader - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function DialogHeader({
   children,
   className,
@@ -60,6 +78,12 @@ export function DialogHeader({
   );
 }
 
+/**
+ * DialogTitle - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function DialogTitle({
   children,
   className,
@@ -74,6 +98,12 @@ export function DialogTitle({
   );
 }
 
+/**
+ * DialogDescription - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function DialogDescription({
   children,
   className,
@@ -84,6 +114,11 @@ export function DialogDescription({
   return <p className={`text-muted-foreground text-sm ${className || ""}`}>{children}</p>;
 }
 
+/**
+ * DialogFooter - Footer component with site information.
+ * @param {Object} props - Component props
+ * @returns {React.ReactElement} Footer component
+ */
 export function DialogFooter({
   children,
   className,

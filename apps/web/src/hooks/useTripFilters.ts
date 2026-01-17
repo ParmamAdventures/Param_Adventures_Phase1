@@ -31,6 +31,11 @@ const DEFAULT_FILTERS: TripFiltersState = {
   endDate: "",
 };
 
+/**
+ * Trip filters hook for managing search and filter state.
+ * @param {number} maxPrice - Maximum price limit for filtering
+ * @returns {Object} Filter state and update functions
+ */
 export function useTripFilters(maxPriceMeta: number) {
   const searchParams = useSearchParams();
   const router = useRouter();

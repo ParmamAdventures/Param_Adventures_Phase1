@@ -17,6 +17,12 @@ type Review = {
   };
 };
 
+/**
+ * Testimonials - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function Testimonials({ tripId }: { tripId?: string }) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);

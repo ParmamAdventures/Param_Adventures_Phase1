@@ -32,6 +32,12 @@ interface DashboardStats {
   }>;
 }
 
+/**
+ * DashboardOverview - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function DashboardOverview() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);

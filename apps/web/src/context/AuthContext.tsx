@@ -14,6 +14,11 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+/**
+ * React component for UI presentation and user interaction.
+ * @param {Object} props - Component props
+ * @returns {React.ReactElement} Component element
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,6 +111,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * React component for UI presentation and user interaction.
+ * @param {Object} props - Component props
+ * @returns {React.ReactElement} Component element
+ */
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");

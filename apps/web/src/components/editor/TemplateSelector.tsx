@@ -8,6 +8,15 @@ type Props = {
   className?: string;
 };
 
+/**
+ * TemplateSelector - Dropdown select component.
+ * @param {Object} props - Component props
+ * @param {Array} [props.options] - Available options
+ * @param {string|number} [props.value] - Selected value
+ * @param {Function} [props.onChange] - Change handler
+ * @param {string} [props.placeholder] - Placeholder text
+ * @returns {React.ReactElement} Select element
+ */
 export function TemplateSelector({ onSelect, className }: Props) {
   return (
     <div className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-3", className)}>

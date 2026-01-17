@@ -5,6 +5,14 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import BlogMeta from "./BlogMeta";
 
+/**
+ * BlogCard - Card component for content containers.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Card content
+ * @param {string} [props.title] - Card title
+ * @param {string} [props.className] - Additional CSS classes
+ * @returns {React.ReactElement} Card element
+ */
 export default function BlogCard({ blog, index = 0 }: { blog: any; index?: number }) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   let imageUrl = blog.coverImage?.mediumUrl || blog.image;

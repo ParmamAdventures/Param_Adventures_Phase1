@@ -9,6 +9,12 @@ interface BlogDetailViewProps {
   blog: any;
 }
 
+/**
+ * BlogDetailView - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function BlogDetailView({ blog }: BlogDetailViewProps) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const { scrollYProgress } = useScroll();

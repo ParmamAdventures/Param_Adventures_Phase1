@@ -21,6 +21,15 @@ interface SelectProps {
   required?: boolean;
 }
 
+/**
+ * Select - Dropdown select component.
+ * @param {Object} props - Component props
+ * @param {Array} [props.options] - Available options
+ * @param {string|number} [props.value] - Selected value
+ * @param {Function} [props.onChange] - Change handler
+ * @param {string} [props.placeholder] - Placeholder text
+ * @returns {React.ReactElement} Select element
+ */
 export function Select({
   value,
   onChange,

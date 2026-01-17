@@ -11,6 +11,12 @@ interface EmptyStateProps {
   icon?: React.ReactNode;
 }
 
+/**
+ * EmptyState - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function EmptyState({ title, description, actionLabel, actionLink, icon }: EmptyStateProps) {
   return (
     <div className="animate-in fade-in zoom-in-95 flex flex-col items-center justify-center space-y-4 px-4 py-24 text-center duration-500">

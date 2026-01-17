@@ -1,3 +1,9 @@
+/**
+ * TripHighlights - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function TripHighlights({ trip }: { trip: any }) {
   return (
     <div className="grid grid-cols-2 gap-4">

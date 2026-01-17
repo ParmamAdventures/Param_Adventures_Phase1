@@ -11,6 +11,12 @@ type Props = {
   existingUrl?: string;
 };
 
+/**
+ * DocumentUploader - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function DocumentUploader({ onUpload, label = "Upload Document", existingUrl }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);

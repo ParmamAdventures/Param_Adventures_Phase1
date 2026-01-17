@@ -1,6 +1,12 @@
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 
+/**
+ * FeaturedTripsSection - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function FeaturedTripsSection() {
   return (
     <section className="space-y-6 py-12">

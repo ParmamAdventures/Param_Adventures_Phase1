@@ -5,6 +5,14 @@ import { motion } from "framer-motion";
 import Card from "./Card";
 import { fadeInUp, scaleOnHover } from "./motion";
 
+/**
+ * MotionCard - Card component for content containers.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Card content
+ * @param {string} [props.title] - Card title
+ * @param {string} [props.className] - Additional CSS classes
+ * @returns {React.ReactElement} Card element
+ */
 export function MotionCard(props: React.ComponentProps<typeof Card>) {
   const { children, className, ...rest } = props;
   return (

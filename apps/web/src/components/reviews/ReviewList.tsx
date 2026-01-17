@@ -23,6 +23,15 @@ interface ReviewListProps {
   refreshTrigger?: number; // Used to re-fetch when a new review is added
 }
 
+/**
+ * ReviewList - List/Gallery display component.
+ * @param {Object} props - Component props
+ * @param {Array} [props.items] - Items to display
+ * @param {Function} [props.renderItem] - Item render function
+ * @param {boolean} [props.isLoading] - Loading state
+ * @param {string} [props.emptyMessage] - Message when no items
+ * @returns {React.ReactElement} List component
+ */
 export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);

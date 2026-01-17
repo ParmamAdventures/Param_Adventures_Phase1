@@ -20,6 +20,15 @@ interface Manager {
   avatarImage?: { thumbUrl: string };
 }
 
+/**
+ * AssignManagerModal - Modal dialog component for user interactions.
+ * @param {Object} props - Component props
+ * @param {boolean} [props.isOpen] - Whether modal is open
+ * @param {Function} [props.onClose] - Callback when modal closes
+ * @param {string} [props.title] - Modal title
+ * @param {React.ReactNode} [props.children] - Modal content
+ * @returns {React.ReactElement} Modal component
+ */
 export default function AssignManagerModal({
   isOpen,
   onClose,
@@ -142,7 +151,7 @@ export default function AssignManagerModal({
           <Button
             variant="primary"
             onClick={handleAssign}
-            isLoading={assigning}
+            loading={assigning}
             disabled={!selectedManagerId}
           >
             Assign Manager
@@ -152,4 +161,3 @@ export default function AssignManagerModal({
     </Dialog>
   );
 }
-

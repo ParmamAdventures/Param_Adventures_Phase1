@@ -4,6 +4,12 @@ import { useState } from "react";
 import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
 
+/**
+ * Newsletter - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function Newsletter() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");

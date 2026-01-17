@@ -12,6 +12,11 @@ interface SocketContextValue {
 
 const SocketContext = createContext<SocketContextValue>({ socket: null });
 
+/**
+ * React component for UI presentation and user interaction.
+ * @param {Object} props - Component props
+ * @returns {React.ReactElement} Component element
+ */
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -78,6 +83,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * React component for UI presentation and user interaction.
+ * @param {Object} props - Component props
+ * @returns {React.ReactElement} Component element
+ */
 export function useSocket() {
   return useContext(SocketContext);
 }

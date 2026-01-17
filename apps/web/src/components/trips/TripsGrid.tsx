@@ -4,6 +4,14 @@ import Button from "../ui/Button";
 import Link from "next/link";
 import MotionCard from "../ui/MotionCard";
 
+/**
+ * TripsGrid - Data table component.
+ * @param {Object} props - Component props
+ * @param {Array} [props.columns] - Table columns
+ * @param {Array} [props.data] - Table data rows
+ * @param {Object} [props.pagination] - Pagination config
+ * @returns {React.ReactElement} Table component
+ */
 export default function TripsGrid({ trips, savedTripIds }: { trips: any[], savedTripIds?: Set<string> }) {
   if (!trips || trips.length === 0) {
     return (

@@ -6,6 +6,13 @@ const sizeMap: Record<string, number> = {
   lg: 40,
 };
 
+/**
+ * Spinner - Loading indicator component.
+ * @param {Object} props - Component props
+ * @param {string} [props.message] - Loading message
+ * @param {'small'|'medium'|'large'} [props.size] - Spinner size
+ * @returns {React.ReactElement} Loading component
+ */
 export function Spinner({ size = 16, className = "" }: { size?: SpinnerSize; className?: string }) {
   const numericSize = typeof size === "number" ? size : sizeMap[size] || 16;
 

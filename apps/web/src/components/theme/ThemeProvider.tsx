@@ -9,6 +9,12 @@ const ThemeContext = createContext<{
   toggle: () => void;
 }>({ theme: "light", toggle: () => {} });
 
+/**
+ * ThemeProvider - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const getInitial = (): Theme => {
     try {
@@ -46,6 +52,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return <ThemeContext.Provider value={{ theme, toggle }}>{children}</ThemeContext.Provider>;
 }
 
+/**
+ * useTheme - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export const useTheme = () => useContext(ThemeContext);
 
 export default ThemeProvider;

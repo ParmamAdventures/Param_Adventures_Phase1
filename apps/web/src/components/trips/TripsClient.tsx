@@ -9,6 +9,12 @@ import TripFilters from "./TripFilters";
 import { useTripFilters } from "@/hooks/useTripFilters";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * TripsClient - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function TripsClient() {
   const [trips, setTrips] = useState<any[] | null>(null);
   const [error, setError] = useState<string | null>(null);

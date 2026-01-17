@@ -10,6 +10,12 @@ const defaultStats = [
   { key: "safety", label: "Safety Record", value: 100, suffix: "%" },
 ];
 
+/**
+ * StatsCounter - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function StatsCounter() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });

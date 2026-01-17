@@ -7,6 +7,12 @@ interface ScrollRevealProps {
   width?: "fit-content" | "100%";
 }
 
+/**
+ * ScrollReveal - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export const ScrollReveal = ({ children, width = "fit-content" }: ScrollRevealProps) => {
   return (
     <div style={{ position: "relative", width, overflow: "hidden" }}>

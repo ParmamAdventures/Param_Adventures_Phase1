@@ -4,6 +4,16 @@ type Props = React.InputHTMLAttributes<HTMLInputElement> & {
   state?: "normal" | "error" | "disabled";
 };
 
+/**
+ * Input - Form input component with validation.
+ * @param {Object} props - Component props
+ * @param {'text'|'email'|'password'|'number'} [props.type] - Input type
+ * @param {string} [props.value] - Current value
+ * @param {Function} [props.onChange] - Change handler
+ * @param {string} [props.placeholder] - Placeholder text
+ * @param {string} [props.error] - Error message if any
+ * @returns {React.ReactElement} Input element
+ */
 export function Input({ label, className, error = null, state = "normal", ...props }: Props) {
   const stateClasses =
     state === "error"

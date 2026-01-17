@@ -8,6 +8,10 @@ export type Role = {
   permissions?: string[];
 };
 
+/**
+ * User roles and permissions hook for checking access control.
+ * @returns {Object} Role checking utilities (hasRole, hasPermission, etc.)
+ */
 export function useRoles() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [isLoading, setIsLoading] = useState(true);

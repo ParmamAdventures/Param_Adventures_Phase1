@@ -10,6 +10,13 @@ import { useState, useEffect } from "react";
 import { Search, X, Loader2 } from "lucide-react";
 import SearchOverlay from "../search/SearchOverlay";
 
+/**
+ * PublicNavbar - Navigation header component.
+ * @param {Object} props - Component props
+ * @param {Array} [props.links] - Navigation links
+ * @param {React.ReactNode} [props.logo] - Logo element
+ * @returns {React.ReactElement} Navigation component
+ */
 export default function PublicNavbar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();

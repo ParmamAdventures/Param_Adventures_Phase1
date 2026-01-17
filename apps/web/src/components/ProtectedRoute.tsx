@@ -4,6 +4,14 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
+/**
+ * ProtectedRoute - Route protection/access control component.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Protected content
+ * @param {string|string[]} [props.requiredRole] - Required role(s)
+ * @param {Function} [props.fallback] - Fallback component
+ * @returns {React.ReactElement} Protected route component
+ */
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   const router = useRouter();

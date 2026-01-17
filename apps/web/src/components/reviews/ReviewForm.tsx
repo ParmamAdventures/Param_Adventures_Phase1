@@ -11,6 +11,14 @@ interface ReviewFormProps {
   onSuccess?: () => void;
 }
 
+/**
+ * ReviewForm - Form component with validation.
+ * @param {Object} props - Component props
+ * @param {Array} [props.fields] - Form fields
+ * @param {Function} [props.onSubmit] - Form submission handler
+ * @param {Object} [props.initialValues] - Initial field values
+ * @returns {React.ReactElement} Form component
+ */
 export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
   const { user } = useAuth(); // Token handled by apiFetch
   const [rating, setRating] = useState(0);

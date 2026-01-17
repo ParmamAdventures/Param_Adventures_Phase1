@@ -51,6 +51,14 @@ type TripFormProps = {
 
 const TABS = ["Overview", "Itinerary", "Logistics", "Inclusions & Policies", "Extras"];
 
+/**
+ * TripForm - Form component with validation.
+ * @param {Object} props - Component props
+ * @param {Array} [props.fields] - Form fields
+ * @param {Function} [props.onSubmit] - Form submission handler
+ * @param {Object} [props.initialValues] - Initial field values
+ * @returns {React.ReactElement} Form component
+ */
 export default function TripForm({ initialData, onSubmit, submitting }: TripFormProps) {
   const [activeTab, setActiveTab] = useState("Overview");
 

@@ -29,6 +29,12 @@ type ItineraryDay = {
   travelTime?: string;
 };
 
+/**
+ * TripItinerary - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function TripItinerary({ itinerary }: { itinerary: any }) {
   const days = (Array.isArray(itinerary) ? itinerary : itinerary?.days || []) as ItineraryDay[];
   const [openDay, setOpenDay] = useState<number | null>(null);

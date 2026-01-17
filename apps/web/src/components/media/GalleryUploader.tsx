@@ -13,6 +13,15 @@ type GalleryUploaderProps = {
   onChange: (images: Image[]) => void;
 };
 
+/**
+ * GalleryUploader - List/Gallery display component.
+ * @param {Object} props - Component props
+ * @param {Array} [props.items] - Items to display
+ * @param {Function} [props.renderItem] - Item render function
+ * @param {boolean} [props.isLoading] - Loading state
+ * @param {string} [props.emptyMessage] - Message when no items
+ * @returns {React.ReactElement} List component
+ */
 export function GalleryUploader({ images, onChange }: GalleryUploaderProps) {
   function move(index: number, dir: -1 | 1) {
     const copy = [...images];

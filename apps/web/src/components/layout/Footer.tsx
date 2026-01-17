@@ -3,6 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 
+/**
+ * Footer - Footer component with site information.
+ * @param {Object} props - Component props
+ * @returns {React.ReactElement} Footer component
+ */
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 

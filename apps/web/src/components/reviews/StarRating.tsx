@@ -12,6 +12,12 @@ interface StarRatingProps {
   onHover?: (rating: number) => void;
 }
 
+/**
+ * StarRating - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function StarRating({
   rating,
   editable = false,

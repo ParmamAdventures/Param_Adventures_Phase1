@@ -35,6 +35,12 @@ type ItineraryBuilderProps = {
   disabled?: boolean;
 };
 
+/**
+ * ItineraryBuilder - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function ItineraryBuilder({ days = [], onChange, disabled }: ItineraryBuilderProps) {
   const [expandedDays, setExpandedDays] = useState<number[]>([1]); // Default first day expanded
 

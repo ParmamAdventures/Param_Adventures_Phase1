@@ -2,6 +2,12 @@ import Image from "next/image";
 import StatusBadge from "../ui/StatusBadge";
 import HeartButton from "./HeartButton";
 
+/**
+ * TripHero - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function TripHero({ trip }: { trip: any }) {
   // Helper to format local image paths
   const getImageUrl = (image: any) => {

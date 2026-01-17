@@ -18,6 +18,15 @@ interface Props {
   onSuccess: () => void;
 }
 
+/**
+ * ManualPaymentModal - Modal dialog component for user interactions.
+ * @param {Object} props - Component props
+ * @param {boolean} [props.isOpen] - Whether modal is open
+ * @param {Function} [props.onClose] - Callback when modal closes
+ * @param {string} [props.title] - Modal title
+ * @param {React.ReactNode} [props.children] - Modal content
+ * @returns {React.ReactElement} Modal component
+ */
 export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess }: Props) {
   const { showToast } = useToast();
   const [amount, setAmount] = useState("");
@@ -49,12 +58,12 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           bookingId: booking.id,
-          amount: Number(amount) * 100, // Convert to paise expected by backend? 
+          amount: Number(amount) * 100, // Convert to paise expected by backend?
           // Wait, backend expects amount. If Razorpay used paise, manual might use Rupees in UI but backend implementation should be consistent.
           // Let's check backend: createManualPayment.ts says: "amount: Number(amount)".
-          // Razorpay expects paise. If Admin enters 5000, backend sees 5000. 
-          // IMPORTANT: If `Booking.totalPrice` is in Rupees, fine. If it's in Paisa, divide. 
-          // `Booking` model says `totalPrice Int` (usually we stored rupees in earlier implementation, checking schema: `price Int`). 
+          // Razorpay expects paise. If Admin enters 5000, backend sees 5000.
+          // IMPORTANT: If `Booking.totalPrice` is in Rupees, fine. If it's in Paisa, divide.
+          // `Booking` model says `totalPrice Int` (usually we stored rupees in earlier implementation, checking schema: `price Int`).
           // Wait, Razorpay creates order with `booking.trip.price * 100`. So DB stores Rupees.
           // So if Admin enters Rupees, we should multiply by 100 if we want consistency with Razorpay (which uses paise).
           // BUT `createManualPayment` saves `amount` directly.
@@ -88,16 +97,22 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
         </DialogHeader>
 
         <div className="space-y-4 pt-4">
-          <div className="rounded-lg bg-muted/30 p-3 text-sm">
-            <p><strong>Booking:</strong> {booking.trip.title}</p>
-            <p><strong>User:</strong> {booking.user.name}</p>
-            <p><strong>Total Due:</strong> ₹{booking.totalPrice.toLocaleString()}</p>
+          <div className="bg-muted/30 rounded-lg p-3 text-sm">
+            <p>
+              <strong>Booking:</strong> {booking.trip.title}
+            </p>
+            <p>
+              <strong>User:</strong> {booking.user.name}
+            </p>
+            <p>
+              <strong>Total Due:</strong> ₹{booking.totalPrice.toLocaleString()}
+            </p>
           </div>
 
           <div className="grid gap-2">
             <label className="text-sm font-medium">Payment Method</label>
             <select
-              className="w-full rounded-md border p-2 text-sm bg-background"
+              className="bg-background w-full rounded-md border p-2 text-sm"
               value={method}
               onChange={(e) => setMethod(e.target.value)}
             >
@@ -108,53 +123,59 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
           </div>
 
           <div className="grid gap-2">
-             <label className="text-sm font-medium">Amount Received (₹)</label>
-             <input 
-                type="number" 
-                className="w-full rounded-md border p-2 text-sm bg-background"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-             />
+            <label className="text-sm font-medium">Amount Received (₹)</label>
+            <input
+              type="number"
+              className="bg-background w-full rounded-md border p-2 text-sm"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
           </div>
 
           <div className="grid gap-2">
-             <label className="text-sm font-medium">Transaction ID / Reference (Optional)</label>
-             <input 
-                type="text" 
-                className="w-full rounded-md border p-2 text-sm bg-background"
-                value={transactionId}
-                onChange={(e) => setTransactionId(e.target.value)}
-                placeholder="e.g. UPI/UTR Number"
-             />
+            <label className="text-sm font-medium">Transaction ID / Reference (Optional)</label>
+            <input
+              type="text"
+              className="bg-background w-full rounded-md border p-2 text-sm"
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
+              placeholder="e.g. UPI/UTR Number"
+            />
           </div>
 
           <div className="grid gap-2">
             <label className="text-sm font-medium">Upload Proof (Screenshot)</label>
             <div className="h-32">
-                {proofUrl ? (
-                  <div className="relative h-full w-full">
-                    <img src={proofUrl} alt="Proof" className="h-full w-auto rounded-lg object-cover" />
-                    <Button 
-                      variant="danger" 
-                      size="sm" 
-                      onClick={() => setProofUrl("")}
-                      className="absolute top-2 right-2 h-6 px-2 text-xs"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ) : (
-                  <ImageUploader 
-                    onUpload={(img) => setProofUrl(img.originalUrl)} 
-                    label="Upload Screenshot" 
+              {proofUrl ? (
+                <div className="relative h-full w-full">
+                  <img
+                    src={proofUrl}
+                    alt="Proof"
+                    className="h-full w-auto rounded-lg object-cover"
                   />
-                )}
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => setProofUrl("")}
+                    className="absolute top-2 right-2 h-6 px-2 text-xs"
+                  >
+                    Remove
+                  </Button>
+                </div>
+              ) : (
+                <ImageUploader
+                  onUpload={(img) => setProofUrl(img.originalUrl)}
+                  label="Upload Screenshot"
+                />
+              )}
             </div>
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button variant="ghost" onClick={onClose} disabled={isLoading}>Cancel</Button>
-            <Button onClick={handleSubmit} isLoading={isLoading} disabled={isLoading}>
+            <Button variant="ghost" onClick={onClose} disabled={isLoading}>
+              Cancel
+            </Button>
+            <Button onClick={handleSubmit} loading={isLoading} disabled={isLoading}>
               Confirm Payment
             </Button>
           </div>
@@ -163,4 +184,3 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
     </Dialog>
   );
 }
-

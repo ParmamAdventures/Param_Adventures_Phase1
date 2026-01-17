@@ -19,6 +19,12 @@ interface HeroProps {
   slides?: HeroSlide[];
 }
 
+/**
+ * Hero - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function Hero({ slides = [] }: HeroProps) {
   const { user } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);

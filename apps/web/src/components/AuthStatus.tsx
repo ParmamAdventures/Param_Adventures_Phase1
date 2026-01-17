@@ -4,6 +4,12 @@ import React from "react";
 import { useAuth } from "../context/AuthContext";
 import Button from "./ui/Button";
 
+/**
+ * AuthStatus - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function AuthStatus() {
   const { user, isLoading, logout } = useAuth();
 

@@ -11,6 +11,15 @@ interface InvoiceModalProps {
   booking: any;
 }
 
+/**
+ * InvoiceModal - Modal dialog component for user interactions.
+ * @param {Object} props - Component props
+ * @param {boolean} [props.isOpen] - Whether modal is open
+ * @param {Function} [props.onClose] - Callback when modal closes
+ * @param {string} [props.title] - Modal title
+ * @param {React.ReactNode} [props.children] - Modal content
+ * @returns {React.ReactElement} Modal component
+ */
 export default function InvoiceModal({ isOpen, onClose, booking }: InvoiceModalProps) {
   const componentRef = useRef<HTMLDivElement>(null);
 

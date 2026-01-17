@@ -5,6 +5,10 @@ interface SiteConfig {
   [key: string]: string;
 }
 
+/**
+ * Site configuration hook for accessing global site settings.
+ * @returns {Object} Site configuration data
+ */
 export function useSiteConfig() {
   const [config, setConfig] = useState<SiteConfig>({});
   const [isLoading, setIsLoading] = useState(true);

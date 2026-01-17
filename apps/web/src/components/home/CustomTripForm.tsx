@@ -6,6 +6,14 @@ import { Select } from "../ui/Select";
 import { motion } from "framer-motion";
 import { apiFetch } from "../../lib/api";
 
+/**
+ * CustomTripForm - Form component with validation.
+ * @param {Object} props - Component props
+ * @param {Array} [props.fields] - Form fields
+ * @param {Function} [props.onSubmit] - Form submission handler
+ * @param {Object} [props.initialValues] - Initial field values
+ * @returns {React.ReactElement} Form component
+ */
 export function CustomTripForm() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [formData, setFormData] = useState({

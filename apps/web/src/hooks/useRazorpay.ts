@@ -27,6 +27,10 @@ interface WindowWithRazorpay extends Window {
   Razorpay?: new (options: RazorpayOptions) => { open: () => void };
 }
 
+/**
+ * Razorpay payment hook for handling payment initialization and verification.
+ * @returns {Object} Payment functions and state (initiatePayment, verifyPayment, etc.)
+ */
 export function useRazorpay() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);

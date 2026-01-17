@@ -9,10 +9,12 @@ const glob = require("glob");
 // Generic JSDoc template
 const createJSDoc = (functionName) => {
   return `/**
- * ${functionName.replace(/([A-Z])/g, " $1").trim()
-    .split(" ")
-    .map((w, i) => (i === 0 ? w.charAt(0).toUpperCase() + w.slice(1) : w))
-    .join(" ")}
+ * ${functionName
+   .replace(/([A-Z])/g, " $1")
+   .trim()
+   .split(" ")
+   .map((w, i) => (i === 0 ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+   .join(" ")}
  * @param {Request} req - Express request object
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
@@ -63,7 +65,7 @@ const processFile = (filePath) => {
 // Main execution
 const controllerDir = path.join(__dirname, "..", "src", "controllers");
 const pattern = path.join(controllerDir, "**", "*.ts");
-const files = glob.sync(pattern).filter(f => !f.includes("index.ts"));
+const files = glob.sync(pattern).filter((f) => !f.includes("index.ts"));
 
 console.log(`\n📝 Adding JSDoc to ${files.length} controller files...\n`);
 
@@ -84,4 +86,6 @@ for (const file of files) {
   }
 }
 
-console.log(`\n✅ Updated ${totalUpdated} files, documented ${totalFunctionsDocumented} functions\n`);
+console.log(
+  `\n✅ Updated ${totalUpdated} files, documented ${totalFunctionsDocumented} functions\n`,
+);

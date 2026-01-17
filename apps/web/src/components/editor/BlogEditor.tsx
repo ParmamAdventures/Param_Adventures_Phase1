@@ -48,6 +48,12 @@ interface BlogEditorProps {
   readOnly?: boolean;
 }
 
+/**
+ * BlogEditor - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);

@@ -23,6 +23,15 @@ interface Props {
   onBookingSuccess: (booking: any) => void;
 }
 
+/**
+ * BookingModal - Modal dialog component for user interactions.
+ * @param {Object} props - Component props
+ * @param {boolean} [props.isOpen] - Whether modal is open
+ * @param {Function} [props.onClose] - Callback when modal closes
+ * @param {string} [props.title] - Modal title
+ * @param {React.ReactNode} [props.children] - Modal content
+ * @returns {React.ReactElement} Modal component
+ */
 export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -72,7 +81,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
   useEffect(() => {
     if (isOpen) {
       setGuests(1);
-      
+
       // Auto-fill date if trip has a fixed start date
       if (trip.startDate) {
         // Format to YYYY-MM-DD for input[type="date"]
@@ -82,7 +91,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
       } else {
         setStartDate("");
       }
-      
+
       setIsLoading(false);
     }
   }, [isOpen, trip.startDate]);
@@ -116,19 +125,18 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
 
       const response = await res.json();
       const booking = response.data; // Unwrap API response
-      
+
       // 2. Initiate Payment (Razorpay)
       // This handles opening the modal and verification internally
       const result = await initiatePayment(booking.id, {
         name: user?.name || guestDetails[0]?.name,
-        email: user?.email || guestDetails[0]?.email
+        email: user?.email || guestDetails[0]?.email,
       });
 
       // 3. Success (Only if we get here without error)
       showToast("Booking & Payment Successful!", "success");
       onBookingSuccess(booking);
       onClose();
-
     } catch (err: any) {
       // If booking was created but payment failed/cancelled, we still show error
       // The user can pay later from "My Bookings" (Future feature)
@@ -230,14 +238,14 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
             {/* Guest Details Forms */}
             <div className="max-h-[300px] space-y-4 overflow-y-auto pr-2">
               {Array.from({ length: guests }).map((_, index) => (
-                <div key={index} className="rounded-xl border bg-muted/20 p-4">
-                  <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <div key={index} className="bg-muted/20 rounded-xl border p-4">
+                  <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
                     {index === 0 ? "Primary Traveler (You)" : `Guest ${index + 1}`}
                   </h4>
                   <div className="grid gap-3">
                     <input
                       placeholder="Full Name"
-                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                      className="bg-background w-full rounded-md border px-3 py-2 text-sm"
                       value={guestDetails[index]?.name || ""}
                       onChange={(e) => updateGuestDetail(index, "name", e.target.value)}
                     />
@@ -245,14 +253,14 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                       <input
                         placeholder="Email"
                         type="email"
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        className="bg-background w-full rounded-md border px-3 py-2 text-sm"
                         value={guestDetails[index]?.email || ""}
                         onChange={(e) => updateGuestDetail(index, "email", e.target.value)}
                       />
                       <input
                         placeholder="Phone"
                         type="tel"
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        className="bg-background w-full rounded-md border px-3 py-2 text-sm"
                         value={guestDetails[index]?.phone || ""}
                         onChange={(e) => updateGuestDetail(index, "phone", e.target.value)}
                       />
@@ -261,12 +269,12 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                       <input
                         placeholder="Age"
                         type="number"
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        className="bg-background w-full rounded-md border px-3 py-2 text-sm"
                         value={guestDetails[index]?.age || ""}
                         onChange={(e) => updateGuestDetail(index, "age", e.target.value)}
                       />
                       <select
-                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                        className="bg-background w-full rounded-md border px-3 py-2 text-sm"
                         value={guestDetails[index]?.gender || ""}
                         onChange={(e) => updateGuestDetail(index, "gender", e.target.value)}
                       >
@@ -288,13 +296,13 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
               <span className="text-muted-foreground text-sm">Total Payment</span>
               <span className="text-2xl font-bold">₹{totalPrice.toLocaleString()}</span>
               {isLoading && paymentMessage && (
-                <span className="text-xs text-blue-500 animate-pulse">{paymentMessage}</span>
+                <span className="animate-pulse text-xs text-blue-500">{paymentMessage}</span>
               )}
             </div>
             <Button
               onClick={handleBooking}
               disabled={isLoading || !startDate}
-              isLoading={isLoading}
+              loading={isLoading}
               className="px-8"
             >
               {isLoading ? "Processing..." : "Confirm & Pay"}
@@ -305,4 +313,3 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     </Dialog>
   );
 }
-

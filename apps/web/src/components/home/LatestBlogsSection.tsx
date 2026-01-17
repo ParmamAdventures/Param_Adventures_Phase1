@@ -6,6 +6,12 @@ import { apiFetch } from "@/lib/api";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
+/**
+ * LatestBlogsSection - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function LatestBlogsSection() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);

@@ -16,6 +16,15 @@ type Props = {
   onRefresh: () => void;
 };
 
+/**
+ * UserListTable - List/Gallery display component.
+ * @param {Object} props - Component props
+ * @param {Array} [props.items] - Items to display
+ * @param {Function} [props.renderItem] - Item render function
+ * @param {boolean} [props.isLoading] - Loading state
+ * @param {string} [props.emptyMessage] - Message when no items
+ * @returns {React.ReactElement} List component
+ */
 export default function UserListTable({ users, loading, onRefresh }: Props) {
   const { user: currentUser } = useAuth();
   const { roles } = useRoles();

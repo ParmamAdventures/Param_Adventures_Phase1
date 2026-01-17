@@ -3,6 +3,13 @@ type Props = {
   type?: "trip" | "booking" | "payment" | "generic";
 };
 
+/**
+ * StatusBadge - Badge component for labels.
+ * @param {Object} props - Component props
+ * @param {string} [props.text] - Badge text
+ * @param {string} [props.variant] - Badge style variant
+ * @returns {React.ReactElement} Badge component
+ */
 export function StatusBadge({ status }: Props) {
   const map: Record<string, string> = {
     // Trip Statuses

@@ -11,6 +11,12 @@ interface SearchResult {
   blogs: any[];
 }
 
+/**
+ * SearchOverlay - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function SearchOverlay({
   isOpen,
   onClose,

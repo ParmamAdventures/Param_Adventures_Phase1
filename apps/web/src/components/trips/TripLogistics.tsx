@@ -1,3 +1,9 @@
+/**
+ * TripLogistics - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function TripLogistics({ trip }: { trip: any }) {
   return (
     <div className="bg-card border-border space-y-6 rounded-xl border p-6">

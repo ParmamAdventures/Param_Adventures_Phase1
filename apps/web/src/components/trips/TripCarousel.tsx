@@ -9,6 +9,12 @@ interface TripCarouselProps {
   trips: any[];
 }
 
+/**
+ * TripCarousel - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function TripCarousel({ trips }: TripCarouselProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

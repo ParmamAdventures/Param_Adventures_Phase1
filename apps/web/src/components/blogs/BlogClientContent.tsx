@@ -37,6 +37,12 @@ function normalizeContentUrls(content: any): any {
   return content;
 }
 
+/**
+ * BlogClientContent - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function BlogClientContent({ content }: { content: any }) {
   const normalizedContent = normalizeContentUrls(content);
 

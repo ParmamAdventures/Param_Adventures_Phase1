@@ -13,6 +13,14 @@ interface RoleCardProps {
   onConfigure?: (role: RoleCardProps["role"]) => void;
 }
 
+/**
+ * RoleCard - Card component for content containers.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Card content
+ * @param {string} [props.title] - Card title
+ * @param {string} [props.className] - Additional CSS classes
+ * @returns {React.ReactElement} Card element
+ */
 export default function RoleCard({ role, allSystemPermissions, onConfigure }: RoleCardProps) {
   return (
     <Card className="group flex flex-col overflow-hidden border-[var(--border)] bg-[var(--card)] transition-all hover:border-[var(--accent)]/30 hover:shadow-[var(--accent)]/5 hover:shadow-2xl">

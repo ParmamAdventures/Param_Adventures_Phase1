@@ -14,6 +14,12 @@ interface ImageCropperProps {
   onCancel: () => void;
 }
 
+/**
+ * ImageCropper - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export function ImageCropper({ imageSrc, onCropComplete, onCancel }: ImageCropperProps) {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);

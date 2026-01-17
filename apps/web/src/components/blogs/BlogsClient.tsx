@@ -6,6 +6,12 @@ import { apiFetch } from "../../lib/api";
 import { Search, X, Loader2 } from "lucide-react";
 import Card from "../ui/Card";
 
+/**
+ * BlogsClient - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function BlogsClient() {
   const [blogs, setBlogs] = useState<any[] | null>(null);
   const [search, setSearch] = useState("");

@@ -56,13 +56,10 @@ export default function AdminModerationPage() {
     try {
       let res;
       if (action === "delete") {
-         const endpoint = type === "trips" ? `/trips/${id}` : `/blogs/${id}`;
-         res = await apiFetch(endpoint, { method: "DELETE" });
+        const endpoint = type === "trips" ? `/trips/${id}` : `/blogs/${id}`;
+        res = await apiFetch(endpoint, { method: "DELETE" });
       } else {
-        const endpoint =
-            type === "trips"
-            ? `/trips/${id}/${action}`
-            : `/blogs/${id}/${action}`;
+        const endpoint = type === "trips" ? `/trips/${id}/${action}` : `/blogs/${id}/${action}`;
         res = await apiFetch(endpoint, { method: "POST" });
       }
 
@@ -123,7 +120,7 @@ export default function AdminModerationPage() {
           </button>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex justify-center p-12">
             <Spinner size={40} />
           </div>
@@ -154,5 +151,3 @@ export default function AdminModerationPage() {
     </PermissionRoute>
   );
 }
-
-

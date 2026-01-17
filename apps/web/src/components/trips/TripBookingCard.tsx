@@ -14,6 +14,14 @@ interface Props {
   trip: any;
 }
 
+/**
+ * TripBookingCard - Card component for content containers.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Card content
+ * @param {string} [props.title] - Card title
+ * @param {string} [props.className] - Additional CSS classes
+ * @returns {React.ReactElement} Card element
+ */
 export default function TripBookingCard({ trip }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();

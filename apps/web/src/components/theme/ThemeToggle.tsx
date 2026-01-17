@@ -4,6 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import Button from "../ui/Button";
 
+/**
+ * ThemeToggle - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function ThemeToggle() {
   const { theme, toggle } = useTheme();
   const [mounted, setMounted] = useState(false);

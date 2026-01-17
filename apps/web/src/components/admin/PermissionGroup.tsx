@@ -7,6 +7,12 @@ interface PermissionGroupProps {
   icon?: React.ReactNode;
 }
 
+/**
+ * PermissionGroup - React component for UI presentation and interaction.
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} [props.children] - Component children
+ * @returns {React.ReactElement} Component element
+ */
 export default function PermissionGroup({
   title,
   permissions,

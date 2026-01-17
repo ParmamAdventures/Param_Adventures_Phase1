@@ -16,6 +16,16 @@ interface HeartButtonProps {
   size?: number;
 }
 
+/**
+ * HeartButton - Reusable button component with styling options.
+ * @param {Object} props - Component props
+ * @param {string} [props.label] - Button text
+ * @param {Function} [props.onClick] - Click handler
+ * @param {'primary'|'secondary'|'danger'} [props.variant] - Button style variant
+ * @param {boolean} [props.disabled] - Disabled state
+ * @param {boolean} [props.isLoading] - Loading state
+ * @returns {React.ReactElement} Button element
+ */
 export default function HeartButton({
   tripId,
   initialSaved = false,

@@ -45,7 +45,7 @@ export default function AdminTripBookingsPage({ params }: { params: Promise<{ tr
   const canManage = perms.includes("booking:approve") && perms.includes("booking:reject");
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     try {
       const r = await apiFetch(`/admin/trips/${tripId}/bookings`);
