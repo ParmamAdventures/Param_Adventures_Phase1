@@ -5,6 +5,14 @@ import { verifyAccessToken } from "../utils/jwt";
 
 import { prisma } from "../lib/prisma";
 
+/**
+ * Middleware to verify Bearer token and attach authenticated user to request.
+ * Fetches user details with roles and permissions from database.
+ * @param {Request} req - Express request object with Authorization header
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next middleware function
+ * @returns {void} - Calls next() if authenticated, sends 401 if not
+ */
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   const auth = req.headers.authorization;
   if (!auth?.startsWith("Bearer ")) {

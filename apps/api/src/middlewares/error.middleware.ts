@@ -31,6 +31,17 @@ function buildError(code: string, message: string, details?: unknown, stack?: st
   return { error: payload };
 }
 
+/**
+ * Global error handler middleware.
+ * Catches all errors, logs them, sends to Sentry, and returns structured error response.
+ * Handles HttpError, Prisma errors, validation errors, and generic errors.
+ * Prevents sending response if headers already sent.
+ * @param {Error} err - Error object from upstream
+ * @param {Request} _req - Express request object (unused)
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next middleware function
+ * @returns {void} - Sends structured error response or passes to next handler
+ */
 export function errorHandler(err: Error, _req: Request, res: Response, next: NextFunction) {
   if (res.headersSent) {
     return next(err);

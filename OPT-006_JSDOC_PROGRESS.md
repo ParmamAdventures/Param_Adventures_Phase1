@@ -7,6 +7,7 @@
 ## Progress Tracking
 
 ### Root-Level Controllers (11 files)
+
 - [x] **auth.controller.ts** - 4 functions documented (register, login, refresh, logout)
 - [x] **health.controller.ts** - 1 function documented (healthCheck)
 - [x] **user.controller.ts** - 1 function documented (updateProfile)
@@ -20,6 +21,7 @@
 - [ ] **wishlist.controller.ts** - 0/? functions
 
 ### Feature Categories (65 files)
+
 - [ ] **Admin** (13 files) - 0/? functions
 - [ ] **Blogs** (11 files) - 0/? functions
 - [ ] **Bookings** (8 files) - 0/? functions
@@ -32,12 +34,14 @@
 ## Completed
 
 ### Total: 6/76 files (7.9%)
+
 - Files: 3 root-level controllers
 - Functions documented: 6 functions
 
 ## JSDoc Template Standards
 
 ### Authentication Controller Pattern
+
 ```typescript
 /**
  * Brief function description.
@@ -49,6 +53,7 @@
 ```
 
 ### CRUD Pattern
+
 ```typescript
 /**
  * Create/Read/Update/Delete operation description.

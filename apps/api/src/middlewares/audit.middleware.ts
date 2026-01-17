@@ -11,6 +11,12 @@ interface AutoLogOptions {
   getTargetId?: (req: Request) => string | undefined;
 }
 
+/**
+ * Factory function to create audit logging middleware.
+ * Automatically logs actions to audit trail after response is sent.
+ * @param {AutoLogOptions} options - Configuration with action, targetType, optional getTargetId function
+ * @returns {Function} - Express middleware function that auto-logs actions
+ */
 export function autoLog(options: AutoLogOptions) {
   return (req: Request, res: Response, next: NextFunction) => {
     // We hook into the response 'finish' event to log after the action is done.

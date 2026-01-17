@@ -4,6 +4,12 @@ const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
 import { storage } from "../config/cloudinary"; // Cloudinary Storage
 
+/**
+ * Multer middleware for file uploads to Cloudinary.
+ * Supports images (JPEG, PNG, WebP) and videos (MP4, WebM, MOV).
+ * Maximum file size: 500MB.
+ * @type {multer.Multer}
+ */
 export const upload = multer({
   storage: storage, // Use Cloudinary Storage for EVERYTHING (Images + Video)
   limits: {

@@ -222,7 +222,10 @@ export const checkReviewEligibility = async (req: Request, res: Response) => {
     });
 
     if (!booking) {
-      return res.json({ eligible: false, reason: "You typically need to complete a trip to review it." });
+      return res.json({
+        eligible: false,
+        reason: "You typically need to complete a trip to review it.",
+      });
     }
 
     // 2. Check for Existing Review

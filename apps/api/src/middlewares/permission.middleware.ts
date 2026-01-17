@@ -1,6 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../lib/prisma";
 
+/**
+ * Middleware to fetch and attach user roles and permissions to request object.
+ * Requires authentication (req.user.id) to be set by auth middleware.
+ * Fetches latest permissions from database for authorization checks.
+ * @param {Request} req - Express request with user ID in req.user
+ * @param {Response} res - Express response object
+ * @param {NextFunction} next - Express next middleware function
+ * @returns {Promise<void>} - Calls next() or sends 401 if unauthenticated
+ */
 export async function attachPermissions(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = req.user?.id;

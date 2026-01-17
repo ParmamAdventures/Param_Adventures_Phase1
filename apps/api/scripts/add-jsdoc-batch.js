@@ -3,16 +3,16 @@
  * Usage: node add-jsdoc-batch.js
  */
 
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob').sync;
+const fs = require("fs");
+const path = require("path");
+const glob = require("glob").sync;
 
 // JSDoc templates by detected function purpose
 const getJSDocByFunctionName = (name) => {
   const lowerName = name.toLowerCase();
-  
+
   // Authentication
-  if (lowerName.includes('register')) {
+  if (lowerName.includes("register")) {
     return `/**
    * Register a new user account.
    * @param {Request} req - Request with email, password, name in body
@@ -20,7 +20,7 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('login')) {
+  if (lowerName.includes("login")) {
     return `/**
    * Authenticate user and issue tokens.
    * @param {Request} req - Request with email, password in body
@@ -28,7 +28,7 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('logout') || lowerName.includes('revoke')) {
+  if (lowerName.includes("logout") || lowerName.includes("revoke")) {
     return `/**
    * Logout user and invalidate session.
    * @param {Request} req - Request object
@@ -36,7 +36,7 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('refresh')) {
+  if (lowerName.includes("refresh")) {
     return `/**
    * Refresh authentication tokens.
    * @param {Request} req - Request with refresh token
@@ -46,7 +46,7 @@ const getJSDocByFunctionName = (name) => {
   }
 
   // CRUD Operations
-  if (lowerName.includes('create') || lowerName.includes('add') || lowerName.includes('post')) {
+  if (lowerName.includes("create") || lowerName.includes("add") || lowerName.includes("post")) {
     return `/**
    * Create a new resource.
    * @param {Request} req - Request with resource data in body
@@ -54,8 +54,8 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('get') || lowerName.includes('fetch') || lowerName.includes('retrieve')) {
-    if (lowerName.includes('list') || lowerName.includes('all')) {
+  if (lowerName.includes("get") || lowerName.includes("fetch") || lowerName.includes("retrieve")) {
+    if (lowerName.includes("list") || lowerName.includes("all")) {
       return `/**
    * Retrieve a paginated list of resources.
    * @param {Request} req - Request with pagination/filter parameters
@@ -70,7 +70,7 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('update') || lowerName.includes('edit') || lowerName.includes('modify')) {
+  if (lowerName.includes("update") || lowerName.includes("edit") || lowerName.includes("modify")) {
     return `/**
    * Update an existing resource.
    * @param {Request} req - Request with resource ID in params and updates in body
@@ -78,7 +78,7 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('delete') || lowerName.includes('remove')) {
+  if (lowerName.includes("delete") || lowerName.includes("remove")) {
     return `/**
    * Delete a resource by ID.
    * @param {Request} req - Request with resource ID in params
@@ -88,7 +88,7 @@ const getJSDocByFunctionName = (name) => {
   }
 
   // Business Logic
-  if (lowerName.includes('health') || lowerName.includes('status')) {
+  if (lowerName.includes("health") || lowerName.includes("status")) {
     return `/**
    * Check service health and connectivity status.
    * @param {Request} req - Request object
@@ -96,7 +96,7 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('search') || lowerName.includes('filter')) {
+  if (lowerName.includes("search") || lowerName.includes("filter")) {
     return `/**
    * Search or filter resources with specified criteria.
    * @param {Request} req - Request with search/filter parameters
@@ -104,9 +104,13 @@ const getJSDocByFunctionName = (name) => {
    * @returns {Promise<void>}
    */`;
   }
-  if (lowerName.includes('approve') || lowerName.includes('reject') || lowerName.includes('verify')) {
+  if (
+    lowerName.includes("approve") ||
+    lowerName.includes("reject") ||
+    lowerName.includes("verify")
+  ) {
     return `/**
-   * ${lowerName.includes('approve') ? 'Approve' : lowerName.includes('reject') ? 'Reject' : 'Verify'} resource or request.
+   * ${lowerName.includes("approve") ? "Approve" : lowerName.includes("reject") ? "Reject" : "Verify"} resource or request.
    * @param {Request} req - Request with resource ID and decision data
    * @param {Response} res - Response with updated resource
    * @returns {Promise<void>}
@@ -115,7 +119,7 @@ const getJSDocByFunctionName = (name) => {
 
   // Default
   return `/**
-   * Handle API request for ${name.replace(/([A-Z])/g, ' $1').toLowerCase()}.
+   * Handle API request for ${name.replace(/([A-Z])/g, " $1").toLowerCase()}.
    * @param {Request} req - Express request object
    * @param {Response} res - Express response object
    * @returns {Promise<void>}
@@ -123,59 +127,60 @@ const getJSDocByFunctionName = (name) => {
 };
 
 const processFile = (filePath) => {
-  let content = fs.readFileSync(filePath, 'utf-8');
+  let content = fs.readFileSync(filePath, "utf-8");
   const originalContent = content;
-  
+
   // Pattern to find export const/function declarations
-  const exportPattern = /^(export\s+(?:const\s+)?(\w+)\s*=(?:\s*async)?\s*\(req[^)]*\)|\s*export\s+(?:async\s+)?function\s+(\w+)\s*\()/gm;
-  
+  const exportPattern =
+    /^(export\s+(?:const\s+)?(\w+)\s*=(?:\s*async)?\s*\(req[^)]*\)|\s*export\s+(?:async\s+)?function\s+(\w+)\s*\()/gm;
+
   let lastIndex = 0;
   const replacements = [];
-  
+
   let match;
   while ((match = exportPattern.exec(content)) !== null) {
     const functionName = match[2] || match[3];
     const startIndex = match.index;
-    
+
     // Check if JSDoc already exists (look back up to 300 chars)
     const beforeText = content.substring(Math.max(0, startIndex - 300), startIndex);
-    if (beforeText.includes('/**') && beforeText.includes('*/')) {
+    if (beforeText.includes("/**") && beforeText.includes("*/")) {
       continue; // Already has JSDoc
     }
-    
+
     const jsdoc = getJSDocByFunctionName(functionName);
     replacements.push({
       startIndex,
       endIndex: startIndex,
       jsdoc,
-      functionName
+      functionName,
     });
   }
-  
+
   // Apply replacements in reverse order to maintain indices
   for (let i = replacements.length - 1; i >= 0; i--) {
     const r = replacements[i];
-    content = content.substring(0, r.startIndex) + jsdoc + '\n' + content.substring(r.endIndex);
+    content = content.substring(0, r.startIndex) + jsdoc + "\n" + content.substring(r.endIndex);
   }
-  
+
   if (content !== originalContent) {
-    fs.writeFileSync(filePath, content, 'utf-8');
+    fs.writeFileSync(filePath, content, "utf-8");
     return replacements.length;
   }
-  
+
   return 0;
 };
 
 // Main execution
 try {
-  const controllerDir = path.join(__dirname, '..', 'controllers');
-  const files = glob(path.join(controllerDir, '**', '*.ts')).filter(f => !f.includes('index.ts'));
-  
+  const controllerDir = path.join(__dirname, "..", "controllers");
+  const files = glob(path.join(controllerDir, "**", "*.ts")).filter((f) => !f.includes("index.ts"));
+
   console.log(`\n📝 Adding JSDoc to controller files...\n`);
-  
+
   let totalUpdated = 0;
   let totalFunctionsDocumented = 0;
-  
+
   for (const file of files) {
     try {
       const count = processFile(file);
@@ -189,9 +194,11 @@ try {
       console.error(`  ✗ Error processing ${file}: ${e.message}`);
     }
   }
-  
-  console.log(`\n✅ Updated ${totalUpdated} files with ${totalFunctionsDocumented} JSDoc comments\n`);
+
+  console.log(
+    `\n✅ Updated ${totalUpdated} files with ${totalFunctionsDocumented} JSDoc comments\n`,
+  );
 } catch (e) {
-  console.error('Fatal error:', e);
+  console.error("Fatal error:", e);
   process.exit(1);
 }

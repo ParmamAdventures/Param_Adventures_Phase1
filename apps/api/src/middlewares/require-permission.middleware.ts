@@ -2,6 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../utils/httpError";
 import { prisma } from "../lib/prisma";
 
+/**
+ * Factory function to create permission-based authorization middleware.
+ * Checks if authenticated user has required permission, denies with 403 if not.
+ * Verifies against user.permissions array from auth middleware.
+ * @param {string} permission - Required permission key
+ * @returns {Function} - Express middleware function for permission authorization
+ */
 export function requirePermission(permission: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
     const user = (req as any).user;
