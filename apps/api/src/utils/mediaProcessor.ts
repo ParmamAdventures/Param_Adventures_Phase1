@@ -35,7 +35,11 @@ export type ProcessedMedia = {
  * @returns {Promise<any>} - Cloudinary upload response
  * @private
  */
-function uploadBuffer(buffer: Buffer, folder: string, resourceType: "image" | "video" = "image"): Promise<any> {
+function uploadBuffer(
+  buffer: Buffer,
+  folder: string,
+  resourceType: "image" | "video" = "image",
+): Promise<any> {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
@@ -45,7 +49,7 @@ function uploadBuffer(buffer: Buffer, folder: string, resourceType: "image" | "v
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
-      }
+      },
     );
     const bufferStream = new stream.PassThrough();
     bufferStream.end(buffer);
