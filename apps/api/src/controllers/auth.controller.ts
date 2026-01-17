@@ -24,12 +24,27 @@ type RolePermissionRow = {
   permission: { key: string };
 };
 
+/**
+ * Register a new user account with email, password, and name.
+ * @param {Request} req - Express request with email, password, name in body
+ * @param {Response} res - Express response with created user and 201 status
+ * @returns {Promise<void>} - Sends success response with user data
+ * @throws {Error} - Throws if email already exists or validation fails
+ */
 export const register = catchAsync(async (req: Request, res: Response) => {
   const { email, password, name } = req.body;
   const user = await authService.register({ email, password, name });
   return ApiResponse.success(res, "User registered successfully", { user }, 201);
 });
 
+/**
+ * Authenticate user with email and password credentials.
+ * Returns access token, refresh token (in HttpOnly cookie), and full user details with roles and permissions.
+ * @param {Request} req - Express request with email, password in body
+ * @param {Response} res - Express response with tokens and user data, sets refresh_token cookie
+ * @returns {Promise<void>} - Sends success response with { accessToken, user }
+ * @throws {Error} - Throws if credentials invalid or user not found
+ */
 export const login = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const { accessToken, refreshToken, user: authUser } = await authService.login(email, password);
@@ -90,6 +105,13 @@ export const login = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+/**
+ * Refresh expired access token using refresh token from cookies.
+ * @param {Request} req - Express request with refresh_token in HttpOnly cookie
+ * @param {Response} res - Express response with new accessToken
+ * @returns {Promise<void>} - Sends success response with { accessToken }
+ * @throws {Error} - Throws if refresh token missing, invalid, or expired
+ */
 export const refresh = catchAsync(async (req: Request, res: Response) => {
   const token = req.cookies?.refresh_token;
   if (!token) {
@@ -100,6 +122,12 @@ export const refresh = catchAsync(async (req: Request, res: Response) => {
   return ApiResponse.success(res, "Token refreshed", { accessToken });
 });
 
+/**
+ * Logout user by clearing refresh token cookie.
+ * @param {Request} _req - Express request (unused)
+ * @param {Response} res - Express response with cleared refresh_token cookie
+ * @returns {Promise<void>} - Sends success response
+ */
 export const logout = catchAsync(async (_req: Request, res: Response) => {
   res.clearCookie("refresh_token", {
     httpOnly: true,

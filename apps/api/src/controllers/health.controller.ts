@@ -3,6 +3,15 @@ import { prisma } from "../lib/prisma";
 import * as fs from "fs";
 import * as path from "path";
 
+/**
+ * Health check endpoint - verifies database connection and service availability.
+ * Performs lightweight database query to validate connectivity.
+ * Logs errors to health_error.log if check fails.
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ * @returns {Promise<void>} - Returns JSON with status and services health
+ * @throws {Error} - Re-throws any errors from database query
+ */
 export const healthCheck = async (req: Request, res: Response) => {
   try {
     // Perform a lightweight query to check DB connection

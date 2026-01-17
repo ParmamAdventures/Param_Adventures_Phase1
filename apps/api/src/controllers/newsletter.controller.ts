@@ -3,6 +3,12 @@ import { prisma } from "../lib/prisma";
 import { ApiResponse } from "../utils/ApiResponse";
 import { catchAsync } from "../utils/catchAsync";
 
+/**
+ * Subscribe email to newsletter or reactivate existing subscription.
+ * @param {Request} req - Request with email in body
+ * @param {Response} res - Response with subscription status
+ * @returns {Promise<void>} - Sends success or error response
+ */
 export const subscribe = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
 

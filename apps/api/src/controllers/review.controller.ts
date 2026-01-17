@@ -1,7 +1,14 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 
-// Create a review
+/**
+ * Create a review for a completed trip.
+ * Validates that user has completed the booking and hasn't reviewed already.
+ * @param {Request} req - Request with tripId, rating (1-5), comment in body and user ID in req.user
+ * @param {Response} res - Response with created review
+ * @returns {Promise<void>} - Sends review data or error
+ * @throws {Error} - If validation fails or database error occurs
+ */
 export const createReview = async (req: Request, res: Response) => {
   try {
     const { tripId, rating, comment } = req.body;
@@ -73,7 +80,12 @@ export const createReview = async (req: Request, res: Response) => {
   }
 };
 
-// Get reviews for a trip
+/**
+ * Get all reviews for a specific trip with user information.
+ * @param {Request} req - Request with tripId in params
+ * @param {Response} res - Response with array of reviews including user details
+ * @returns {Promise<void>} - Sends list of reviews
+ */
 export const getTripReviews = async (req: Request, res: Response) => {
   try {
     const { tripId } = req.params;
@@ -107,7 +119,13 @@ export const getTripReviews = async (req: Request, res: Response) => {
   }
 };
 
-// Get featured reviews (Top rated, recent) for Home Page
+/**
+ * Get featured reviews (top-rated, most recent) for home page display.
+ * Returns up to 3 reviews with rating >= 4.
+ * @param {Request} req - Request object (no parameters)
+ * @param {Response} res - Response with array of featured reviews
+ * @returns {Promise<void>} - Sends featured reviews
+ */
 export const getFeaturedReviews = async (req: Request, res: Response) => {
   try {
     const reviews = await prisma.review.findMany({
@@ -147,7 +165,14 @@ export const getFeaturedReviews = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a review (Admin or Owner)
+/**
+ * Delete a review by ID.
+ * Only the review owner or admins can delete reviews.
+ * @param {Request} req - Request with reviewId in params and user info in req.user
+ * @param {Response} res - Response confirming deletion
+ * @returns {Promise<void>} - Sends success or error response
+ * @throws {Error} - If review not found or user unauthorized
+ */
 export const deleteReview = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -175,7 +200,13 @@ export const deleteReview = async (req: Request, res: Response) => {
   }
 };
 
-// Check if user is eligible to review
+/**
+ * Check if a user is eligible to review a trip.
+ * User must have a completed booking for the trip to be eligible.
+ * @param {Request} req - Request with tripId in params and user ID in req.user
+ * @param {Response} res - Response with eligibility status and existing review (if any)
+ * @returns {Promise<void>} - Sends eligibility information
+ */
 export const checkReviewEligibility = async (req: Request, res: Response) => {
   try {
     const { tripId } = req.params;

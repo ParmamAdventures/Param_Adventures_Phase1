@@ -1,7 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 
-// Toggle Wishlist (Add/Remove)
+/**
+ * Toggle a trip in the user's wishlist (add if not present, remove if present).
+ * @param {Request} req - Request with tripId in body and user ID in req.user
+ * @param {Response} res - Response with updated wishlist status
+ * @returns {Promise<void>} - Sends success or error response
+ */
 export const toggleWishlist = async (req: Request, res: Response) => {
   try {
     const { tripId } = req.body;
@@ -57,7 +62,13 @@ export const toggleWishlist = async (req: Request, res: Response) => {
   }
 };
 
-// Get User's Wishlist
+/**
+ * Get user's wishlist of saved trips.
+ * Returns paginated list of trips user has saved.
+ * @param {Request} req - Request with optional pagination in query and user ID in req.user
+ * @param {Response} res - Response with array of saved trips
+ * @returns {Promise<void>} - Sends user's wishlist
+ */
 export const getWishlist = async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
