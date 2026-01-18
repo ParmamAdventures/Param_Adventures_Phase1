@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { prisma } from "../lib/prisma";
 import { ApiResponse } from "./ApiResponse";
-import { HttpError } from "./HttpError";
+import { HttpError } from "./httpError";
 import { Trip, Blog, Booking, User } from "@prisma/client";
 
 /**

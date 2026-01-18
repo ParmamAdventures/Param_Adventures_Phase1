@@ -1,5 +1,5 @@
 import { TripStatus, BlogStatus, BookingStatus } from "@prisma/client";
-import { HttpError } from "./HttpError";
+import { HttpError } from "./httpError";
 
 /**
  * Status transition validation utilities
