@@ -55,6 +55,7 @@ return ApiResponse.error(res, "VALIDATION_ERROR", "Title is required", 400);
 ```
 
 Notes:
+
 - Pass human-readable messages via the third parameter, not inside mapped data.
 - Always include a non-empty `error.code` for failures.
 
