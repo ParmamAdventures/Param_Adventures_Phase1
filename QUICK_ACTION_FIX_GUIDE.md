@@ -14,6 +14,7 @@
 **Location**: `node_modules/.prisma/client/query_engine-windows.dll.node`
 
 **Execute**:
+
 ```bash
 cd c:\Users\akash\Documents\Param_Adventures_Phase1\apps\api
 
@@ -28,6 +29,7 @@ npx prisma generate
 ```
 
 **Expected Output**:
+
 ```
 ✓ Generated Prisma Client successfully
 ```
@@ -37,7 +39,8 @@ npx prisma generate
 ### FIX #2: Update Seed Scripts (10 minutes)
 
 **Problem**: CommonJS `require()` not allowed in TypeScript project  
-**Files**: 
+**Files**:
+
 - `apps/api/prisma/seed_minimal.js`
 - `apps/api/prisma/seed_production.js`
 
@@ -54,18 +57,21 @@ mv seed_production.js seed_production.cjs
 **File 1**: `apps/api/prisma/seed_minimal.js`
 
 Change line 1-2 from:
+
 ```javascript
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 ```
 
 To:
+
 ```javascript
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 ```
 
 Change the end from:
+
 ```javascript
 seedData();
 ```
@@ -83,6 +89,7 @@ To (nothing needed, it's already good)
 **Line**: 118
 
 Find this code:
+
 ```typescript
 } catch (error) {
   console.log(`⚠️ Skipped ${pageConfig.name}-${breakpoint.name}: ${error.message}`)
@@ -90,6 +97,7 @@ Find this code:
 ```
 
 Replace with:
+
 ```typescript
 } catch (error) {
   const errorMessage = error instanceof Error ? error.message : String(error);
@@ -169,6 +177,7 @@ Once all fixes pass:
 ### Step 1: Update Version
 
 In `package.json` (root):
+
 ```json
 "version": "1.0.0-beta.1"
 ```
@@ -298,14 +307,14 @@ If something doesn't work:
 
 ## ⏱️ Time Estimate
 
-| Task | Time | Done |
-|------|------|------|
-| Fix #1 (Prisma) | 5 min | |
-| Fix #2 (Seeds) | 10 min | |
-| Fix #3 (E2E) | 5 min | |
-| Verify Fixes | 5 min | |
-| Final Setup | 5-10 min | |
-| **TOTAL** | **30-35 min** | |
+| Task            | Time          | Done |
+| --------------- | ------------- | ---- |
+| Fix #1 (Prisma) | 5 min         |      |
+| Fix #2 (Seeds)  | 10 min        |      |
+| Fix #3 (E2E)    | 5 min         |      |
+| Verify Fixes    | 5 min         |      |
+| Final Setup     | 5-10 min      |      |
+| **TOTAL**       | **30-35 min** |      |
 
 ---
 
