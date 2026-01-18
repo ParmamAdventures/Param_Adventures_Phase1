@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
 import { HttpError } from "../../utils/httpError";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
 
 /**
  * Reject Booking
@@ -36,14 +37,12 @@ export async function rejectBooking(req: Request, res: Response) {
       data: { status: "REJECTED" },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        actorId: admin.id,
-        action: "BOOKING_REJECTED",
-        targetType: "BOOKING",
-        targetId: booking.id,
-        metadata: { tripId: booking.tripId },
-      },
+    await createAuditLog({
+      actorId: admin.id,
+      action: AuditActions.BOOKING_REJECTED,
+      targetType: AuditTargetTypes.BOOKING,
+      targetId: booking.id,
+      metadata: { tripId: booking.tripId },
     });
 
     return res.json(updated);

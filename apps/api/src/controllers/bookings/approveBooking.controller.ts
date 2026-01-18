@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
 import { HttpError } from "../../utils/httpError";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
 
 /**
  * Approve Booking
@@ -40,14 +41,13 @@ export async function approveBooking(req: Request, res: Response) {
       if (!trip) throw new HttpError(404, "NOT_FOUND", "Trip not found");
 
       if (confirmedCount >= trip.capacity) {
-        await tx.auditLog.create({
-          data: {
-            actorId: admin.id,
-            action: "BOOKING_REJECTED_CAPACITY",
-            targetType: "BOOKING",
-            targetId: booking.id,
-            metadata: { tripId: booking.tripId },
-          },
+        // Use new utility for capacity rejection audit
+        await createAuditLog({
+          actorId: admin.id,
+          action: AuditActions.BOOKING_REJECTED,
+          targetType: AuditTargetTypes.BOOKING,
+          targetId: booking.id,
+          metadata: { tripId: booking.tripId, reason: "capacity_full" },
         });
         throw new HttpError(409, "CAPACITY_FULL", "Trip capacity is full");
       }
@@ -57,14 +57,13 @@ export async function approveBooking(req: Request, res: Response) {
         data: { status: "CONFIRMED" },
       });
 
-      await tx.auditLog.create({
-        data: {
-          actorId: admin.id,
-          action: "BOOKING_CONFIRMED",
-          targetType: "BOOKING",
-          targetId: booking.id,
-          metadata: { tripId: booking.tripId },
-        },
+      // Use new utility for successful confirmation
+      await createAuditLog({
+        actorId: admin.id,
+        action: AuditActions.BOOKING_CONFIRMED,
+        targetType: AuditTargetTypes.BOOKING,
+        targetId: booking.id,
+        metadata: { tripId: booking.tripId },
       });
 
       return updated;
