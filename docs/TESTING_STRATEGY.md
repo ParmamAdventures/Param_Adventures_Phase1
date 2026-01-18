@@ -1,5 +1,39 @@
 # Testing Strategy & Critical Scenarios
 
+## Status Update — 2026-01-18
+
+- API unit + integration suites are green.
+- Jest reports open handles during teardown; use `--detectOpenHandles` and ensure explicit disconnects for Prisma and Redis in test teardown.
+
+## Run Commands (Local)
+
+API (apps/api):
+
+```bash
+cd apps/api
+npm test -- --runInBand --testLocationInResults --detectOpenHandles
+```
+
+Web (apps/web):
+
+```bash
+cd apps/web
+npm test -- --runInBand
+```
+
+Root E2E (e2e):
+
+```bash
+cd e2e
+npm test
+```
+
+## Teardown Hygiene
+
+- Ensure `await prisma.$disconnect()` is called after tests.
+- Ensure cache clients disconnect (e.g., `await cache.disconnect()` for Redis wrappers).
+- Close any HTTP servers started in tests.
+
 Based on the audit of `apps/api` and `apps/web`, the following tests are prioritized to ensure stability for Release 1.0.
 
 ## 1. Critical Backend Tests (API)

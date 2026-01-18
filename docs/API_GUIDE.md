@@ -40,6 +40,24 @@ All API responses should follow the `ApiResponse` utility pattern to ensure cons
 }
 ```
 
+### ApiResponse Utility Signatures
+
+Use the shared `ApiResponse` helper to standardize outputs and enforce error codes.
+
+```ts
+// Signatures
+ApiResponse.success(res: Response, data?: unknown, message?: string, statusCode?: number)
+ApiResponse.error(res: Response, code: string, message?: string, statusCode?: number)
+
+// Usage examples
+return ApiResponse.success(res, payload, "Created", 201);
+return ApiResponse.error(res, "VALIDATION_ERROR", "Title is required", 400);
+```
+
+Notes:
+- Pass human-readable messages via the third parameter, not inside mapped data.
+- Always include a non-empty `error.code` for failures.
+
 ### 2. Controller Pattern
 
 Use the `catchAsync` wrapper to eliminate repetitive `try-catch` blocks.
@@ -47,7 +65,7 @@ Use the `catchAsync` wrapper to eliminate repetitive `try-catch` blocks.
 ```typescript
 export const createTrip = catchAsync(async (req: Request, res: Response) => {
   const trip = await TripService.create(req.body);
-  res.status(201).json(ApiResponse.success(trip, "Trip created"));
+  return ApiResponse.success(res, trip, "Trip created", 201);
 });
 ```
 

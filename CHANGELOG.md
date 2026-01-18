@@ -32,13 +32,28 @@ All notable changes to the Param Adventures project will be documented in this f
 ## [Phase 11] - Visual Enhancements & Templates
 
 ### Added
-
-- **Trip Hero Redesign**: High-impact visual headers with mobile-optimized overlays.
 - **Blog Templates**: JSON-driven design patterns for rich story-telling.
 - **Image Tools**: Integration of `CroppedImageUploader` for better content control.
 
-## [Phase 10] - Advanced Trip Management
 
+ ## [Phase 13] - 2026-01-18 (API Consistency & Test Green)
+
+ ### Changed
+
+ - Normalized `ApiResponse.success(res, data, message, statusCode?)` across controllers.
+ - Enforced `ApiResponse.error(res, code, message, statusCode)` with required `error.code`.
+
+ ### Fixed
+
+ - Strongly-typed `TripCacheService` filters (cast `category` to Prisma enum) to resolve TS2322.
+ - Hardened `CacheService.getStats()` error handling (safe unknown error messages) to resolve TS18046.
+ - Corrected `.map` callbacks in payment/admin controllers and removed stray strings in expressions.
+ - Corrected pagination math in admin inquiry controller.
+
+ ### Notes
+
+ - Full Jest suite now passing (unit + integration).
+ - Jest warns about open handles on teardown; consider running with `--detectOpenHandles` and ensuring Redis/Prisma disconnects in test teardown.
 ### Added
 
 - **Trip Lifecycle Engine**: Full DRAFT -> PENDING -> PUBLISHED workflow.
