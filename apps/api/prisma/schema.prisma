@@ -23,6 +23,13 @@ enum MediaType {
   VIDEO
 }
 
+enum TripInquiryStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+  CLOSED
+}
+
 //////////////////////
 // MODELS
 //////////////////////
@@ -50,7 +57,7 @@ model User {
   updatedAt   DateTime   @updatedAt
 
   avatarImageId String?
-  avatarImage   Image?  @relation("UserAvatar", fields: [avatarImageId], references: [id])
+  avatarImage   Image?  @relation("UserAvatar", fields: [avatarImageId], references: [id], onDelete: SetNull)
 
   roles         UserRole[]
   // Trip relations
@@ -74,6 +81,7 @@ model User {
 
   @@index([status])
   @@index([createdAt])
+  @@index([avatarImageId])
 }
 
 model Role {
@@ -185,9 +193,9 @@ model Trip {
   // Media (Production-grade)
   // Media (Production-grade)
   coverImageId String?
-  coverImage   Image?             @relation("TripCoverImage", fields: [coverImageId], references: [id])
+  coverImage   Image?             @relation("TripCoverImage", fields: [coverImageId], references: [id], onDelete: SetNull)
   heroImageId  String?
-  heroImage    Image?             @relation("TripHeroImage", fields: [heroImageId], references: [id])
+  heroImage    Image?             @relation("TripHeroImage", fields: [heroImageId], references: [id], onDelete: SetNull)
   gallery      TripGalleryImage[]
 
   // Legacy fields (Consider removing after migration)
@@ -195,10 +203,10 @@ model Trip {
   galleryLegacy    String[] @map("gallery")
 
   createdById String
-  createdBy   User   @relation("TripCreatedBy", fields: [createdById], references: [id])
+  createdBy   User   @relation("TripCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
 
   approvedById String?
-  approvedBy   User?   @relation("TripApprovedBy", fields: [approvedById], references: [id])
+  approvedBy   User?   @relation("TripApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
 
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
@@ -211,7 +219,7 @@ model Trip {
   endDate   DateTime?
 
   managerId String?
-  manager   User?   @relation("TripManagedBy", fields: [managerId], references: [id])
+  manager   User?   @relation("TripManagedBy", fields: [managerId], references: [id], onDelete: SetNull)
   guides    TripsOnGuides[]
   
   documentation Json? // Post-trip proofs (photos, reports)
@@ -227,6 +235,11 @@ model Trip {
   @@index([slug])
   @@index([category])
   @@index([isFeatured])
+  @@index([createdById])
+  @@index([approvedById])
+  @@index([managerId])
+  @@index([coverImageId])
+  @@index([heroImageId])
 }
 
 model TripGalleryImage {
@@ -269,19 +282,21 @@ model Blog {
   status  BlogStatus @default(DRAFT)
 
   authorId String
-  author   User   @relation("UserBlogs", fields: [authorId], references: [id])
+  author   User   @relation("UserBlogs", fields: [authorId], references: [id], onDelete: Cascade)
 
   coverImageId String?
-  coverImage   Image?  @relation("BlogCoverImage", fields: [coverImageId], references: [id])
+  coverImage   Image?  @relation("BlogCoverImage", fields: [coverImageId], references: [id], onDelete: SetNull)
 
   tripId String?
-  trip   Trip?   @relation("TripBlogs", fields: [tripId], references: [id])
+  trip   Trip?   @relation("TripBlogs", fields: [tripId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([status])
   @@index([authorId])
+  @@index([coverImageId])
+  @@index([tripId])
 }
 
 model Image {
@@ -297,7 +312,7 @@ model Image {
   duration    Int?      // Duration in seconds for videos
 
   uploadedById String
-  uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id])
+  uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id], onDelete: Cascade)
 
   tripsCover   Trip[]             @relation("TripCoverImage")
   tripsHero    Trip[]             @relation("TripHeroImage")
@@ -308,6 +323,8 @@ model Image {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  @@index([uploadedById])
 }
 
 enum BookingStatus {
@@ -347,9 +364,12 @@ model Booking {
 
   paymentStatus BookingPaymentStatus @default(PENDING)
 
-  // Removed unique constraint to allow multiple bookings (different dates)
+  // Prevent duplicate bookings for same trip on same date
   @@index([tripId])
   @@index([userId])
+  @@index([status])
+  @@index([paymentStatus])
+  @@unique([userId, tripId, startDate])
 }
 
 enum PaymentStatus {
@@ -384,6 +404,7 @@ model Payment {
   booking Booking @relation(fields: [bookingId], references: [id])
 
   @@index([bookingId])
+  @@index([status])
 }
 
 model HeroSlide {
@@ -443,8 +464,11 @@ model TripInquiry {
   dates       String?
   budget      String?
   details     String?
-  status      String   @default("NEW") // NEW, CONTACTED, CONVERTED, CLOSED
+  status      TripInquiryStatus @default(NEW)
   createdAt   DateTime @default(now())
+  
+  @@index([status])
+  @@index([createdAt])
 }
 
 model NewsletterSubscriber {
