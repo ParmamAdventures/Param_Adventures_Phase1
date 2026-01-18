@@ -68,6 +68,7 @@ describe("Razorpay Webhooks", () => {
   beforeAll(async () => {
     await prisma.payment.deleteMany();
     await prisma.booking.deleteMany();
+    await prisma.blog.deleteMany();
     await prisma.trip.deleteMany();
     await prisma.user.deleteMany();
 
@@ -113,6 +114,7 @@ describe("Razorpay Webhooks", () => {
   afterAll(async () => {
     await prisma.payment.deleteMany();
     await prisma.booking.deleteMany();
+    await prisma.blog.deleteMany();
     await prisma.trip.deleteMany();
     await prisma.user.deleteMany();
   });

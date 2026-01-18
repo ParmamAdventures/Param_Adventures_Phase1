@@ -3,6 +3,7 @@
 ## ⚡ Quick Start
 
 ### Start the Application
+
 ```bash
 # Terminal 1 - API Server
 cd apps/api
@@ -14,6 +15,7 @@ npm run dev  # http://localhost:3000
 ```
 
 ### Access Points
+
 - **Web App**: http://localhost:3000
 - **API**: http://localhost:3001
 - **Docs**: http://localhost:3001/docs (OpenAPI)
@@ -23,6 +25,7 @@ npm run dev  # http://localhost:3000
 ## 🔐 Test Credentials (All Password: `Demo@123`)
 
 ### Admin
+
 ```
 Email: admin@paramadventures.com
 Password: Demo@123
@@ -30,6 +33,7 @@ Access: Full control, all dashboards, analytics
 ```
 
 ### Guides
+
 ```
 guide1@paramadventures.com - Rahul Singh
 guide2@paramadventures.com - Priya Sharma
@@ -38,6 +42,7 @@ Access: View assigned trips, manage bookings, earnings
 ```
 
 ### Customers
+
 ```
 customer1@example.com - Amit Kumar (2 bookings)
 customer2@example.com - Sarah Johnson (1 booking)
@@ -50,14 +55,14 @@ Access: Browse trips, make bookings, leave reviews
 
 ## 🌍 Demo Trips Loaded
 
-| Trip | Price | Duration | Difficulty | Capacity |
-|------|-------|----------|-----------|----------|
-| Everest Base Camp Trek | $1,200 | 14 days | HARD | 15 |
-| Manali-Leh Bike Expedition | $850 | 10 days | HARD | 12 |
-| Kerala Backwaters Tour | $550 | 5 days | EASY | 20 |
-| Rishikesh Rafting | $120 | 2 days | MODERATE | 30 |
-| Nubra Valley Trek | $380 | 4 days | MODERATE | 18 |
-| Paragliding Bir-Billing | $280 | 3 days | MODERATE | 16 |
+| Trip                       | Price  | Duration | Difficulty | Capacity |
+| -------------------------- | ------ | -------- | ---------- | -------- |
+| Everest Base Camp Trek     | $1,200 | 14 days  | HARD       | 15       |
+| Manali-Leh Bike Expedition | $850   | 10 days  | HARD       | 12       |
+| Kerala Backwaters Tour     | $550   | 5 days   | EASY       | 20       |
+| Rishikesh Rafting          | $120   | 2 days   | MODERATE   | 30       |
+| Nubra Valley Trek          | $380   | 4 days   | MODERATE   | 18       |
+| Paragliding Bir-Billing    | $280   | 3 days   | MODERATE   | 16       |
 
 **Total**: 6 trips | All with images, itineraries, reviews
 
@@ -78,6 +83,7 @@ Access: Browse trips, make bookings, leave reviews
 ## 🧪 Quick Test Scenarios
 
 ### Test 1: Browse & Book (2 min)
+
 ```
 1. Login as customer1@example.com
 2. Go to Trips → Search "Everest"
@@ -88,6 +94,7 @@ Access: Browse trips, make bookings, leave reviews
 ```
 
 ### Test 2: Admin Dashboard (2 min)
+
 ```
 1. Login as admin@paramadventures.com
 2. Go to Admin → Dashboard
@@ -97,6 +104,7 @@ Access: Browse trips, make bookings, leave reviews
 ```
 
 ### Test 3: Leave Review (1 min)
+
 ```
 1. Login as customer (any account)
 2. Go to Dashboard → Bookings
@@ -106,6 +114,7 @@ Access: Browse trips, make bookings, leave reviews
 ```
 
 ### Test 4: Guide Dashboard (1 min)
+
 ```
 1. Login as guide1@paramadventures.com
 2. View My Trips → See assigned trips
@@ -133,17 +142,20 @@ Access: Browse trips, make bookings, leave reviews
 ## 🎯 Sample Data Breakdown
 
 ### Bookings
+
 - Everest Trek: 2 bookings (1 confirmed, 1 cancelled)
 - Manali-Leh Bike: 1 confirmed
 - Kerala Backwaters: 1 pending
 - Total: 4 bookings | 8 participants | $7,150 revenue
 
 ### Reviews
+
 - Everest Trek: ⭐⭐⭐⭐⭐ "Amazing trek!"
 - Manali-Leh Bike: ⭐⭐⭐⭐☆ "Incredible bike experience"
 - Kerala Backwaters: ⭐⭐⭐⭐⭐ "Best backwater experience"
 
 ### Trip Dates
+
 - March 2026: Rishikesh Rafting, Everest Trek
 - April 2026: Kerala Backwaters
 - June 2026: Manali-Leh Bike
@@ -223,18 +235,21 @@ npx prisma studio
 ## 📞 Need Help?
 
 **To reseed data:**
+
 ```bash
 cd apps/api
 node prisma/seed_demo_full.js
 ```
 
 **To reset everything:**
+
 ```bash
 npm run db:push
 node prisma/seed_demo_full.js
 ```
 
 **Check logs:**
+
 ```bash
 npm run dev  # Watch console for errors
 ```

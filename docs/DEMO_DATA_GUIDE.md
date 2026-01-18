@@ -11,16 +11,18 @@ Your Param Adventures system is now populated with realistic demo data for testi
 ### 1. **6 Diverse Adventure Trips** 📍
 
 #### Everest Base Camp Trek
+
 - **Price**: $1,200 | **Duration**: 14 days | **Difficulty**: HARD
 - **Location**: Everest Region, Nepal
 - **Capacity**: 15 people
-- **Features**: 
+- **Features**:
   - Complete 14-day itinerary
   - Sherpa culture experience
   - Kala Patthar summit (sunrise views)
   - Real Unsplash cover images and gallery
 
 #### Manali to Leh Bike Expedition
+
 - **Price**: $850 | **Duration**: 10 days | **Difficulty**: HARD
 - **Location**: Ladakh, India
 - **Capacity**: 12 people
@@ -31,6 +33,7 @@ Your Param Adventures system is now populated with realistic demo data for testi
   - Professional riding guides
 
 #### Backwaters of Kerala Tour
+
 - **Price**: $550 | **Duration**: 5 days | **Difficulty**: EASY
 - **Location**: Kerala, India
 - **Capacity**: 20 people
@@ -41,6 +44,7 @@ Your Param Adventures system is now populated with realistic demo data for testi
   - Spice plantation visits
 
 #### Rishikesh White Water Rafting
+
 - **Price**: $120 | **Duration**: 2 days | **Difficulty**: MODERATE
 - **Location**: Rishikesh, India
 - **Capacity**: 30 people
@@ -51,6 +55,7 @@ Your Param Adventures system is now populated with realistic demo data for testi
   - Evening bonfire
 
 #### Nubra Valley Desert Trek
+
 - **Price**: $380 | **Duration**: 4 days | **Difficulty**: MODERATE
 - **Location**: Ladakh, India
 - **Capacity**: 18 people
@@ -61,6 +66,7 @@ Your Param Adventures system is now populated with realistic demo data for testi
   - Cold desert experience
 
 #### Paragliding Adventure in Bir-Billing
+
 - **Price**: $280 | **Duration**: 3 days | **Difficulty**: MODERATE
 - **Location**: Himachal Pradesh, India
 - **Capacity**: 16 people
@@ -75,6 +81,7 @@ Your Param Adventures system is now populated with realistic demo data for testi
 ### 2. **6 Test Users** 👥
 
 #### Admin User
+
 ```
 Email: admin@paramadventures.com
 Password: Demo@123
@@ -83,6 +90,7 @@ Access: Full platform control, all dashboards
 ```
 
 #### Guide Users (2)
+
 ```
 Guide 1:
 Email: guide1@paramadventures.com
@@ -98,6 +106,7 @@ Role: GUIDE
 ```
 
 #### Customer Users (3)
+
 ```
 Customer 1:
 Email: customer1@example.com
@@ -123,11 +132,13 @@ Bookings: 1 (Cancelled)
 ### 3. **Bookings & Reviews** 📅
 
 #### Sample Bookings
+
 - **Everest Trek**: 2 bookings (1 Confirmed with 2 participants, 1 Cancelled with 3 participants)
 - **Manali-Leh Bike**: 1 confirmed booking (1 participant)
 - **Kerala Backwaters**: 1 pending booking (4 participants)
 
 #### Sample Reviews
+
 - **Everest Trek**: ⭐⭐⭐⭐⭐ "Amazing trek! Views were breathtaking"
 - **Manali-Leh Bike**: ⭐⭐⭐⭐☆ "Incredible bike experience. Challenging but rewarding"
 - **Kerala Backwaters**: ⭐⭐⭐⭐⭐ "Best backwater experience! Highly recommend"
@@ -139,6 +150,7 @@ Bookings: 1 (Cancelled)
 ### Running the Application Locally
 
 #### 1. Start the API Server
+
 ```bash
 cd apps/api
 npm install  # if needed
@@ -146,6 +158,7 @@ npm run dev  # runs on http://localhost:3001
 ```
 
 #### 2. Start the Web Application
+
 ```bash
 cd apps/web
 npm install  # if needed
@@ -162,6 +175,7 @@ npm run dev  # runs on http://localhost:3000
 ### Testing Scenarios
 
 #### Scenario 1: Browse & Filter Trips
+
 ```
 1. Open http://localhost:3000
 2. Click "Browse Trips" or use search
@@ -174,6 +188,7 @@ npm run dev  # runs on http://localhost:3000
 ```
 
 #### Scenario 2: Book a Trip (Customer Journey)
+
 ```
 1. Login as customer1@example.com / Demo@123
 2. Browse trips catalog
@@ -187,6 +202,7 @@ npm run dev  # runs on http://localhost:3000
 ```
 
 #### Scenario 3: Admin Operations
+
 ```
 1. Login as admin@paramadventures.com / Demo@123
 2. Access Admin Dashboard
@@ -206,6 +222,7 @@ npm run dev  # runs on http://localhost:3000
 ```
 
 #### Scenario 4: Guide Operations
+
 ```
 1. Login as guide1@paramadventures.com / Demo@123
 2. View "My Trips" dashboard
@@ -216,6 +233,7 @@ npm run dev  # runs on http://localhost:3000
 ```
 
 #### Scenario 5: Review & Rating System
+
 ```
 1. Login as a customer who has completed a trip
 2. View completed bookings
@@ -231,13 +249,16 @@ npm run dev  # runs on http://localhost:3000
 ## 📸 Image & Media Details
 
 ### Cover Images
+
 All trips have **real Unsplash images** for authentic visual experience:
+
 - High-quality 1200x600px cover images
 - Multiple gallery images (400x300px) for each trip
 - Proper aspect ratios for responsive design
 - No authentication needed (public URLs)
 
 ### Gallery Images Per Trip
+
 - **Everest Trek**: 4 images
 - **Manali-Leh Bike**: 2 images
 - **Kerala Backwaters**: 2 images
@@ -250,6 +271,7 @@ All trips have **real Unsplash images** for authentic visual experience:
 ## 🗓️ Trip Dates & Availability
 
 ### Scheduled Trip Dates
+
 ```
 March 2026:
 - Rishikesh Rafting: Mar 1-3
@@ -269,7 +291,9 @@ September 2026:
 ```
 
 ### Testing Booking Flow
+
 When booking:
+
 - Use dates within the scheduled ranges
 - Test with different participant counts
 - Verify capacity constraints (can't exceed max)
@@ -280,6 +304,7 @@ When booking:
 ## 🔍 API Testing
 
 ### Public Endpoints (No Auth Required)
+
 ```bash
 # List all trips
 curl http://localhost:3001/api/v1/trips
@@ -292,6 +317,7 @@ curl http://localhost:3001/api/v1/reviews?tripId=[ID]
 ```
 
 ### Authenticated Endpoints (Login Required)
+
 ```bash
 # Create booking (requires JWT token)
 POST http://localhost:3001/api/v1/bookings
@@ -318,14 +344,17 @@ GET http://localhost:3001/api/v1/bookings
 ## 💰 Payment Testing
 
 ### Test Razorpay Integration
+
 If Razorpay webhook is configured:
 
 **Test Payment Credentials** (Use Razorpay Test Mode):
+
 - Card: 4111 1111 1111 1111
 - Expiry: Any future date (e.g., 12/25)
 - CVV: 123 (any 3 digits)
 
 **Webhook Testing**:
+
 ```bash
 # Test webhook endpoint
 curl -X POST http://localhost:3001/api/v1/payments/webhook \
@@ -355,9 +384,9 @@ curl -X POST http://localhost:3001/api/v1/payments/webhook \
 SELECT id, title, price, difficulty, capacity FROM trip ORDER BY created_at DESC;
 
 -- View all users and their roles
-SELECT u.email, u.name, r.name as role 
-FROM user u 
-LEFT JOIN user_role ur ON u.id = ur.user_id 
+SELECT u.email, u.name, r.name as role
+FROM user u
+LEFT JOIN user_role ur ON u.id = ur.user_id
 LEFT JOIN role r ON ur.role_id = r.id;
 
 -- View all bookings
@@ -378,6 +407,7 @@ JOIN trip t ON r.trip_id = t.id;
 ## ✨ Features to Test with Demo Data
 
 ### 1. **Trip Discovery**
+
 - [ ] Browse all 6 trips with images
 - [ ] Filter by difficulty level
 - [ ] Search by location
@@ -386,6 +416,7 @@ JOIN trip t ON r.trip_id = t.id;
 - [ ] Check reviews and ratings
 
 ### 2. **Booking System**
+
 - [ ] Create new booking
 - [ ] Select multiple participants
 - [ ] Choose booking dates
@@ -394,6 +425,7 @@ JOIN trip t ON r.trip_id = t.id;
 - [ ] Download booking confirmation
 
 ### 3. **User Management**
+
 - [ ] Register as new user
 - [ ] Update user profile
 - [ ] Change password
@@ -401,6 +433,7 @@ JOIN trip t ON r.trip_id = t.id;
 - [ ] Save favorite trips
 
 ### 4. **Admin Functions**
+
 - [ ] View platform dashboard
 - [ ] Manage trips (create, edit, delete)
 - [ ] Manage users
@@ -409,12 +442,14 @@ JOIN trip t ON r.trip_id = t.id;
 - [ ] View payments
 
 ### 5. **Guide Features**
+
 - [ ] View assigned trips
 - [ ] See participant bookings
 - [ ] Send group updates
 - [ ] View earnings
 
 ### 6. **Content**
+
 - [ ] Read trip itineraries
 - [ ] View inclusions/exclusions
 - [ ] Check packing lists
@@ -426,6 +461,7 @@ JOIN trip t ON r.trip_id = t.id;
 ## 🎯 Performance Testing
 
 ### Load Testing Checklist
+
 ```
 - [ ] Homepage loads in < 2s
 - [ ] Trip catalog loads with all 6 trips
@@ -437,6 +473,7 @@ JOIN trip t ON r.trip_id = t.id;
 ```
 
 ### Browser Testing
+
 - [ ] Chrome/Edge (latest)
 - [ ] Firefox (latest)
 - [ ] Safari (latest)
@@ -448,7 +485,9 @@ JOIN trip t ON r.trip_id = t.id;
 ## 📝 Notes for Demo Purposes
 
 ### Wireframe Reference
+
 See `docs/WIREFRAME.md` for complete UI/UX design specifications including:
+
 - Homepage layout
 - Trip catalog filters
 - Trip detail page structure
@@ -457,6 +496,7 @@ See `docs/WIREFRAME.md` for complete UI/UX design specifications including:
 - API endpoints
 
 ### Demo Talking Points
+
 1. **6 diverse trip offerings** across India and Nepal
 2. **Multiple user roles** (Admin, Guide, Customer)
 3. **Real booking workflow** with payment integration
@@ -471,20 +511,26 @@ See `docs/WIREFRAME.md` for complete UI/UX design specifications including:
 ## 🔧 Troubleshooting
 
 ### Issue: Images Not Loading
+
 **Solution**: Check if Unsplash URLs are accessible. They should load automatically since they're public URLs.
 
 ### Issue: Login Fails
+
 **Solution**: Verify credentials match exactly (case-sensitive). Try: `admin@paramadventures.com` / `Demo@123`
 
 ### Issue: Bookings Not Showing
-**Solution**: 
+
+**Solution**:
+
 1. Clear browser cache
 2. Refresh the page
 3. Check user is logged in
 4. Verify booking is linked to correct user
 
 ### Issue: Database Conflicts
+
 **Solution**: If seeding fails due to duplicate entries, run:
+
 ```bash
 # Clear demo data
 npx prisma db push --skip-generate
@@ -498,6 +544,7 @@ node prisma/seed_demo_full.js
 ## 📞 Support
 
 For issues or questions:
+
 1. Check application logs: `npm run dev` (watch for errors)
 2. Review database schema: `apps/api/prisma/schema.prisma`
 3. Check API responses in browser DevTools Network tab
