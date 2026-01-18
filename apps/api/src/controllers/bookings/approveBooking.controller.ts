@@ -17,7 +17,7 @@ export async function approveBooking(req: Request, res: Response) {
   try {
     const updated = await prisma.$transaction(async (tx) => {
       const booking = await tx.booking.findUnique({ where: { id } });
-      if (!booking) throw new HttpError(404, "NOT_FOUND", "Booking not found");
+      if (!booking) throw new HttpError(404, "NOT_FOUND", ErrorMessages.BOOKING_NOT_FOUND);
 
       if (booking.status === "CONFIRMED" || booking.status === "REJECTED") {
         throw new HttpError(403, "INVALID_STATE", "Booking already processed");
@@ -38,7 +38,7 @@ export async function approveBooking(req: Request, res: Response) {
       });
 
       const trip = await tx.trip.findUnique({ where: { id: booking.tripId } });
-      if (!trip) throw new HttpError(404, "NOT_FOUND", "Trip not found");
+      if (!trip) throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
 
       if (confirmedCount >= trip.capacity) {
         // Use new utility for capacity rejection audit

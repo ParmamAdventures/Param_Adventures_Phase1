@@ -12,7 +12,7 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   const trip = await TripCacheService.getTripBySlug(slug);
 
   if (!trip) {
-    throw new HttpError(404, "NOT_FOUND", "Trip not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
   }
 
   if (trip.status === "PUBLISHED") {
@@ -57,6 +57,6 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Fallback to hiding existence
-  throw new HttpError(404, "NOT_FOUND", "Trip not found");
+  throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
 });
 

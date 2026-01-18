@@ -49,7 +49,7 @@ export async function getBlogBySlug(req: Request, res: Response) {
   });
 
   if (!blog) {
-    throw new HttpError(404, "NOT_FOUND", "Blog not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.BLOG_NOT_FOUND);
   }
 
   res.json(blog);

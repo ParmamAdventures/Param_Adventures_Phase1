@@ -14,7 +14,7 @@ export const refundBooking = async (req: Request, res: Response) => {
   });
 
   if (!booking) {
-    throw new HttpError(404, "NOT_FOUND", "Booking not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.BOOKING_NOT_FOUND);
   }
 
   // Find a captured payment to refund (Assuming single payment for now)

@@ -16,7 +16,7 @@ export async function rejectBooking(req: Request, res: Response) {
 
   try {
     const booking = await prisma.booking.findUnique({ where: { id } });
-    if (!booking) throw new HttpError(404, "NOT_FOUND", "Booking not found");
+    if (!booking) throw new HttpError(404, "NOT_FOUND", ErrorMessages.BOOKING_NOT_FOUND);
 
     if (booking.status === "CONFIRMED" || booking.status === "REJECTED") {
       throw new HttpError(403, "INVALID_STATE", "Booking already processed");

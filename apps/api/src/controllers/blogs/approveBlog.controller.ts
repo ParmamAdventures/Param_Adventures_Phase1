@@ -16,7 +16,7 @@ export async function approveBlog(req: Request, res: Response) {
   const blog = await prisma.blog.findUnique({ where: { id } });
 
   if (!blog) {
-    throw new HttpError(404, "NOT_FOUND", "Blog not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.BLOG_NOT_FOUND);
   }
 
   if (blog.status !== "PENDING_REVIEW") {

@@ -22,7 +22,7 @@ export const toggleWishlist = async (req: Request, res: Response) => {
     });
 
     if (!trip) {
-      return res.status(404).json({ message: "Trip not found" });
+      return res.status(404).json({ message: ErrorMessages.TRIP_NOT_FOUND });
     }
 
     // Check if already saved using composite key

@@ -20,7 +20,7 @@ export const getPaymentStatus = async (req: Request, res: Response) => {
   });
 
   if (!booking) {
-    throw new HttpError(404, "NOT_FOUND", "Booking not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.BOOKING_NOT_FOUND);
   }
 
   // Security check: User can only see their own booking (Admin can see all)

@@ -19,7 +19,7 @@ export async function setTripGallery(req: Request, res: Response) {
   // Verify trip exists
   const trip = await prisma.trip.findUnique({ where: { id: tripId } });
   if (!trip) {
-    throw new HttpError(404, "TRIP_NOT_FOUND", "Trip not found");
+    throw new HttpError(404, "TRIP_NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
   }
 
   // Perform atomic update of gallery relations

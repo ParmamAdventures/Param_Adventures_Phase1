@@ -12,7 +12,7 @@ export async function listTripBookings(req: Request, res: Response) {
   const { tripId } = req.params;
 
   const trip = await prisma.trip.findUnique({ where: { id: tripId } });
-  if (!trip) throw new HttpError(404, "NOT_FOUND", "Trip not found");
+  if (!trip) throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
 
   const bookings = await prisma.booking.findMany({
     where: { tripId },

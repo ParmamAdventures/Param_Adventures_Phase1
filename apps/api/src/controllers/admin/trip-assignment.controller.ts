@@ -21,7 +21,7 @@ export async function assignManager(req: Request, res: Response) {
   // Verify trip exists
   const trip = await prisma.trip.findUnique({ where: { id: tripId } });
   if (!trip) {
-    throw new HttpError(404, "NOT_FOUND", "Trip not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
   }
 
   // Verify manager has the correct role
@@ -74,7 +74,7 @@ export async function assignGuide(req: Request, res: Response) {
 
   const trip = await prisma.trip.findUnique({ where: { id: tripId } });
   if (!trip) {
-    throw new HttpError(404, "NOT_FOUND", "Trip not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
   }
 
   // Authorization check: Only Admin or the assigned Manager can assign guides
@@ -131,7 +131,7 @@ export async function removeGuide(req: Request, res: Response) {
 
   const trip = await prisma.trip.findUnique({ where: { id: tripId } });
   if (!trip) {
-    throw new HttpError(404, "NOT_FOUND", "Trip not found");
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
   }
 
   const isAdmin = userRoles.includes("ADMIN") || userRoles.includes("SUPER_ADMIN");
