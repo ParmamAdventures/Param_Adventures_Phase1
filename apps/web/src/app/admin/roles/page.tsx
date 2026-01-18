@@ -17,6 +17,7 @@ type Role = {
 };
 
 const ALL_SYSTEM_PERMISSIONS = [
+  // Trips
   "trip:create",
   "trip:edit",
   "trip:view:internal",
@@ -24,21 +25,42 @@ const ALL_SYSTEM_PERMISSIONS = [
   "trip:publish",
   "trip:archive",
   "trip:submit",
+  "trip:assign-guide",
+  "trip:assign-manager",
+  "trip:update-status",
+  // Blogs
   "blog:create",
   "blog:update",
   "blog:submit",
   "blog:approve",
   "blog:reject",
+  "blog:publish",
+  "blog:view:internal",
+  // Bookings
   "booking:create",
   "booking:approve",
   "booking:reject",
+  "booking:read:admin",
+  "booking:cancel",
+  // Roles (only SUPER_ADMIN)
   "role:list",
   "role:assign",
-  "role:revoke",
+  "role:create",
+  "role:update",
+  "role:delete",
+  // Users
   "user:list",
+  "user:edit",
+  "user:delete",
+  "user:assign-role",
+  "user:remove-role",
+  // Media
   "media:upload",
   "media:view",
   "media:delete",
+  "media:manage",
+  // Analytics & Audit
+  "analytics:view",
   "audit:view",
 ];
 
@@ -172,6 +194,7 @@ export default function RolesPage() {
             role={role}
             allSystemPermissions={ALL_SYSTEM_PERMISSIONS}
             onConfigure={isSuperAdmin ? setEditingRole : undefined}
+            isSuperAdmin={isSuperAdmin}
           />
         ))}
       </div>
@@ -264,4 +287,3 @@ export default function RolesPage() {
     </div>
   );
 }
-

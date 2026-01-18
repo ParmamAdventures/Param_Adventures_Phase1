@@ -26,10 +26,16 @@ export default function PermissionRoute({
     if (!isLoading) {
       if (!user) router.replace("/login");
       else {
+        // SUPER_ADMIN and ADMIN bypass all permission checks
+        const roles: string[] = (user as { roles?: string[] } | null)?.roles || [];
+        const isSuperAdmin = roles.includes("SUPER_ADMIN") || roles.includes("ADMIN");
+
+        if (isSuperAdmin) return; // Allow access
+
         const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];
-        
-        const hasPermission = Array.isArray(permission) 
-          ? permission.some(p => perms.includes(p))
+
+        const hasPermission = Array.isArray(permission)
+          ? permission.some((p) => perms.includes(p))
           : perms.includes(permission);
 
         if (!hasPermission) router.replace("/dashboard");
@@ -40,9 +46,15 @@ export default function PermissionRoute({
   if (isLoading) return <p>Loading...</p>;
   if (!user) return null;
 
+  // SUPER_ADMIN and ADMIN bypass all permission checks
+  const roles: string[] = (user as { roles?: string[] } | null)?.roles || [];
+  const isSuperAdmin = roles.includes("SUPER_ADMIN") || roles.includes("ADMIN");
+
+  if (isSuperAdmin) return <>{children}</>;
+
   const perms: string[] = (user as { permissions?: string[] } | null)?.permissions || [];
-  const hasPermission = Array.isArray(permission) 
-    ? permission.some(p => perms.includes(p))
+  const hasPermission = Array.isArray(permission)
+    ? permission.some((p) => perms.includes(p))
     : perms.includes(permission);
 
   if (!hasPermission) return null;

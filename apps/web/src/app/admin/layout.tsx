@@ -199,7 +199,7 @@ const navItems = [
   {
     name: "Content",
     href: "/admin/content",
-    requiredPermission: "media:view",
+    requiredPermission: ["blog:update", "media:view"],
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -303,6 +303,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               {navItems
                 .filter((item) => {
                   if (!item.requiredPermission) return true;
+
+                  // SUPER_ADMIN and ADMIN roles have access to everything
+                  const roles = user?.roles || [];
+                  if (roles.includes("SUPER_ADMIN") || roles.includes("ADMIN")) {
+                    return true;
+                  }
+
                   const perms = user?.permissions || [];
                   if (Array.isArray(item.requiredPermission)) {
                     return item.requiredPermission.some((p) => perms.includes(p));

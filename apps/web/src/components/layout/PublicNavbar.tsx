@@ -291,7 +291,11 @@ function UserMenu({
             Profile
           </Link>
 
-          {(user?.permissions?.includes("trip:approve") || user?.roles?.includes("UPLOADER")) && (
+          {/* Admin Panel - for SUPER_ADMIN, ADMIN, or users with approve permissions */}
+          {(user?.roles?.includes("SUPER_ADMIN") ||
+            user?.roles?.includes("ADMIN") ||
+            user?.permissions?.includes("trip:approve") ||
+            user?.roles?.includes("UPLOADER")) && (
             <Link
               href="/admin"
               onClick={() => setIsOpen(false)}
@@ -302,6 +306,7 @@ function UserMenu({
             </Link>
           )}
 
+          {/* Manager Portal */}
           {user?.roles?.includes("TRIP_MANAGER") && (
             <Link
               href="/dashboard/manager"
@@ -313,18 +318,17 @@ function UserMenu({
             </Link>
           )}
 
-          {user?.permissions?.includes("trip:view:guests") &&
-            !user?.permissions?.includes("trip:approve") &&
-            !user?.permissions?.includes("trip:view:internal") && (
-              <Link
-                href="/dashboard/guide"
-                onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-green-600 transition-colors hover:bg-green-500/10 hover:text-green-700"
-              >
-                <Compass size={16} />
-                Guide Portal
-              </Link>
-            )}
+          {/* Guide Portal - only for TRIP_GUIDE role */}
+          {user?.roles?.includes("TRIP_GUIDE") && (
+            <Link
+              href="/dashboard/guide"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm font-medium text-green-600 transition-colors hover:bg-green-500/10 hover:text-green-700"
+            >
+              <Compass size={16} />
+              Guide Portal
+            </Link>
+          )}
         </div>
 
         {/* Footer */}

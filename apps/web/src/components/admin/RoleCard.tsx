@@ -11,6 +11,7 @@ interface RoleCardProps {
   };
   allSystemPermissions: string[];
   onConfigure?: (role: RoleCardProps["role"]) => void;
+  isSuperAdmin?: boolean;
 }
 
 /**
@@ -21,16 +22,31 @@ interface RoleCardProps {
  * @param {string} [props.className] - Additional CSS classes
  * @returns {React.ReactElement} Card element
  */
-export default function RoleCard({ role, allSystemPermissions, onConfigure }: RoleCardProps) {
+export default function RoleCard({
+  role,
+  allSystemPermissions,
+  onConfigure,
+  isSuperAdmin,
+}: RoleCardProps) {
   return (
     <Card className="group flex flex-col overflow-hidden border-[var(--border)] bg-[var(--card)] transition-all hover:border-[var(--accent)]/30 hover:shadow-[var(--accent)]/5 hover:shadow-2xl">
       <div className="flex items-center justify-between border-b border-[var(--border)] p-6">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
             <h3 className="text-xl font-black tracking-tighter uppercase">{role.name}</h3>
-            {role.isSystem && (
-              <span className="rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase">
-                System
+            {role.name === "SUPER_ADMIN" && (
+              <span className="rounded-full border border-[#ff6b35]/20 bg-[#ff6b35]/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-[#ff6b35] uppercase">
+                Full Access
+              </span>
+            )}
+            {role.name === "ADMIN" && (
+              <span className="rounded-full border border-[#f77f00]/20 bg-[#f77f00]/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-[#f77f00] uppercase">
+                Admin
+              </span>
+            )}
+            {!["SUPER_ADMIN", "ADMIN", "USER"].includes(role.name) && (
+              <span className="rounded-full border border-[var(--border)] bg-[var(--border)]/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-[var(--muted-foreground)] uppercase">
+                Specialized
               </span>
             )}
           </div>
@@ -174,9 +190,9 @@ export default function RoleCard({ role, allSystemPermissions, onConfigure }: Ro
         <button
           onClick={() => onConfigure?.(role)}
           className="text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase hover:underline disabled:opacity-50"
-          disabled={role.isSystem || !onConfigure}
+          disabled={!isSuperAdmin || !onConfigure}
         >
-          {role.isSystem || !onConfigure ? "Read Only Access" : "Configure Access ➔"}
+          {!isSuperAdmin || !onConfigure ? "Read Only Access" : "Configure Access ➔"}
         </button>
       </div>
     </Card>

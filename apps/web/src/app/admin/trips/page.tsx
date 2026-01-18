@@ -43,13 +43,23 @@ export default function AdminTripsPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data?.error || "Unable to load trips");
+        // Extract error message, handling both string and object formats
+        let errorMsg = "Unable to load trips";
+        if (typeof data?.error === "string") {
+          errorMsg = data.error;
+        } else if (typeof data?.error === "object" && data?.error?.message) {
+          errorMsg = data.error.message;
+        }
+        setError(errorMsg);
         setTrips([]);
       } else {
-        setTrips(Array.isArray(data.data?.data) ? data.data.data : []);
+        // Ensure trips is always an array
+        const tripsData = data.data?.data;
+        const trips = Array.isArray(tripsData) ? tripsData : [];
+        setTrips(trips);
         setTotalPages(data.data?.metadata?.totalPages || 1);
       }
-    } catch {
+    } catch (err) {
       setError("Network error: Could not reach the server.");
       setTrips([]);
     } finally {
@@ -165,5 +175,3 @@ export default function AdminTripsPage() {
     </PermissionRoute>
   );
 }
-
-

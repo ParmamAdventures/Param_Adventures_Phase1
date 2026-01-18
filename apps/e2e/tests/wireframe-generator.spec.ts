@@ -114,8 +114,10 @@ test.describe("Wireframe Generation Suite", () => {
 
           console.log(`✅ Generated: ${filename}`);
         } catch (error) {
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
           console.log(
-            `⚠️ Skipped ${pageConfig.name}-${breakpoint.name}: ${error.message}`
+            `⚠️ Skipped ${pageConfig.name}-${breakpoint.name}: ${errorMessage}`
           );
           test.skip();
         }

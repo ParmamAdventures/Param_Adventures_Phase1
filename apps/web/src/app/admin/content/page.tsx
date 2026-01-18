@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
+import PermissionRoute from "@/components/PermissionRoute";
 import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/lib/api";
 
@@ -22,50 +23,61 @@ export default function AdminContentPage() {
   const [activeTab, setActiveTab] = useState<"hero" | "config">("hero");
 
   return (
-    <div className="space-y-8 p-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Content Management</h1>
-          <p className="text-muted-foreground">Manage homepage content and site settings.</p>
+    <PermissionRoute permission={["blog:update", "media:view"]}>
+      <div className="space-y-8 p-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Content Management</h1>
+            <p className="text-muted-foreground">Manage homepage content and site settings.</p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant={activeTab === "hero" ? "primary" : "subtle"}
+              onClick={() => setActiveTab("hero")}
+            >
+              Hero Slides
+            </Button>
+            <Button
+              variant={activeTab === "config" ? "primary" : "subtle"}
+              onClick={() => setActiveTab("config")}
+            >
+              Site Settings
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button
-            variant={activeTab === "hero" ? "primary" : "subtle"}
-            onClick={() => setActiveTab("hero")}
-          >
-            Hero Slides
-          </Button>
-          <Button
-            variant={activeTab === "config" ? "primary" : "subtle"}
-            onClick={() => setActiveTab("config")}
-          >
-            Site Settings
-          </Button>
-        </div>
-      </div>
 
-      {activeTab === "hero" ? <HeroSlidesEditor /> : <SiteConfigEditor />}
-    </div>
+        {activeTab === "hero" ? <HeroSlidesEditor /> : <SiteConfigEditor />}
+      </div>
+    </PermissionRoute>
   );
 }
 
 function HeroSlidesEditor() {
   const [slides, setSlides] = useState<HeroSlide[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchSlides() {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/content/hero-slides`,
-        );
+        const res = await apiFetch("/content/hero-slides");
         if (res.ok) {
           const data = await res.json();
-          setSlides(data);
+          const slidesArray = Array.isArray(data) ? data : data.data || [];
+          setSlides(slidesArray);
+          setError(null);
+        } else {
+          const errorData = await res.json().catch(() => ({}));
+          setError(
+            typeof errorData?.error === "string" ? errorData.error : "Failed to load hero slides",
+          );
+          setSlides([]);
         }
       } catch (e) {
         console.error(e);
+        setError("Error loading hero slides");
+        setSlides([]);
       } finally {
         setIsLoading(false);
       }
@@ -76,7 +88,7 @@ function HeroSlidesEditor() {
   async function handleSave(slide: HeroSlide) {
     setSaving(slide.id);
     try {
-      await apiFetch(`/content/hero-slides/${slide.id}`, {
+      const res = await apiFetch(`/content/hero-slides/${slide.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -86,7 +98,12 @@ function HeroSlidesEditor() {
           ctaLink: slide.ctaLink,
         }),
       });
-      alert("Saved successfully!");
+      if (res.ok) {
+        alert("Saved successfully!");
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        alert(typeof errorData?.error === "string" ? errorData.error : "Failed to save");
+      }
     } catch (e) {
       console.error(e);
       alert("Failed to save");
@@ -99,7 +116,25 @@ function HeroSlidesEditor() {
     setSlides((prev) => prev.map((s) => (s.id === id ? { ...s, [field]: value } : s)));
   }
 
-  if (isLoading) return <div>Loading slides...</div>;
+  if (isLoading) {
+    return <div className="text-muted-foreground py-8 text-center">Loading slides...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="bg-destructive/10 border-destructive/20 rounded-lg border p-4 text-center">
+        <p className="text-destructive text-sm font-medium">{error}</p>
+      </div>
+    );
+  }
+
+  if (slides.length === 0) {
+    return (
+      <div className="bg-muted/20 rounded-lg border border-dashed p-8 text-center">
+        <p className="text-muted-foreground">No hero slides found.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-in fade-in space-y-6">
@@ -252,4 +287,3 @@ function SiteConfigEditor() {
     </div>
   );
 }
-

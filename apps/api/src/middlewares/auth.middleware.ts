@@ -46,18 +46,107 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
     // Flatten unique permissions
     const permissions = new Set<string>();
+    const roles = user.roles.map((ur) => ur.role.name);
+
     user.roles.forEach((ur) => {
       ur.role.permissions.forEach((rp) => {
         if (rp.permission?.key) permissions.add(rp.permission.key);
       });
-      // Failsafe: Ensure SUPER_ADMIN has critical permissions even if DB seed is stale
-      if (ur.role.name === "SUPER_ADMIN") {
-        permissions.add("trip:delete");
-        permissions.add("trip:view:internal");
-        permissions.add("blog:view:internal");
-        // Add other critical ones as needed or rely on DB for the rest
-      }
     });
+
+    // Failsafe: Ensure SUPER_ADMIN has ALL admin permissions
+    if (roles.includes("SUPER_ADMIN")) {
+      // Trip permissions
+      permissions.add("trip:create");
+      permissions.add("trip:view:internal");
+      permissions.add("trip:edit");
+      permissions.add("trip:delete");
+      permissions.add("trip:publish");
+      permissions.add("trip:archive");
+
+      // Booking permissions
+      permissions.add("booking:read:admin");
+      permissions.add("booking:approve");
+      permissions.add("booking:reject");
+      permissions.add("booking:cancel");
+      permissions.add("booking:refund");
+
+      // Blog/Content permissions
+      permissions.add("blog:create");
+      permissions.add("blog:update");
+      permissions.add("blog:publish");
+      permissions.add("blog:delete");
+      permissions.add("blog:view:internal");
+
+      // Media permissions
+      permissions.add("media:upload");
+      permissions.add("media:view");
+      permissions.add("media:delete");
+
+      // User permissions
+      permissions.add("user:list");
+      permissions.add("user:create");
+      permissions.add("user:update");
+      permissions.add("user:delete");
+
+      // Role permissions
+      permissions.add("role:list");
+      permissions.add("role:create");
+      permissions.add("role:update");
+      permissions.add("role:delete");
+
+      // Analytics & Audit
+      permissions.add("analytics:view");
+      permissions.add("audit:view");
+
+      // System
+      permissions.add("system:settings");
+      permissions.add("admin:dashboard");
+    }
+
+    // Failsafe: Ensure ADMIN has most permissions (except system settings and user delete)
+    if (roles.includes("ADMIN") && !roles.includes("SUPER_ADMIN")) {
+      // Trip permissions
+      permissions.add("trip:create");
+      permissions.add("trip:view:internal");
+      permissions.add("trip:edit");
+      permissions.add("trip:delete");
+      permissions.add("trip:publish");
+      permissions.add("trip:archive");
+
+      // Booking permissions
+      permissions.add("booking:read:admin");
+      permissions.add("booking:approve");
+      permissions.add("booking:reject");
+      permissions.add("booking:cancel");
+
+      // Blog/Content permissions
+      permissions.add("blog:create");
+      permissions.add("blog:update");
+      permissions.add("blog:publish");
+      permissions.add("blog:view:internal");
+
+      // Media permissions
+      permissions.add("media:upload");
+      permissions.add("media:view");
+      permissions.add("media:delete");
+
+      // User permissions (no delete)
+      permissions.add("user:list");
+      permissions.add("user:create");
+      permissions.add("user:update");
+
+      // Role permissions
+      permissions.add("role:list");
+      permissions.add("role:create");
+      permissions.add("role:update");
+
+      // Analytics & Audit
+      permissions.add("analytics:view");
+      permissions.add("audit:view");
+
+      permissions.add("admin:dashboard");
+    }
 
     req.user = {
       id: user.id,

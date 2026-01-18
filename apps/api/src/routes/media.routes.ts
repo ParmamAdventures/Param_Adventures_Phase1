@@ -17,7 +17,13 @@ const router = Router();
  * multipart/form-data
  * field: file
  */
-router.post("/upload", requireAuth, upload.single("file"), uploadImage);
+router.post(
+  "/upload",
+  requireAuth,
+  requirePermission("media:upload"),
+  upload.single("file"),
+  uploadImage,
+);
 
 /**
  * POST /media/upload-doc

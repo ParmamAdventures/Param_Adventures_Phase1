@@ -59,6 +59,126 @@ export async function attachPermissions(req: Request, res: Response, next: NextF
       }
     }
 
+    // Failsafe: Augment permissions for SUPER_ADMIN and ADMIN to match route checks
+    // This prevents 403s when database permission keys lag behind code expectations.
+    if (roleNames.includes("SUPER_ADMIN")) {
+      // Trip permissions
+      permissionsSet.add("trip:create");
+      permissionsSet.add("trip:view:internal");
+      permissionsSet.add("trip:edit");
+      permissionsSet.add("trip:delete");
+      permissionsSet.add("trip:publish");
+      permissionsSet.add("trip:archive");
+      permissionsSet.add("trip:approve");
+      permissionsSet.add("trip:submit");
+      permissionsSet.add("trip:update-status");
+      permissionsSet.add("trip:assign-guide");
+      permissionsSet.add("trip:assign-manager");
+
+      // Booking permissions
+      permissionsSet.add("booking:read:admin");
+      permissionsSet.add("booking:approve");
+      permissionsSet.add("booking:reject");
+      permissionsSet.add("booking:cancel");
+      permissionsSet.add("booking:refund");
+
+      // Blog/Content permissions
+      permissionsSet.add("blog:create");
+      permissionsSet.add("blog:update");
+      permissionsSet.add("blog:publish");
+      permissionsSet.add("blog:delete");
+      permissionsSet.add("blog:view:internal");
+      permissionsSet.add("blog:approve");
+      permissionsSet.add("blog:reject");
+      permissionsSet.add("blog:submit");
+
+      // Media permissions
+      permissionsSet.add("media:upload");
+      permissionsSet.add("media:view");
+      permissionsSet.add("media:delete");
+      permissionsSet.add("media:manage");
+
+      // User permissions
+      permissionsSet.add("user:list");
+      permissionsSet.add("user:create");
+      permissionsSet.add("user:update");
+      permissionsSet.add("user:delete");
+      permissionsSet.add("user:edit");
+      permissionsSet.add("user:assign-role");
+      permissionsSet.add("user:remove-role");
+
+      // Role permissions
+      permissionsSet.add("role:list");
+      permissionsSet.add("role:create");
+      permissionsSet.add("role:update");
+      permissionsSet.add("role:delete");
+      permissionsSet.add("role:assign");
+
+      // Analytics & Audit
+      permissionsSet.add("analytics:view");
+      permissionsSet.add("audit:view");
+      permissionsSet.add("metrics:read");
+
+      // System/Admin
+      permissionsSet.add("system:settings");
+      permissionsSet.add("admin:dashboard");
+    }
+
+    // ADMIN: Most permissions, but cannot delete users, delete roles, or refund bookings
+    if (roleNames.includes("ADMIN") && !roleNames.includes("SUPER_ADMIN")) {
+      // Trip permissions
+      permissionsSet.add("trip:create");
+      permissionsSet.add("trip:view:internal");
+      permissionsSet.add("trip:edit");
+      permissionsSet.add("trip:delete");
+      permissionsSet.add("trip:publish");
+      permissionsSet.add("trip:archive");
+      permissionsSet.add("trip:approve");
+      permissionsSet.add("trip:submit");
+      permissionsSet.add("trip:update-status");
+      permissionsSet.add("trip:assign-guide");
+      permissionsSet.add("trip:assign-manager");
+
+      // Booking permissions (no refund)
+      permissionsSet.add("booking:read:admin");
+      permissionsSet.add("booking:approve");
+      permissionsSet.add("booking:reject");
+      permissionsSet.add("booking:cancel");
+
+      // Blog moderation
+      permissionsSet.add("blog:create");
+      permissionsSet.add("blog:update");
+      permissionsSet.add("blog:publish");
+      permissionsSet.add("blog:view:internal");
+      permissionsSet.add("blog:approve");
+      permissionsSet.add("blog:reject");
+      permissionsSet.add("blog:submit");
+
+      // Media
+      permissionsSet.add("media:upload");
+      permissionsSet.add("media:view");
+      permissionsSet.add("media:delete");
+      permissionsSet.add("media:manage");
+
+      // Users (no delete). Can edit/update user profiles.
+      permissionsSet.add("user:list");
+      permissionsSet.add("user:create");
+      permissionsSet.add("user:update");
+      permissionsSet.add("user:edit");
+
+      // Roles (no assign/remove or delete per policy)
+      permissionsSet.add("role:list");
+      permissionsSet.add("role:create");
+      permissionsSet.add("role:update");
+
+      // Analytics & Audit
+      permissionsSet.add("analytics:view");
+      permissionsSet.add("audit:view");
+      permissionsSet.add("metrics:read");
+
+      permissionsSet.add("admin:dashboard");
+    }
+
     if (req.user) {
       req.user.roles = roleNames;
       req.user.permissions = Array.from(permissionsSet);
