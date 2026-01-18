@@ -16,7 +16,7 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   }
 
   if (trip.status === "PUBLISHED") {
-    return ApiResponse.success(res, "Trip Fetched", trip);
+    return ApiResponse.success(res, trip, "Trip Fetched");
   }
 
   // If not published, check for internal permission
@@ -51,7 +51,7 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
       });
 
       if (permissions.has("trip:view:internal") || trip.createdById === user.id) {
-        return ApiResponse.success(res, "Trip Fetched (Internal)", trip);
+        return ApiResponse.success(res, trip, "Trip Fetched (Internal)");
       }
     }
   }
@@ -59,3 +59,4 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   // Fallback to hiding existence
   throw new HttpError(404, "NOT_FOUND", "Trip not found");
 });
+

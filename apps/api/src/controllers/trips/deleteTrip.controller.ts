@@ -50,5 +50,6 @@ export const deleteTrip = catchAsync(async (req: Request, res: Response) => {
     where: { id },
   });
 
-  return ApiResponse.success(res, "Trip deleted successfully", null);
+  return ApiResponse.success(res, null, "Trip deleted successfully");
 });
+

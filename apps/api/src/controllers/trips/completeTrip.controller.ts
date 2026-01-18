@@ -52,5 +52,6 @@ export const completeTrip = catchAsync(async (req: Request, res: Response) => {
 
   // TODO: Trigger Badge Awards / Review Requests here
 
-  return ApiResponse.success(res, "Trip completed successfully", { trip: updatedTrip });
+  return ApiResponse.success(res, { trip: updatedTrip }, "Trip completed successfully");
 });
+

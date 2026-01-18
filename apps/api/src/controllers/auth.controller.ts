@@ -34,7 +34,7 @@ type RolePermissionRow = {
 export const register = catchAsync(async (req: Request, res: Response) => {
   const { email, password, name } = req.body;
   const user = await authService.register({ email, password, name });
-  return ApiResponse.success(res, "User registered successfully", { user }, 201);
+  return ApiResponse.success(res, { user }, "User registered successfully", 201);
 });
 
 /**
@@ -99,10 +99,14 @@ export const login = catchAsync(async (req: Request, res: Response) => {
     path: "/",
   });
 
-  return ApiResponse.success(res, "Login successful", {
-    accessToken,
-    user: { ...user, roles: userRoles, permissions },
-  });
+  return ApiResponse.success(
+    res,
+    {
+      accessToken,
+      user: { ...user, roles: userRoles, permissions },
+    },
+    "Login successful",
+  );
 });
 
 /**
@@ -115,11 +119,15 @@ export const login = catchAsync(async (req: Request, res: Response) => {
 export const refresh = catchAsync(async (req: Request, res: Response) => {
   const token = req.cookies?.refresh_token;
   if (!token) {
-    return ApiResponse.error(res, "Missing refresh token", 401);
+    return ApiResponse.error(res, "MISSING_REFRESH_TOKEN", "Missing refresh token", 401);
   }
 
-  const { accessToken } = await authService.refresh(token);
-  return ApiResponse.success(res, "Token refreshed", { accessToken });
+  try {
+    const { accessToken } = await authService.refresh(token);
+    return ApiResponse.success(res, { accessToken }, "Token refreshed", 200);
+  } catch (error) {
+    return ApiResponse.error(res, "INVALID_REFRESH_TOKEN", "Invalid or expired refresh token", 401);
+  }
 });
 
 /**
@@ -184,23 +192,27 @@ export const me = catchAsync(async (req: Request, res: Response) => {
   );
 
   res.set("Cache-Control", "no-store");
-  return ApiResponse.success(res, "Current user details", {
-    ...user,
-    roles: userRoles,
-    permissions,
-  });
+  return ApiResponse.success(
+    res,
+    {
+      ...user,
+      roles: userRoles,
+      permissions,
+    },
+    "Current user details",
+  );
 });
 
 export const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
   await authService.forgotPassword(email);
-  return ApiResponse.success(res, "If an account exists, a reset link has been sent.");
+  return ApiResponse.success(res, {}, "If an account exists, a reset link has been sent.");
 });
 
 export const resetPassword = catchAsync(async (req: Request, res: Response) => {
   const { token, password } = req.body;
   await authService.resetPassword(token, password);
-  return ApiResponse.success(res, "Password updated successfully");
+  return ApiResponse.success(res, {}, "Password updated successfully");
 });
 
 export const changePassword = catchAsync(async (req: Request, res: Response) => {

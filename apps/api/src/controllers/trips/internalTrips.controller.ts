@@ -35,7 +35,7 @@ export const getInternalTrips = catchAsync(async (req: Request, res: Response) =
 
   const totalPages = Math.ceil(total / limitNumber);
 
-  return ApiResponse.success(res, "Internal trips fetched", {
+  return ApiResponse.success(res, {
     data: trips,
     metadata: {
       total,
@@ -43,5 +43,6 @@ export const getInternalTrips = catchAsync(async (req: Request, res: Response) =
       limit: limitNumber,
       totalPages,
     },
-  });
+  }, "Internal trips fetched");
 });
+

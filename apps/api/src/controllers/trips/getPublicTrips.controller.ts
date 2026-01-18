@@ -35,13 +35,13 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
   if (!hasFilters && !category) {
     // Use cache for basic public trips request
     const trips = await TripCacheService.getPublicTrips();
-    return ApiResponse.success(res, "Trips fetched", trips);
+    return ApiResponse.success(res, trips, "Trips fetched");
   }
 
   if (!hasFilters && category) {
     // Use cache for category-filtered trips
     const trips = await TripCacheService.getPublicTrips({ category: String(category) });
-    return ApiResponse.success(res, "Trips fetched", trips);
+    return ApiResponse.success(res, trips, "Trips fetched");
   }
 
   // For complex filters, fetch from database directly (bypass cache)
@@ -102,5 +102,5 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     },
   });
 
-  return ApiResponse.success(res, "Trips fetched", trips);
+  return ApiResponse.success(res, trips, "Trips fetched");
 });

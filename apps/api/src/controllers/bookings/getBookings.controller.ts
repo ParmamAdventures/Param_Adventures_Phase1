@@ -27,5 +27,6 @@ export const getBookings = catchAsync(async (req: Request, res: Response) => {
     orderBy: { createdAt: "desc" },
   });
 
-  return ApiResponse.success(res, "Bookings fetched successfully", bookings);
+  return ApiResponse.success(res, bookings, "Bookings fetched successfully");
 });
+

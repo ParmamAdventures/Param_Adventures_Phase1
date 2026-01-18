@@ -10,19 +10,29 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
 
   const trip = await prisma.trip.findUnique({ where: { id } });
 
-  if (!trip) return ApiResponse.error(res, "Trip not found", 404);
+  if (!trip) return ApiResponse.error(res, "TRIP_NOT_FOUND", "Trip not found", 404);
 
   // Check permissions: Owner OR Admin (trip:edit)
   const isOwner = trip.createdById === user.id;
   const canEditAny = user.permissions?.includes("trip:edit");
 
   if (!isOwner && !canEditAny) {
-    return ApiResponse.error(res, "Insufficient permissions to edit this trip", 403);
+    return ApiResponse.error(
+      res,
+      "TRIP_EDIT_FORBIDDEN",
+      "Insufficient permissions to edit this trip",
+      403,
+    );
   }
 
   // Allow editing even if not DRAFT if user is Admin
   if (trip.status !== "DRAFT" && !canEditAny) {
-    return ApiResponse.error(res, "Only drafts can be edited by owners", 403);
+    return ApiResponse.error(
+      res,
+      "TRIP_EDIT_NOT_DRAFT",
+      "Only drafts can be edited by owners",
+      403,
+    );
   }
 
   const updated = await prisma.trip.update({
@@ -89,5 +99,5 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
     },
   });
 
-  return ApiResponse.success(res, "Trip updated successfully", updated);
+  return ApiResponse.success(res, updated, "Trip updated successfully");
 });

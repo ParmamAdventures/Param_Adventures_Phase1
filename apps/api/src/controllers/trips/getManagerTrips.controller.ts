@@ -6,7 +6,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 export const getManagerTrips = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) {
-    return ApiResponse.error(res, "Unauthenticated", 401);
+    return ApiResponse.error(res, "UNAUTHENTICATED", "Unauthenticated", 401);
   }
 
   // Optional status filter
@@ -35,5 +35,5 @@ export const getManagerTrips = catchAsync(async (req: Request, res: Response) =>
     },
   });
 
-  return ApiResponse.success(res, "Manager trips fetched", trips);
+  return ApiResponse.success(res, trips, "Manager trips fetched");
 });

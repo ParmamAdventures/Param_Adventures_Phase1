@@ -9,5 +9,6 @@ export const cancelBooking = catchAsync(async (req: Request, res: Response) => {
 
   const updatedBooking = await bookingService.cancelBooking(id, userId);
 
-  return ApiResponse.success(res, "Booking cancelled successfully", { booking: updatedBooking });
+  return ApiResponse.success(res, { booking: updatedBooking }, "Booking cancelled successfully");
 });
+

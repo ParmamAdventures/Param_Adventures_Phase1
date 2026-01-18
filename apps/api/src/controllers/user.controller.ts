@@ -15,7 +15,11 @@ export const updateProfile = catchAsync(async (req: Request, res: Response) => {
 
   const user = await userService.updateProfile(userId, req.body);
 
-  return ApiResponse.success(res, "Profile updated successfully", {
-    user,
-  });
+  return ApiResponse.success(
+    res,
+    {
+      user,
+    },
+    "Profile updated successfully",
+  );
 });

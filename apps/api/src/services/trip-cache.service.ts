@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
+import { Prisma, Trip, TripCategory, TripStatus } from "@prisma/client";
 import { cacheService } from "./cache.service";
 import { logger } from "../lib/logger";
-import { Trip, User } from "@prisma/client";
 
 /**
  * Trip Cache Service - Specialized caching for trip data
@@ -49,13 +49,19 @@ export class TripCacheService {
         async () => {
           logger.debug(`Fetching public trips from database (filters: ${JSON.stringify(filters)})`);
 
+          const where: Prisma.TripWhereInput = {
+            status: TripStatus.PUBLISHED,
+          };
+
+          if (filters?.category) {
+            // Cast to enum to satisfy strict Prisma typing when filters come from query params
+            where.category = filters.category as TripCategory;
+          }
+
           const trips = await prisma.trip.findMany({
-            where: {
-              isActive: true,
-              ...(filters?.category && { category: filters.category }),
-            },
+            where,
             include: {
-              author: {
+              manager: {
                 select: {
                   id: true,
                   name: true,
@@ -91,11 +97,11 @@ export class TripCacheService {
 
           const trips = await prisma.trip.findMany({
             where: {
-              isActive: true,
+              status: TripStatus.PUBLISHED,
               isFeatured: true,
             },
             include: {
-              author: {
+              manager: {
                 select: {
                   id: true,
                   name: true,
@@ -133,7 +139,7 @@ export class TripCacheService {
           const trip = await prisma.trip.findUnique({
             where: { slug },
             include: {
-              author: {
+              manager: {
                 select: {
                   id: true,
                   name: true,
@@ -183,7 +189,7 @@ export class TripCacheService {
           return await prisma.trip.findUnique({
             where: { id: tripId },
             include: {
-              author: {
+              manager: {
                 select: {
                   id: true,
                   name: true,

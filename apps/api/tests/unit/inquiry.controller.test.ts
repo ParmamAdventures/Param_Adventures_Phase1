@@ -41,7 +41,10 @@ describe("InquiryController", () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          message: "Name, Email and Destination are required",
+          error: expect.objectContaining({
+            code: "VALIDATION_ERROR",
+            message: "Name, Email and Destination are required",
+          }),
         }),
       );
     });

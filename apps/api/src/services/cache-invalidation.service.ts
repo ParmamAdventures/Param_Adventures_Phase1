@@ -1,4 +1,4 @@
-import { CacheService } from "./cache.service";
+import CacheService, { cacheService } from "./cache.service";
 import { TripCacheService } from "./trip-cache.service";
 import { UserCacheService } from "./user-cache.service";
 import { logger } from "../lib/logger";
@@ -15,26 +15,17 @@ import { logger } from "../lib/logger";
  * - Event-driven: Listen to domain events and invalidate accordingly
  */
 export class CacheInvalidationService {
-  private cache: CacheService;
-  private tripCache: TripCacheService;
-  private userCache: UserCacheService;
-  private invalidationLog: Map<string, number> = new Map();
-
-  constructor(cache: CacheService, tripCache: TripCacheService, userCache: UserCacheService) {
-    this.cache = cache;
-    this.tripCache = tripCache;
-    this.userCache = userCache;
-  }
+  private static invalidationLog: Map<string, number> = new Map();
 
   /**
    * Immediate invalidation - directly delete from cache
    * Used for: Critical updates that must reflect immediately
    */
-  async invalidateImmediate(keys: string | string[]): Promise<void> {
+  static async invalidateImmediate(keys: string | string[]): Promise<void> {
     try {
       const keyArray = Array.isArray(keys) ? keys : [keys];
-      await this.cache.deleteMany(keyArray);
-      this.logInvalidation("immediate", keyArray.length);
+      await cacheService.deleteMany(keyArray);
+      CacheInvalidationService.logInvalidation("immediate", keyArray.length);
       logger.info(`Immediate invalidation: ${keyArray.length} keys deleted`);
     } catch (error) {
       logger.error(`Error in immediate invalidation: ${error}`);
@@ -45,10 +36,10 @@ export class CacheInvalidationService {
    * Pattern-based invalidation - invalidate all keys matching a pattern
    * Used for: Cascade invalidation (e.g., when a category changes, invalidate all related trips)
    */
-  async invalidatePattern(pattern: string): Promise<void> {
+  static async invalidatePattern(pattern: string): Promise<void> {
     try {
-      await this.cache.invalidatePattern(pattern);
-      this.logInvalidation("pattern", 1, pattern);
+      await cacheService.invalidatePattern(pattern);
+      CacheInvalidationService.logInvalidation("pattern", 1, pattern);
       logger.info(`Pattern invalidation: ${pattern}`);
     } catch (error) {
       logger.error(`Error in pattern invalidation: ${error}`);
@@ -59,18 +50,18 @@ export class CacheInvalidationService {
    * TTL-based refresh - set a shorter TTL to gradually expire cache
    * Used for: Non-critical data where eventual consistency is acceptable
    */
-  async invalidateWithFallback(key: string, fallbackTTL: number = 300): Promise<void> {
+  static async invalidateWithFallback(key: string, fallbackTTL: number = 300): Promise<void> {
     try {
-      const data = await this.cache.get(key);
+      const data = await cacheService.get(key);
       if (data) {
         // Re-cache with shorter TTL (default 5 minutes)
-        await this.cache.set(key, data, fallbackTTL);
-        this.logInvalidation("fallback", 1, key, fallbackTTL);
+        await cacheService.set(key, data, fallbackTTL);
+        CacheInvalidationService.logInvalidation("fallback", 1, key, fallbackTTL);
         logger.info(`Fallback invalidation: ${key} TTL reduced to ${fallbackTTL}s`);
       } else {
         // Key not in cache, direct delete
-        await this.cache.delete(key);
-        this.logInvalidation("fallback-delete", 1, key);
+        await cacheService.delete(key);
+        CacheInvalidationService.logInvalidation("fallback-delete", 1, key);
       }
     } catch (error) {
       logger.error(`Error in fallback invalidation: ${error}`);
@@ -81,16 +72,16 @@ export class CacheInvalidationService {
    * Cascade invalidation - invalidate dependent caches
    * Used for: When a resource changes, invalidate all dependent resources
    */
-  async invalidateCascade(tripId: string): Promise<void> {
+  static async invalidateCascade(tripId: string): Promise<void> {
     try {
       // Invalidate trip itself
-      await this.tripCache.invalidateTrip(tripId);
+      await TripCacheService.invalidateTrip(tripId);
 
       // Invalidate all trip-related lists
-      await this.invalidatePattern(`trip:${tripId}:*`);
-      await this.invalidatePattern("trips:*");
+      await CacheInvalidationService.invalidatePattern(`trip:${tripId}:*`);
+      await CacheInvalidationService.invalidatePattern("trips:*");
 
-      this.logInvalidation("cascade", 3);
+      CacheInvalidationService.logInvalidation("cascade", 3);
       logger.info(`Cascade invalidation for trip ${tripId}: deleted trip + related + lists`);
     } catch (error) {
       logger.error(`Error in cascade invalidation: ${error}`);
@@ -105,7 +96,7 @@ export class CacheInvalidationService {
    * - A review is added
    * - A user updates profile
    */
-  async onTripUpdated(tripId: string): Promise<void> {
+  static async onTripUpdated(tripId: string): Promise<void> {
     try {
       await this.invalidateCascade(tripId);
       logger.info(`Cache invalidated for trip update: ${tripId}`);
@@ -114,7 +105,7 @@ export class CacheInvalidationService {
     }
   }
 
-  async onTripDeleted(tripId: string): Promise<void> {
+  static async onTripDeleted(tripId: string): Promise<void> {
     try {
       await this.invalidateCascade(tripId);
       logger.info(`Cache invalidated for trip deletion: ${tripId}`);
@@ -123,23 +114,23 @@ export class CacheInvalidationService {
     }
   }
 
-  async onTripCreated(tripId: string): Promise<void> {
+  static async onTripCreated(tripId: string): Promise<void> {
     try {
       // When a new trip is created, invalidate the "all trips" cache
-      await this.invalidatePattern("trips:*");
+      await CacheInvalidationService.invalidatePattern("trips:*");
       logger.info(`Cache invalidated for new trip: ${tripId}`);
     } catch (error) {
       logger.error(`Error handling trip create event: ${error}`);
     }
   }
 
-  async onBookingCreated(userId: string, tripId: string): Promise<void> {
+  static async onBookingCreated(userId: string, tripId: string): Promise<void> {
     try {
       // Invalidate user's bookings list
-      await this.userCache.invalidateUserBookings(userId);
+      await UserCacheService.invalidateUserBookings(userId);
 
       // Invalidate trip's booking count and details
-      await this.tripCache.invalidateTrip(tripId);
+      await TripCacheService.invalidateTrip(tripId);
 
       logger.info(`Cache invalidated for new booking: user ${userId}, trip ${tripId}`);
     } catch (error) {
@@ -147,13 +138,13 @@ export class CacheInvalidationService {
     }
   }
 
-  async onBookingConfirmed(userId: string, tripId: string): Promise<void> {
+  static async onBookingConfirmed(userId: string, tripId: string): Promise<void> {
     try {
       // Invalidate user's bookings
-      await this.userCache.invalidateUserBookings(userId);
+      await UserCacheService.invalidateUserBookings(userId);
 
       // Invalidate trip details (booking count may have changed)
-      await this.tripCache.invalidateTrip(tripId);
+      await TripCacheService.invalidateTrip(tripId);
 
       logger.info(`Cache invalidated for booking confirmation: user ${userId}, trip ${tripId}`);
     } catch (error) {
@@ -161,22 +152,22 @@ export class CacheInvalidationService {
     }
   }
 
-  async onUserProfileUpdated(userId: string): Promise<void> {
+  static async onUserProfileUpdated(userId: string): Promise<void> {
     try {
-      await this.userCache.invalidateUser(userId);
+      await UserCacheService.invalidateUser(userId);
       logger.info(`Cache invalidated for user profile update: ${userId}`);
     } catch (error) {
       logger.error(`Error handling user profile update event: ${error}`);
     }
   }
 
-  async onUserRoleChanged(userId: string): Promise<void> {
+  static async onUserRoleChanged(userId: string): Promise<void> {
     try {
       // Invalidate the specific user
-      await this.userCache.invalidateUser(userId);
+      await UserCacheService.invalidateUser(userId);
 
       // Invalidate admin list if user became/stopped being admin
-      await this.userCache.invalidateAdminList();
+      await UserCacheService.invalidateAdminList();
 
       logger.info(`Cache invalidated for user role change: ${userId}`);
     } catch (error) {
@@ -184,13 +175,13 @@ export class CacheInvalidationService {
     }
   }
 
-  async onReviewAdded(tripId: string, userId: string): Promise<void> {
+  static async onReviewAdded(tripId: string, userId: string): Promise<void> {
     try {
       // Invalidate trip details (review count/rating changed)
-      await this.tripCache.invalidateTrip(tripId);
+      await TripCacheService.invalidateTrip(tripId);
 
       // Invalidate user's reviews
-      await this.userCache.invalidateUserReviews(userId);
+      await UserCacheService.invalidateUserReviews(userId);
 
       logger.info(`Cache invalidated for new review: trip ${tripId}, user ${userId}`);
     } catch (error) {
@@ -198,10 +189,10 @@ export class CacheInvalidationService {
     }
   }
 
-  async onTripSaved(userId: string, tripId: string): Promise<void> {
+  static async onTripSaved(userId: string, tripId: string): Promise<void> {
     try {
       // Invalidate user's saved trips
-      await this.userCache.invalidateUserSavedTrips(userId);
+      await UserCacheService.invalidateUserSavedTrips(userId);
 
       logger.info(`Cache invalidated for saved trip: user ${userId}, trip ${tripId}`);
     } catch (error) {
@@ -213,7 +204,7 @@ export class CacheInvalidationService {
    * Bulk invalidation - invalidate multiple related resources at once
    * Used for: Admin operations that affect multiple resources
    */
-  async invalidateBulk(
+  static async invalidateBulk(
     invalidations: Array<{
       type: "trip" | "user" | "pattern" | "key";
       id?: string;
@@ -228,32 +219,32 @@ export class CacheInvalidationService {
         switch (inv.type) {
           case "trip":
             if (inv.id) {
-              await this.tripCache.invalidateTrip(inv.id);
+              await TripCacheService.invalidateTrip(inv.id);
               count++;
             }
             break;
           case "user":
             if (inv.id) {
-              await this.userCache.invalidateUser(inv.id);
+              await UserCacheService.invalidateUser(inv.id);
               count++;
             }
             break;
           case "pattern":
             if (inv.pattern) {
-              await this.invalidatePattern(inv.pattern);
+              await CacheInvalidationService.invalidatePattern(inv.pattern);
               count++;
             }
             break;
           case "key":
             if (inv.key) {
-              await this.cache.delete(inv.key);
+              await cacheService.delete(inv.key);
               count++;
             }
             break;
         }
       }
 
-      this.logInvalidation("bulk", count);
+      CacheInvalidationService.logInvalidation("bulk", count);
       logger.info(`Bulk invalidation completed: ${count} operations`);
     } catch (error) {
       logger.error(`Error in bulk invalidation: ${error}`);
@@ -264,12 +255,12 @@ export class CacheInvalidationService {
    * Smart invalidation - invalidates only if cache exists
    * Reduces unnecessary operations
    */
-  async invalidateSmart(key: string): Promise<boolean> {
+  static async invalidateSmart(key: string): Promise<boolean> {
     try {
-      const exists = await this.cache.get(key);
+      const exists = await cacheService.get(key);
       if (exists) {
-        await this.cache.delete(key);
-        this.logInvalidation("smart", 1, key);
+        await cacheService.delete(key);
+        CacheInvalidationService.logInvalidation("smart", 1, key);
         return true;
       }
       return false;
@@ -288,13 +279,16 @@ export class CacheInvalidationService {
     recentInvalidations: string[];
   } {
     const stats = {
-      totalInvalidations: Array.from(this.invalidationLog.values()).reduce((a, b) => a + b, 0),
+      totalInvalidations: Array.from(CacheInvalidationService.invalidationLog.values()).reduce(
+        (a, b) => a + b,
+        0,
+      ),
       byType: {} as Record<string, number>,
-      recentInvalidations: Array.from(this.invalidationLog.keys()).slice(-10),
+      recentInvalidations: Array.from(CacheInvalidationService.invalidationLog.keys()).slice(-10),
     };
 
     // Group by type
-    for (const [key, count] of this.invalidationLog.entries()) {
+    for (const [key, count] of CacheInvalidationService.invalidationLog.entries()) {
       const type = key.split(":")[0];
       stats.byType[type] = (stats.byType[type] || 0) + count;
     }
@@ -306,7 +300,7 @@ export class CacheInvalidationService {
    * Reset invalidation log (for monitoring)
    */
   resetStats(): void {
-    this.invalidationLog.clear();
+    CacheInvalidationService.invalidationLog.clear();
     logger.info("Invalidation statistics reset");
   }
 
@@ -321,12 +315,12 @@ export class CacheInvalidationService {
       logger.debug(`[${type}] ${detail}${ttl ? ` (TTL: ${ttl}s)` : ""}`);
     }
 
-    this.invalidationLog.set(key, count);
+    CacheInvalidationService.invalidationLog.set(key, count);
 
     // Keep only last 1000 entries to avoid memory leak
-    if (this.invalidationLog.size > 1000) {
-      const firstKey = this.invalidationLog.keys().next().value;
-      this.invalidationLog.delete(firstKey);
+    if (CacheInvalidationService.invalidationLog.size > 1000) {
+      const firstKey = CacheInvalidationService.invalidationLog.keys().next().value;
+      CacheInvalidationService.invalidationLog.delete(firstKey);
     }
   }
 }

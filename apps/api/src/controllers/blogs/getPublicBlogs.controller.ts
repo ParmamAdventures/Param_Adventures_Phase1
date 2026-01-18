@@ -29,5 +29,5 @@ export const getPublicBlogs = catchAsync(async (req: Request, res: Response) => 
     },
   });
 
-  return ApiResponse.success(res, "Blogs fetched", blogs);
+  return ApiResponse.success(res, blogs, "Blogs fetched");
 });

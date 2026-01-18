@@ -9,9 +9,11 @@ export const submitTrip = catchAsync(async (req: Request, res: Response) => {
 
   const trip = await prisma.trip.findUnique({ where: { id } });
 
-  if (!trip) return ApiResponse.error(res, "Trip not found", 404);
-  if (trip.createdById !== user.id) return ApiResponse.error(res, "Not owner", 403);
-  if (trip.status !== "DRAFT") return ApiResponse.error(res, "Invalid state transition", 403);
+  if (!trip) return ApiResponse.error(res, "TRIP_NOT_FOUND", "Trip not found", 404);
+  if (trip.createdById !== user.id)
+    return ApiResponse.error(res, "TRIP_SUBMIT_FORBIDDEN", "Not owner", 403);
+  if (trip.status !== "DRAFT")
+    return ApiResponse.error(res, "TRIP_SUBMIT_INVALID_STATE", "Invalid state transition", 403);
 
   const updated = await prisma.trip.update({
     where: { id },
@@ -28,5 +30,5 @@ export const submitTrip = catchAsync(async (req: Request, res: Response) => {
     },
   });
 
-  return ApiResponse.success(res, "Trip submitted successfully", updated);
+  return ApiResponse.success(res, updated, "Trip submitted successfully");
 });

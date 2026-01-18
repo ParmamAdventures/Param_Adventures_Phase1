@@ -17,15 +17,19 @@ export const listInquiries = catchAsync(async (req: Request, res: Response) => {
     prisma.tripInquiry.count(),
   ]);
 
-  return ApiResponse.success(res, "Inquiries fetched successfully", {
-    inquiries,
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+  return ApiResponse.success(
+    res,
+    {
+      inquiries,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     },
-  });
+    "Inquiries fetched successfully",
+  );
 });
 
 export const updateInquiryStatus = catchAsync(async (req: Request, res: Response) => {
@@ -33,7 +37,7 @@ export const updateInquiryStatus = catchAsync(async (req: Request, res: Response
   const { status } = req.body;
 
   if (!status) {
-    return ApiResponse.error(res, "Status is required", 400);
+    return ApiResponse.error(res, "INQUIRY_STATUS_REQUIRED", "Status is required", 400);
   }
 
   const updated = await prisma.tripInquiry.update({
@@ -41,5 +45,5 @@ export const updateInquiryStatus = catchAsync(async (req: Request, res: Response
     data: { status },
   });
 
-  return ApiResponse.success(res, "Inquiry updated successfully", updated);
+  return ApiResponse.success(res, updated, "Inquiry updated successfully");
 });

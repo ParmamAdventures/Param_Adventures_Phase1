@@ -193,9 +193,10 @@ class CacheService {
       const info = await this.redis.info("stats");
       const dbSize = await this.redis.dbsize();
       return { info, dbSize, connected: true };
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error("Cache stats error:", error);
-      return { error: error.message };
+      const message = error instanceof Error ? error.message : "Unknown cache error";
+      return { error: message };
     }
   }
 

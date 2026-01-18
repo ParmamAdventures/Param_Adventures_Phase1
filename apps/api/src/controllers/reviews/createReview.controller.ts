@@ -36,5 +36,6 @@ export const createReview = catchAsync(async (req: Request, res: Response) => {
     },
   });
 
-  return ApiResponse.success(res, "Review created successfully", review, 201);
+  return ApiResponse.success(res, review, 201, "Review created successfully");
 });
+

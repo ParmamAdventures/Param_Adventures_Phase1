@@ -67,5 +67,6 @@ export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => 
 
   logger.info("Trip Doc Uploaded", { tripId: id, userId, type });
 
-  return ApiResponse.success(res, "Document uploaded", { documentation: updatedDocs });
+  return ApiResponse.success(res, { documentation: updatedDocs }, "Document uploaded");
 });
+

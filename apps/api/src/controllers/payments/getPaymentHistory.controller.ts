@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -6,8 +5,8 @@ import { ApiResponse } from "../../utils/ApiResponse";
 export const getPaymentHistory = async (req: Request, res: Response) => {
   const userId = req.user?.id;
   if (!userId) {
-      // Should be caught by auth middleware, but safety first
-      return ApiResponse.error(res, "Unauthorized", 401);
+    // Should be caught by auth middleware, but safety first
+    return ApiResponse.error(res, "UNAUTHORIZED", "Unauthorized", 401);
   }
 
   // Pagination
@@ -45,22 +44,26 @@ export const getPaymentHistory = async (req: Request, res: Response) => {
     },
   });
 
-  return ApiResponse.success(res, "Payment history retrieved", {
-    payments: payments.map((p) => ({
-      id: p.id,
-      amount: p.amount,
-      status: p.status,
-      currency: p.currency,
-      date: p.createdAt,
-      bookingId: p.bookingId,
-      tripTitle: p.booking.trip.title,
-      tripSlug: p.booking.trip.slug,
-    })),
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
+  return ApiResponse.success(
+    res,
+    {
+      payments: payments.map((p) => ({
+        id: p.id,
+        amount: p.amount,
+        status: p.status,
+        currency: p.currency,
+        date: p.createdAt,
+        bookingId: p.bookingId,
+        tripTitle: p.booking.trip.title,
+        tripSlug: p.booking.trip.slug,
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     },
-  });
+    "Payment history retrieved",
+  );
 };

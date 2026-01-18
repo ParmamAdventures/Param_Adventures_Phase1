@@ -9,8 +9,14 @@ export const restoreTrip = catchAsync(async (req: Request, res: Response) => {
 
   const trip = await prisma.trip.findUnique({ where: { id } });
 
-  if (!trip) return ApiResponse.error(res, "Trip not found", 404);
-  if (trip.status !== "ARCHIVED") return ApiResponse.error(res, "Only archived trips can be restored", 400);
+  if (!trip) return ApiResponse.error(res, "TRIP_NOT_FOUND", "Trip not found", 404);
+  if (trip.status !== "ARCHIVED")
+    return ApiResponse.error(
+      res,
+      "TRIP_RESTORE_INVALID_STATE",
+      "Only archived trips can be restored",
+      400,
+    );
 
   const updated = await prisma.trip.update({
     where: { id },
@@ -27,5 +33,5 @@ export const restoreTrip = catchAsync(async (req: Request, res: Response) => {
     },
   });
 
-  return ApiResponse.success(res, "Trip restored to Draft", updated);
+  return ApiResponse.success(res, updated, "Trip restored to Draft");
 });

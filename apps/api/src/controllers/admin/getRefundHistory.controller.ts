@@ -1,4 +1,3 @@
-
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -51,8 +50,10 @@ export const getRefundHistory = async (req: Request, res: Response) => {
     prisma.payment.count({ where }),
   ]);
 
-  return ApiResponse.success(res, "Refund history retrieved", {
-    refunds: refunds.map((p) => ({
+  return ApiResponse.success(
+    res,
+    {
+      refunds: refunds.map((p) => ({
         id: p.id,
         amount: p.amount,
         refundId: p.providerPaymentId, // In refund flow, we might store refund ID here or in rawPayload
@@ -60,13 +61,15 @@ export const getRefundHistory = async (req: Request, res: Response) => {
         bookingId: p.bookingId,
         user: p.booking?.user?.name,
         email: p.booking?.user?.email,
-        trip: p.booking?.trip?.title
-    })),
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages: Math.ceil(total / limit),
+        trip: p.booking?.trip?.title,
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     },
-  });
+    "Refund history retrieved",
+  );
 };

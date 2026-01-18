@@ -27,7 +27,7 @@ async function getTrips() {
     );
     if (!res.ok) return [];
     const json = await res.json();
-    return json.message || json.data?.data || json.data || json;
+    return Array.isArray(json.data) ? json.data : [];
   } catch {
     return [];
   }
@@ -41,7 +41,7 @@ async function getBlogs() {
     );
     if (!res.ok) return [];
     const json = await res.json();
-    const blogs = json.message || json.data?.data || json.data || json;
+    const blogs = Array.isArray(json.data) ? json.data : [];
     return blogs.slice(0, 3);
   } catch {
     return [];
@@ -69,7 +69,7 @@ async function getFeaturedTrips() {
     );
     if (!res.ok) return [];
     const json = await res.json();
-    return json.message || json.data?.data || json.data || json;
+    return Array.isArray(json.data) ? json.data : [];
   } catch {
     return [];
   }

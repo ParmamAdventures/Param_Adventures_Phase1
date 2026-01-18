@@ -13,7 +13,7 @@ export const subscribe = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
 
   if (!email) {
-    return ApiResponse.error(res, "Email is required", 400);
+    return ApiResponse.error(res, "NEWSLETTER_EMAIL_REQUIRED", "Email is required", 400);
   }
 
   // Check if already subscribed
@@ -28,14 +28,14 @@ export const subscribe = catchAsync(async (req: Request, res: Response) => {
         where: { id: existing.id },
         data: { isActive: true },
       });
-      return ApiResponse.success(res, "Welcome back! Subscription reactivated.");
+      return ApiResponse.success(res, {}, "Welcome back! Subscription reactivated.");
     }
-    return ApiResponse.success(res, "You are already subscribed!");
+    return ApiResponse.success(res, {}, "You are already subscribed!");
   }
 
   await prisma.newsletterSubscriber.create({
     data: { email },
   });
 
-  return ApiResponse.success(res, "Subscribed successfully! Stay tuned for updates.", {}, 201);
+  return ApiResponse.success(res, {}, "Subscribed successfully! Stay tuned for updates.", 201);
 });

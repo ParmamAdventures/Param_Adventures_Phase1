@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse";
 
 export const uploadImage = catchAsync(async (req: Request, res: Response) => {
   if (!req.file) {
-    return ApiResponse.error(res, "NO_FILE_UPLOADED", 400);
+    return ApiResponse.error(res, "NO_FILE_UPLOADED", "No file uploaded", 400);
   }
 
   const file = req.file as any; // Multer Cloudinary File
@@ -62,5 +62,5 @@ export const uploadImage = catchAsync(async (req: Request, res: Response) => {
     },
   });
 
-  return ApiResponse.success(res, "File uploaded successfully", { image }, 201);
+  return ApiResponse.success(res, { image }, "File uploaded successfully", 201);
 });

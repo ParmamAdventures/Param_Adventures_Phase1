@@ -66,5 +66,5 @@ export const createTrip = catchAsync(async (req: Request, res: Response) => {
     },
   });
 
-  return ApiResponse.success(res, "Trip created successfully", trip, 201);
+  return ApiResponse.success(res, trip, "Trip created successfully", 201);
 });
