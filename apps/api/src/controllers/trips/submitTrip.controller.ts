@@ -2,32 +2,53 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { getTripOrThrow } from "../../utils/entityHelpers";
+import { validateTripStatusTransition } from "../../utils/statusValidation";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
 
 export const submitTrip = catchAsync(async (req: Request, res: Response) => {
   const user = (req as any).user;
   const { id } = req.params;
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
+  // Use new utility for fetch and validation
+  const trip = await getTripOrThrow(id, res);
+  if (!trip) return; // Already sent 404 response
 
-  if (!trip) return ApiResponse.error(res, "TRIP_NOT_FOUND", "Trip not found", 404);
-  if (trip.createdById !== user.id)
-    return ApiResponse.error(res, "TRIP_SUBMIT_FORBIDDEN", "Not owner", 403);
-  if (trip.status !== "DRAFT")
-    return ApiResponse.error(res, "TRIP_SUBMIT_INVALID_STATE", "Invalid state transition", 403);
+  // Check ownership
+  if (trip.createdById !== user.id) {
+    return ApiResponse.error(
+      res,
+      ErrorCodes.FORBIDDEN,
+      ErrorMessages.PERMISSION_DENIED,
+      403
+    );
+  }
+
+  // Validate status transition using state machine
+  try {
+    validateTripStatusTransition(trip.status, "PENDING_REVIEW");
+  } catch (error: any) {
+    return ApiResponse.error(
+      res,
+      ErrorCodes.INVALID_STATUS_TRANSITION,
+      error.message,
+      400
+    );
+  }
 
   const updated = await prisma.trip.update({
     where: { id },
     data: { status: "PENDING_REVIEW" },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      action: "TRIP_SUBMITTED",
-      targetType: "TRIP",
-      targetId: updated.id,
-      metadata: { status: updated.status },
-    },
+  // Use new utility for audit log
+  await createAuditLog({
+    actorId: user.id,
+    action: AuditActions.TRIP_SUBMITTED,
+    targetType: AuditTargetTypes.TRIP,
+    targetId: updated.id,
+    metadata: { status: updated.status },
   });
 
   return ApiResponse.success(res, updated, "Trip submitted successfully");
