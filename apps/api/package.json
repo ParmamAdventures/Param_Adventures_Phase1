@@ -11,8 +11,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "jest --config jest.config.js",
-    "seed": "npx ts-node scripts/seed-dummy-data.ts",
-    "seed:dummy": "npx ts-node scripts/seed-dummy-data.ts"
+    "seed": "npx ts-node prisma/seeds/production/index.ts",
+    "seed:prod": "cross-env ALLOW_PROD_SEED=true npx ts-node prisma/seeds/production/index.ts",
+    "seed:test": "node prisma/seeds/test/seed_comprehensive.js",
+    "seed:legacy": "node prisma/seeds/test/seed_legacy.js"
   },
   "keywords": [],
   "author": "",
@@ -87,6 +89,6 @@
     "typescript-eslint": "^8.51.0"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "npx ts-node prisma/seeds/production/index.ts"
   }
 }
