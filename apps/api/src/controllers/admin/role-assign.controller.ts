@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
 
 /**
  * Assign Role
@@ -35,14 +36,12 @@ export async function assignRole(req: Request, res: Response) {
     create: { userId, roleId: role.id },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: actor.id,
-      action: "ROLE_ASSIGNED",
-      targetType: "User",
-      targetId: userId,
-      metadata: { role: roleName },
-    },
+  await createAuditLog({
+    actorId: actor.id,
+    action: AuditActions.USER_ROLE_ASSIGNED,
+    targetType: AuditTargetTypes.USER,
+    targetId: userId,
+    metadata: { role: roleName },
   });
 
   res.json({ message: "Role assigned" });

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { isLastSuperAdmin } from "../../utils/roleGuards";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
 
 /**
  * List Roles
@@ -110,14 +111,12 @@ export async function assignRole(req: Request, res: Response) {
     create: { userId, roleId: role.id },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: actor.id,
-      action: "ROLE_ASSIGNED",
-      targetType: "User",
-      targetId: userId,
-      metadata: { role: roleName },
-    },
+  await createAuditLog({
+    actorId: actor.id,
+    action: AuditActions.USER_ROLE_ASSIGNED,
+    targetType: AuditTargetTypes.USER,
+    targetId: userId,
+    metadata: { role: roleName },
   });
 
   res.json({ message: "Role assigned" });
@@ -159,14 +158,12 @@ export async function revokeRole(req: Request, res: Response) {
     where: { userId_roleId: { userId, roleId: role.id } },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: actor.id,
-      action: "ROLE_REVOKED",
-      targetType: "User",
-      targetId: userId,
-      metadata: { role: roleName },
-    },
+  await createAuditLog({
+    actorId: actor.id,
+    action: AuditActions.USER_ROLE_REVOKED,
+    targetType: AuditTargetTypes.USER,
+    targetId: userId,
+    metadata: { role: roleName },
   });
 
   res.json({ message: "Role revoked" });

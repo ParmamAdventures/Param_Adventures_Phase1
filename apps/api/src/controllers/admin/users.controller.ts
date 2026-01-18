@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
 
 /**
  * List Users
@@ -82,14 +83,12 @@ export async function updateUserStatus(req: Request, res: Response) {
     },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: (req as any).user.id,
-      action: "USER_STATUS_UPDATED",
-      targetType: "USER",
-      targetId: user.id,
-      metadata: { status, reason },
-    },
+  await createAuditLog({
+    actorId: (req as any).user.id,
+    action: AuditActions.USER_STATUS_CHANGED,
+    targetType: AuditTargetTypes.USER,
+    targetId: user.id,
+    metadata: { status, reason },
   });
 
   res.json(user);
@@ -110,14 +109,12 @@ export async function deleteUser(req: Request, res: Response) {
     data: { status: "BANNED", statusReason: "DELETED_BY_ADMIN" },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: (req as any).user.id,
-      action: "USER_DELETED",
-      targetType: "USER",
-      targetId: user.id,
-      metadata: { deletedAt: new Date().toISOString() },
-    },
+  await createAuditLog({
+    actorId: (req as any).user.id,
+    action: AuditActions.USER_BANNED,
+    targetType: AuditTargetTypes.USER,
+    targetId: user.id,
+    metadata: { deletedAt: new Date().toISOString() },
   });
 
   res.json({ message: "User deleted successfully" });
@@ -137,13 +134,12 @@ export async function unsuspendUser(req: Request, res: Response) {
     data: { status: "ACTIVE", statusReason: null },
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: (req as any).user.id,
-      action: "USER_UNSUSPENDED",
-      targetType: "USER",
-      targetId: user.id,
-    },
+  await createAuditLog({
+    actorId: (req as any).user.id,
+    action: AuditActions.USER_STATUS_CHANGED,
+    targetType: AuditTargetTypes.USER,
+    targetId: user.id,
+    metadata: { status: "ACTIVE", action: "unsuspended" },
   });
 
   res.json(user);
