@@ -4,6 +4,7 @@ import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { getTripOrThrowService } from "../../utils/entityHelpers";
 
 export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -16,10 +17,7 @@ export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => 
     throw new HttpError(400, "INVALID_REQUEST", "URL and Type are required");
   }
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
-  if (!trip) {
-    throw new HttpError(404, "NOT_FOUND", "Trip not found");
-  }
+  const trip = await getTripOrThrowService(id);
 
   // Authz: Guide assigned to trip OR Manager/Admin
   const isAssignedGuide = await prisma.tripsOnGuides.findUnique({
@@ -69,4 +67,3 @@ export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => 
 
   return ApiResponse.success(res, { documentation: updatedDocs }, "Document uploaded");
 });
-

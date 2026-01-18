@@ -4,15 +4,14 @@ import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { getTripOrThrowService } from "../../utils/entityHelpers";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 export const completeTrip = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const userId = req.user!.id;
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
-  if (!trip) {
-    throw new HttpError(404, "NOT_FOUND", "Trip not found");
-  }
+  const trip = await getTripOrThrowService(id);
 
   // Authz: Only Manager or Admin (Guides cannot close trips, only submit docs)
   const isManager = trip.managerId === userId;
@@ -54,4 +53,3 @@ export const completeTrip = catchAsync(async (req: Request, res: Response) => {
 
   return ApiResponse.success(res, { trip: updatedTrip }, "Trip completed successfully");
 });
-

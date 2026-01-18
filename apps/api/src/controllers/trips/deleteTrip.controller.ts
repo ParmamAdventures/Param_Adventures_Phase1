@@ -4,18 +4,12 @@ import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { getTripOrThrowService } from "../../utils/entityHelpers";
 
 export const deleteTrip = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const trip = await prisma.trip.findUnique({
-    where: { id },
-    include: { bookings: true }
-  });
-
-  if (!trip) {
-    throw new HttpError(404, "NOT_FOUND", "Trip not found");
-  }
+  const trip = await getTripOrThrow Service(id, { include: { bookings: true } });
 
   // Constraint 1: Cannot delete PUBLISHED trips
   if (trip.status === "PUBLISHED") {
@@ -52,4 +46,3 @@ export const deleteTrip = catchAsync(async (req: Request, res: Response) => {
 
   return ApiResponse.success(res, null, "Trip deleted successfully");
 });
-
