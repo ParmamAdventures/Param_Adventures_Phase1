@@ -3,14 +3,17 @@ import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { TripCacheService } from "../../services/trip-cache.service";
+import { getTripOrThrow } from "../../utils/entityHelpers";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
+import { TripIncludes } from "../../constants/prismaIncludes";
 
 export const updateTrip = catchAsync(async (req: Request, res: Response) => {
   const user = (req as any).user;
   const { id } = req.params;
 
-  const trip = await prisma.trip.findUnique({ where: { id } });
-
-  if (!trip) return ApiResponse.error(res, "TRIP_NOT_FOUND", "Trip not found", 404);
+  const trip = await getTripOrThrow(id, res);
+  if (!trip) return;
 
   // Check permissions: Owner OR Admin (trip:edit)
   const isOwner = trip.createdById === user.id;
@@ -19,9 +22,9 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
   if (!isOwner && !canEditAny) {
     return ApiResponse.error(
       res,
-      "TRIP_EDIT_FORBIDDEN",
-      "Insufficient permissions to edit this trip",
-      403,
+      ErrorCodes.TRIP_EDIT_FORBIDDEN,
+      ErrorMessages.INSUFFICIENT_PERMISSIONS,
+      403
     );
   }
 
@@ -29,9 +32,9 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
   if (trip.status !== "DRAFT" && !canEditAny) {
     return ApiResponse.error(
       res,
-      "TRIP_EDIT_NOT_DRAFT",
-      "Only drafts can be edited by owners",
-      403,
+      ErrorCodes.TRIP_EDIT_NOT_DRAFT,
+      ErrorMessages.TRIP_EDIT_NOT_DRAFT,
+      403
     );
   }
 
@@ -77,26 +80,18 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
           }
         : undefined,
     },
-    include: {
-      coverImage: true,
-      gallery: {
-        include: { image: true },
-        orderBy: { order: "asc" },
-      },
-    },
+    include: TripIncludes.withMedia,
   });
 
   // Invalidate cache after update
   await TripCacheService.invalidateTrip(updated);
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      action: "TRIP_UPDATED",
-      targetType: "TRIP",
-      targetId: updated.id,
-      metadata: { status: updated.status },
-    },
+  await createAuditLog({
+    actorId: user.id,
+    action: AuditActions.TRIP_UPDATED,
+    targetType: AuditTargetTypes.TRIP,
+    targetId: updated.id,
+    metadata: { status: updated.status },
   });
 
   return ApiResponse.success(res, updated, "Trip updated successfully");

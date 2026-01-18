@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { TripIncludes } from "../../constants/prismaIncludes";
 
 export const createTrip = catchAsync(async (req: Request, res: Response) => {
   const user = (req as any).user;
@@ -47,23 +49,15 @@ export const createTrip = catchAsync(async (req: Request, res: Response) => {
             }
           : undefined,
     },
-    include: {
-      coverImage: true,
-      gallery: {
-        include: { image: true },
-        orderBy: { order: "asc" },
-      },
-    },
+    include: TripIncludes.withMedia, // Use shared include pattern
   });
 
-  await prisma.auditLog.create({
-    data: {
-      actorId: user.id,
-      action: "TRIP_CREATED",
-      targetType: "TRIP",
-      targetId: trip.id,
-      metadata: { status: trip.status },
-    },
+  await createAuditLog({
+    actorId: user.id,
+    action: AuditActions.TRIP_CREATED,
+    targetType: AuditTargetTypes.TRIP,
+    targetId: trip.id,
+    metadata: { status: trip.status },
   });
 
   return ApiResponse.success(res, trip, "Trip created successfully", 201);
