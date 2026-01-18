@@ -40,6 +40,7 @@ describe("Payment Integration Tests", () => {
     await prisma.payment.deleteMany();
     await prisma.booking.deleteMany();
     await prisma.trip.deleteMany();
+    await prisma.blog.deleteMany();
     await prisma.userRole.deleteMany();
     await prisma.user.deleteMany();
 
@@ -108,6 +109,7 @@ describe("Payment Integration Tests", () => {
     await prisma.payment.deleteMany();
     await prisma.booking.deleteMany();
     await prisma.trip.deleteMany();
+    await prisma.blog.deleteMany();
     await prisma.userRole.deleteMany();
     await prisma.user.deleteMany();
   });
