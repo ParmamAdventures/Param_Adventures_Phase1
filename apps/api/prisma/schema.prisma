@@ -384,6 +384,14 @@ enum PaymentStatus {
   DISPUTED
 }
 
+enum PaymentMethod {
+  CARD
+  UPI
+  NETBANKING
+  WALLET
+  OTHER
+}
+
 model Payment {
   id                String        @id @default(uuid())
   bookingId         String
@@ -395,7 +403,7 @@ model Payment {
   proofUrl          String? // For manual/offline payments (image URL)
   amount            Int // paise
   currency          String        @default("INR")
-  method            String?
+  method            PaymentMethod?
   refundedAmount    Int           @default(0) // Track cumulative refunds
   disputeId         String?       // ID from provider if disputed
   status            PaymentStatus @default(CREATED)
