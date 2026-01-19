@@ -35,32 +35,31 @@ enum TripInquiryStatus {
 //////////////////////
 
 model User {
-  id          String     @id @default(uuid())
-  email       String     @unique
-  password    String
-  name        String
-  nickname    String?
-  bio         String?
-  age         Int?
-  gender      String?
-  phoneNumber String?
-  address     String?
+  id           String     @id @default(uuid())
+  email        String     @unique
+  password     String
+  name         String
+  nickname     String?
+  bio          String?
+  age          Int?
+  gender       String?
+  phoneNumber  String?
+  address      String?
   status       UserStatus @default(ACTIVE)
   statusReason String?
   preferences  Json?      @default("{}")
-  
-  // Social Auth
-  googleId     String?    @unique
-  avatarUrl    String?
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  // Social Auth
+  googleId  String? @unique
+  avatarUrl String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   avatarImageId String?
   avatarImage   Image?  @relation("UserAvatar", fields: [avatarImageId], references: [id], onDelete: SetNull)
 
-  deletedAt     DateTime? // Soft Delete
-
+  deletedAt DateTime? // Soft Delete
 
   roles         UserRole[]
   // Trip relations
@@ -77,10 +76,10 @@ model User {
 
   managedTrips Trip[]          @relation("TripManagedBy")
   guidedTrips  TripsOnGuides[]
-  
-  reviews      Review[]
-  savedTrips   SavedTrip[]
-  auditLogs    AuditLog[]
+
+  reviews    Review[]
+  savedTrips SavedTrip[]
+  auditLogs  AuditLog[]
 
   @@index([status])
   @@index([createdAt])
@@ -140,8 +139,8 @@ model AuditLog {
   targetId   String?
   metadata   Json?
   createdAt  DateTime @default(now())
-  
-  actor      User?    @relation(fields: [actorId], references: [id])
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([actorId])
   @@index([targetType, targetId])
@@ -203,10 +202,7 @@ model Trip {
   heroImage    Image?             @relation("TripHeroImage", fields: [heroImageId], references: [id], onDelete: SetNull)
   gallery      TripGalleryImage[]
 
-
-  
-  deletedAt        DateTime? // Soft Delete
-
+  deletedAt DateTime? // Soft Delete
 
   createdById String
   createdBy   User   @relation("TripCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
@@ -225,9 +221,9 @@ model Trip {
   endDate   DateTime
 
   managerId String?
-  manager   User?   @relation("TripManagedBy", fields: [managerId], references: [id], onDelete: SetNull)
+  manager   User?           @relation("TripManagedBy", fields: [managerId], references: [id], onDelete: SetNull)
   guides    TripsOnGuides[]
-  
+
   documentation Json? // Post-trip proofs (photos, reports)
 
   blogs Blog[] @relation("TripBlogs")
@@ -247,6 +243,9 @@ model Trip {
   @@index([coverImageId])
   @@index([heroImageId])
   @@index([price])
+  @@index([status, isFeatured, createdAt])
+  @@index([category, status])
+  @@index([difficulty, price])
 }
 
 model TripGalleryImage {
@@ -258,17 +257,22 @@ model TripGalleryImage {
   image Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
 
   @@id([tripId, imageId])
+  @@index([tripId])
+  @@index([imageId, order])
 }
 
 model TripsOnGuides {
-  tripId  String
-  guideId String
+  tripId     String
+  guideId    String
   assignedAt DateTime @default(now())
 
   trip  Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
   guide User @relation(fields: [guideId], references: [id], onDelete: Cascade)
 
   @@id([tripId, guideId])
+  @@index([tripId])
+  @@index([guideId])
+  @@index([assignedAt])
 }
 
 enum Difficulty {
@@ -292,7 +296,7 @@ model Blog {
   slug    String     @unique
   excerpt String?
   content Json // editor output
-  theme   String?   @default("modern")
+  theme   String?    @default("modern")
   status  BlogStatus @default(DRAFT)
 
   authorId String
@@ -305,7 +309,7 @@ model Blog {
   trip   Trip?   @relation("TripBlogs", fields: [tripId], references: [id], onDelete: SetNull)
 
   deletedAt DateTime? // Soft Delete
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -316,7 +320,7 @@ model Blog {
 }
 
 model Image {
-  id          String @id @default(uuid())
+  id          String    @id @default(uuid())
   originalUrl String
   mediumUrl   String
   thumbUrl    String
@@ -325,7 +329,7 @@ model Image {
   size        Int
   mimeType    String
   type        MediaType @default(IMAGE)
-  duration    Int?      // Duration in seconds for videos
+  duration    Int? // Duration in seconds for videos
 
   uploadedById String
   uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id], onDelete: Restrict)
@@ -339,7 +343,7 @@ model Image {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@index([uploadedById])
 }
 
@@ -364,10 +368,10 @@ model Booking {
   status BookingStatus @default(REQUESTED)
   notes  String?
 
-  startDate  DateTime
-  guests     Int      @default(1)
-  guestDetails Json?  // Array of { name, email, age, gender }
-  totalPrice Int // Stored at time of booking to handle price changes
+  startDate    DateTime
+  guests       Int      @default(1)
+  guestDetails Json?    @default("[]") // Array of { name, email, age, gender }
+  totalPrice   Int // Stored at time of booking to handle price changes
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -380,13 +384,16 @@ model Booking {
 
   paymentStatus BookingPaymentStatus @default(PENDING)
 
+  @@unique([userId, tripId, startDate])
   // Prevent duplicate bookings for same trip on same date
   @@index([tripId])
   @@index([userId])
   @@index([status])
   @@index([paymentStatus])
-  @@unique([userId, tripId, startDate])
   @@index([startDate])
+  @@index([status, createdAt])
+  @@index([userId, createdAt])
+  @@index([tripId, status, createdAt])
 }
 
 enum PaymentStatus {
@@ -408,20 +415,20 @@ enum PaymentMethod {
 }
 
 model Payment {
-  id                String        @id @default(uuid())
+  id                String         @id @default(uuid())
   bookingId         String
   provider          String // "razorpay"
-  providerOrderId   String        @unique
-  providerPaymentId String?       @unique
-  razorpayRefundId  String?       @unique
+  providerOrderId   String         @unique
+  providerPaymentId String?        @unique
+  razorpayRefundId  String?        @unique
   rawPayload        Json?
   proofUrl          String? // For manual/offline payments (image URL)
   amount            Int // paise
-  currency          String        @default("INR")
+  currency          String         @default("INR")
   method            PaymentMethod?
-  refundedAmount    Int           @default(0) // Track cumulative refunds
-  disputeId         String?       // ID from provider if disputed
-  status            PaymentStatus @default(CREATED)
+  refundedAmount    Int            @default(0) // Track cumulative refunds
+  disputeId         String? // ID from provider if disputed
+  status            PaymentStatus  @default(CREATED)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -446,30 +453,32 @@ model HeroSlide {
   @@index([order])
 }
 
-
 model Review {
   id        String   @id @default(uuid())
-  rating    Int      // 1-5 stars
+  rating    Int // 1-5 stars
   comment   String?
   userId    String
   tripId    String
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
   @@unique([userId, tripId]) // One review per trip per user
   @@index([tripId])
+  @@index([userId, tripId])
+  @@index([tripId, rating])
+  @@index([createdAt])
 }
 
 model SavedTrip {
   userId    String
   tripId    String
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
-  
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
   @@id([userId, tripId])
   @@index([userId])
 }
@@ -481,7 +490,7 @@ model SiteConfig {
 }
 
 model TripInquiry {
-  id          String   @id @default(uuid())
+  id          String            @id @default(uuid())
   name        String
   email       String
   phoneNumber String?
@@ -490,10 +499,12 @@ model TripInquiry {
   budget      String?
   details     String?
   status      TripInquiryStatus @default(NEW)
-  createdAt   DateTime @default(now())
-  
+  createdAt   DateTime          @default(now())
+
   @@index([status])
   @@index([createdAt])
+  @@index([email, status])
+  @@index([status, createdAt])
 }
 
 model NewsletterSubscriber {
@@ -501,4 +512,6 @@ model NewsletterSubscriber {
   email     String   @unique
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+
+  @@index([isActive, createdAt])
 }
