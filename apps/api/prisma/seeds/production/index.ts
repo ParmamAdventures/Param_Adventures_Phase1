@@ -264,6 +264,25 @@ async function createUsers(roles: any) {
   );
   console.log(`   (Save this password! It will not be shown again)\n`);
 
+  // Super Admin user
+  const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || `super.admin@paramadventures.com`;
+  const superAdmin = await prisma.user.upsert({
+    where: { email: superAdminEmail },
+    update: {},
+    create: {
+      email: superAdminEmail,
+      password: hashedPassword,
+      name: "Super Admin",
+      status: "ACTIVE",
+    },
+  });
+
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId: superAdmin.id, roleId: roles.superAdminRole.id } },
+    update: {},
+    create: { userId: superAdmin.id, roleId: roles.superAdminRole.id },
+  });
+
   // Admin user (from env vars)
   const admin = await prisma.user.upsert({
     where: { email: process.env.ADMIN_EMAIL! },
@@ -969,7 +988,10 @@ async function main() {
     console.log("   • Site configuration");
 
     console.log("\n🔑 Login Credentials:");
-    console.log(`   Admin:    ${process.env.ADMIN_EMAIL}`);
+    console.log(
+      `   Super Admin: ${process.env.SUPER_ADMIN_EMAIL || "super.admin@paramadventures.com"}`,
+    );
+    console.log(`   Admin:       ${process.env.ADMIN_EMAIL}`);
     console.log(`   Manager:  manager@paramadventures.com / Demo@2026`);
     console.log(`   Guide:    guide.rahul@paramadventures.com / Demo@2026`);
     console.log(`   Customer: amit.patel@email.com / Demo@2026\n`);
