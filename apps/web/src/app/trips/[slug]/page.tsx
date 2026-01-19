@@ -15,30 +15,9 @@ import ReviewsSection from "../../../components/reviews/ReviewsSection";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 console.log(`[TripDetail] Configured API_BASE: "${API_BASE}"`);
 
-type TripFull = {
-  id?: string;
-  title: string;
-  slug: string;
-  description?: string | null;
-  location?: string;
-  startPoint?: string;
-  endPoint?: string;
-  altitude?: string;
-  distance?: string;
-  durationDays?: number;
-  difficulty?: string;
-  price?: number;
-  capacity?: number;
-  status?: string;
-  itinerary?: any;
-  inclusions?: string[];
-  exclusions?: string[];
-  thingsToPack?: string[];
-  highlights?: string[];
-  itineraryPdf?: string;
-  gallery?: { image: { mediumUrl: string; originalUrl: string } }[];
-  category?: string;
-};
+import { Trip } from "@/types/trip";
+
+type TripFull = Trip;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -67,20 +46,22 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
   const slug = resolvedParams.slug;
 
   console.log(`[TripDetail] Server-side fetching: ${API_BASE}/trips/public/${slug}`);
-  
+
   let initialTrip = null;
 
   try {
     const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
       cache: "no-store",
     });
-    
+
     if (res.ok) {
       const json = await res.json();
       // Robust unpacking on server side too
       initialTrip = json.data?.data || json.data || json;
     } else {
-       console.warn(`[TripDetail] Server fetch failed (Status: ${res.status}). Falling back to client.`);
+      console.warn(
+        `[TripDetail] Server fetch failed (Status: ${res.status}). Falling back to client.`,
+      );
     }
   } catch (err) {
     console.error("[TripDetail] Server network error. Falling back to client:", err);
@@ -209,7 +190,6 @@ function renderTrip(trip: TripFull) {
                 </div>
               </section>
             )}
-
 
             {/* Reviews / Testimonials */}
             {/* <Testimonials tripId={trip.id} /> Replaced with Real Reviews */}

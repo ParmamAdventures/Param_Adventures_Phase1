@@ -1,12 +1,15 @@
 "use client";
+"use client";
 
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import TripCard from "./TripCard";
 import { Button } from "../ui/Button";
 
+import { Trip } from "@/types/trip";
+
 interface TripCarouselProps {
-  trips: any[];
+  trips: Trip[];
 }
 
 /**

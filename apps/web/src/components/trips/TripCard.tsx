@@ -3,16 +3,7 @@ import { Button } from "../ui/Button";
 import Image from "next/image";
 import HeartButton from "./HeartButton";
 
-type Trip = {
-  id: string;
-  title: string;
-  location: string;
-  slug: string;
-  price?: number;
-  duration?: string;
-  durationDays?: number;
-  coverImage?: string | { mediumUrl: string };
-};
+import { Trip } from "@/types/trip";
 
 interface TripCardProps {
   trip: Trip;

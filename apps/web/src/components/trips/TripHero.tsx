@@ -17,15 +17,16 @@ interface TripHeroProps {
     location?: string;
     difficulty?: string;
     price?: number;
-    heroImage?: TripImage | null;
-    coverImage?: TripImage | null;
+    heroImage?: TripImage | string | null;
+    coverImage?: TripImage | string | null;
   };
 }
 
 export default function TripHero({ trip }: TripHeroProps) {
   // Helper to format local image paths
-  const getImageUrl = (image: TripImage | null | undefined) => {
+  const getImageUrl = (image: TripImage | string | null | undefined) => {
     if (!image) return null;
+    if (typeof image === "string") return image;
     const url = image.originalUrl || image.mediumUrl;
     if (!url) return null;
 
@@ -59,7 +60,7 @@ export default function TripHero({ trip }: TripHeroProps) {
     activeUrl = coverImageUrl;
   }
 
-  const isVideo = activeAsset?.type === "VIDEO";
+  const isVideo = typeof activeAsset !== "string" && activeAsset?.type === "VIDEO";
 
   return (
     <div className="relative flex h-[60vh] min-h-[500px] w-full items-end overflow-hidden bg-slate-900 pb-12 text-white">

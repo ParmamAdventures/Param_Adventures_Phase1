@@ -9,6 +9,7 @@ import DynamicList from "../ui/DynamicList";
 import ItineraryBuilder from "./ItineraryBuilder";
 import { Select } from "../ui/Select";
 import FormattedDateInput from "../ui/FormattedDateInput";
+import { User } from "@/types/auth";
 
 export type TripFormData = {
   title: string;
@@ -40,7 +41,7 @@ export type TripFormData = {
   distance: string;
   isFeatured: boolean;
   managerId?: string | null;
-  guides?: { guide: { id: string; name: string; email: string } }[];
+  guides?: { guide: User }[];
 };
 
 type TripFormProps = {
@@ -532,7 +533,9 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => update("faqs", [...form.faqs, { question: "", answer: "Answer here..." }])}
+                    onClick={() =>
+                      update("faqs", [...form.faqs, { question: "", answer: "Answer here..." }])
+                    }
                     className="border-dashed"
                   >
                     + Add FAQ

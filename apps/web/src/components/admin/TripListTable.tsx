@@ -5,24 +5,16 @@ import Link from "next/link";
 import { Button } from "../ui/Button";
 import StatusBadge from "../ui/StatusBadge";
 import Spinner from "../ui/Spinner";
-
-type Trip = {
-  id: string;
-  title: string;
-  slug: string;
-  location: string;
-  status: string;
-  price?: number;
-  startDate?: string;
-  endDate?: string;
-  capacity?: number;
-};
+import { Trip } from "@/types/trip";
 
 type Props = {
   trips: Trip[];
   loading: boolean;
   onRefresh?: () => void;
-  onAction?: (id: string, action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore" | "delete") => void;
+  onAction?: (
+    id: string,
+    action: "submit" | "approve" | "reject" | "publish" | "archive" | "restore" | "delete",
+  ) => void;
   currentPage?: number;
   totalPages?: number;
   onPageChange?: (page: number) => void;
@@ -143,7 +135,7 @@ export default function TripListTable({
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <StatusBadge status={trip.status} />
+                    <StatusBadge status={trip.status || "DRAFT"} />
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap items-center gap-2">

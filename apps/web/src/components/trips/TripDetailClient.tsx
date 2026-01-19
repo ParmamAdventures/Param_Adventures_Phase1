@@ -14,34 +14,10 @@ import ReviewsSection from "../reviews/ReviewsSection";
 import TripBookingCard from "./TripBookingCard";
 import TripPolicies from "./TripPolicies";
 
+import { Trip } from "@/types/trip";
+
 // Define strict types matching the API response
-type TripFull = {
-  id: string;
-  title: string;
-  slug: string;
-  description?: string | null;
-  location?: string;
-  startPoint?: string;
-  endPoint?: string;
-  altitude?: string;
-  distance?: string;
-  durationDays?: number;
-  difficulty?: string;
-  price?: number;
-  capacity?: number;
-  status?: string;
-  itinerary?: any;
-  inclusions?: string[];
-  exclusions?: string[];
-  thingsToPack?: string[];
-  highlights?: string[];
-  itineraryPdf?: string;
-  gallery?: { image: { mediumUrl: string; originalUrl: string } }[];
-  category?: string;
-  cancellationPolicy?: any;
-  faqs?: { question: string; answer: string }[];
-  seasons?: string[];
-};
+type TripFull = Trip;
 
 // Re-using the same render layout as the server component to ensure consistency
 function RenderTripLayout({ trip }: { trip: TripFull }) {
@@ -112,7 +88,6 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
                 </div>
               )}
             </section>
-
 
             {/* Inclusions */}
             <section id="inclusions" className="scroll-mt-24">
@@ -234,7 +209,7 @@ export default function TripDetailClient({
 
     // Otherwise, fetch from client (waking up backend if needed)
     console.log(`[Client] Waking up backend for slug: ${slug}`);
-    
+
     // We can use the proxy route /api/trips/public/...
     apiFetch(`/trips/public/${slug}`)
       .then(async (res) => {

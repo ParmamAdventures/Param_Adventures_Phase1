@@ -5,12 +5,7 @@ import { apiFetch } from "../../lib/api";
 import { Button } from "../ui/Button";
 import Spinner from "../ui/Spinner";
 import { useToast } from "../ui/ToastProvider";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { User } from "@/types/auth";
 
 interface TripAssignmentManagerProps {
   tripId: string;
@@ -211,4 +206,3 @@ export default function TripAssignmentManager({
     </div>
   );
 }
-
