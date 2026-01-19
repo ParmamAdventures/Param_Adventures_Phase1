@@ -16,7 +16,14 @@
  * - Can be safely run in production for demos/staging
  */
 
-import { PrismaClient, Prisma, TripStatus, BlogStatus, TripCategory } from "@prisma/client";
+import {
+  PrismaClient,
+  Prisma,
+  TripStatus,
+  BlogStatus,
+  TripCategory,
+  PaymentMethod,
+} from "@prisma/client";
 // ... (skip lines)
 
 // (Code removed)
@@ -762,7 +769,7 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
       amount: 240000,
       currency: "INR",
       status: "CAPTURED",
-      method: "card",
+      method: PaymentMethod.CARD,
     },
   });
 
@@ -788,7 +795,7 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
       amount: 85000,
       currency: "INR",
       status: "CAPTURED",
-      method: "upi",
+      method: PaymentMethod.UPI,
     },
   });
 
