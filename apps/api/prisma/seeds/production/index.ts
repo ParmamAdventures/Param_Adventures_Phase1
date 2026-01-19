@@ -23,6 +23,7 @@ import {
   BlogStatus,
   TripCategory,
   PaymentMethod,
+  Difficulty,
 } from "@prisma/client";
 // ... (skip lines)
 
@@ -318,8 +319,8 @@ async function createUsers(roles: any) {
     },
   });
 
-  // 2. Guide
-  const guide = await prisma.user.upsert({
+  // 2. Guides
+  const guide1 = await prisma.user.upsert({
     where: { email: "guide.rahul@paramadventures.com" },
     update: {},
     create: {
@@ -331,57 +332,58 @@ async function createUsers(roles: any) {
     },
   });
 
-  await prisma.userRole.upsert({
-    where: {
-      userId_roleId: {
-        userId: guide.id,
-        roleId: roles.guideRole.id,
-      },
-    },
+  const guide2 = await prisma.user.upsert({
+    where: { email: "guide.neha@paramadventures.com" },
     update: {},
     create: {
-      userId: guide.id,
-      roleId: roles.guideRole.id,
-    },
-  });
-
-  // 3. Customer
-  const customer = await prisma.user.upsert({
-    where: { email: "amit.patel@email.com" },
-    update: {},
-    create: {
-      email: "amit.patel@email.com",
+      email: "guide.neha@paramadventures.com",
       password: demoPassword,
-      name: "Amit Patel",
-      phoneNumber: "+91-9123456789",
+      name: "Neha Sharma",
+      phoneNumber: "+91-9876543212",
       status: "ACTIVE",
     },
   });
 
-  await prisma.userRole.upsert({
-    where: {
-      userId_roleId: {
-        userId: customer.id,
-        roleId: roles.userRole.id,
+  for (const guide of [guide1, guide2]) {
+    await prisma.userRole.upsert({
+      where: { userId_roleId: { userId: guide.id, roleId: roles.guideRole.id } },
+      update: {},
+      create: { userId: guide.id, roleId: roles.guideRole.id },
+    });
+  }
+
+  // 3. Customers
+  const customerEmails = ["amit.patel@email.com", "sneha.k@email.com", "vikram.m@email.com"];
+  const customerNames = ["Amit Patel", "Sneha Kapoor", "Vikram Mehta"];
+  const customers = [];
+
+  for (let i = 0; i < customerEmails.length; i++) {
+    const customer = await prisma.user.upsert({
+      where: { email: customerEmails[i] },
+      update: {},
+      create: {
+        email: customerEmails[i],
+        password: demoPassword,
+        name: customerNames[i],
+        status: "ACTIVE",
       },
-    },
-    update: {},
-    create: {
-      userId: customer.id,
-      roleId: roles.userRole.id,
-    },
-  });
+    });
+    await prisma.userRole.upsert({
+      where: { userId_roleId: { userId: customer.id, roleId: roles.userRole.id } },
+      update: {},
+      create: { userId: customer.id, roleId: roles.userRole.id },
+    });
+    customers.push(customer);
+  }
 
-  console.log(`✅ Created Admin and 3 Demo Users (Manager, Guide, Customer)`);
+  console.log(`✅ Created Admin and ${guide1.id ? 2 : 0} Guides and ${customers.length} Customers`);
 
-  // Return structure matching original for downstream functions
-  // We map the single guide/customer to the expected return properties if needed
   return {
     admin,
     manager,
-    guide1: guide,
-    // guide2 was removed
-    customers: [customer],
+    guide1,
+    guide2,
+    customers,
   };
 }
 
@@ -427,7 +429,7 @@ async function createImages(users: any) {
         size: 250000,
         mimeType: "image/jpeg",
         type: "IMAGE",
-        uploadedById: users.admin.id,
+        uploadedBy: { connect: { id: users.admin.id } },
       },
     });
     images.push(image);
@@ -605,26 +607,59 @@ async function createTrips(users: any, images: any[]) {
 
   const trips = [];
   for (const data of tripsData) {
-    const trip = await prisma.trip.upsert({
-      where: { slug: data.slug },
-      update: {
-        ...data,
-        status: data.status as TripStatus,
-        category: data.category as TripCategory,
-        difficulty: data.difficulty,
-      },
-      create: {
-        ...data,
-        status: data.status as TripStatus,
-        category: data.category as TripCategory,
-        difficulty: data.difficulty,
-        createdBy: { connect: { id: users.admin.id } },
-        approvedBy: { connect: { id: users.admin.id } },
-        manager: { connect: { id: users.manager.id } },
-        publishedAt: new Date(),
-      },
-    });
-    trips.push(trip);
+    console.log(`   - Processing trip: ${data.title}`);
+    const tripData: any = {
+      title: data.title,
+      description: data.description,
+      location: data.location,
+      price: data.price,
+      durationDays: data.durationDays,
+      difficulty: data.difficulty as Difficulty,
+      status: data.status as TripStatus,
+      category: data.category as TripCategory,
+      capacity: data.capacity,
+      isFeatured: data.isFeatured,
+      startPoint: data.startPoint,
+      endPoint: data.endPoint,
+      altitude: data.altitude,
+      distance: data.distance,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      highlights: data.highlights,
+      inclusions: data.inclusions,
+      exclusions: data.exclusions,
+      thingsToPack: data.thingsToPack,
+      seasons: data.seasons,
+      itinerary: data.itinerary as any,
+    };
+
+    if (data.coverImageId) {
+      tripData.coverImage = { connect: { id: data.coverImageId } };
+    }
+    if (data.heroImageId) {
+      tripData.heroImage = { connect: { id: data.heroImageId } };
+    }
+
+    let trip;
+    try {
+      trip = await prisma.trip.upsert({
+        where: { slug: data.slug },
+        update: tripData,
+        create: {
+          ...tripData,
+          slug: data.slug,
+          createdBy: { connect: { id: users.admin.id } },
+          approvedBy: { connect: { id: users.admin.id } },
+          manager: { connect: { id: users.manager.id } },
+          publishedAt: new Date(),
+        },
+      });
+      trips.push(trip);
+    } catch (e: any) {
+      console.error(`❌ Failed to upsert trip: ${data.title}`);
+      console.error(e.message);
+      throw e;
+    }
 
     // Assign guides
     if (trip.id) {
@@ -723,16 +758,27 @@ async function createBlogs(users: any, trips: any[], images: any[]) {
   ];
 
   for (const data of blogs) {
+    const blogData = {
+      title: data.title,
+      slug: data.slug,
+      excerpt: data.excerpt,
+      content: data.content,
+      status: data.status as BlogStatus,
+    };
+
     await prisma.blog.upsert({
       where: { slug: data.slug },
       update: {
-        ...data,
-        status: data.status as BlogStatus,
+        ...blogData,
+        author: { connect: { id: data.authorId } },
+        coverImage: data.coverImageId ? { connect: { id: data.coverImageId } } : undefined,
+        trip: data.tripId ? { connect: { id: data.tripId } } : undefined,
       },
       create: {
-        ...data,
-        status: data.status as BlogStatus,
-        author: { connect: { id: data.authorId } }, // using connect for relation
+        ...blogData,
+        author: { connect: { id: data.authorId } },
+        coverImage: data.coverImageId ? { connect: { id: data.coverImageId } } : undefined,
+        trip: data.tripId ? { connect: { id: data.tripId } } : undefined,
       },
     });
   }
@@ -746,8 +792,8 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   // Completed booking with payment
   const booking1 = await prisma.booking.create({
     data: {
-      userId: users.customers[0].id,
-      tripId: trips[0].id,
+      user: { connect: { id: users.customers[0].id } },
+      trip: { connect: { id: trips[0].id } },
       startDate: new Date("2026-03-15"),
       guests: 2,
       totalPrice: 240000,
@@ -762,7 +808,7 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
 
   await prisma.payment.create({
     data: {
-      bookingId: booking1.id,
+      booking: { connect: { id: booking1.id } },
       provider: "razorpay",
       providerOrderId: `order_demo_${Date.now()}_1`,
       providerPaymentId: `pay_demo_${Date.now()}_1`,
@@ -776,8 +822,8 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   // Ongoing trip booking
   const booking2 = await prisma.booking.create({
     data: {
-      userId: users.customers[1].id,
-      tripId: trips[1].id,
+      user: { connect: { id: users.customers[1].id } },
+      trip: { connect: { id: trips[1].id } },
       startDate: new Date("2026-06-01"),
       guests: 1,
       totalPrice: 85000,
@@ -788,7 +834,7 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
 
   await prisma.payment.create({
     data: {
-      bookingId: booking2.id,
+      booking: { connect: { id: booking2.id } },
       provider: "razorpay",
       providerOrderId: `order_demo_${Date.now()}_2`,
       providerPaymentId: `pay_demo_${Date.now()}_2`,
@@ -802,8 +848,8 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   // Pending booking
   await prisma.booking.create({
     data: {
-      userId: users.customers[2].id,
-      tripId: trips[2].id,
+      user: { connect: { id: users.customers[2].id } },
+      trip: { connect: { id: trips[2].id } },
       startDate: new Date("2026-04-01"),
       guests: 4,
       totalPrice: 220000,
@@ -820,8 +866,8 @@ async function createReviewsAndInquiries(users: any, trips: any[]) {
 
   await prisma.review.create({
     data: {
-      userId: users.customers[0].id,
-      tripId: trips[3].id,
+      user: { connect: { id: users.customers[0].id } },
+      trip: { connect: { id: trips[3].id } },
       rating: 5,
       comment: "Amazing experience! The guides were professional and the rapids were thrilling.",
     },
@@ -927,8 +973,13 @@ async function main() {
     console.log(`   Manager:  manager@paramadventures.com / Demo@2026`);
     console.log(`   Guide:    guide.rahul@paramadventures.com / Demo@2026`);
     console.log(`   Customer: amit.patel@email.com / Demo@2026\n`);
-  } catch (error) {
+  } catch (error: any) {
     console.error("\n❌ Seed failed:", error);
+    const fs = require("fs");
+    fs.writeFileSync(
+      "C:/Users/akash/Documents/Param_Adventures_Phase1/apps/api/seed_diagnostic.txt",
+      error.stack || String(error),
+    );
     throw error;
   } finally {
     await prisma.$disconnect();

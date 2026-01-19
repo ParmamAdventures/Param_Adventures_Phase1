@@ -174,7 +174,7 @@ model Trip {
   description  String
   itinerary    Json
   durationDays Int
-  difficulty   String
+  difficulty   Difficulty
   location     String
   price        Int
   status       TripStatus   @default(DRAFT)
@@ -221,8 +221,8 @@ model Trip {
   capacity Int       @default(0)
   bookings Booking[]
 
-  startDate DateTime?
-  endDate   DateTime?
+  startDate DateTime
+  endDate   DateTime
 
   managerId String?
   manager   User?   @relation("TripManagedBy", fields: [managerId], references: [id], onDelete: SetNull)
@@ -246,6 +246,7 @@ model Trip {
   @@index([managerId])
   @@index([coverImageId])
   @@index([heroImageId])
+  @@index([price])
 }
 
 model TripGalleryImage {
@@ -268,6 +269,13 @@ model TripsOnGuides {
   guide User @relation(fields: [guideId], references: [id], onDelete: Cascade)
 
   @@id([tripId, guideId])
+}
+
+enum Difficulty {
+  EASY
+  MODERATE
+  HARD
+  EXTREME
 }
 
 enum BlogStatus {
@@ -320,7 +328,7 @@ model Image {
   duration    Int?      // Duration in seconds for videos
 
   uploadedById String
-  uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id], onDelete: Cascade)
+  uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id], onDelete: Restrict)
 
   tripsCover   Trip[]             @relation("TripCoverImage")
   tripsHero    Trip[]             @relation("TripHeroImage")
@@ -364,8 +372,8 @@ model Booking {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id])
-  trip Trip @relation(fields: [tripId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Restrict)
 
   // Payments created for this booking
   payments Payment[]
@@ -378,6 +386,7 @@ model Booking {
   @@index([status])
   @@index([paymentStatus])
   @@unique([userId, tripId, startDate])
+  @@index([startDate])
 }
 
 enum PaymentStatus {
@@ -417,7 +426,7 @@ model Payment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  booking Booking @relation(fields: [bookingId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
 
   @@index([bookingId])
   @@index([status])
@@ -446,8 +455,8 @@ model Review {
   tripId    String
   createdAt DateTime @default(now())
   
-  user      User     @relation(fields: [userId], references: [id])
-  trip      Trip     @relation(fields: [tripId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip      Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
   
   @@unique([userId, tripId]) // One review per trip per user
   @@index([tripId])

@@ -40,7 +40,7 @@ async function main() {
       ],
       capacity: 12,
       durationDays: 10,
-      difficulty: "Hard",
+      difficulty: "HARD",
       altitude: "5359m (Khardung La)",
       distance: "480 km",
       startPoint: "Manali",
@@ -90,7 +90,7 @@ async function main() {
       capacity: 30,
 
       durationDays: 2,
-      difficulty: "Moderate",
+      difficulty: "MODERATE",
       distance: "16 km rapids",
       highlights: [
         "Grade III & IV rapids",
@@ -123,7 +123,7 @@ async function main() {
       capacity: 8,
 
       durationDays: 8,
-      difficulty: "Extreme",
+      difficulty: "EXTREME",
       altitude: "4270m (Key Monastery)",
       highlights: [
         "Frozen Spiti River trek",
@@ -155,7 +155,7 @@ async function main() {
       capacity: 25,
 
       durationDays: 5,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "Beach hopping (Anjuna, Baga, Palolem)",
         "Sunset cruise",
@@ -181,7 +181,7 @@ async function main() {
       capacity: 60,
 
       durationDays: 2,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "High ropes course",
         "Trust fall exercises",
@@ -206,7 +206,7 @@ async function main() {
       capacity: 40,
 
       durationDays: 4,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "Botanical Gardens tour",
         "Night sky observation",
@@ -237,7 +237,7 @@ async function main() {
       capacity: 16,
 
       durationDays: 3,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "Private houseboat cruise",
         "Fresh Kerala cuisine",
@@ -262,7 +262,7 @@ async function main() {
       capacity: 20,
 
       durationDays: 3,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "Virupaksha Temple",
         "Vittala Temple chariot",
@@ -287,7 +287,7 @@ async function main() {
       capacity: 15,
 
       durationDays: 3,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "Morning boat ride on Ganges",
         "Ganga Aarti ceremony",
@@ -313,7 +313,7 @@ async function main() {
       capacity: 12,
 
       durationDays: 7,
-      difficulty: "Moderate",
+      difficulty: "MODERATE",
       highlights: [
         "Rumtek Monastery",
         "Pelling Monastery",
@@ -338,7 +338,7 @@ async function main() {
       capacity: 20,
 
       durationDays: 5,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "Camel safari in Sam dunes",
         "Desert camping under stars",
@@ -364,7 +364,7 @@ async function main() {
       capacity: 10,
 
       durationDays: 5,
-      difficulty: "Moderate",
+      difficulty: "MODERATE",
       highlights: [
         "PADI Open Water certification",
         "4 ocean dives",
@@ -389,7 +389,7 @@ async function main() {
       capacity: 15,
 
       durationDays: 6,
-      difficulty: "Moderate",
+      difficulty: "MODERATE",
       distance: "25 km total",
       highlights: [
         "Double Decker Root Bridge",
@@ -415,7 +415,7 @@ async function main() {
       capacity: 18,
 
       durationDays: 3,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "4 jungle safaris",
         "Corbett Museum visit",
@@ -445,7 +445,7 @@ async function main() {
       capacity: 25,
 
       durationDays: 4,
-      difficulty: "Easy",
+      difficulty: "EASY",
       highlights: [
         "Rann Utsav cultural festival",
         "Full moon white desert walk",
