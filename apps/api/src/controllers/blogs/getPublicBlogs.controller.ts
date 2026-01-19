@@ -5,6 +5,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 
 export const getPublicBlogs = catchAsync(async (req: Request, res: Response) => {
   const { search } = req.query;
+  const { page, limit, skip } = req.pagination || { page: 1, limit: 10, skip: 0 };
 
   const where: any = { status: "PUBLISHED" };
 
@@ -15,19 +16,36 @@ export const getPublicBlogs = catchAsync(async (req: Request, res: Response) => 
     ];
   }
 
-  const blogs = await prisma.blog.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
+  const [total, blogs] = await prisma.$transaction([
+    prisma.blog.count({ where }),
+    prisma.blog.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
+        coverImage: true,
       },
-      coverImage: true,
-    },
-  });
+      skip,
+      take: limit,
+    }),
+  ]);
 
-  return ApiResponse.success(res, blogs, "Blogs fetched");
+  return ApiResponse.success(
+    res,
+    {
+      blogs,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    },
+    "Blogs fetched successfully",
+  );
 });

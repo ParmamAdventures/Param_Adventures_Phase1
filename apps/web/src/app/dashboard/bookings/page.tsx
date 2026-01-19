@@ -33,7 +33,8 @@ export default function MyBookingsPage() {
       const res = await apiFetch("/bookings/me");
       if (res.ok) {
         const response = await res.json();
-        setBookings(response.data);
+        const bookingsData = response.data?.bookings || response.data || [];
+        setBookings(Array.isArray(bookingsData) ? bookingsData : []);
       }
     } catch (error) {
       console.error("Failed to load bookings", error);
@@ -265,4 +266,3 @@ export default function MyBookingsPage() {
     </div>
   );
 }
-

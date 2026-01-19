@@ -1,4 +1,3 @@
-
 declare global {
   namespace Express {
     interface User {
@@ -12,6 +11,11 @@ declare global {
     interface Request {
       user?: User; // Explicitly adding user to Request to satisfy Render/TS
       permissions?: string[];
+      pagination?: {
+        page: number;
+        limit: number;
+        skip: number;
+      };
     }
   }
 }

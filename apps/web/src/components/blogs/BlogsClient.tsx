@@ -29,7 +29,10 @@ export default function BlogsClient() {
       if (!res.ok) throw new Error("Failed to load stories");
 
       const data = await res.json();
-      setBlogs(data.data || (Array.isArray(data) ? data : []));
+
+      // Handle standardized ApiResponse with pagination
+      const blogsList = data.data?.blogs || data.data || data;
+      setBlogs(Array.isArray(blogsList) ? blogsList : []);
     } catch (err: any) {
       setError(err.message);
       setBlogs([]);
@@ -125,4 +128,3 @@ export default function BlogsClient() {
     </div>
   );
 }
-

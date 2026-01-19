@@ -42,13 +42,13 @@ export default function TripsClient() {
 
     // 2. Fetch Wishlist (if logged in)
     if (user) {
-        apiFetch("/wishlist")
-            .then((res) => res.json())
-            .then((data: any[]) => {
-                const ids = new Set(data.map((t) => t.id));
-                setSavedTripIds(ids);
-            })
-            .catch(console.error);
+      apiFetch("/wishlist")
+        .then((res) => res.json())
+        .then((data: any[]) => {
+          const ids = new Set(data.map((t) => t.id));
+          setSavedTripIds(ids);
+        })
+        .catch(console.error);
     }
   }, [user]);
 
@@ -88,7 +88,16 @@ export default function TripsClient() {
         return;
       }
       const json = await res.json();
-      setTrips(json.data?.data || json.data || json);
+      const json = await res.json();
+
+      // Handle standardized ApiResponse with pagination
+      if (json.data && json.data.trips && Array.isArray(json.data.trips)) {
+        setTrips(json.data.trips);
+        // TODO: handle json.data.pagination if we want to show page buttons
+      } else {
+        // Fallback for legacy or direct array returns
+        setTrips(json.data?.data || json.data || json);
+      }
     } catch (e) {
       console.error(e);
       setError("Network error");

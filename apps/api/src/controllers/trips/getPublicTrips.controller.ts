@@ -20,6 +20,9 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     sortOrder = "desc",
   } = req.query;
 
+  // Pagination parameters (injected by middleware or defaults)
+  const { page, limit, skip } = req.pagination || { page: 1, limit: 10, skip: 0 };
+
   // If filtering is applied (not just basic category), skip cache
   const hasFilters =
     search ||
@@ -32,40 +35,28 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     endDate ||
     capacity;
 
-  if (!hasFilters && !category) {
-    // Use cache for basic public trips request
+  if (!hasFilters && !category && page === 1) {
+    // Use cache for basic public trips request (first page only to keep cache simple)
     const trips = await TripCacheService.getPublicTrips();
+    // Cache service returns array, so wrap it.
+    // Note: Cached version doesn't support pagination metadata yet.
+    // For now, we return cached for pure speed on home page.
     return ApiResponse.success(res, trips, "Trips fetched");
   }
 
-  if (!hasFilters && category) {
-    // Use cache for category-filtered trips
-    const trips = await TripCacheService.getPublicTrips({ category: String(category) });
-    return ApiResponse.success(res, trips, "Trips fetched");
-  }
-
-  // For complex filters, fetch from database directly (bypass cache)
+  // Build query
   const where: any = { status: "PUBLISHED" };
 
   if (search) {
-    // Upgraded to Prisma's full-text search capability
     where.OR = [
       { title: { search: String(search).split(" ").join(" & ") } },
       { description: { search: String(search).split(" ").join(" & ") } },
     ];
   }
 
-  if (category) {
-    where.category = category;
-  }
-
-  if (difficulty) {
-    where.difficulty = difficulty;
-  }
-
-  if (capacity) {
-    where.capacity = { gte: Number(capacity) };
-  }
+  if (category) where.category = category;
+  if (difficulty) where.difficulty = difficulty;
+  if (capacity) where.capacity = { gte: Number(capacity) };
 
   if (maxPrice || minPrice) {
     where.price = {};
@@ -89,18 +80,35 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     where.isFeatured = true;
   }
 
-  // Define allowed sort fields to prevent injection
   const allowedSortFields = ["price", "durationDays", "startDate", "createdAt", "title"];
   const finalSortField = allowedSortFields.includes(String(sortBy)) ? String(sortBy) : "createdAt";
   const finalSortOrder = sortOrder === "asc" ? "asc" : "desc";
 
-  const trips = await prisma.trip.findMany({
-    where,
-    orderBy: { [finalSortField]: finalSortOrder },
-    include: {
-      coverImage: true,
-    },
-  });
+  // Execute query with pagination
+  const [total, trips] = await prisma.$transaction([
+    prisma.trip.count({ where }),
+    prisma.trip.findMany({
+      where,
+      orderBy: { [finalSortField]: finalSortOrder },
+      include: {
+        coverImage: true,
+      },
+      skip,
+      take: limit,
+    }),
+  ]);
 
-  return ApiResponse.success(res, trips, "Trips fetched");
+  return ApiResponse.success(
+    res,
+    {
+      trips,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    },
+    "Trips fetched successfully",
+  );
 });

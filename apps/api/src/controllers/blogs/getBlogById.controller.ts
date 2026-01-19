@@ -1,19 +1,16 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
+import { ApiResponse } from "../../utils/ApiResponse";
+import { ErrorMessages } from "../../constants/errorMessages";
+import { catchAsync } from "../../utils/catchAsync";
 
 /**
  * Get Blog By Id
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- * @returns {Promise<void>}
  */
-export async function getBlogById(req: Request, res: Response) {
+export const getBlogById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  // Assuming req.user is added by a middleware like requireAuth
-  // and Request type is augmented or casted elsewhere if not using AuthRequest directly.
-  // For this change, we'll assume req.user is available on Request after middleware.
-  const user = (req as any).user;
+  const user = req.user;
 
   const blog = await prisma.blog.findUnique({
     where: { id },
@@ -42,11 +39,11 @@ export async function getBlogById(req: Request, res: Response) {
 
   // Check if user is author OR has admin permission
   const isAuthor = blog.authorId === user?.id;
-  const isAdmin = user?.permissions.includes("blog:approve");
+  const isAdmin = user?.permissions?.includes("blog:approve");
 
   if (!isAuthor && !isAdmin) {
     throw new HttpError(403, "FORBIDDEN", "You do not have permission to view this blog");
   }
 
-  res.json(blog);
-}
+  return ApiResponse.success(res, blog, "Blog details retrieved");
+});

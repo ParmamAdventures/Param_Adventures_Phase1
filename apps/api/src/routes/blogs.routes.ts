@@ -4,6 +4,7 @@ import { attachPermissions } from "../middlewares/permission.middleware";
 import { requirePermission } from "../middlewares/require-permission.middleware";
 
 import { createBlog } from "../controllers/blogs/createBlog.controller";
+import { paginate } from "../middlewares/pagination.middleware";
 import { updateBlog } from "../controllers/blogs/updateBlog.controller";
 import { submitBlog } from "../controllers/blogs/submitBlog.controller";
 import { approveBlog } from "../controllers/blogs/approveBlog.controller";
@@ -18,7 +19,7 @@ import { getMyBlogs } from "../controllers/blogs/getMyBlogs.controller";
 const router = Router();
 
 // Public routes
-router.get("/public", getPublicBlogs);
+router.get("/public", paginate, getPublicBlogs);
 router.get("/public/:slug", optionalAuth, getBlogBySlug);
 
 // Protected routes

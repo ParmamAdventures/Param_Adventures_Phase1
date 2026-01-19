@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { slugify } from "../../utils/slugify";
 import { auditService } from "../../services/audit.service";
+import { sanitizeHtml } from "../../utils/sanitize";
 
 /**
  * Create Blog
@@ -39,7 +40,7 @@ export async function createBlog(req: Request, res: Response) {
     data: {
       title,
       slug,
-      content,
+      content: sanitizeHtml(content),
       excerpt,
       tripId,
       coverImageId,

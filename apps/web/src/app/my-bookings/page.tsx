@@ -32,7 +32,8 @@ export default function MyBookingsPage() {
           return;
         }
         const data = await res.json();
-        setBookings(data);
+        const bookingsList = data.data?.bookings || data.data || data;
+        setBookings(Array.isArray(bookingsList) ? bookingsList : []);
       } catch (err) {
         setError("Network connectivity issue. Please try again.");
       } finally {

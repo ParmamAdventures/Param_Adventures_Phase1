@@ -1,15 +1,15 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import { auditService } from "../../services/audit.service";
+import { createAuditLog } from "../../utils/auditLog";
+import { ApiResponse } from "../../utils/ApiResponse";
+import { ErrorMessages } from "../../constants/errorMessages";
+import { catchAsync } from "../../utils/catchAsync";
 
 /**
  * Submit Blog
- * @param {Request} req - Express request object
- * @param {Response} res - Express response object
- * @returns {Promise<void>}
  */
-export async function submitBlog(req: Request, res: Response) {
+export const submitBlog = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const user = req.user!;
 
@@ -28,12 +28,12 @@ export async function submitBlog(req: Request, res: Response) {
     data: { status: "PENDING_REVIEW" },
   });
 
-  await auditService.logAudit({
+  await createAuditLog({
     actorId: user.id,
     action: "BLOG_SUBMITTED",
     targetType: "BLOG",
     targetId: blog.id,
   });
 
-  res.json(updated);
-}
+  return ApiResponse.success(res, updated, "Blog submitted for review successfully");
+});

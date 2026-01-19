@@ -9,6 +9,7 @@ import { verifyPayment } from "../controllers/payments/verifyPayment.controller"
 import { getPaymentStatus } from "../controllers/payments/getPaymentStatus.controller";
 import { getPaymentHistory } from "../controllers/payments/getPaymentHistory.controller";
 import { downloadInvoice } from "../controllers/bookings/downloadInvoice.controller";
+import { paginate } from "../middlewares/pagination.middleware";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ router.post("/", requireAuth, createBooking);
 router.get("/payments/history", requireAuth, getPaymentHistory);
 
 // Get user's bookings
-router.get("/me", requireAuth, getBookings);
+router.get("/me", requireAuth, paginate, getBookings);
 
 // Get single booking details
 router.get("/:id", requireAuth, getBookingById);

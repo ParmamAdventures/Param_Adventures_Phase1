@@ -21,6 +21,7 @@ import { validate } from "../middlewares/validate.middleware";
 import { createTripSchema, updateTripSchema } from "../schemas/trip.schema";
 import { getTripBySlug } from "../controllers/trips/getTripBySlug.controller";
 import { getTripById } from "../controllers/trips/getTripById.controller";
+import { paginate } from "../middlewares/pagination.middleware";
 
 /**
  * @swagger
@@ -98,7 +99,7 @@ router.get("/public/meta", async (req, res) => {
  *       200:
  *         description: List of published trips
  */
-router.get("/public", getPublicTrips);
+router.get("/public", paginate, getPublicTrips);
 
 /**
  * @swagger

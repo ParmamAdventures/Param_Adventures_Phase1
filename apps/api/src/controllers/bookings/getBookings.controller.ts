@@ -5,28 +5,47 @@ import { ApiResponse } from "../../utils/ApiResponse";
 
 export const getBookings = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user!.id;
+  const { page, limit, skip } = req.pagination || { page: 1, limit: 10, skip: 0 };
 
-  const bookings = await prisma.booking.findMany({
-    where: { userId },
-    include: {
-      trip: {
-        select: {
-          title: true,
-          slug: true,
-          location: true,
-          coverImageLegacy: true,
-          coverImage: {
-            select: {
-              mediumUrl: true,
+  const where = { userId };
+
+  const [total, bookings] = await prisma.$transaction([
+    prisma.booking.count({ where }),
+    prisma.booking.findMany({
+      where,
+      include: {
+        trip: {
+          select: {
+            title: true,
+            slug: true,
+            location: true,
+            coverImageLegacy: true,
+            coverImage: {
+              select: {
+                mediumUrl: true,
+              },
             },
           },
         },
+        payments: true,
       },
-      payments: true,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+  ]);
+
+  return ApiResponse.success(
+    res,
+    {
+      bookings,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
     },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return ApiResponse.success(res, bookings, "Bookings fetched successfully");
+    "Bookings fetched successfully",
+  );
 });
-
