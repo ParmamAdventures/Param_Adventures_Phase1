@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference
 /// <reference path="./types/express.d.ts" />
-import "express-async-errors";
 import "./instrument"; // Must be imported before other imports potentially
 import express from "express";
 import cors from "cors";

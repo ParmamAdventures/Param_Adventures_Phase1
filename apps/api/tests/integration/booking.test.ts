@@ -92,6 +92,11 @@ describe("Booking Integration", () => {
   });
 
   it("should create a new booking", async () => {
+    const guestDetails = [
+      { name: "John Doe", email: "john@example.com", age: 30, gender: "Male" },
+      { name: "Jane Doe", email: "jane@example.com", age: 28, gender: "Female" },
+    ];
+
     const res = await request(app)
       .post("/bookings")
       .set("Authorization", `Bearer ${userToken}`)
@@ -100,6 +105,7 @@ describe("Booking Integration", () => {
         startDate: new Date().toISOString(),
         guests: 2,
         notes: "Excited for the trip!",
+        guestDetails,
       });
 
     if (res.status !== 201) {
@@ -110,6 +116,8 @@ describe("Booking Integration", () => {
     expect(res.body.data).toHaveProperty("id");
     expect(res.body.data.tripId).toBe(tripId);
     expect(res.body.data.guests).toBe(2);
+    // Verify guestDetails are saved and returned correctly
+    expect(res.body.data.guestDetails).toEqual(guestDetails);
   });
 
   it("should get user's bookings", async () => {
