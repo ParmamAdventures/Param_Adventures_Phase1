@@ -1,6 +1,6 @@
 /**
  * PRODUCTION SEED - Demo Ready
- * 
+ *
  * This seed creates realistic, production-quality demo data including:
  * - RBAC system (roles, permissions)
  * - Sample users (admin, guides, customers)
@@ -9,14 +9,17 @@
  * - Hero page content
  * - Sample bookings and payments
  * - Ongoing trips
- * 
+ *
  * SAFETY FEATURES:
  * - Uses environment variables for admin credentials
  * - Validates environment before seeding
  * - Can be safely run in production for demos/staging
  */
 
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient, Prisma, TripStatus, BlogStatus, TripCategory } from "@prisma/client";
+// ... (skip lines)
+
+// (Code removed)
 import * as bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -27,9 +30,7 @@ const prisma = new PrismaClient();
 
 function validateEnvironment() {
   if (process.env.NODE_ENV === "production" && !process.env.ALLOW_PROD_SEED) {
-    throw new Error(
-      "❌ Cannot seed production without ALLOW_PROD_SEED=true environment variable"
-    );
+    throw new Error("❌ Cannot seed production without ALLOW_PROD_SEED=true environment variable");
   }
 
   const requiredEnvVars = ["ADMIN_EMAIL", "ADMIN_PASSWORD"];
@@ -38,7 +39,7 @@ function validateEnvironment() {
   if (missing.length > 0) {
     throw new Error(
       `❌ Missing required environment variables: ${missing.join(", ")}\n` +
-        `Set them in your .env file or pass them when running the seed.`
+        `Set them in your .env file or pass them when running the seed.`,
     );
   }
 
@@ -53,23 +54,53 @@ async function createRolesAndPermissions() {
   console.log("\n📋 Creating roles and permissions...");
 
   const permissions = [
-    { key: "trips:read", description: "View trips", category: "trips" },
-    { key: "trips:create", description: "Create trips", category: "trips" },
-    { key: "trips:update", description: "Update trips", category: "trips" },
-    { key: "trips:delete", description: "Delete trips", category: "trips" },
-    { key: "trips:publish", description: "Publish trips", category: "trips" },
-    { key: "bookings:read", description: "View bookings", category: "bookings" },
-    { key: "bookings:manage", description: "Manage bookings", category: "bookings" },
-    { key: "users:read", description: "View users", category: "users" },
-    { key: "users:manage", description: "Manage users", category: "users" },
+    // Trip Management
+    { key: "trip:create", description: "Create new trip drafts", category: "trips" },
+    { key: "trip:edit", description: "Edit trip details", category: "trips" },
+    { key: "trip:submit", description: "Submit trip for review", category: "trips" },
+    { key: "trip:approve", description: "Approve trip for publishing", category: "trips" },
+    { key: "trip:publish", description: "Publish trip live", category: "trips" },
+    { key: "trip:archive", description: "Archive trip", category: "trips" },
+    { key: "trip:view:internal", description: "View Draft/Pending Trips", category: "trips" },
+    {
+      key: "trip:update-status",
+      description: "Operational updates (started/ended)",
+      category: "trips",
+    },
+    { key: "trip:assign-guide", description: "Assign guides/managers", category: "trips" },
+    { key: "trip:view:guests", description: "View guest list for trip", category: "trips" },
+
+    // Booking Management
+    { key: "booking:create", description: "Book a trip", category: "bookings" },
+    { key: "booking:view", description: "View own bookings", category: "bookings" },
+    { key: "booking:read:admin", description: "View ALL bookings", category: "bookings" },
+    { key: "booking:manage", description: "Manage bookings", category: "bookings" },
+    { key: "booking:approve", description: "Manually approve booking", category: "bookings" },
+    { key: "booking:reject", description: "Reject booking", category: "bookings" },
+    { key: "booking:cancel", description: "Cancel booking", category: "bookings" },
+
+    // Content (Blogs & Media)
+    { key: "blog:create", description: "Draft a blog", category: "blogs" },
+    { key: "blog:update", description: "Edit own blog", category: "blogs" },
+    { key: "blog:submit", description: "Submit for review", category: "blogs" },
+    { key: "blog:approve", description: "Approve/Reject Blogs", category: "blogs" },
+    { key: "blog:publish", description: "Publish Blogs", category: "blogs" },
+    { key: "media:upload", description: "Upload Images/Videos", category: "media" },
+    { key: "media:view", description: "View Media Library", category: "media" },
+
+    // System Administration
+    { key: "user:list", description: "List all users", category: "users" },
+    { key: "user:view", description: "View full profiles", category: "users" },
+    { key: "user:edit", description: "Edit user details", category: "users" },
+    { key: "user:assign-role", description: "Change user roles", category: "users" },
+    { key: "role:list", description: "View System Roles", category: "users" },
+    { key: "audit:view", description: "View Audit Logs", category: "users" },
     { key: "payments:read", description: "View payments", category: "payments" },
     { key: "payments:refund", description: "Process refunds", category: "payments" },
-    { key: "media:upload", description: "Upload media", category: "media" },
-    { key: "blogs:write", description: "Write blogs", category: "blogs" },
     { key: "analytics:view", description: "View analytics", category: "analytics" },
   ];
 
-  const createdPermissions = [];
+  const createdPermissions: Prisma.PermissionGetPayload<{}>[] = [];
   for (const perm of permissions) {
     const created = await prisma.permission.upsert({
       where: { key: perm.key },
@@ -79,101 +110,151 @@ async function createRolesAndPermissions() {
     createdPermissions.push(created);
   }
 
-  // Create roles
+  // Helper to get permission IDs by keys
+  const getPermIds = (keys: string[]) =>
+    keys.map((k) => createdPermissions.find((p) => p.key === k)?.id).filter(Boolean) as string[];
+
+  // 1. SUPER_ADMIN
+  const superAdminRole = await prisma.role.upsert({
+    where: { name: "SUPER_ADMIN" },
+    update: {},
+    create: { name: "SUPER_ADMIN", description: "Full System Access (Root)", isSystem: true },
+  });
+  // Assign ALL permissions
+  await assignPermissions(
+    superAdminRole.id,
+    createdPermissions.map((p) => p.id),
+  );
+
+  // 2. ADMIN
   const adminRole = await prisma.role.upsert({
     where: { name: "ADMIN" },
     update: {},
-    create: {
-      name: "ADMIN",
-      description: "Full system access",
-      isSystem: true,
-    },
+    create: { name: "ADMIN", description: "Operational Admin", isSystem: true },
   });
+  const adminPerms = getPermIds([
+    "trip:create",
+    "trip:edit",
+    "trip:submit",
+    "trip:approve",
+    "trip:publish",
+    "trip:archive",
+    "trip:view:internal",
+    "trip:update-status",
+    "trip:assign-guide",
+    "trip:view:guests",
+    "booking:create",
+    "booking:view",
+    "booking:read:admin",
+    "booking:approve",
+    "booking:reject",
+    "booking:cancel",
+    "blog:create",
+    "blog:update",
+    "blog:submit",
+    "blog:approve",
+    "blog:publish",
+    "media:upload",
+    "media:view",
+    "user:list",
+    "user:view",
+    "user:edit",
+    "user:assign-role",
+    "role:list",
+    "audit:view",
+  ]);
+  await assignPermissions(adminRole.id, adminPerms);
 
+  // 3. UPLOADER
+  const uploaderRole = await prisma.role.upsert({
+    where: { name: "UPLOADER" },
+    update: {},
+    create: { name: "UPLOADER", description: "Content Creator", isSystem: true },
+  });
+  const uploaderPerms = getPermIds([
+    "trip:create",
+    "trip:edit",
+    "trip:submit",
+    "trip:view:internal",
+    "blog:create",
+    "blog:update",
+    "blog:submit",
+    "media:upload",
+    "media:view",
+  ]);
+  await assignPermissions(uploaderRole.id, uploaderPerms);
+
+  // 4. TRIP_MANAGER
   const managerRole = await prisma.role.upsert({
-    where: { name: "MANAGER" },
+    where: { name: "TRIP_MANAGER" }, // Renamed from MANAGER
     update: {},
-    create: {
-      name: "MANAGER",
-      description: "Trip and booking management",
-      isSystem: true,
-    },
+    create: { name: "TRIP_MANAGER", description: "Logistics Coordinator", isSystem: true },
   });
+  const managerPerms = getPermIds([
+    "trip:view:internal",
+    "trip:update-status",
+    "trip:assign-guide",
+    "trip:view:guests",
+    "booking:view",
+    "booking:read:admin",
+  ]);
+  await assignPermissions(managerRole.id, managerPerms);
 
+  // 5. TRIP_GUIDE
   const guideRole = await prisma.role.upsert({
-    where: { name: "GUIDE" },
+    where: { name: "TRIP_GUIDE" }, // Renamed from GUIDE
     update: {},
-    create: {
-      name: "GUIDE",
-      description: "Tour guide access",
-      isSystem: true,
-    },
+    create: { name: "TRIP_GUIDE", description: "Field Staff", isSystem: true },
   });
+  const guidePerms = getPermIds(["trip:update-status", "trip:view:guests"]);
+  await assignPermissions(guideRole.id, guidePerms);
 
+  // 6. USER
   const userRole = await prisma.role.upsert({
     where: { name: "USER" },
     update: {},
-    create: {
-      name: "USER",
-      description: "Regular user access",
-      isSystem: true,
-    },
+    create: { name: "USER", description: "Standard Traveler", isSystem: true },
   });
+  const userPerms = getPermIds([
+    "booking:create",
+    "booking:view",
+    "blog:create",
+    "blog:update",
+    "blog:submit",
+    "media:upload",
+  ]);
+  await assignPermissions(userRole.id, userPerms);
 
-  // Assign all permissions to admin
-  for (const perm of createdPermissions) {
+  console.log(`✅ Created 6 roles and assigned permissions`);
+  return { superAdminRole, adminRole, uploaderRole, managerRole, guideRole, userRole };
+}
+
+async function assignPermissions(roleId: string, permissionIds: string[]) {
+  for (const permId of permissionIds) {
     await prisma.rolePermission.upsert({
-      where: {
-        roleId_permissionId: {
-          roleId: adminRole.id,
-          permissionId: perm.id,
-        },
-      },
+      where: { roleId_permissionId: { roleId, permissionId: permId } },
       update: {},
-      create: {
-        roleId: adminRole.id,
-        permissionId: perm.id,
-      },
+      create: { roleId, permissionId: permId },
     });
   }
-
-  // Assign specific permissions to manager
-  const managerPermKeys = [
-    "trips:read",
-    "trips:create",
-    "trips:update",
-    "bookings:read",
-    "bookings:manage",
-    "analytics:view",
-  ];
-  for (const key of managerPermKeys) {
-    const perm = createdPermissions.find((p) => p.key === key);
-    if (perm) {
-      await prisma.rolePermission.upsert({
-        where: {
-          roleId_permissionId: {
-            roleId: managerRole.id,
-            permissionId: perm.id,
-          },
-        },
-        update: {},
-        create: {
-          roleId: managerRole.id,
-          permissionId: perm.id,
-        },
-      });
-    }
-  }
-
-  console.log(`✅ Created ${createdPermissions.length} permissions and 4 roles`);
-  return { adminRole, managerRole, guideRole, userRole };
 }
+
+import * as crypto from "crypto";
 
 async function createUsers(roles: any) {
   console.log("\n👥 Creating users...");
 
   const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD!, 10);
-  const demoPassword = await bcrypt.hash("Demo@2026", 10);
+
+  // Secure Demo Password Generation
+  const demoPasswordRaw = process.env.DEMO_PASSWORD || crypto.randomBytes(12).toString("hex");
+  const demoPassword = await bcrypt.hash(demoPasswordRaw, 10);
+
+  console.log(`\n🔐 DEMO USER CHARTS:`);
+  console.log(
+    `   Password for all demo users: ${process.env.DEMO_PASSWORD ? "(from env)" : demoPasswordRaw}`,
+  );
+  console.log(`   (Save this password! It will not be shown again)\n`);
 
   // Admin user (from env vars)
   const admin = await prisma.user.upsert({
@@ -201,7 +282,9 @@ async function createUsers(roles: any) {
     },
   });
 
-  // Demo users
+  // Demo users - One of each role
+
+  // 1. Manager
   const manager = await prisma.user.upsert({
     where: { email: "manager@paramadventures.com" },
     update: {},
@@ -228,7 +311,8 @@ async function createUsers(roles: any) {
     },
   });
 
-  const guide1 = await prisma.user.upsert({
+  // 2. Guide
+  const guide = await prisma.user.upsert({
     where: { email: "guide.rahul@paramadventures.com" },
     update: {},
     create: {
@@ -243,25 +327,26 @@ async function createUsers(roles: any) {
   await prisma.userRole.upsert({
     where: {
       userId_roleId: {
-        userId: guide1.id,
+        userId: guide.id,
         roleId: roles.guideRole.id,
       },
     },
     update: {},
     create: {
-      userId: guide1.id,
+      userId: guide.id,
       roleId: roles.guideRole.id,
     },
   });
 
-  const guide2 = await prisma.user.upsert({
-    where: { email: "guide.priya@paramadventures.com" },
+  // 3. Customer
+  const customer = await prisma.user.upsert({
+    where: { email: "amit.patel@email.com" },
     update: {},
     create: {
-      email: "guide.priya@paramadventures.com",
+      email: "amit.patel@email.com",
       password: demoPassword,
-      name: "Priya Sharma",
-      phoneNumber: "+91-9876543212",
+      name: "Amit Patel",
+      phoneNumber: "+91-9123456789",
       status: "ACTIVE",
     },
   });
@@ -269,57 +354,28 @@ async function createUsers(roles: any) {
   await prisma.userRole.upsert({
     where: {
       userId_roleId: {
-        userId: guide2.id,
-        roleId: roles.guideRole.id,
+        userId: customer.id,
+        roleId: roles.userRole.id,
       },
     },
     update: {},
     create: {
-      userId: guide2.id,
-      roleId: roles.guideRole.id,
+      userId: customer.id,
+      roleId: roles.userRole.id,
     },
   });
 
-  // Customer users
-  const customers = [];
-  const customerData = [
-    { email: "amit.patel@email.com", name: "Amit Patel", phone: "+91-9123456789" },
-    { email: "sarah.johnson@email.com", name: "Sarah Johnson", phone: "+91-9123456790" },
-    { email: "rohit.verma@email.com", name: "Rohit Verma", phone: "+91-9123456791" },
-  ];
+  console.log(`✅ Created Admin and 3 Demo Users (Manager, Guide, Customer)`);
 
-  for (const data of customerData) {
-    const customer = await prisma.user.upsert({
-      where: { email: data.email },
-      update: {},
-      create: {
-        email: data.email,
-        password: demoPassword,
-        name: data.name,
-        phoneNumber: data.phone,
-        status: "ACTIVE",
-      },
-    });
-
-    await prisma.userRole.upsert({
-      where: {
-        userId_roleId: {
-          userId: customer.id,
-          roleId: roles.userRole.id,
-        },
-      },
-      update: {},
-      create: {
-        userId: customer.id,
-        roleId: roles.userRole.id,
-      },
-    });
-
-    customers.push(customer);
-  }
-
-  console.log(`✅ Created admin, manager, 2 guides, and ${customers.length} customers`);
-  return { admin, manager, guide1, guide2, customers };
+  // Return structure matching original for downstream functions
+  // We map the single guide/customer to the expected return properties if needed
+  return {
+    admin,
+    manager,
+    guide1: guide,
+    // guide2 was removed
+    customers: [customer],
+  };
 }
 
 async function createImages(users: any) {
@@ -447,7 +503,8 @@ async function createTrips(users: any, images: any[]) {
     {
       title: "Kerala Backwaters Houseboat",
       slug: "kerala-backwaters",
-      description: "Cruise through enchanting backwaters on traditional houseboats. Experience village life.",
+      description:
+        "Cruise through enchanting backwaters on traditional houseboats. Experience village life.",
       location: "Kerala, India",
       startPoint: "Cochin",
       endPoint: "Alleppey",
@@ -543,12 +600,20 @@ async function createTrips(users: any, images: any[]) {
   for (const data of tripsData) {
     const trip = await prisma.trip.upsert({
       where: { slug: data.slug },
-      update: data,
+      update: {
+        ...data,
+        status: data.status as TripStatus,
+        category: data.category as TripCategory,
+        difficulty: data.difficulty,
+      },
       create: {
         ...data,
-        createdById: users.admin.id,
-        approvedById: users.admin.id,
-        managerId: users.manager.id,
+        status: data.status as TripStatus,
+        category: data.category as TripCategory,
+        difficulty: data.difficulty,
+        createdBy: { connect: { id: users.admin.id } },
+        approvedBy: { connect: { id: users.admin.id } },
+        manager: { connect: { id: users.manager.id } },
         publishedAt: new Date(),
       },
     });
@@ -641,9 +706,7 @@ async function createBlogs(users: any, trips: any[], images: any[]) {
       slug: "best-time-visit-ladakh",
       excerpt: "Complete guide to planning your Ladakh adventure.",
       content: JSON.stringify({
-        blocks: [
-          { type: "paragraph", text: "June to September is ideal for Ladakh trips." },
-        ],
+        blocks: [{ type: "paragraph", text: "June to September is ideal for Ladakh trips." }],
       }),
       status: "PUBLISHED",
       coverImageId: images[5]?.id,
@@ -655,8 +718,15 @@ async function createBlogs(users: any, trips: any[], images: any[]) {
   for (const data of blogs) {
     await prisma.blog.upsert({
       where: { slug: data.slug },
-      update: data,
-      create: data,
+      update: {
+        ...data,
+        status: data.status as BlogStatus,
+      },
+      create: {
+        ...data,
+        status: data.status as BlogStatus,
+        author: { connect: { id: data.authorId } }, // using connect for relation
+      },
     });
   }
 
