@@ -89,7 +89,7 @@ describe("Payment Integration Tests", () => {
         title: "Payment Test Trip",
         slug: "payment-test-trip",
         description: "Trip for testing payments",
-        itinerary: {},
+        itinerary: [],
         price: 5000,
         status: "PUBLISHED",
         location: "Test Destination",

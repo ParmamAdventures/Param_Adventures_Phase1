@@ -310,100 +310,106 @@ async function createUsers(roles: any) {
   });
 
   // Demo users - One of each role
-
-  // 1. Manager
-  const manager = await prisma.user.upsert({
-    where: { email: "manager@paramadventures.com" },
-    update: {},
-    create: {
-      email: "manager@paramadventures.com",
-      password: demoPassword,
-      name: "Rajesh Kumar",
-      phoneNumber: "+91-9876543210",
-      status: "ACTIVE",
-    },
-  });
-
-  await prisma.userRole.upsert({
-    where: {
-      userId_roleId: {
-        userId: manager.id,
-        roleId: roles.managerRole.id,
-      },
-    },
-    update: {},
-    create: {
-      userId: manager.id,
-      roleId: roles.managerRole.id,
-    },
-  });
-
-  // 2. Guides
-  const guide1 = await prisma.user.upsert({
-    where: { email: "guide.rahul@paramadventures.com" },
-    update: {},
-    create: {
-      email: "guide.rahul@paramadventures.com",
-      password: demoPassword,
-      name: "Rahul Singh",
-      phoneNumber: "+91-9876543211",
-      status: "ACTIVE",
-    },
-  });
-
-  const guide2 = await prisma.user.upsert({
-    where: { email: "guide.neha@paramadventures.com" },
-    update: {},
-    create: {
-      email: "guide.neha@paramadventures.com",
-      password: demoPassword,
-      name: "Neha Sharma",
-      phoneNumber: "+91-9876543212",
-      status: "ACTIVE",
-    },
-  });
-
-  for (const guide of [guide1, guide2]) {
-    await prisma.userRole.upsert({
-      where: { userId_roleId: { userId: guide.id, roleId: roles.guideRole.id } },
-      update: {},
-      create: { userId: guide.id, roleId: roles.guideRole.id },
-    });
-  }
-
-  // 3. Customers
-  const customerEmails = ["amit.patel@email.com", "sneha.k@email.com", "vikram.m@email.com"];
-  const customerNames = ["Amit Patel", "Sneha Kapoor", "Vikram Mehta"];
-  const customers = [];
-
-  for (let i = 0; i < customerEmails.length; i++) {
-    const customer = await prisma.user.upsert({
-      where: { email: customerEmails[i] },
+  if (process.env.SEED_DEMO_DATA === "true") {
+    // 1. Manager
+    const manager = await prisma.user.upsert({
+      where: { email: "manager@paramadventures.com" },
       update: {},
       create: {
-        email: customerEmails[i],
+        email: "manager@paramadventures.com",
         password: demoPassword,
-        name: customerNames[i],
+        name: "Rajesh Kumar",
+        phoneNumber: "+91-9876543210",
         status: "ACTIVE",
       },
     });
+
     await prisma.userRole.upsert({
-      where: { userId_roleId: { userId: customer.id, roleId: roles.userRole.id } },
+      where: {
+        userId_roleId: {
+          userId: manager.id,
+          roleId: roles.managerRole.id,
+        },
+      },
       update: {},
-      create: { userId: customer.id, roleId: roles.userRole.id },
+      create: {
+        userId: manager.id,
+        roleId: roles.managerRole.id,
+      },
     });
-    customers.push(customer);
+
+    // 2. Guides
+    const guide1 = await prisma.user.upsert({
+      where: { email: "guide.rahul@paramadventures.com" },
+      update: {},
+      create: {
+        email: "guide.rahul@paramadventures.com",
+        password: demoPassword,
+        name: "Rahul Singh",
+        phoneNumber: "+91-9876543211",
+        status: "ACTIVE",
+      },
+    });
+
+    const guide2 = await prisma.user.upsert({
+      where: { email: "guide.neha@paramadventures.com" },
+      update: {},
+      create: {
+        email: "guide.neha@paramadventures.com",
+        password: demoPassword,
+        name: "Neha Sharma",
+        phoneNumber: "+91-9876543212",
+        status: "ACTIVE",
+      },
+    });
+
+    for (const guide of [guide1, guide2]) {
+      await prisma.userRole.upsert({
+        where: { userId_roleId: { userId: guide.id, roleId: roles.guideRole.id } },
+        update: {},
+        create: { userId: guide.id, roleId: roles.guideRole.id },
+      });
+    }
+
+    // 3. Customers
+    const customerEmails = ["amit.patel@email.com", "sneha.k@email.com", "vikram.m@email.com"];
+    const customerNames = ["Amit Patel", "Sneha Kapoor", "Vikram Mehta"];
+    const customers = [];
+
+    for (let i = 0; i < customerEmails.length; i++) {
+      const customer = await prisma.user.upsert({
+        where: { email: customerEmails[i] },
+        update: {},
+        create: {
+          email: customerEmails[i],
+          password: demoPassword,
+          name: customerNames[i],
+          status: "ACTIVE",
+        },
+      });
+      await prisma.userRole.upsert({
+        where: { userId_roleId: { userId: customer.id, roleId: roles.userRole.id } },
+        update: {},
+        create: { userId: customer.id, roleId: roles.userRole.id },
+      });
+      customers.push(customer);
+    }
+
+    console.log(
+      `✅ Created Admin and ${guide1.id ? 2 : 0} Guides and ${customers.length} Customers`,
+    );
+
+    return {
+      admin,
+      manager,
+      guide1,
+      guide2,
+      customers,
+    };
+  } else {
+    console.log("ℹ️  Skipping demo users (SEED_DEMO_DATA not true)");
+    return { admin };
   }
-
-  console.log(`✅ Created Admin and ${guide1.id ? 2 : 0} Guides and ${customers.length} Customers`);
-
-  return {
-    admin,
-    manager,
-    guide1,
-    guide2,
-    customers,
-  };
 }
 
 async function createImages(users: any) {
@@ -964,12 +970,16 @@ async function main() {
 
     const roles = await createRolesAndPermissions();
     const users = await createUsers(roles);
-    const images = await createImages(users);
-    const trips = await createTrips(users, images);
-    await createHeroSlides();
-    await createBlogs(users, trips, images);
-    await createBookingsAndPayments(users, trips);
-    await createReviewsAndInquiries(users, trips);
+
+    if (process.env.SEED_DEMO_DATA === "true") {
+      const images = await createImages(users);
+      const trips = await createTrips(users, images);
+      await createHeroSlides();
+      await createBlogs(users, trips, images);
+      await createBookingsAndPayments(users, trips);
+      await createReviewsAndInquiries(users, trips);
+    }
+
     await createSiteConfig();
 
     console.log("\n╔════════════════════════════════════════════════════════════╗");
@@ -978,23 +988,29 @@ async function main() {
 
     console.log("\n📊 Summary:");
     console.log("   • 4 Roles with permissions");
-    console.log("   • 7 Users (1 admin, 1 manager, 2 guides, 3 customers)");
-    console.log("   • 6 Images");
-    console.log("   • 5 Featured trips");
-    console.log("   • 3 Hero slides");
-    console.log("   • 2 Blog posts");
-    console.log("   • 3 Bookings (2 confirmed, 1 pending)");
-    console.log("   • 2 Payments");
-    console.log("   • Site configuration");
+    if (process.env.SEED_DEMO_DATA === "true") {
+      console.log("   • 7 Users (1 admin, 1 manager, 2 guides, 3 customers)");
+      console.log("   • 6 Images");
+      console.log("   • 5 Featured trips");
+      console.log("   • 3 Hero slides");
+      console.log("   • 2 Blog posts");
+      console.log("   • 3 Bookings (2 confirmed, 1 pending)");
+      console.log("   • 2 Payments");
+    } else {
+      console.log("   • System Users (Super Admin, Admin)");
+      console.log("   • Site configuration");
+    }
 
     console.log("\n🔑 Login Credentials:");
     console.log(
       `   Super Admin: ${process.env.SUPER_ADMIN_EMAIL || "super.admin@paramadventures.com"}`,
     );
     console.log(`   Admin:       ${process.env.ADMIN_EMAIL}`);
-    console.log(`   Manager:  manager@paramadventures.com / Demo@2026`);
-    console.log(`   Guide:    guide.rahul@paramadventures.com / Demo@2026`);
-    console.log(`   Customer: amit.patel@email.com / Demo@2026\n`);
+    if (process.env.SEED_DEMO_DATA === "true") {
+      console.log(`   Manager:  manager@paramadventures.com / Demo@2026`);
+      console.log(`   Guide:    guide.rahul@paramadventures.com / Demo@2026`);
+      console.log(`   Customer: amit.patel@email.com / Demo@2026\n`);
+    }
   } catch (error: any) {
     console.error("\n❌ Seed failed:", error);
     const fs = require("fs");

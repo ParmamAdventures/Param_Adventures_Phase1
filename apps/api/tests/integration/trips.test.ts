@@ -75,7 +75,7 @@ describe("Trip Endpoints", () => {
     // Create admin user
     const admin = await prisma.user.create({
       data: {
-        email: "admin_trips@test.com",
+        email: `admin_trips_${Date.now()}@test.com`,
         password: "hashed",
         name: "Admin User",
       },
@@ -97,9 +97,13 @@ describe("Trip Endpoints", () => {
         description: "A test trek",
         category: "TREK",
         durationDays: 3,
-        difficulty: "Moderate",
+        difficulty: "MODERATE",
         price: 12000,
         capacity: 20,
+        itinerary: [],
+        location: "Test Location",
+        startDate: new Date().toISOString(),
+        endDate: new Date().toISOString(),
       };
 
       const response = await request(app)
@@ -171,6 +175,13 @@ describe("Trip Endpoints", () => {
             slug: `update-${Date.now()}`,
             category: "TREK",
             durationDays: 2,
+            difficulty: "EASY",
+            description: "To update",
+            price: 5000,
+            itinerary: [],
+            location: "Test Location",
+            startDate: new Date().toISOString(),
+            endDate: new Date().toISOString(),
           });
         if (createRes.body && createRes.body.data && createRes.body.data.id) {
           tripId = createRes.body.data.id;
@@ -227,6 +238,14 @@ describe("Trip Endpoints", () => {
           title: "Trip to Delete",
           slug: `delete-${Date.now()}`,
           category: "TREK",
+          description: "To delete",
+          durationDays: 1,
+          difficulty: "EASY",
+          price: 1000,
+          itinerary: [],
+          location: "Test Location",
+          startDate: new Date().toISOString(),
+          endDate: new Date().toISOString(),
         });
 
       if (!createRes.body || !createRes.body.data || !createRes.body.data.id) {
@@ -287,6 +306,14 @@ describe("Trip Endpoints", () => {
             title: "Trip for Retrieval",
             slug: `retrieve-${Date.now()}`,
             category: "TREK",
+            description: "To retrieve",
+            durationDays: 1,
+            difficulty: "EASY",
+            price: 1000,
+            itinerary: [],
+            location: "Test Location",
+            startDate: new Date().toISOString(),
+            endDate: new Date().toISOString(),
           });
         if (createRes.body && createRes.body.data && createRes.body.data.id) {
           tripId = createRes.body.data.id;

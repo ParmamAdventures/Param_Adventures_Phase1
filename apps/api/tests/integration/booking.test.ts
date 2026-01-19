@@ -71,12 +71,14 @@ describe("Booking Integration", () => {
         description: "A test trip",
         itinerary: {},
         durationDays: 5,
-        difficulty: "Moderate",
+        difficulty: "MODERATE",
         location: "Himalayas",
         price: 500,
         status: "PUBLISHED",
         capacity: 10,
         createdById: userId,
+        startDate: new Date(),
+        endDate: new Date(),
       },
     });
     tripId = trip.id;

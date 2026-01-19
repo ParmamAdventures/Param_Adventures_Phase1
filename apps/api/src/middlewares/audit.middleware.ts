@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { auditService } from "../services/audit.service";
+import { AuditAction } from "@prisma/client";
 
 interface AutoLogOptions {
-  action: string;
+  action: AuditAction;
   targetType: string;
   /**
    * Function to extract target ID from request.

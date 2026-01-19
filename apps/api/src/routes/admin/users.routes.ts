@@ -9,6 +9,7 @@ import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";
 import { requirePermission } from "../../middlewares/require-permission.middleware";
 import { autoLog } from "../../middlewares/audit.middleware";
+import { AuditActions } from "../../utils/auditLog";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.get(
   requireAuth,
   attachPermissions,
   requirePermission("user:list"),
-  autoLog({ action: "USER_LIST_VIEW", targetType: "User" }),
+  autoLog({ action: AuditActions.USER_LIST_VIEW, targetType: "User" }),
   listUsers,
 );
 
@@ -26,7 +27,7 @@ router.patch(
   requireAuth,
   attachPermissions,
   requirePermission("user:edit"),
-  autoLog({ action: "USER_STATUS_CHANGE", targetType: "User" }),
+  autoLog({ action: AuditActions.USER_STATUS_CHANGED, targetType: "User" }),
   updateUserStatus,
 );
 

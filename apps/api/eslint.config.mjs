@@ -24,6 +24,15 @@ export default [
     },
   },
   {
-    ignores: ["dist/**/*", "node_modules/**/*", "coverage/**/*", "prisma/seed.js"],
+    ignores: [
+      "dist/**/*",
+      "node_modules/**/*",
+      "coverage/**/*",
+      "prisma/seeds/**/*",
+      "src/generated/**/*",
+      "scripts/**/*",
+      "*.js",
+      "*.cjs",
+    ],
   },
 ];

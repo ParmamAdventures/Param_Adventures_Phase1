@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { auditService } from "./audit.service";
+import { AuditActions } from "../utils/auditLog";
 
 export class UserService {
   /**
@@ -95,7 +96,7 @@ export class UserService {
 
     await auditService.logAudit({
       actorId: userId,
-      action: "USER_UPDATE_PROFILE",
+      action: AuditActions.USER_UPDATE_PROFILE,
       targetType: "User",
       targetId: userId,
     });

@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { AuditAction } from "@prisma/client";
 
 /**
  * Creates an audit log entry
@@ -6,7 +7,7 @@ import { prisma } from "../lib/prisma";
  */
 export async function createAuditLog(params: {
   actorId: string;
-  action: string;
+  action: AuditAction;
   targetType: string;
   targetId: string;
   metadata?: Record<string, any>;
@@ -23,58 +24,9 @@ export async function createAuditLog(params: {
 }
 
 /**
- * Type-safe audit log actions
+ * Re-export AuditAction as AuditActions for backward compatibility
  */
-export const AuditActions = {
-  // Trip actions
-  TRIP_CREATED: "TRIP_CREATED",
-  TRIP_UPDATED: "TRIP_UPDATED",
-  TRIP_DELETED: "TRIP_DELETED",
-  TRIP_SUBMITTED: "TRIP_SUBMITTED",
-  TRIP_APPROVED: "TRIP_APPROVED",
-  TRIP_PUBLISHED: "TRIP_PUBLISHED",
-  TRIP_ARCHIVED: "TRIP_ARCHIVED",
-  TRIP_RESTORED: "TRIP_RESTORED",
-  TRIP_COMPLETED: "TRIP_COMPLETED",
-
-  // Blog actions
-  BLOG_CREATED: "BLOG_CREATED",
-  BLOG_UPDATED: "BLOG_UPDATED",
-  BLOG_SUBMITTED: "BLOG_SUBMITTED",
-  BLOG_APPROVED: "BLOG_APPROVED",
-  BLOG_REJECTED: "BLOG_REJECTED",
-  BLOG_PUBLISHED: "BLOG_PUBLISHED",
-
-  // Booking actions
-  BOOKING_CREATED: "BOOKING_CREATED",
-  BOOKING_CONFIRMED: "BOOKING_CONFIRMED",
-  BOOKING_CANCELLED: "BOOKING_CANCELLED",
-  BOOKING_REJECTED: "BOOKING_REJECTED",
-  BOOKING_COMPLETED: "BOOKING_COMPLETED",
-
-  // User actions
-  USER_CREATED: "USER_CREATED",
-  USER_UPDATED: "USER_UPDATED",
-  USER_ROLE_ASSIGNED: "USER_ROLE_ASSIGNED",
-  USER_ROLE_REVOKED: "USER_ROLE_REVOKED",
-  USER_STATUS_CHANGED: "USER_STATUS_CHANGED",
-  USER_SUSPENDED: "USER_SUSPENDED",
-  USER_BANNED: "USER_BANNED",
-
-  // Role actions
-  ROLE_CREATED: "ROLE_CREATED",
-  ROLE_UPDATED: "ROLE_UPDATED",
-  ROLE_DELETED: "ROLE_DELETED",
-  ROLE_PERMISSION_ADDED: "ROLE_PERMISSION_ADDED",
-  ROLE_PERMISSION_REMOVED: "ROLE_PERMISSION_REMOVED",
-
-  // Payment actions
-  PAYMENT_CREATED: "PAYMENT_CREATED",
-  PAYMENT_CAPTURED: "PAYMENT_CAPTURED",
-  PAYMENT_FAILED: "PAYMENT_FAILED",
-  PAYMENT_REFUNDED: "PAYMENT_REFUNDED",
-  PAYMENT_DISPUTED: "PAYMENT_DISPUTED",
-} as const;
+export { AuditAction as AuditActions } from "@prisma/client";
 
 /**
  * Type-safe target types
@@ -89,5 +41,5 @@ export const AuditTargetTypes = {
   PERMISSION: "PERMISSION",
 } as const;
 
-export type AuditAction = (typeof AuditActions)[keyof typeof AuditActions];
-export type AuditTargetType = (typeof AuditTargetTypes)[keyof typeof AuditTargetTypes];
+export type { AuditAction };
+// TargetType is just string in schema, but we can keep the helper

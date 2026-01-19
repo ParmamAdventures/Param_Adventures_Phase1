@@ -8,6 +8,7 @@ import {
   verifyResetToken,
 } from "../utils/jwt";
 import { auditService } from "./audit.service";
+import { AuditActions } from "../utils/auditLog";
 import { notificationService } from "./notification.service";
 import { HttpError } from "../utils/httpError";
 
@@ -36,7 +37,7 @@ export class AuthService {
 
     await auditService.logAudit({
       actorId: user.id,
-      action: "USER_REGISTER",
+      action: AuditActions.USER_REGISTER,
       targetType: "User",
       targetId: user.id,
     });
@@ -63,7 +64,7 @@ export class AuthService {
 
     await auditService.logAudit({
       actorId: user.id,
-      action: "USER_LOGIN",
+      action: AuditActions.USER_LOGIN,
       targetType: "User",
       targetId: user.id,
     });
@@ -129,7 +130,7 @@ export class AuthService {
 
     await auditService.logAudit({
       actorId: user.id,
-      action: "USER_CHANGE_PASSWORD",
+      action: AuditActions.USER_CHANGE_PASSWORD,
       targetType: "User",
       targetId: user.id,
     });

@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { auditService } from "./audit.service";
+import { AuditActions } from "../utils/auditLog";
 import { HttpError } from "../utils/httpError";
 import { slugify } from "../utils/slugify";
 
@@ -286,7 +287,7 @@ export class BlogService {
 
     await auditService.logAudit({
       actorId: userId,
-      action: "BLOG_DELETED",
+      action: AuditActions.BLOG_DELETED,
       targetType: "BLOG",
       targetId: id,
     });

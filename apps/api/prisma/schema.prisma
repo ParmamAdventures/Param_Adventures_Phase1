@@ -23,6 +23,66 @@ enum MediaType {
   VIDEO
 }
 
+enum AuditAction {
+  // Trip actions
+  TRIP_CREATED
+  TRIP_UPDATED
+  TRIP_DELETED
+  TRIP_SUBMITTED
+  TRIP_APPROVED
+  TRIP_PUBLISHED
+  TRIP_ARCHIVED
+  TRIP_RESTORED
+  TRIP_COMPLETED
+
+  // Blog actions
+  BLOG_CREATED
+  BLOG_UPDATED
+  BLOG_SUBMITTED
+  BLOG_APPROVED
+  BLOG_REJECTED
+  BLOG_PUBLISHED
+  BLOG_DELETED
+
+  // Booking actions
+  BOOKING_CREATED
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+  BOOKING_REJECTED
+  BOOKING_COMPLETED
+
+  // User actions
+  USER_REGISTER
+  USER_LOGIN
+  USER_CHANGE_PASSWORD
+  USER_UPDATE_PROFILE
+  USER_LIST_VIEW
+  USER_CREATED
+  USER_UPDATED
+  USER_ROLE_ASSIGNED
+  USER_ROLE_REVOKED
+  USER_STATUS_CHANGED
+  USER_STATUS_UPDATED
+  USER_SUSPENDED
+  USER_UNSUSPENDED
+  USER_BANNED
+  USER_DELETED
+
+  // Role actions
+  ROLE_CREATED
+  ROLE_UPDATED
+  ROLE_DELETED
+  ROLE_PERMISSION_ADDED
+  ROLE_PERMISSION_REMOVED
+
+  // Payment actions
+  PAYMENT_CREATED
+  PAYMENT_CAPTURED
+  PAYMENT_FAILED
+  PAYMENT_REFUNDED
+  PAYMENT_DISPUTED
+}
+
 enum TripInquiryStatus {
   NEW
   CONTACTED
@@ -134,7 +194,7 @@ model RolePermission {
 model AuditLog {
   id         String   @id @default(uuid())
   actorId    String?
-  action     String
+  action     AuditAction
   targetType String
   targetId   String?
   metadata   Json?
@@ -246,6 +306,8 @@ model Trip {
   @@index([status, isFeatured, createdAt])
   @@index([category, status])
   @@index([difficulty, price])
+  @@index([durationDays])
+  @@index([startPoint])
 }
 
 model TripGalleryImage {
@@ -493,7 +555,7 @@ model TripInquiry {
   id          String            @id @default(uuid())
   name        String
   email       String
-  phoneNumber String?
+  phoneNumber String?    @unique
   destination String
   dates       String?
   budget      String?
@@ -510,7 +572,7 @@ model TripInquiry {
 model NewsletterSubscriber {
   id        String   @id @default(uuid())
   email     String   @unique
-  isActive  Boolean  @default(true)
+  isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([isActive, createdAt])

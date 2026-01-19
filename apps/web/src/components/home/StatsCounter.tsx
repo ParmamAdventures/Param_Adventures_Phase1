@@ -65,7 +65,7 @@ function CountUp({ end, duration }: { end: number; duration: number }) {
   useEffect(() => {
     let start = 0;
     if (end === 0) {
-      setCount(0);
+      setCount((prev) => (prev !== 0 ? 0 : prev));
       return;
     }
     const increment = end / (duration * 60);

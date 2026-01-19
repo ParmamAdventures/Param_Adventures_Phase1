@@ -21,6 +21,12 @@ describe("Trip Creation Flow (Mocked)", () => {
       slug: "adventure-trip",
       description: "Exciting adventure",
       price: 1000,
+      itinerary: [],
+      durationDays: 5,
+      difficulty: "MODERATE",
+      location: "Himalayas",
+      startDate: new Date().toISOString(),
+      endDate: new Date().toISOString(),
     };
 
     const createdTrip = {
