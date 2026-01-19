@@ -59,6 +59,9 @@ model User {
   avatarImageId String?
   avatarImage   Image?  @relation("UserAvatar", fields: [avatarImageId], references: [id], onDelete: SetNull)
 
+  deletedAt     DateTime? // Soft Delete
+
+
   roles         UserRole[]
   // Trip relations
   createdTrips  Trip[]     @relation("TripCreatedBy")
@@ -203,6 +206,9 @@ model Trip {
   // Legacy fields (Consider removing after migration)
   coverImageLegacy String?  @map("coverImage")
   galleryLegacy    String[] @map("gallery")
+  
+  deletedAt        DateTime? // Soft Delete
+
 
   createdById String
   createdBy   User   @relation("TripCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
@@ -292,6 +298,8 @@ model Blog {
   tripId String?
   trip   Trip?   @relation("TripBlogs", fields: [tripId], references: [id], onDelete: SetNull)
 
+  deletedAt DateTime? // Soft Delete
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

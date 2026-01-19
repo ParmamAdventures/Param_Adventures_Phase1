@@ -39,6 +39,17 @@ Core backend services for the Param Adventures platform.
 4. Seed initial roles/permissions: `npm run seed`.
 5. Seed test users: `npm run seed:users`.
 
+### 🛡️ Production Seeding
+
+To run seeds in a **production** environment (where `NODE_ENV=production`), you must explicitly allow it:
+
+```bash
+# Example: Running seed in production
+ALLOW_PROD_SEED=true npm run seed:prod
+```
+
+This prevents accidental data overwrites. You can also set a `DEMO_PASSWORD` env var to explicitly set the password for demo users; otherwise, a secure random one is generated.
+
 ### Running
 
 ```bash
