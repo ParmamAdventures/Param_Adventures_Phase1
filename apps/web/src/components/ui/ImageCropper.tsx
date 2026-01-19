@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import { Button } from "./Button";
-import { getCroppedImg } from "@/lib/cropImage";
+import { getCroppedImg } from "@/lib/canvasUtils";
 
 type Point = { x: number; y: number };
 type Area = { width: number; height: number; x: number; y: number };
