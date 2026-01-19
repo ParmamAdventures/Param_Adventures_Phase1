@@ -21,6 +21,20 @@ export const createUserSchema = z.object({
       .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number")
       .optional(),
     address: z.string().max(200).optional(),
+    preferences: z
+      .object({
+        theme: z.enum(["light", "dark", "system"]).optional(),
+        language: z.string().min(2).max(10).optional(),
+        notifications: z
+          .object({
+            email: z.boolean().optional(),
+            push: z.boolean().optional(),
+            sms: z.boolean().optional(),
+            marketing: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   }),
 });
 
@@ -37,6 +51,20 @@ export const updateUserSchema = z.object({
       .optional(),
     address: z.string().max(200).optional(),
     avatarImageId: z.string().uuid().optional(),
+    preferences: z
+      .object({
+        theme: z.enum(["light", "dark", "system"]).optional(),
+        language: z.string().min(2).max(10).optional(),
+        notifications: z
+          .object({
+            email: z.boolean().optional(),
+            push: z.boolean().optional(),
+            sms: z.boolean().optional(),
+            marketing: z.boolean().optional(),
+          })
+          .optional(),
+      })
+      .optional(),
   }),
 });
 

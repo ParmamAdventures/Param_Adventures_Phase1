@@ -16,9 +16,31 @@ export const createTripSchema = z.object({
     meetingPoint: z.string().optional(),
     maxCapacity: z.number().int().positive().optional(),
     location: z.string().optional(),
-    itinerary: z.array(z.any()).optional(), // Can be more specific if structure is known
+    itinerary: z
+      .array(
+        z.object({
+          day: z.number().int().positive(),
+          title: z.string().min(3),
+          description: z.string().min(10),
+          activities: z.array(z.string()).optional(),
+          accommodation: z.string().optional(),
+          meals: z.array(z.string()).optional(),
+        }),
+      )
+      .optional(),
     inclusions: z.array(z.string()).optional(),
     exclusions: z.array(z.string()).optional(),
+    highlights: z.array(z.string()).optional(),
+    thingsToPack: z.array(z.string()).optional(),
+    faqs: z
+      .array(
+        z.object({
+          question: z.string().min(5),
+          answer: z.string().min(10),
+        }),
+      )
+      .optional(),
+    seasons: z.array(z.string()).optional(),
   }),
 });
 
@@ -40,8 +62,30 @@ export const updateTripSchema = z.object({
     meetingPoint: z.string().optional(),
     maxCapacity: z.number().int().positive().optional(),
     location: z.string().optional(),
-    itinerary: z.array(z.any()).optional(),
+    itinerary: z
+      .array(
+        z.object({
+          day: z.number().int().positive(),
+          title: z.string().min(3),
+          description: z.string().min(10),
+          activities: z.array(z.string()).optional(),
+          accommodation: z.string().optional(),
+          meals: z.array(z.string()).optional(),
+        }),
+      )
+      .optional(),
     inclusions: z.array(z.string()).optional(),
     exclusions: z.array(z.string()).optional(),
+    highlights: z.array(z.string()).optional(),
+    thingsToPack: z.array(z.string()).optional(),
+    faqs: z
+      .array(
+        z.object({
+          question: z.string().min(5),
+          answer: z.string().min(10),
+        }),
+      )
+      .optional(),
+    seasons: z.array(z.string()).optional(),
   }),
 });

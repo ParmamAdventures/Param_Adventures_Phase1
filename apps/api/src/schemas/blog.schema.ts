@@ -4,7 +4,15 @@ import { z } from "zod";
 export const createBlogSchema = z.object({
   body: z.object({
     title: z.string().min(10, "Title must be at least 10 characters").max(150),
-    content: z.record(z.string(), z.any()), // Editor.js JSON content
+    content: z
+      .object({
+        time: z.number().optional(),
+        blocks: z.array(z.any()), // Minimal block validation
+        version: z.string().optional(),
+      })
+      .refine((data) => Array.isArray(data.blocks) && data.blocks.length > 0, {
+        message: "Content must have at least one block",
+      }),
     excerpt: z.string().max(300, "Excerpt must be less than 300 characters").optional(),
     tripId: z.string().uuid("Invalid trip ID").optional(),
     coverImageId: z.string().uuid("Invalid image ID").optional(),
@@ -14,7 +22,13 @@ export const createBlogSchema = z.object({
 export const updateBlogSchema = z.object({
   body: z.object({
     title: z.string().min(10).max(150).optional(),
-    content: z.record(z.string(), z.any()).optional(),
+    content: z
+      .object({
+        time: z.number().optional(),
+        blocks: z.array(z.any()),
+        version: z.string().optional(),
+      })
+      .optional(),
     excerpt: z.string().max(300).optional(),
     tripId: z.string().uuid().optional(),
     coverImageId: z.string().uuid().optional(),
