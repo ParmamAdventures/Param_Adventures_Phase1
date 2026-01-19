@@ -2,12 +2,12 @@ import Image from "next/image";
 import StatusBadge from "../ui/StatusBadge";
 import HeartButton from "./HeartButton";
 
-/**
- * TripHero - React component for UI presentation and interaction.
- * @param {Object} props - Component props
- * @param {React.ReactNode} [props.children] - Component children
- * @returns {React.ReactElement} Component element
- */
+interface TripImage {
+  originalUrl?: string;
+  mediumUrl?: string;
+  type?: "IMAGE" | "VIDEO";
+}
+
 interface TripHeroProps {
   trip: {
     id: string;
@@ -17,14 +17,14 @@ interface TripHeroProps {
     location: string;
     difficulty: string;
     price: number;
-    heroImage?: { originalUrl?: string; mediumUrl?: string } | null;
-    coverImage?: { originalUrl?: string; mediumUrl?: string } | null;
+    heroImage?: TripImage | null;
+    coverImage?: TripImage | null;
   };
 }
 
 export default function TripHero({ trip }: TripHeroProps) {
   // Helper to format local image paths
-  const getImageUrl = (image: { originalUrl?: string; mediumUrl?: string } | null | undefined) => {
+  const getImageUrl = (image: TripImage | null | undefined) => {
     if (!image) return null;
     const url = image.originalUrl || image.mediumUrl;
     if (!url) return null;
@@ -33,22 +33,51 @@ export default function TripHero({ trip }: TripHeroProps) {
     if (url.startsWith("http") || url.startsWith("/")) return url;
 
     // Otherwise assume it's a filename in the uploads directory
-    // We'll use the original folder by default for hero images
     return `/uploads/original/${url}`;
   };
 
-  const heroImage = getImageUrl(trip.heroImage);
-  const coverImage = getImageUrl(trip.coverImage);
+  const heroImageAsset = trip.heroImage;
+  const coverImageAsset = trip.coverImage;
 
-  // Prioritize Hero -> Cover
-  const finalCoverImage = heroImage || coverImage;
+  // Resolve URLs
+  const heroImageUrl = getImageUrl(heroImageAsset);
+  const coverImageUrl = getImageUrl(coverImageAsset);
+
+  // Logic:
+  // 1. If heroImage exists, use it. Check type to determine invalid rendering.
+  // 2. If no heroImage, fallback to coverImage.
+  // 3. Fallback logic applies to URL, but we need type for rendering.
+
+  let activeAsset = null;
+  let activeUrl = null;
+
+  if (heroImageUrl) {
+    activeAsset = heroImageAsset;
+    activeUrl = heroImageUrl;
+  } else if (coverImageUrl) {
+    activeAsset = coverImageAsset;
+    activeUrl = coverImageUrl;
+  }
+
+  const isVideo = activeAsset?.type === "VIDEO";
 
   return (
     <div className="relative flex h-[60vh] min-h-[500px] w-full items-end overflow-hidden bg-slate-900 pb-12 text-white">
       {/* Background Layer */}
       <div className="absolute inset-0 z-0">
-        {finalCoverImage ? (
-          <Image src={finalCoverImage} alt={trip.title} fill priority className="object-cover" />
+        {activeUrl ? (
+          isVideo ? (
+            <video
+              src={activeUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <Image src={activeUrl} alt={trip.title} fill priority className="object-cover" />
+          )
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-black" />
         )}
