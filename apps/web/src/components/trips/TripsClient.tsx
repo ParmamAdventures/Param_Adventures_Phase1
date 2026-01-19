@@ -88,7 +88,6 @@ export default function TripsClient() {
         return;
       }
       const json = await res.json();
-      const json = await res.json();
 
       // Handle standardized ApiResponse with pagination
       if (json.data && json.data.trips && Array.isArray(json.data.trips)) {
