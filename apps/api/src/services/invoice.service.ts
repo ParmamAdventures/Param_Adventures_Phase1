@@ -1,4 +1,4 @@
-import PDFDocument from "pdfkit";
+import PDFDocument = require("pdfkit");
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
 import fs from "fs";
@@ -82,12 +82,10 @@ export const invoiceService = {
 
       // --- Total ---
       doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .text(`Total: INR ${booking.totalPrice.toFixed(2)}`, 400, y + 20, {
-          width: 100,
-          align: "right",
-        });
+      doc.font("Helvetica-Bold").text(`Total: INR ${booking.totalPrice.toFixed(2)}`, 400, y + 20, {
+        width: 100,
+        align: "right",
+      });
 
       // --- Status ---
       doc.moveDown();
