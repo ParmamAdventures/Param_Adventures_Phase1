@@ -24,7 +24,7 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
       res,
       ErrorCodes.TRIP_EDIT_FORBIDDEN,
       ErrorMessages.INSUFFICIENT_PERMISSIONS,
-      403
+      403,
     );
   }
 
@@ -34,7 +34,7 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
       res,
       ErrorCodes.TRIP_EDIT_NOT_DRAFT,
       ErrorMessages.TRIP_EDIT_NOT_DRAFT,
-      403
+      403,
     );
   }
 
@@ -65,8 +65,8 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
       durationDays: req.body.durationDays,
       difficulty: req.body.difficulty,
       isFeatured: req.body.isFeatured,
-      startDate: req.body.startDate ? new Date(req.body.startDate) : null,
-      endDate: req.body.endDate ? new Date(req.body.endDate) : null,
+      startDate: req.body.startDate ? new Date(req.body.startDate) : undefined,
+      endDate: req.body.endDate ? new Date(req.body.endDate) : undefined,
       coverImageId: req.body.coverImageId,
       heroImageId: req.body.heroImageId,
       // Update gallery
