@@ -277,9 +277,10 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                         onChange={(e) => updateGuestDetail(index, "gender", e.target.value)}
                       >
                         <option value="">Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+                        <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
                       </select>
                     </div>
                   </div>

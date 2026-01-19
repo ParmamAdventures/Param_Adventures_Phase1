@@ -161,7 +161,7 @@ describe("User Endpoints Integration", () => {
         nickname: "Tester",
         bio: "Test bio content",
         age: 28,
-        gender: "Male",
+        gender: "MALE",
         phoneNumber: "+1234567890",
         address: "123 Test Street",
         preferences: { theme: "dark", notifications: true },

@@ -5,7 +5,7 @@ export interface User {
   nickname?: string;
   bio?: string;
   age?: number;
-  gender?: string;
+  gender?: "MALE" | "FEMALE" | "OTHER" | "PREFER_NOT_TO_SAY";
   phoneNumber?: string;
   address?: string;
   status: "ACTIVE" | "SUSPENDED" | "BANNED";

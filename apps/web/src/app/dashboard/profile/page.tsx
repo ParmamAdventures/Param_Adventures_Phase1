@@ -385,10 +385,10 @@ export default function ProfilePage() {
                 onChange={(val) => setGender(val)}
                 placeholder="Select Gender"
                 options={[
-                  { value: "Male", label: "Male" },
-                  { value: "Female", label: "Female" },
-                  { value: "Other", label: "Other" },
-                  { value: "Prefer not to say", label: "Prefer not to say" },
+                  { value: "MALE", label: "Male" },
+                  { value: "FEMALE", label: "Female" },
+                  { value: "OTHER", label: "Other" },
+                  { value: "PREFER_NOT_TO_SAY", label: "Prefer not to say" },
                 ]}
               />
             </div>
@@ -607,5 +607,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-

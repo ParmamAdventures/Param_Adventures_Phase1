@@ -102,7 +102,7 @@ model User {
   nickname     String?
   bio          String?
   age          Int?
-  gender       String?
+  gender       Gender?
   phoneNumber  String?
   address      String?
   status       UserStatus @default(ACTIVE)
@@ -205,6 +205,7 @@ model AuditLog {
   @@index([actorId])
   @@index([targetType, targetId])
   @@index([createdAt])
+  @@index([action])
 }
 
 enum TripStatus {
@@ -499,6 +500,14 @@ model Payment {
 
   @@index([bookingId])
   @@index([status])
+  @@index([method])
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
 }
 
 model HeroSlide {

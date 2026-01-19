@@ -15,8 +15,11 @@ export const createUserSchema = z.object({
     nickname: z.string().optional(),
     bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
     age: z.number().int().min(13, "Must be at least 13 years old").max(120).optional(),
-    gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
-    phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number").optional(),
+    gender: z.enum(["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"]).optional(),
+    phoneNumber: z
+      .string()
+      .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number")
+      .optional(),
     address: z.string().max(200).optional(),
   }),
 });
@@ -27,8 +30,11 @@ export const updateUserSchema = z.object({
     nickname: z.string().optional(),
     bio: z.string().max(500).optional(),
     age: z.number().int().min(13).max(120).optional(),
-    gender: z.enum(["Male", "Female", "Other", "Prefer not to say"]).optional(),
-    phoneNumber: z.string().regex(/^\+?[1-9]\d{1,14}$/).optional(),
+    gender: z.enum(["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"]).optional(),
+    phoneNumber: z
+      .string()
+      .regex(/^\+?[1-9]\d{1,14}$/)
+      .optional(),
     address: z.string().max(200).optional(),
     avatarImageId: z.string().uuid().optional(),
   }),
