@@ -38,7 +38,7 @@ model User {
   id          String     @id @default(uuid())
   email       String     @unique
   password    String
-  name        String?
+  name        String
   nickname    String?
   bio         String?
   age         Int?
@@ -203,9 +203,7 @@ model Trip {
   heroImage    Image?             @relation("TripHeroImage", fields: [heroImageId], references: [id], onDelete: SetNull)
   gallery      TripGalleryImage[]
 
-  // Legacy fields (Consider removing after migration)
-  coverImageLegacy String?  @map("coverImage")
-  galleryLegacy    String[] @map("gallery")
+
   
   deletedAt        DateTime? // Soft Delete
 

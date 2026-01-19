@@ -12,7 +12,6 @@ type Trip = {
   duration?: string;
   durationDays?: number;
   coverImage?: string | { mediumUrl: string };
-  coverImageLegacy?: string;
 };
 
 interface TripCardProps {
@@ -33,8 +32,7 @@ export default function TripCard({ trip, initialSaved = false, onToggle }: TripC
   const imageUrl =
     typeof trip.coverImage === "string"
       ? trip.coverImage
-      : (trip.coverImage as any)?.mediumUrl ||
-        trip.coverImageLegacy ||
+      : (trip.coverImage as { mediumUrl: string })?.mediumUrl ||
         "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&q=80";
 
   const displayDuration = trip.duration || (trip.durationDays ? `${trip.durationDays} Days` : null);
