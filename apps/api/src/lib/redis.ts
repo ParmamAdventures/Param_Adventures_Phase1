@@ -6,12 +6,20 @@ export const createRedisClient = (options = {}) => {
     console.log(`Connecting to Redis: ${env.REDIS_URL.replace(/:[^:@]+@/, ":****@")}`);
   }
 
-  const client = new Redis(env.REDIS_URL, {
+  const redisOptions: any = {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
     family: 4, // Force IPv4 to avoid ENOTFOUND on some environments
     ...options,
-  });
+  };
+
+  if (env.REDIS_URL.startsWith("rediss://")) {
+    redisOptions.tls = {
+      rejectUnauthorized: false,
+    };
+  }
+
+  const client = new Redis(env.REDIS_URL, redisOptions);
 
   client.on("error", (err) => {
     console.error("Redis Client Error:", err);
