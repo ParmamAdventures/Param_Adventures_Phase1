@@ -6,7 +6,14 @@ import { paymentService } from "../services/payment.service";
 import { emitToUser } from "./socket";
 
 // Define Job Data Types
-export type JobType = "SEND_BOOKING_EMAIL" | "SEND_PAYMENT_EMAIL" | "SEND_ASSIGNMENT_EMAIL" | "SEND_REFUND_EMAIL" | "RECONCILE_PAYMENT" | "SEND_PAYMENT_INITIATED" | "SEND_PAYMENT_FAILED";
+export type JobType =
+  | "SEND_BOOKING_EMAIL"
+  | "SEND_PAYMENT_EMAIL"
+  | "SEND_ASSIGNMENT_EMAIL"
+  | "SEND_REFUND_EMAIL"
+  | "RECONCILE_PAYMENT"
+  | "SEND_PAYMENT_INITIATED"
+  | "SEND_PAYMENT_FAILED";
 
 interface JobData {
   type: JobType;
@@ -31,8 +38,9 @@ export const notificationQueue = new Queue(QUEUE_NAME, {
 // 2. Create the Worker
 export const notificationWorker = new Worker(
   QUEUE_NAME,
-  async (job: Job<any>) => { // Relaxed type to allow flexible data
-    const type = job.name as JobType; 
+  async (job: Job<any>) => {
+    // Relaxed type to allow flexible data
+    const type = job.name as JobType;
     const payload = job.data;
     console.log(`👷 Processing job ${job.id} of type ${type}...`);
 
@@ -82,25 +90,25 @@ export const notificationWorker = new Worker(
           break;
         case "SEND_REFUND_EMAIL":
           await notificationService.sendRefundEmail(user!.email, {
-             ...payload.details,
-             userName: user!.name || user!.email,
+            ...payload.details,
+            userName: user!.name || user!.email,
           });
           emitToUser(payload.userId, "refund_update", {
             status: "REFUNDED",
             message: "Refund processed successfully",
-            amount: payload.details.amount
+            amount: payload.details.amount,
           });
           break;
         case "SEND_PAYMENT_INITIATED":
           await notificationService.sendPaymentInitiated(user!.email, {
-             ...payload.details,
-             userName: user!.name || user!.email,
+            ...payload.details,
+            userName: user!.name || user!.email,
           });
           break;
         case "SEND_PAYMENT_FAILED":
           await notificationService.sendPaymentFailed(user!.email, {
-             ...payload.details,
-             userName: user!.name || user!.email,
+            ...payload.details,
+            userName: user!.name || user!.email,
           });
           break;
         case "RECONCILE_PAYMENT":
@@ -115,7 +123,7 @@ export const notificationWorker = new Worker(
       throw error; // Rethrow to trigger BullMQ retry
     }
   },
-  { connection: redisConnection },
+  { connection: redisConnection.duplicate() },
 );
 
 notificationWorker.on("completed", (job) => {

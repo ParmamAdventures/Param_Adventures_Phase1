@@ -1,14 +1,14 @@
 import { Server } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
-import { createRedisClient } from "./redis";
+import { redisConnection } from "./redis";
 import { verifyAccessToken } from "../utils/jwt";
 import { logger } from "./logger";
 
 let io: Server;
 
 export function initSocket(httpServer: any) {
-  const pubClient = createRedisClient();
-  const subClient = createRedisClient();
+  const pubClient = redisConnection;
+  const subClient = redisConnection.duplicate();
 
   io = new Server(httpServer, {
     cors: {

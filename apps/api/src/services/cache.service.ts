@@ -1,41 +1,38 @@
-import Redis from "ioredis";
 import { logger } from "../lib/logger";
+import { redisConnection } from "../lib/redis";
 
 /**
  * Cache Service - Unified caching interface using Redis
  * Provides methods for setting, getting, and invalidating cache entries
  */
 export class CacheService {
-  private redis: Redis;
+  private redis = redisConnection;
   private isConnected: boolean = false;
 
   constructor() {
-    this.redis = new Redis({
-      host: process.env.REDIS_HOST || "localhost",
-      port: parseInt(process.env.REDIS_PORT || "6379", 10),
-      db: parseInt(process.env.REDIS_DB || "0", 10),
-      retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000);
-        return delay;
-      },
-      enableReadyCheck: false,
-      enableOfflineQueue: false,
-    });
-
     this.redis.on("connect", () => {
       this.isConnected = true;
       logger.info("Redis cache service connected");
     });
 
+    this.redis.on("ready", () => {
+      this.isConnected = true;
+    });
+
     this.redis.on("error", (err) => {
       logger.error("Redis connection error:", err);
-      this.isConnected = false;
+      // Don't set isConnected = false here strictly, let ioredis handle reconnect
     });
 
     this.redis.on("close", () => {
       this.isConnected = false;
       logger.warn("Redis connection closed");
     });
+
+    // Check initial state
+    if (this.redis.status === "ready" || this.redis.status === "connect") {
+      this.isConnected = true;
+    }
   }
 
   /**
