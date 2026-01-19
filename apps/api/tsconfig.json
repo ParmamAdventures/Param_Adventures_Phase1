@@ -6,10 +6,7 @@
     "moduleResolution": "node",
     "noEmitOnError": false,
     "skipLibCheck": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "../../node_modules/@types"
-    ]
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types", "./src/types"]
   },
   "include": ["src"]
 }
