@@ -2,7 +2,6 @@
   "private": true,
   "dependencies": {
     "dotenv": "^17.2.3",
-    "express-async-errors": "^3.1.1",
     "zod": "^4.2.1"
   },
   "name": "param_adventures_phase1",
@@ -32,6 +31,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
     "build": "npm run build -w apps/api && npm run build -w apps/web",
+    "build:api": "npm run build -w apps/api",
+    "build:web": "npm run build -w apps/web",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

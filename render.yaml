@@ -1,0 +1,26 @@
+services:
+  # Backend Service
+  - type: web
+    name: param-adventures-api
+    runtime: node
+    region: singapore # Optional: Change to your preferred region
+    plan: free # or starter/standard
+    buildCommand: npm install && npm run build:api
+    startCommand: npm start -w apps/api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false # User must provide this in Render Dashboard
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+    autoDeploy: true
+
+  # Frontend Service (Optional, usually Vercel is better, but Render supports static/node too)
+  # - type: web
+  #   name: param-adventures-web
+  #   runtime: node
+  #   buildCommand: npm install && npm run build:web
+  #   startCommand: npm start -w apps/web
