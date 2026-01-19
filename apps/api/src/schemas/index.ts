@@ -21,8 +21,8 @@ export const uuidParamSchema = z.object({
 // Pagination query validation
 export const paginationSchema = z.object({
   query: z.object({
-    page: z.string().regex(/^\d+$/).transform(Number).default("1"),
-    limit: z.string().regex(/^\d+$/).transform(Number).default("10"),
+    page: z.string().regex(/^\d+$/).transform(Number).default(1),
+    limit: z.string().regex(/^\d+$/).transform(Number).default(10),
   }),
 });
 

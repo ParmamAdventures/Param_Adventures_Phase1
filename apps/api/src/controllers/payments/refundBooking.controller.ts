@@ -4,6 +4,7 @@ import { razorpayService } from "../../services/razorpay.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { notificationQueue } from "../../lib/queue";
 import { HttpError } from "../../utils/httpError";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 export const refundBooking = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -86,14 +87,18 @@ export const refundBooking = async (req: Request, res: Response) => {
       },
     });
 
-    return ApiResponse.success(res, {
-      refund,
-      booking: {
-        id: booking.id,
-        status: bookingStatus,
-        paymentStatus: booking.paymentStatus,
+    return ApiResponse.success(
+      res,
+      {
+        refund,
+        booking: {
+          id: booking.id,
+          status: bookingStatus,
+          paymentStatus: booking.paymentStatus,
+        },
       },
-    }, "Refund processed successfully");
+      "Refund processed successfully",
+    );
   } catch (error: any) {
     console.error("Refund Controller Error:", error);
     throw new HttpError(
@@ -103,4 +108,3 @@ export const refundBooking = async (req: Request, res: Response) => {
     );
   }
 };
-

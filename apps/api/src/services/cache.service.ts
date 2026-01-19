@@ -5,7 +5,7 @@ import { logger } from "../lib/logger";
  * Cache Service - Unified caching interface using Redis
  * Provides methods for setting, getting, and invalidating cache entries
  */
-class CacheService {
+export class CacheService {
   private redis: Redis;
   private isConnected: boolean = false;
 

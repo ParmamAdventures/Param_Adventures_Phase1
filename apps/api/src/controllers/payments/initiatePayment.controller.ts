@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { razorpayService } from "../../services/razorpay.service";
 import { HttpError } from "../../utils/httpError";
+import { ErrorMessages } from "../../constants/errorMessages";
 import { logger } from "../../lib/logger";
 import { env } from "../../config/env";
 import { notificationQueue } from "../../lib/queue";
@@ -43,12 +44,16 @@ export async function initiatePayment(req: Request, res: Response) {
   }
 
   if (booking.status === "CANCELLED" || booking.status === "REJECTED") {
-    throw new HttpError(400, "INVALID_STATE", `Cannot pay for a ${booking.status.toLowerCase()} booking`);
+    throw new HttpError(
+      400,
+      "INVALID_STATE",
+      `Cannot pay for a ${booking.status.toLowerCase()} booking`,
+    );
   }
 
   // Calculate amount in paise (100 paise = 1 INR)
-  // booking.totalPrice is presumed to be in INR based on typical usage, 
-  // BUT schema says `amount` in Payment is in paise. 
+  // booking.totalPrice is presumed to be in INR based on typical usage,
+  // BUT schema says `amount` in Payment is in paise.
   // Let's verify usage. `createPaymentIntent` used `booking.trip.price * 100`.
   // `booking.totalPrice` is likely in INR.
   const amountInPaise = booking.totalPrice * 100;
@@ -61,7 +66,7 @@ export async function initiatePayment(req: Request, res: Response) {
     // Check if we already have a PENDING/CREATED payment for this booking?
     // User might retry. We can either return existing or create new.
     // Let's create a new one to be safe with Razorpay orders (they expire).
-    
+
     // Create Razorpay Order
     const order = await razorpayService.createOrder(amountInPaise, booking.id);
 
@@ -85,8 +90,8 @@ export async function initiatePayment(req: Request, res: Response) {
         details: {
           tripTitle: booking.trip.title,
           amount: amountInPaise,
-          orderId: order.id
-        }
+          orderId: order.id,
+        },
       });
     } catch (err) {
       logger.error("Failed to queue initiation email", { error: err });
@@ -101,10 +106,9 @@ export async function initiatePayment(req: Request, res: Response) {
         amount: amountInPaise,
         currency: order.currency,
         key: env.RAZORPAY_KEY_ID,
-        bookingId: booking.id
-      }
+        bookingId: booking.id,
+      },
     });
-
   } catch (error) {
     logger.error("Failed to initiate payment", { error, bookingId });
     throw new HttpError(500, "PAYMENT_INIT_FAILED", "Failed to initiate payment with provider");

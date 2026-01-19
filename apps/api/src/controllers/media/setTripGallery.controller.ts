@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 /**
  * Set Trip Gallery

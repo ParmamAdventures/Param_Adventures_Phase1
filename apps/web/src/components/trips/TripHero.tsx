@@ -10,13 +10,13 @@ interface TripImage {
 
 interface TripHeroProps {
   trip: {
-    id: string;
-    title: string;
-    status: string;
-    durationDays: number;
-    location: string;
-    difficulty: string;
-    price: number;
+    id?: string;
+    title?: string;
+    status?: string;
+    durationDays?: number;
+    location?: string;
+    difficulty?: string;
+    price?: number;
     heroImage?: TripImage | null;
     coverImage?: TripImage | null;
   };
@@ -68,7 +68,7 @@ export default function TripHero({ trip }: TripHeroProps) {
         {activeUrl ? (
           isVideo ? (
             <video
-              src={activeUrl}
+              src={activeUrl as string}
               autoPlay
               loop
               muted
@@ -76,7 +76,13 @@ export default function TripHero({ trip }: TripHeroProps) {
               className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
-            <Image src={activeUrl} alt={trip.title} fill priority className="object-cover" />
+            <Image
+              src={activeUrl as string}
+              alt={trip.title || "Trip Image"}
+              fill
+              priority
+              className="object-cover"
+            />
           )
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-black" />
@@ -88,7 +94,7 @@ export default function TripHero({ trip }: TripHeroProps) {
       {/* Content Layer */}
       <div className="animate-in fade-in slide-in-from-bottom-8 relative z-10 mx-auto w-full max-w-7xl space-y-6 px-6 duration-1000">
         <div className="flex flex-wrap items-center gap-4">
-          <StatusBadge status={trip.status} />
+          <StatusBadge status={trip.status || "DRAFT"} />
           <span className="text-sm font-black tracking-[0.3em] uppercase opacity-80">
             {trip.durationDays} Days Expedition
           </span>
@@ -96,11 +102,11 @@ export default function TripHero({ trip }: TripHeroProps) {
 
         <div className="flex items-start justify-between">
           <h1 className="text-5xl leading-[0.8] font-black tracking-tighter uppercase italic md:text-7xl lg:text-8xl">
-            {trip.title}
+            {trip.title || "Adventure"}
           </h1>
           <div className="hidden pt-4 md:block">
             <HeartButton
-              tripId={trip.id}
+              tripId={trip.id || ""}
               size={32}
               checkStatus
               className="bg-white/10 hover:bg-white/20"
@@ -113,19 +119,23 @@ export default function TripHero({ trip }: TripHeroProps) {
             <p className="text-accent text-[10px] font-black tracking-[0.2em] uppercase">
               Location
             </p>
-            <p className="text-xl font-bold tracking-tight uppercase italic">{trip.location}</p>
+            <p className="text-xl font-bold tracking-tight uppercase italic">
+              {trip.location || "Earth"}
+            </p>
           </div>
           <div className="space-y-1">
             <p className="text-accent text-[10px] font-black tracking-[0.2em] uppercase">
               Difficulty
             </p>
-            <p className="text-xl font-bold tracking-tight uppercase italic">{trip.difficulty}</p>
+            <p className="text-xl font-bold tracking-tight uppercase italic">
+              {trip.difficulty || "Moderate"}
+            </p>
           </div>
           <div className="space-y-1">
             <p className="text-accent text-[10px] font-black tracking-[0.2em] uppercase">
               Starts From
             </p>
-            <p className="text-xl font-bold tracking-tight uppercase italic">₹{trip.price}</p>
+            <p className="text-xl font-bold tracking-tight uppercase italic">₹{trip.price || 0}</p>
           </div>
         </div>
       </div>

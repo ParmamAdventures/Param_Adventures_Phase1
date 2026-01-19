@@ -75,7 +75,7 @@ export class CacheInvalidationService {
   static async invalidateCascade(tripId: string): Promise<void> {
     try {
       // Invalidate trip itself
-      await TripCacheService.invalidateTrip(tripId);
+      await TripCacheService.invalidateTripById(tripId);
 
       // Invalidate all trip-related lists
       await CacheInvalidationService.invalidatePattern(`trip:${tripId}:*`);
@@ -130,7 +130,7 @@ export class CacheInvalidationService {
       await UserCacheService.invalidateUserBookings(userId);
 
       // Invalidate trip's booking count and details
-      await TripCacheService.invalidateTrip(tripId);
+      await TripCacheService.invalidateTripById(tripId);
 
       logger.info(`Cache invalidated for new booking: user ${userId}, trip ${tripId}`);
     } catch (error) {
@@ -144,7 +144,7 @@ export class CacheInvalidationService {
       await UserCacheService.invalidateUserBookings(userId);
 
       // Invalidate trip details (booking count may have changed)
-      await TripCacheService.invalidateTrip(tripId);
+      await TripCacheService.invalidateTripById(tripId);
 
       logger.info(`Cache invalidated for booking confirmation: user ${userId}, trip ${tripId}`);
     } catch (error) {
@@ -178,7 +178,7 @@ export class CacheInvalidationService {
   static async onReviewAdded(tripId: string, userId: string): Promise<void> {
     try {
       // Invalidate trip details (review count/rating changed)
-      await TripCacheService.invalidateTrip(tripId);
+      await TripCacheService.invalidateTripById(tripId);
 
       // Invalidate user's reviews
       await UserCacheService.invalidateUserReviews(userId);
@@ -219,7 +219,7 @@ export class CacheInvalidationService {
         switch (inv.type) {
           case "trip":
             if (inv.id) {
-              await TripCacheService.invalidateTrip(inv.id);
+              await TripCacheService.invalidateTripById(inv.id);
               count++;
             }
             break;
@@ -307,7 +307,7 @@ export class CacheInvalidationService {
   /**
    * Log invalidation for monitoring and debugging
    */
-  private logInvalidation(type: string, count: number, detail?: string, ttl?: number): void {
+  private static logInvalidation(type: string, count: number, detail?: string, ttl?: number): void {
     const timestamp = new Date().toISOString();
     const key = `${type}:${timestamp}`;
 
@@ -319,8 +319,11 @@ export class CacheInvalidationService {
 
     // Keep only last 1000 entries to avoid memory leak
     if (CacheInvalidationService.invalidationLog.size > 1000) {
-      const firstKey = CacheInvalidationService.invalidationLog.keys().next().value;
-      CacheInvalidationService.invalidationLog.delete(firstKey);
+      const keys = CacheInvalidationService.invalidationLog.keys();
+      const firstKey = keys.next().value;
+      if (firstKey) {
+        CacheInvalidationService.invalidationLog.delete(firstKey);
+      }
     }
   }
 }

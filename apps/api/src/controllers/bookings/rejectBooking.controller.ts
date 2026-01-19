@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
 import { HttpError } from "../../utils/httpError";
+import { ErrorMessages } from "../../constants/errorMessages";
 import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
 
 /**

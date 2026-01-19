@@ -1,0 +1,63 @@
+﻿src/controllers/admin/getTripBookings.controller.ts(15,52): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/admin/listTripBookings.controller.ts(15,52): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/admin/trip-assignment.controller.ts(24,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/admin/trip-assignment.controller.ts(77,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/admin/trip-assignment.controller.ts(134,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/blogs/getBlogBySlug.controller.ts(52,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/bookings/approveBooking.controller.ts(20,59): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/bookings/approveBooking.controller.ts(41,56): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/bookings/downloadInvoice.controller.ts(19,45): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/bookings/getBookings.controller.ts(22,13): error TS2353: Object literal may only specify known properties, and 'coverImageLegacy' does not exist in type 'TripSelect<DefaultArgs>'.
+src/controllers/bookings/rejectBooking.controller.ts(19,57): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/media/setTripGallery.controller.ts(22,48): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/payments/createManualPayment.controller.ts(27,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/payments/createPaymentIntent.controller.ts(27,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/payments/getPaymentStatus.controller.ts(23,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/payments/initiatePayment.controller.ts(30,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/payments/refundBooking.controller.ts(17,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/reviews/createReview.controller.ts(39,43): error TS2345: Argument of type 'number' is not assignable to parameter of type 'string'.
+src/controllers/trips/completeTrip.controller.ts(7,10): error TS2724: '"../../utils/entityHelpers"' has no exported member named 'getTripOrThrowService'. Did you mean 'getTripOrThrow'?
+src/controllers/trips/getTripBySlug.controller.ts(15,43): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/trips/getTripBySlug.controller.ts(60,41): error TS2304: Cannot find name 'ErrorMessages'.
+src/controllers/trips/uploadTripDocs.controller.ts(7,10): error TS2724: '"../../utils/entityHelpers"' has no exported member named 'getTripOrThrowService'. Did you mean 'getTripOrThrow'?
+src/controllers/wishlist.controller.ts(25,46): error TS2304: Cannot find name 'ErrorMessages'.
+src/schemas/blog.schema.ts(7,16): error TS2554: Expected 2-3 arguments, but got 1.
+src/schemas/blog.schema.ts(17,16): error TS2554: Expected 2-3 arguments, but got 1.
+src/schemas/index.ts(24,63): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(def: number): ZodDefault<ZodPipe<ZodString, ZodTransform<number, string>>>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'number'.
+  Overload 2 of 2, '(def: () => number): ZodDefault<ZodPipe<ZodString, ZodTransform<number, string>>>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type '() => number'.
+src/schemas/index.ts(25,64): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(def: number): ZodDefault<ZodPipe<ZodString, ZodTransform<number, string>>>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'number'.
+  Overload 2 of 2, '(def: () => number): ZodDefault<ZodPipe<ZodString, ZodTransform<number, string>>>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type '() => number'.
+src/services/cache-invalidation.service.ts(28,32): error TS2551: Property 'logInvalidation' does not exist on type 'typeof CacheInvalidationService'. Did you mean 'invalidationLog'?
+src/services/cache-invalidation.service.ts(42,32): error TS2551: Property 'logInvalidation' does not exist on type 'typeof CacheInvalidationService'. Did you mean 'invalidationLog'?
+src/services/cache-invalidation.service.ts(59,34): error TS2551: Property 'logInvalidation' does not exist on type 'typeof CacheInvalidationService'. Did you mean 'invalidationLog'?
+src/services/cache-invalidation.service.ts(64,34): error TS2551: Property 'logInvalidation' does not exist on type 'typeof CacheInvalidationService'. Did you mean 'invalidationLog'?
+src/services/cache-invalidation.service.ts(78,45): error TS2345: Argument of type 'string' is not assignable to parameter of type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown> & {}'.
+  Type 'string' is not assignable to type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown>'.
+src/services/cache-invalidation.service.ts(84,32): error TS2551: Property 'logInvalidation' does not exist on type 'typeof CacheInvalidationService'. Did you mean 'invalidationLog'?
+src/services/cache-invalidation.service.ts(130,30): error TS2339: Property 'invalidateUserBookings' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(133,45): error TS2345: Argument of type 'string' is not assignable to parameter of type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown> & {}'.
+  Type 'string' is not assignable to type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown>'.
+src/services/cache-invalidation.service.ts(144,30): error TS2339: Property 'invalidateUserBookings' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(147,45): error TS2345: Argument of type 'string' is not assignable to parameter of type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown> & {}'.
+  Type 'string' is not assignable to type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown>'.
+src/services/cache-invalidation.service.ts(157,30): error TS2339: Property 'invalidateUser' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(167,30): error TS2339: Property 'invalidateUser' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(170,30): error TS2339: Property 'invalidateAdminList' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(181,45): error TS2345: Argument of type 'string' is not assignable to parameter of type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown> & {}'.
+  Type 'string' is not assignable to type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown>'.
+src/services/cache-invalidation.service.ts(184,30): error TS2339: Property 'invalidateUserReviews' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(195,30): error TS2339: Property 'invalidateUserSavedTrips' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(222,53): error TS2345: Argument of type 'string' is not assignable to parameter of type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown> & {}'.
+  Type 'string' is not assignable to type 'GetResult<{ id: string; title: string; slug: string; description: string; itinerary: JsonValue; durationDays: number; difficulty: string; location: string; price: number; status: TripStatus; ... 26 more ...; isFeatured: boolean; }, unknown>'.
+src/services/cache-invalidation.service.ts(228,38): error TS2339: Property 'invalidateUser' does not exist on type 'typeof UserCacheService'.
+src/services/cache-invalidation.service.ts(247,32): error TS2551: Property 'logInvalidation' does not exist on type 'typeof CacheInvalidationService'. Did you mean 'invalidationLog'?
+src/services/cache-invalidation.service.ts(263,34): error TS2551: Property 'logInvalidation' does not exist on type 'typeof CacheInvalidationService'. Did you mean 'invalidationLog'?
+src/services/cache-invalidation.service.ts(323,55): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/user-cache.service.ts(1,10): error TS2724: '"./cache.service"' has no exported member named 'CacheService'. Did you mean 'cacheService'?

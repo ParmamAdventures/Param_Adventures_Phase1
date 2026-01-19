@@ -1,0 +1,2 @@
+﻿src/controllers/trips/deleteTrip.controller.ts(12,37): error TS1005: ',' expected.
+src/controllers/trips/deleteTrip.controller.ts(12,44): error TS1005: ',' expected.

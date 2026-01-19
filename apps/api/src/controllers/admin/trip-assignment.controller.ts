@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
+import { ErrorMessages } from "../../constants/errorMessages";
 import { logger } from "../../lib/logger";
 import { notificationQueue } from "../../lib/queue";
 
@@ -43,15 +44,17 @@ export async function assignManager(req: Request, res: Response) {
   logger.info("Manager assigned to trip", { tripId, managerId });
 
   // Send Notification (Async - Fire & Forget to prevent hanging if Redis is slow)
-  notificationQueue.add("SEND_ASSIGNMENT_EMAIL", {
-    userId: managerId,
-    role: "TRIP_MANAGER",
-    details: {
-      tripTitle: trip.title,
-    },
-  }).catch((err) => {
-    logger.error("Failed to queue assignment email", { error: err });
-  });
+  notificationQueue
+    .add("SEND_ASSIGNMENT_EMAIL", {
+      userId: managerId,
+      role: "TRIP_MANAGER",
+      details: {
+        tripTitle: trip.title,
+      },
+    })
+    .catch((err) => {
+      logger.error("Failed to queue assignment email", { error: err });
+    });
 
   res.json({ success: true, trip: updatedTrip });
 }

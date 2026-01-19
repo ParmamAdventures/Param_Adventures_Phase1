@@ -4,14 +4,14 @@ import { HttpError } from "../../utils/httpError";
 import { logger } from "../../lib/logger";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
-import { getTripOrThrowService } from "../../utils/entityHelpers";
+import { getTripOrThrowError } from "../../utils/entityHelpers";
 import { ErrorMessages } from "../../constants/errorMessages";
 
 export const completeTrip = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const userId = req.user!.id;
 
-  const trip = await getTripOrThrowService(id);
+  const trip = await getTripOrThrowError(id);
 
   // Authz: Only Manager or Admin (Guides cannot close trips, only submit docs)
   const isManager = trip.managerId === userId;

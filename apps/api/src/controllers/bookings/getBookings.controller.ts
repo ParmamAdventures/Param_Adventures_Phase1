@@ -19,7 +19,7 @@ export const getBookings = catchAsync(async (req: Request, res: Response) => {
             title: true,
             slug: true,
             location: true,
-            coverImageLegacy: true,
+
             coverImage: {
               select: {
                 mediumUrl: true,

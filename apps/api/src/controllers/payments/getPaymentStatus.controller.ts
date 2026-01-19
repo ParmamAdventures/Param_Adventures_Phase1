@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { HttpError } from "../../utils/httpError";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 export const getPaymentStatus = async (req: Request, res: Response) => {
   const { id } = req.params;

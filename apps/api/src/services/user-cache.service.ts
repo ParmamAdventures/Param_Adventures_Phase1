@@ -1,4 +1,4 @@
-import { CacheService } from "./cache.service";
+import { CacheService, cacheService } from "./cache.service";
 import { logger } from "../lib/logger";
 
 /**
@@ -19,8 +19,8 @@ import { logger } from "../lib/logger";
  * - Email lookups: 2 hours (7200s)
  */
 export class UserCacheService {
-  private cache: CacheService;
-  private readonly TTL = {
+  private static cache: CacheService = cacheService;
+  private static readonly TTL = {
     USER_PROFILE: 3600, // 1 hour
     USER_LIST: 1800, // 30 minutes
     EMAIL_LOOKUP: 7200, // 2 hours
@@ -30,15 +30,11 @@ export class UserCacheService {
     ADMIN_LIST: 3600, // 1 hour
   };
 
-  constructor(cache: CacheService) {
-    this.cache = cache;
-  }
-
   /**
    * Get cached user by ID
    * Falls back to null if not in cache
    */
-  async getUserById(userId: string): Promise<any | null> {
+  static async getUserById(userId: string): Promise<any | null> {
     try {
       const key = `user:${userId}`;
       const cached = await this.cache.get(key);
@@ -56,7 +52,7 @@ export class UserCacheService {
   /**
    * Cache user by ID
    */
-  async cacheUserById(userId: string, userData: any): Promise<void> {
+  static async cacheUserById(userId: string, userData: any): Promise<void> {
     try {
       const key = `user:${userId}`;
       await this.cache.set(key, userData, this.TTL.USER_PROFILE);
@@ -69,7 +65,7 @@ export class UserCacheService {
   /**
    * Get cached user by email
    */
-  async getUserByEmail(email: string): Promise<any | null> {
+  static async getUserByEmail(email: string): Promise<any | null> {
     try {
       const key = `user:email:${email}`;
       const cached = await this.cache.get(key);
@@ -87,7 +83,7 @@ export class UserCacheService {
   /**
    * Cache user by email
    */
-  async cacheUserByEmail(email: string, userData: any): Promise<void> {
+  static async cacheUserByEmail(email: string, userData: any): Promise<void> {
     try {
       const key = `user:email:${email}`;
       await this.cache.set(key, userData, this.TTL.EMAIL_LOOKUP);
@@ -100,7 +96,7 @@ export class UserCacheService {
   /**
    * Get cached user bookings
    */
-  async getUserBookings(userId: string): Promise<any[] | null> {
+  static async getUserBookings(userId: string): Promise<any[] | null> {
     try {
       const key = `user:${userId}:bookings`;
       const cached = await this.cache.get(key);
@@ -118,7 +114,7 @@ export class UserCacheService {
   /**
    * Cache user bookings
    */
-  async cacheUserBookings(userId: string, bookings: any[]): Promise<void> {
+  static async cacheUserBookings(userId: string, bookings: any[]): Promise<void> {
     try {
       const key = `user:${userId}:bookings`;
       await this.cache.set(key, bookings, this.TTL.USER_BOOKINGS);
@@ -131,7 +127,7 @@ export class UserCacheService {
   /**
    * Get cached user saved trips
    */
-  async getUserSavedTrips(userId: string): Promise<any[] | null> {
+  static async getUserSavedTrips(userId: string): Promise<any[] | null> {
     try {
       const key = `user:${userId}:saved-trips`;
       const cached = await this.cache.get(key);
@@ -149,7 +145,7 @@ export class UserCacheService {
   /**
    * Cache user saved trips
    */
-  async cacheUserSavedTrips(userId: string, trips: any[]): Promise<void> {
+  static async cacheUserSavedTrips(userId: string, trips: any[]): Promise<void> {
     try {
       const key = `user:${userId}:saved-trips`;
       await this.cache.set(key, trips, this.TTL.USER_SAVED_TRIPS);
@@ -162,7 +158,7 @@ export class UserCacheService {
   /**
    * Get cached user reviews
    */
-  async getUserReviews(userId: string): Promise<any[] | null> {
+  static async getUserReviews(userId: string): Promise<any[] | null> {
     try {
       const key = `user:${userId}:reviews`;
       const cached = await this.cache.get(key);
@@ -180,7 +176,7 @@ export class UserCacheService {
   /**
    * Cache user reviews
    */
-  async cacheUserReviews(userId: string, reviews: any[]): Promise<void> {
+  static async cacheUserReviews(userId: string, reviews: any[]): Promise<void> {
     try {
       const key = `user:${userId}:reviews`;
       await this.cache.set(key, reviews, this.TTL.USER_REVIEWS);
@@ -193,7 +189,7 @@ export class UserCacheService {
   /**
    * Get cached admin list
    */
-  async getAdminList(): Promise<any[] | null> {
+  static async getAdminList(): Promise<any[] | null> {
     try {
       const key = `users:admins`;
       const cached = await this.cache.get(key);
@@ -211,7 +207,7 @@ export class UserCacheService {
   /**
    * Cache admin list
    */
-  async cacheAdminList(admins: any[]): Promise<void> {
+  static async cacheAdminList(admins: any[]): Promise<void> {
     try {
       const key = `users:admins`;
       await this.cache.set(key, admins, this.TTL.ADMIN_LIST);
@@ -224,7 +220,7 @@ export class UserCacheService {
   /**
    * Invalidate all user-related cache for a specific user
    */
-  async invalidateUser(userId: string): Promise<void> {
+  static async invalidateUser(userId: string): Promise<void> {
     try {
       const keys = [
         `user:${userId}`,
@@ -243,7 +239,7 @@ export class UserCacheService {
   /**
    * Invalidate user email cache
    */
-  async invalidateUserByEmail(email: string): Promise<void> {
+  static async invalidateUserByEmail(email: string): Promise<void> {
     try {
       const key = `user:email:${email}`;
       await this.cache.delete(key);
@@ -256,7 +252,7 @@ export class UserCacheService {
   /**
    * Invalidate admin list cache
    */
-  async invalidateAdminList(): Promise<void> {
+  static async invalidateAdminList(): Promise<void> {
     try {
       const key = `users:admins`;
       await this.cache.delete(key);
@@ -269,7 +265,7 @@ export class UserCacheService {
   /**
    * Invalidate user bookings cache
    */
-  async invalidateUserBookings(userId: string): Promise<void> {
+  static async invalidateUserBookings(userId: string): Promise<void> {
     try {
       const key = `user:${userId}:bookings`;
       await this.cache.delete(key);
@@ -282,7 +278,7 @@ export class UserCacheService {
   /**
    * Invalidate user saved trips cache
    */
-  async invalidateUserSavedTrips(userId: string): Promise<void> {
+  static async invalidateUserSavedTrips(userId: string): Promise<void> {
     try {
       const key = `user:${userId}:saved-trips`;
       await this.cache.delete(key);
@@ -295,7 +291,7 @@ export class UserCacheService {
   /**
    * Invalidate user reviews cache
    */
-  async invalidateUserReviews(userId: string): Promise<void> {
+  static async invalidateUserReviews(userId: string): Promise<void> {
     try {
       const key = `user:${userId}:reviews`;
       await this.cache.delete(key);
@@ -308,7 +304,7 @@ export class UserCacheService {
   /**
    * Flush all user-related cache
    */
-  async flushAllUserCache(): Promise<void> {
+  static async flushAllUserCache(): Promise<void> {
     try {
       await this.cache.invalidatePattern("user:*");
       logger.info(`Flushed all user cache`);

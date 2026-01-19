@@ -1,9 +1,9 @@
-
 import { Request, Response } from "express";
 import { invoiceService } from "../../services/invoice.service";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { ErrorMessages } from "../../constants/errorMessages";
 
 export const downloadInvoice = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -11,26 +11,26 @@ export const downloadInvoice = async (req: Request, res: Response) => {
 
   // Verify ownership
   const booking = await prisma.booking.findUnique({
-      where: { id },
-      select: { userId: true }
+    where: { id },
+    select: { userId: true },
   });
 
   if (!booking) {
-      throw new HttpError(404, "NOT_FOUND", ErrorMessages.BOOKING_NOT_FOUND);
+    throw new HttpError(404, "NOT_FOUND", ErrorMessages.BOOKING_NOT_FOUND);
   }
 
   const isOwner = booking.userId === userId;
   // Use optional chaining for permissions since it might be string[] or Set or undefined dependent on middleware version
-//   const isAdmin = req.permissions?.includes?.("bookings:read"); 
-//   const permissions = req.permissions as unknown as Set<string>;
-//   const isAdmin = permissions?.has?.("bookings:read");
-    
-    // Simplest Check: allow if owner or if user has admin role
-    const userRoles = req.user?.roles || [];
-    const isAdmin = userRoles.includes("super_admin") || userRoles.includes("admin");
+  //   const isAdmin = req.permissions?.includes?.("bookings:read");
+  //   const permissions = req.permissions as unknown as Set<string>;
+  //   const isAdmin = permissions?.has?.("bookings:read");
+
+  // Simplest Check: allow if owner or if user has admin role
+  const userRoles = req.user?.roles || [];
+  const isAdmin = userRoles.includes("super_admin") || userRoles.includes("admin");
 
   if (!isOwner && !isAdmin) {
-      throw new HttpError(403, "FORBIDDEN", "Unauthorized");
+    throw new HttpError(403, "FORBIDDEN", "Unauthorized");
   }
 
   const pdfBuffer = await invoiceService.generateInvoice(id);

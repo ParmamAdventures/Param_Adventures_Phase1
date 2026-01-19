@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
+import { ErrorMessages } from "../../constants/errorMessages";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { TripCacheService } from "../../services/trip-cache.service";
@@ -59,4 +60,3 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   // Fallback to hiding existence
   throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
 });
-

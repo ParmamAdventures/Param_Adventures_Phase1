@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { Prisma, Trip, TripCategory, TripStatus } from "@prisma/client";
-import { cacheService } from "./cache.service";
+import CacheService, { cacheService } from "./cache.service";
 import { logger } from "../lib/logger";
 
 /**
@@ -222,6 +222,16 @@ export class TripCacheService {
 
     logger.debug(`Invalidating cache for trip: ${trip.id}`);
     await cacheService.deleteMany(keysToInvalidate);
+  }
+
+  /**
+   * Invalidate trip by ID only
+   * Useful when we don't have the full trip object
+   */
+  static async invalidateTripById(tripId: string) {
+    await cacheService.delete(this.KEYS.TRIP(tripId));
+    // Also invalidate lists as they might contain this trip
+    await cacheService.invalidatePattern(this.KEYS.TRIPS_PATTERN());
   }
 
   /**
