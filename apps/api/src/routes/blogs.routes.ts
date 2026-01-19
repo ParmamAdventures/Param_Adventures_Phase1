@@ -60,4 +60,8 @@ router.post(
 // General authenticated route (permission checked in controller)
 router.get("/:id", requireAuth, attachPermissions, getBlogById);
 
+// Delete blog
+import { deleteBlog } from "../controllers/blogs/deleteBlog.controller";
+router.delete("/:id", requireAuth, attachPermissions, deleteBlog);
+
 export default router;

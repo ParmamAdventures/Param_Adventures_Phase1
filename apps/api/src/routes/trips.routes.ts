@@ -17,7 +17,10 @@ import { restoreTrip } from "../controllers/trips/restoreTrip.controller";
 import { prisma } from "../lib/prisma";
 const router = Router();
 
+import { validate } from "../middlewares/validate.middleware";
+import { createTripSchema, updateTripSchema } from "../schemas/trip.schema";
 import { getTripBySlug } from "../controllers/trips/getTripBySlug.controller";
+import { getTripById } from "../controllers/trips/getTripById.controller";
 
 /**
  * @swagger
@@ -178,7 +181,14 @@ router.get(
  *       201:
  *         description: Trip created
  */
-router.post("/", requireAuth, attachPermissions, requirePermission("trip:create"), createTrip);
+router.post(
+  "/",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:create"),
+  validate(createTripSchema),
+  createTrip,
+);
 /**
  * @swagger
  * /trips/{id}:
@@ -203,7 +213,14 @@ router.post("/", requireAuth, attachPermissions, requirePermission("trip:create"
  *       200:
  *         description: Trip updated
  */
-router.put("/:id", requireAuth, attachPermissions, requirePermission("trip:edit"), updateTrip);
+router.put(
+  "/:id",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:edit"),
+  validate(updateTripSchema),
+  updateTrip,
+);
 
 /**
  * @swagger
@@ -217,47 +234,10 @@ router.put("/:id", requireAuth, attachPermissions, requirePermission("trip:edit"
  *       200:
  *         description: Trip deleted
  */
-router.delete(
-  "/:id",
-  requireAuth,
-  attachPermissions,
-  requirePermission("trip:delete"),
-  deleteTrip
-);
+router.delete("/:id", requireAuth, attachPermissions, requirePermission("trip:delete"), deleteTrip);
 
 // Get single trip with owner-or-internal-view logic
-router.get("/:id", requireAuth, attachPermissions, async (req, res) => {
-  const { id } = req.params;
-  const user = req.user!;
-  const permissions = req.permissions || [];
-
-  const trip = await prisma.trip.findUnique({
-    where: { id },
-    include: {
-      manager: { select: { id: true, name: true, email: true } },
-      guides: { include: { guide: { select: { id: true, name: true, email: true } } } },
-      coverImage: true,
-      gallery: { include: { image: true }, orderBy: { order: "asc" } },
-    },
-  });
-
-  if (!trip) return res.status(404).json({ error: "Trip not found" });
-
-  // Allow if Internal, Owner, or User has a booking
-  const userBooking = await prisma.booking.findFirst({
-    where: { tripId: id, userId: user.id },
-  });
-
-  if (
-    permissions.includes("trip:view:internal") ||
-    trip.createdById === user.id ||
-    userBooking
-  ) {
-    return res.json(trip);
-  }
-
-  return res.status(403).json({ error: "Insufficient permissions" });
-});
+router.get("/:id", requireAuth, attachPermissions, getTripById);
 router.post(
   "/:id/submit",
   requireAuth,
@@ -286,7 +266,6 @@ router.post(
   requirePermission("trip:archive"),
   archiveTrip,
 );
-
 
 router.post(
   "/:id/restore",
