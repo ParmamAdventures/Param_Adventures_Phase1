@@ -8,9 +8,23 @@ import HeartButton from "./HeartButton";
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function TripHero({ trip }: { trip: any }) {
+interface TripHeroProps {
+  trip: {
+    id: string;
+    title: string;
+    status: string;
+    durationDays: number;
+    location: string;
+    difficulty: string;
+    price: number;
+    heroImage?: { originalUrl?: string; mediumUrl?: string } | null;
+    coverImage?: { originalUrl?: string; mediumUrl?: string } | null;
+  };
+}
+
+export default function TripHero({ trip }: TripHeroProps) {
   // Helper to format local image paths
-  const getImageUrl = (image: any) => {
+  const getImageUrl = (image: { originalUrl?: string; mediumUrl?: string } | null | undefined) => {
     if (!image) return null;
     const url = image.originalUrl || image.mediumUrl;
     if (!url) return null;
