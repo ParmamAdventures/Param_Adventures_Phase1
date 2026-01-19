@@ -307,6 +307,10 @@ export class BlogService {
       throw new HttpError(404, "NOT_FOUND", "Blog not found");
     }
 
+    if (blog.status !== "DRAFT" && blog.status !== "REJECTED") {
+      throw new HttpError(403, "INVALID_STATE", "Cannot submit blog in its current state");
+    }
+
     const updated = await prisma.blog.update({
       where: { id },
       data: { status: "PENDING_REVIEW" },
@@ -329,6 +333,16 @@ export class BlogService {
    * @returns The updated blog object.
    */
   async approveBlog(id: string, userId: string) {
+    const blog = await prisma.blog.findUnique({ where: { id } });
+
+    if (!blog) {
+      throw new HttpError(404, "NOT_FOUND", "Blog not found");
+    }
+
+    if (blog.status !== "PENDING_REVIEW") {
+      throw new HttpError(403, "INVALID_STATE", "Only blogs in review can be approved");
+    }
+
     const updated = await prisma.blog.update({
       where: { id },
       data: { status: "APPROVED" },

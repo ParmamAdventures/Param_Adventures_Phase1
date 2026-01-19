@@ -6,6 +6,7 @@ import { getTripOrThrow } from "../../utils/entityHelpers";
 import { validateTripStatusTransition } from "../../utils/statusValidation";
 import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
 import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
+import { tripService } from "../../services/trip.service";
 
 export const publishTrip = catchAsync(async (req: Request, res: Response) => {
   const user = (req as any).user;
@@ -18,29 +19,10 @@ export const publishTrip = catchAsync(async (req: Request, res: Response) => {
   try {
     validateTripStatusTransition(trip.status, "PUBLISHED");
   } catch (error: any) {
-    return ApiResponse.error(
-      res,
-      ErrorCodes.INVALID_STATUS_TRANSITION,
-      error.message,
-      400
-    );
+    return ApiResponse.error(res, ErrorCodes.INVALID_STATUS_TRANSITION, error.message, 400);
   }
 
-  const updated = await prisma.trip.update({
-    where: { id },
-    data: {
-      status: "PUBLISHED",
-      publishedAt: new Date(),
-    },
-  });
-
-  await createAuditLog({
-    actorId: user.id,
-    action: AuditActions.TRIP_PUBLISHED,
-    targetType: AuditTargetTypes.TRIP,
-    targetId: updated.id,
-    metadata: { status: updated.status },
-  });
+  const updated = await tripService.publishTrip(id, user.id);
 
   return ApiResponse.success(res, updated, "Trip published successfully");
 });

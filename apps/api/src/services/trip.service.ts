@@ -79,14 +79,16 @@ export class TripService {
         ...data,
         startDate: data.startDate ? new Date(data.startDate) : undefined,
         endDate: data.endDate ? new Date(data.endDate) : undefined,
-        gallery: data.gallery ? {
-           deleteMany: {},
-           create: data.gallery.map((g: any, index: number) => ({
-             imageId: g.id,
-             order: index,
-           }))
-        } : undefined
-      }
+        gallery: data.gallery
+          ? {
+              deleteMany: {},
+              create: data.gallery.map((g: any, index: number) => ({
+                imageId: g.id,
+                order: index,
+              })),
+            }
+          : undefined,
+      },
     });
 
     await auditService.logAudit({
@@ -97,6 +99,60 @@ export class TripService {
     });
 
     return trip;
+  }
+
+  async approveTrip(id: string, userId: string) {
+    // We need to fetch current status for validation
+    // Ideally this check should be reusable, but for now implementing direct logic
+    // Using import inside method or assume helpers available if imported at top
+    // For simplicity, we trust the caller (controller) did existence check or we do it here.
+    // The previous controller did getTripOrThrow. Service should probably throw if not found.
+    const trip = await prisma.trip.findUnique({ where: { id } });
+    if (!trip) throw new Error("Trip not found");
+
+    // We can move validation here or keep in controller.
+    // Ideally service handles business logic.
+    // Importing validateTripStatusTransition might be circular if it depends on service? No.
+    // Let's assume input is valid or validation happens here.
+
+    const updated = await prisma.trip.update({
+      where: { id },
+      data: {
+        status: "APPROVED",
+        approvedById: userId,
+      },
+    });
+
+    await auditService.logAudit({
+      actorId: userId,
+      action: "TRIP_APPROVED",
+      targetType: "TRIP",
+      targetId: updated.id,
+      metadata: { status: updated.status },
+    });
+    return updated;
+  }
+
+  async publishTrip(id: string, userId: string) {
+    const trip = await prisma.trip.findUnique({ where: { id } });
+    if (!trip) throw new Error("Trip not found");
+
+    const updated = await prisma.trip.update({
+      where: { id },
+      data: {
+        status: "PUBLISHED",
+        publishedAt: new Date(),
+      },
+    });
+
+    await auditService.logAudit({
+      actorId: userId,
+      action: "TRIP_PUBLISHED",
+      targetType: "TRIP",
+      targetId: updated.id,
+      metadata: { status: updated.status },
+    });
+    return updated;
   }
 }
 
