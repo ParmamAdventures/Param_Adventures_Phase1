@@ -63,7 +63,7 @@ router.post(
   addTripGalleryImage,
 );
 
-router.post("/trips/:tripId/gallery", requireAuth, requirePermission("trip:edit"), setTripGallery);
+router.put("/trips/:tripId/gallery", requireAuth, requirePermission("trip:edit"), setTripGallery);
 
 import { listMedia, deleteMedia } from "../controllers/media/listMedia.controller";
 

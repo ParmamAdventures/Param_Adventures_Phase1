@@ -13,8 +13,11 @@ import { paginate } from "../middlewares/pagination.middleware";
 
 const router = Router();
 
+import { validate } from "../middlewares/validate.middleware";
+import { createBookingSchema } from "../schemas/booking.schema";
+
 // Create a new booking
-router.post("/", requireAuth, createBooking);
+router.post("/", requireAuth, validate(createBookingSchema), createBooking);
 
 // Get User's Payment History (Must be before /:id)
 router.get("/payments/history", requireAuth, getPaymentHistory);
@@ -22,10 +25,12 @@ router.get("/payments/history", requireAuth, getPaymentHistory);
 // Get user's bookings
 router.get("/me", requireAuth, paginate, getBookings);
 
+import { bookingIdSchema } from "../schemas/booking.schema";
+
 // Get single booking details
-router.get("/:id", requireAuth, getBookingById);
+router.get("/:id", requireAuth, validate(bookingIdSchema), getBookingById);
 // Cancel booking
-router.post("/:id/cancel", requireAuth, cancelBooking);
+router.post("/:id/cancel", requireAuth, validate(bookingIdSchema), cancelBooking);
 
 // Initiate Payment
 router.post("/:id/initiate-payment", requireAuth, initiatePayment);
@@ -39,6 +44,12 @@ router.get("/:id/invoice", requireAuth, downloadInvoice);
 // Refund booking (Super Admin Only)
 import { refundBooking } from "../controllers/payments/refundBooking.controller";
 import { requireRole } from "../middlewares/require-role.middleware";
-router.post("/:id/refund", requireAuth, requireRole("super_admin"), refundBooking);
+router.post(
+  "/:id/refund",
+  requireAuth,
+  requireRole("super_admin"),
+  validate(bookingIdSchema),
+  refundBooking,
+);
 
 export default router;

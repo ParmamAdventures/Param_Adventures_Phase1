@@ -8,7 +8,7 @@ export class UserService {
    * @returns The user object with roles and permissions, or null if not found.
    */
   async getUserWithPermissions(userId: string) {
-    const user = await (prisma.user as any).findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
         id: true,
@@ -46,7 +46,7 @@ export class UserService {
 
     const roles = user.roles.map((r: any) => r.role.name);
     const permissions = new Set<string>();
-    
+
     user.roles.forEach((ur: any) => {
       ur.role.permissions.forEach((rp: any) => {
         permissions.add(rp.permission.key);
@@ -75,7 +75,7 @@ export class UserService {
    * Updates a user's profile and logs the action.
    */
   async updateProfile(userId: string, data: any) {
-    const user = await (prisma.user as any).update({
+    const user = await prisma.user.update({
       where: { id: userId },
       data: {
         name: data.name,

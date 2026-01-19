@@ -125,7 +125,7 @@ export const refresh = catchAsync(async (req: Request, res: Response) => {
   try {
     const { accessToken } = await authService.refresh(token);
     return ApiResponse.success(res, { accessToken }, "Token refreshed", 200);
-  } catch (error) {
+  } catch (error: unknown) {
     return ApiResponse.error(res, "INVALID_REFRESH_TOKEN", "Invalid or expired refresh token", 401);
   }
 });

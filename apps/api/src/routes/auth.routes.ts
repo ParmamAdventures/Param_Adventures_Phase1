@@ -15,7 +15,13 @@ import passport from "passport";
 
 import { authLimiter } from "../config/rate-limit";
 import { validate } from "../middlewares/validate.middleware";
-import { loginSchema, registerSchema } from "../schemas/auth.schema";
+import {
+  loginSchema,
+  registerSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  changePasswordSchema,
+} from "../schemas/auth.schema";
 
 const router = Router();
 
@@ -77,7 +83,6 @@ router.post("/register", authLimiter, validate(registerSchema), register);
  */
 router.post("/login", authLimiter, validate(loginSchema), login);
 
-
 /**
  * @swagger
  * /auth/refresh:
@@ -120,9 +125,9 @@ router.post("/logout", logout);
  */
 router.get("/me", requireAuth, me);
 
-router.post("/forgot-password", authLimiter, forgotPassword);
-router.post("/reset-password", authLimiter, resetPassword);
-router.post("/change-password", requireAuth, changePassword);
+router.post("/forgot-password", authLimiter, validate(forgotPasswordSchema), forgotPassword);
+router.post("/reset-password", authLimiter, validate(resetPasswordSchema), resetPassword);
+router.post("/change-password", requireAuth, validate(changePasswordSchema), changePassword);
 
 // OAuth Routes
 router.get(

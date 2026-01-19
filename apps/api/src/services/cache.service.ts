@@ -55,7 +55,7 @@ export class CacheService {
         await this.redis.set(key, serialized);
       }
       logger.debug(`Cache set: ${key} (TTL: ${ttl}s)`);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error(`Cache set error for key ${key}:`, error);
     }
   }
@@ -80,7 +80,7 @@ export class CacheService {
       const parsed = JSON.parse(value);
       logger.debug(`Cache hit: ${key}`);
       return parsed as T;
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error(`Cache get error for key ${key}:`, error);
       return null;
     }
@@ -98,7 +98,7 @@ export class CacheService {
     try {
       await this.redis.del(key);
       logger.debug(`Cache deleted: ${key}`);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error(`Cache delete error for key ${key}:`, error);
     }
   }
@@ -115,7 +115,7 @@ export class CacheService {
     try {
       await this.redis.del(...keys);
       logger.debug(`Cache deleted: ${keys.length} keys`);
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error(`Cache deleteMany error:`, error);
     }
   }
@@ -135,7 +135,7 @@ export class CacheService {
         await this.redis.del(...keys);
         logger.debug(`Cache pattern invalidated: ${pattern} (${keys.length} keys)`);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error(`Cache pattern invalidation error for ${pattern}:`, error);
     }
   }
@@ -173,7 +173,7 @@ export class CacheService {
     try {
       await this.redis.flushdb();
       logger.info("Cache flushed completely");
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error("Cache flush error:", error);
     }
   }
@@ -212,7 +212,7 @@ export class CacheService {
       await this.redis.quit();
       this.isConnected = false;
       logger.info("Redis connection closed gracefully");
-    } catch (error) {
+    } catch (error: unknown) {
       logger.error("Error closing Redis connection:", error);
     }
   }
