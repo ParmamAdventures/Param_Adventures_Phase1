@@ -2,6 +2,7 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import { env } from "../config/env";
 import { logger } from "../lib/logger";
+import { handleError } from "../utils/errorHandler";
 
 // Lazy initialization for better testability
 let razorpayInstance: Razorpay | null = null;
@@ -36,9 +37,9 @@ export const razorpayService = {
         receipt,
       });
       return order;
-    } catch (error) {
-      logger.error("Razorpay order creation failed", { error, receipt });
-      throw error;
+    } catch (error: unknown) {
+      const err = handleError(error, logger, "Razorpay order creation failed");
+      throw err;
     }
   },
 
@@ -74,7 +75,10 @@ export const razorpayService = {
   /**
    * Refund a payment
    */
-  async refundPayment(paymentId: string, options?: { amount?: number; notes?: Record<string, string> }) {
+  async refundPayment(
+    paymentId: string,
+    options?: { amount?: number; notes?: Record<string, string> },
+  ) {
     try {
       const razorpay = getRazorpayInstance();
       const refund = await razorpay.payments.refund(paymentId, {
@@ -83,9 +87,9 @@ export const razorpayService = {
         notes: options?.notes,
       });
       return refund;
-    } catch (error) {
-      logger.error("Razorpay refund failed", { error, paymentId });
-      throw error;
+    } catch (error: unknown) {
+      const err = handleError(error, logger, "Razorpay refund failed");
+      throw err;
     }
   },
 
@@ -97,11 +101,11 @@ export const razorpayService = {
       const razorpay = getRazorpayInstance();
       const payment = await razorpay.payments.fetch(paymentId);
       return payment;
-    } catch (error) {
-       logger.error("Razorpay fetch payment failed", { error, paymentId });
-       throw error;
+    } catch (error: unknown) {
+      const err = handleError(error, logger, "Razorpay fetch payment failed");
+      throw err;
     }
-  }
+  },
 };
 
 // Also export individual functions for backward compatibility with existing stubs

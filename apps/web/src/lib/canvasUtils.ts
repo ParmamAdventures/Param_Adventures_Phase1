@@ -1,5 +1,6 @@
-// Re-export image utility functions from consolidated module
-export { createImage, getRadianAngle, rotateSize } from "./imageUtils";
+import { createImage, getRadianAngle, rotateSize } from "./imageUtils";
+
+export { createImage, getRadianAngle, rotateSize };
 
 /**
  * This function was adapted from the one in the Readme of https://github.com/DominicTobias/react-image-crop
