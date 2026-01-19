@@ -25,10 +25,9 @@ export default function TripHero({ trip }: { trip: any }) {
 
   const heroImage = getImageUrl(trip.heroImage);
   const coverImage = getImageUrl(trip.coverImage);
-  const legacyImage = trip.coverImageLegacy || trip.image; // Legacy might be a full string
 
-  // Prioritize Hero -> Cover -> Legacy
-  const finalCoverImage = heroImage || coverImage || legacyImage;
+  // Prioritize Hero -> Cover
+  const finalCoverImage = heroImage || coverImage;
 
   return (
     <div className="relative flex h-[60vh] min-h-[500px] w-full items-end overflow-hidden bg-slate-900 pb-12 text-white">
