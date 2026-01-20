@@ -8,7 +8,7 @@
  * - Blogs with rich content
  * - Hero slides for homepage
  * - Reviews, bookings, payments
- * 
+ *
  * Run: npx ts-node scripts/seed-production-complete.ts
  */
 
@@ -92,7 +92,7 @@ async function main() {
 
   // Content creator permissions
   const contentPerms = permissions.filter((p) =>
-    ["blogs:create", "blogs:update", "trips:read", "trips:create"].includes(p.key)
+    ["blogs:create", "blogs:update", "trips:read", "trips:create"].includes(p.key),
   );
   for (const perm of contentPerms) {
     await prisma.rolePermission.create({
@@ -102,7 +102,7 @@ async function main() {
 
   // Guide permissions
   const guidePerms = permissions.filter((p) =>
-    ["trips:read", "bookings:read", "reviews:moderate"].includes(p.key)
+    ["trips:read", "bookings:read", "reviews:moderate"].includes(p.key),
   );
   for (const perm of guidePerms) {
     await prisma.rolePermission.create({
@@ -158,20 +158,20 @@ async function main() {
         bio: "Wildlife enthusiast and certified adventure guide",
       },
     }),
-    user1: await prisma.user.create({
+    customer1: await prisma.user.create({
       data: {
-        email: "user1@example.com",
+        email: "customer1@paramadventures.com",
         password: hashedPassword,
-        name: "John Doe",
+        name: "Arjun Mehta",
         phoneNumber: "+91-9999900005",
         status: "ACTIVE",
       },
     }),
-    user2: await prisma.user.create({
+    customer2: await prisma.user.create({
       data: {
-        email: "user2@example.com",
+        email: "customer2@paramadventures.com",
         password: hashedPassword,
-        name: "Jane Smith",
+        name: "Priyanka Singh",
         phoneNumber: "+91-9999900006",
         status: "ACTIVE",
       },
@@ -185,8 +185,8 @@ async function main() {
   });
   await prisma.userRole.create({ data: { userId: users.guide1.id, roleId: roles.guide.id } });
   await prisma.userRole.create({ data: { userId: users.guide2.id, roleId: roles.guide.id } });
-  await prisma.userRole.create({ data: { userId: users.user1.id, roleId: roles.user.id } });
-  await prisma.userRole.create({ data: { userId: users.user2.id, roleId: roles.user.id } });
+  await prisma.userRole.create({ data: { userId: users.customer1.id, roleId: roles.user.id } });
+  await prisma.userRole.create({ data: { userId: users.customer2.id, roleId: roles.user.id } });
 
   console.log("✅ Created 6 users with roles\n");
 
@@ -243,8 +243,16 @@ async function main() {
           "Epic 10-day motorcycle journey through the highest motorable passes in the world. Experience the thrill of riding through the majestic Himalayas, crossing rivers, and camping under starlit skies.",
         itinerary: {
           days: [
-            { day: 1, title: "Manali Arrival", activities: ["Meet & Greet", "Bike allocation", "Safety briefing"] },
-            { day: 2, title: "Rohtang Pass", activities: ["Cross Rohtang", "Reach Jispa", "Acclimatization"] },
+            {
+              day: 1,
+              title: "Manali Arrival",
+              activities: ["Meet & Greet", "Bike allocation", "Safety briefing"],
+            },
+            {
+              day: 2,
+              title: "Rohtang Pass",
+              activities: ["Cross Rohtang", "Reach Jispa", "Acclimatization"],
+            },
             { day: 3, title: "Leh Arrival", activities: ["Khardung La", "Explore Leh Market"] },
           ],
         },
@@ -256,13 +264,21 @@ async function main() {
         category: "TREK",
         status: "PUBLISHED" as TripStatus,
         highlights: ["Rohtang Pass (3978m)", "Khardung La (5359m)", "Pangong Lake", "Nubra Valley"],
-        inclusions: ["Royal Enfield 350cc", "Fuel", "Accommodation", "All meals", "Support vehicle"],
+        inclusions: [
+          "Royal Enfield 350cc",
+          "Fuel",
+          "Accommodation",
+          "All meals",
+          "Support vehicle",
+        ],
         exclusions: ["Personal expenses", "Bike insurance", "Emergency evacuation"],
         coverImageId: images[0].id,
         createdById: users.admin.id,
+        startDate: new Date("2026-06-01"),
+        endDate: new Date("2026-06-11"),
         isFeatured: true,
       },
-    })
+    }),
   );
 
   trips.push(
@@ -274,8 +290,16 @@ async function main() {
           "Serene 3-day cruise through the tranquil backwaters of Kerala in a traditional kettuvallam (houseboat). Experience authentic Kerala cuisine and village life.",
         itinerary: {
           days: [
-            { day: 1, title: "Alleppey Check-in", activities: ["Board houseboat", "Lunch onboard", "Cruise begins"] },
-            { day: 2, title: "Backwater Exploration", activities: ["Village visits", "Sunset views", "Traditional dinner"] },
+            {
+              day: 1,
+              title: "Alleppey Check-in",
+              activities: ["Board houseboat", "Lunch onboard", "Cruise begins"],
+            },
+            {
+              day: 2,
+              title: "Backwater Exploration",
+              activities: ["Village visits", "Sunset views", "Traditional dinner"],
+            },
             { day: 3, title: "Return", activities: ["Morning tea", "Disembark", "Farewell"] },
           ],
         },
@@ -291,9 +315,11 @@ async function main() {
         exclusions: ["Transport to Alleppey", "Personal expenses"],
         coverImageId: images[1].id,
         createdById: users.admin.id,
+        startDate: new Date("2026-07-01"),
+        endDate: new Date("2026-07-04"),
         isFeatured: true,
       },
-    })
+    }),
   );
 
   trips.push(
@@ -305,9 +331,21 @@ async function main() {
           "5-day desert adventure exploring the golden sands of Thar Desert. Camel safari, desert camping, and cultural performances under the stars.",
         itinerary: {
           days: [
-            { day: 1, title: "Jaisalmer Arrival", activities: ["Fort visit", "Market exploration"] },
-            { day: 2, title: "Desert Safari", activities: ["Camel ride", "Sand dunes", "Camp setup"] },
-            { day: 3, title: "Cultural Evening", activities: ["Folk dance", "Bonfire", "Stargazing"] },
+            {
+              day: 1,
+              title: "Jaisalmer Arrival",
+              activities: ["Fort visit", "Market exploration"],
+            },
+            {
+              day: 2,
+              title: "Desert Safari",
+              activities: ["Camel ride", "Sand dunes", "Camp setup"],
+            },
+            {
+              day: 3,
+              title: "Cultural Evening",
+              activities: ["Folk dance", "Bonfire", "Stargazing"],
+            },
           ],
         },
         durationDays: 5,
@@ -322,9 +360,11 @@ async function main() {
         exclusions: ["Transport to Jaisalmer", "Alcohol", "Personal expenses"],
         coverImageId: images[2].id,
         createdById: users.contentWriter.id,
+        startDate: new Date("2026-08-15"),
+        endDate: new Date("2026-08-20"),
         isFeatured: true,
       },
-    })
+    }),
   );
 
   trips.push(
@@ -337,7 +377,11 @@ async function main() {
         itinerary: {
           days: [
             { day: 1, title: "Arrival", activities: ["Check-in", "Beach time", "Shack dinner"] },
-            { day: 2, title: "Water Sports", activities: ["Parasailing", "Jet ski", "Banana boat"] },
+            {
+              day: 2,
+              title: "Water Sports",
+              activities: ["Parasailing", "Jet ski", "Banana boat"],
+            },
             { day: 3, title: "Party Night", activities: ["Beach club", "DJ night", "Bonfire"] },
           ],
         },
@@ -353,9 +397,11 @@ async function main() {
         exclusions: ["Lunch & dinner", "Alcohol", "Transport"],
         coverImageId: images[3].id,
         createdById: users.admin.id,
+        startDate: new Date("2026-05-10"),
+        endDate: new Date("2026-05-14"),
         isFeatured: false,
       },
-    })
+    }),
   );
 
   trips.push(
@@ -367,8 +413,16 @@ async function main() {
           "2-day adventure with white water rafting on the Ganges, cliff jumping, and riverside camping. Ideal for thrill-seekers.",
         itinerary: {
           days: [
-            { day: 1, title: "Rafting Day", activities: ["16 km rapids", "Cliff jumping", "Beach camping"] },
-            { day: 2, title: "Morning Yoga", activities: ["Yoga session", "Breakfast", "Departure"] },
+            {
+              day: 1,
+              title: "Rafting Day",
+              activities: ["16 km rapids", "Cliff jumping", "Beach camping"],
+            },
+            {
+              day: 2,
+              title: "Morning Yoga",
+              activities: ["Yoga session", "Breakfast", "Departure"],
+            },
           ],
         },
         durationDays: 2,
@@ -383,9 +437,11 @@ async function main() {
         exclusions: ["Transport to Rishikesh", "Personal gear"],
         coverImageId: images[4].id,
         createdById: users.admin.id,
+        startDate: new Date("2026-04-25"),
+        endDate: new Date("2026-04-27"),
         isFeatured: true,
       },
-    })
+    }),
   );
 
   // DRAFT Trips (2)
@@ -409,9 +465,11 @@ async function main() {
         exclusions: ["Personal clothing", "Insurance"],
         coverImageId: images[5].id,
         createdById: users.contentWriter.id,
+        startDate: new Date("2026-12-15"),
+        endDate: new Date("2026-12-27"),
         isFeatured: false,
       },
-    })
+    }),
   );
 
   trips.push(
@@ -434,9 +492,11 @@ async function main() {
         exclusions: ["Flights", "Lunch & dinner", "Certification card fees"],
         coverImageId: images[6].id,
         createdById: users.contentWriter.id,
+        startDate: new Date("2026-11-01"),
+        endDate: new Date("2026-11-08"),
         isFeatured: false,
       },
-    })
+    }),
   );
 
   // ARCHIVED Trip (1)
@@ -459,9 +519,11 @@ async function main() {
         exclusions: [],
         coverImageId: images[7].id,
         createdById: users.admin.id,
+        startDate: new Date("2023-12-10"),
+        endDate: new Date("2023-12-18"),
         isFeatured: false,
       },
-    })
+    }),
   );
 
   console.log("✅ Created 8 trips (5 published, 2 draft, 1 archived)\n");
@@ -567,15 +629,15 @@ The Himalayas are home to diverse cultures. Be respectful of local customs and t
 
 *Happy trekking!*`,
         excerpt: "Essential preparation tips for first-time Himalayan trekkers",
-        featuredImageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200",
+        coverImageId: images[0].id,
         status: "PUBLISHED",
         authorId: users.contentWriter.id,
-        publishedAt: new Date(),
-        tags: ["trekking", "himalayas", "tips", "adventure"],
       },
-    })coverImageId: images[0].id,
-        status: "PUBLISHED",
-        authorId: users.contentWriter.id
+    }),
+  );
+
+  blogs.push(
+    await prisma.blog.create({
       data: {
         title: "Why Kerala Should Be Your Next Vacation Destination",
         slug: "kerala-vacation-guide",
@@ -608,11 +670,11 @@ October to March is ideal when the weather is pleasant and perfect for explorati
 
 Book your Kerala trip today!`,
         excerpt: "Discover why Kerala is the perfect blend of nature, culture, and relaxation",
-        featuredImageUrl: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1200",
-        status: "PUBLISHED",
         coverImageId: images[1].id,
         status: "PUBLISHED",
-        authorId: users.contentWriter.id
+        authorId: users.contentWriter.id,
+      },
+    }),
   );
 
   blogs.push(
@@ -647,11 +709,11 @@ The Manali-Leh highway is a dream for every motorcyclist, but it demands respect
 
 Stay safe and enjoy the ride!`,
         excerpt: "Essential safety tips for your Leh-Ladakh motorcycle adventure",
-        featuredImageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200",
-        status: "PUBLISHED",
         coverImageId: images[2].id,
         status: "PUBLISHED",
-        authorId: users.admin.id
+        authorId: users.admin.id,
+      },
+    }),
   );
 
   blogs.push(
@@ -687,13 +749,13 @@ Don't miss:
 
 Plan your desert adventure wisely!`,
         excerpt: "Complete guide to choosing the perfect time for your Rajasthan desert experience",
-        featuredImageUrl: "https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1200",
-        status: "PUBLISHED",
-        authorId: users.contentWriter.id,
-        publishedAt: new Date(),
         coverImageId: images[3].id,
         status: "PUBLISHED",
-        authorId: users.contentWriter.id
+        authorId: users.contentWriter.id,
+      },
+    }),
+  );
+
   blogs.push(
     await prisma.blog.create({
       data: {
@@ -701,13 +763,13 @@ Plan your desert adventure wisely!`,
         slug: "spiti-winter-guide-draft",
         content: "Draft content for Spiti Valley winter guide...",
         excerpt: "Coming soon: Complete guide for winter travel to Spiti",
-        featuredImageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200",
+        coverImageId: images[4].id,
         status: "DRAFT",
         authorId: users.contentWriter.id,
-        tags: ["spiti", "winter", "draft"],
-      },coverImageId: images[4].id,
-        status: "DRAFT",
-        authorId: users.contentWriter.id
+      },
+    }),
+  );
+
   console.log("✅ Created 5 blog posts (4 published, 1 draft)\n");
 
   // ================================
@@ -721,11 +783,8 @@ Plan your desert adventure wisely!`,
       comment:
         "Absolutely incredible experience! The ride through Khardung La was breathtaking. Our guide Rajesh was amazing and very knowledgeable. Highly recommend!",
       tripId: trips[0].id,
-      userId: users.user1.id,
-      isFeatured: true,
+      userId: users.customer1.id,
     },
-  });
-},
   });
 
   await prisma.review.create({
@@ -734,7 +793,7 @@ Plan your desert adventure wisely!`,
       comment:
         "The houseboat cruise was so peaceful and relaxing. Food was delicious, staff was friendly. Perfect getaway!",
       tripId: trips[1].id,
-      userId: users.user2.id,
+      userId: users.customer2.id,
     },
   });
 
@@ -744,7 +803,10 @@ Plan your desert adventure wisely!`,
       comment:
         "Great desert experience. Camel safari was fun. Only complaint is it got a bit cold at night in the desert camp.",
       tripId: trips[2].id,
-      userId: users.user1.id
+      userId: users.customer1.id,
+    },
+  });
+
   console.log("✅ Created 3 reviews\n");
 
   // ================================
@@ -755,21 +817,15 @@ Plan your desert adventure wisely!`,
   const booking1 = await prisma.booking.create({
     data: {
       tripId: trips[0].id,
-      userId: users.user1.id,
-      numberOfPeople: 2,
-      totalPrice: 130000,
-      status: "CONFIRMED",
-      emergencyContact: {
-        name: "Alice Doe",
-        phone: "+91-9876543210",
+      userId: users.customer1.id,
       guests: 2,
       startDate: new Date("2026-06-15"),
       totalPrice: 130000,
       status: "CONFIRMED",
       paymentStatus: "PAID",
       guestDetails: [
-        { name: "John Doe", age: 32, email: "john@example.com" },
-        { name: "Alice Doe", age: 30, email: "alice@example.com" },
+        { name: "Arjun Mehta", age: 32, email: "arjun.mehta@gmail.com" },
+        { name: "Neha Mehta", age: 30, email: "neha.mehta@gmail.com" },
       ],
     },
   });
@@ -781,23 +837,23 @@ Plan your desert adventure wisely!`,
       provider: "razorpay",
       status: "CAPTURED",
       method: "CARD",
-      providerOrderId: "order_test_123",
-      providerPaymentId: "pay_test_456",
+      providerOrderId: `order_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+      providerPaymentId: `pay_${Date.now()}_${Math.random().toString(36).substring(7)}`,
     },
   });
 
   const booking2 = await prisma.booking.create({
     data: {
       tripId: trips[1].id,
-      userId: users.user2.id,
+      userId: users.customer2.id,
       guests: 2,
       startDate: new Date("2026-07-01"),
       totalPrice: 50000,
       status: "REQUESTED",
       paymentStatus: "PENDING",
       guestDetails: [
-        { name: "Jane Smith", age: 28, email: "jane@example.com" },
-        { name: "Bob Smith", age: 30, email: "bob@example.com" },
+        { name: "Priyanka Singh", age: 28, email: "priyanka.singh@gmail.com" },
+        { name: "Rohit Singh", age: 30, email: "rohit.singh@gmail.com" },
       ],
     },
   });
@@ -807,7 +863,12 @@ Plan your desert adventure wisely!`,
       bookingId: booking2.id,
       amount: 50000,
       provider: "razorpay",
-      status: "CREATEDed 2 bookings with payments\n");
+      status: "CREATED",
+      providerOrderId: `order_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+    },
+  });
+
+  console.log("✅ Created 2 bookings with payments\n");
 
   // ================================
   // SUMMARY
@@ -832,8 +893,8 @@ Plan your desert adventure wisely!`,
   console.log("   ✍️  Content Writer:  writer@paramadventures.com");
   console.log("   🗺️  Guide 1:         guide1@paramadventures.com");
   console.log("   🗺️  Guide 2:         guide2@paramadventures.com");
-  console.log("   👤 User 1:          user1@example.com");
-  console.log("   👤 User 2:          user2@example.com\n");
+  console.log("   👤 Customer 1:      customer1@paramadventures.com");
+  console.log("   👤 Customer 2:      customer2@paramadventures.com\n");
 
   console.log("🗺️  Published Trips:");
   console.log("   • manali-leh-bike-adventure (Featured)");

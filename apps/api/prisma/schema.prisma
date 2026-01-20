@@ -144,6 +144,8 @@ model User {
   @@index([status])
   @@index([createdAt])
   @@index([avatarImageId])
+  @@index([deletedAt]) // Optimize queries for active users (WHERE deletedAt IS NULL)
+  @@index([email, deletedAt]) // Compound: Check active user by email
 }
 
 model Role {
@@ -192,13 +194,13 @@ model RolePermission {
 }
 
 model AuditLog {
-  id         String   @id @default(uuid())
+  id         String      @id @default(uuid())
   actorId    String?
   action     AuditAction
   targetType String
   targetId   String?
   metadata   Json?
-  createdAt  DateTime @default(now())
+  createdAt  DateTime    @default(now())
 
   actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
@@ -309,6 +311,8 @@ model Trip {
   @@index([difficulty, price])
   @@index([durationDays])
   @@index([startPoint])
+  @@index([deletedAt]) // Optimize queries for active trips
+  @@index([status, deletedAt]) // Compound: Published non-deleted trips
 }
 
 model TripGalleryImage {
@@ -376,10 +380,13 @@ model Blog {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([slug]) // Explicit index for consistency (unique already creates one)
   @@index([status])
   @@index([authorId])
   @@index([coverImageId])
   @@index([tripId])
+  @@index([status, createdAt]) // Compound index for filtering by status and sorting
+  @@index([deletedAt]) // Optimize queries for active blogs
 }
 
 model Image {
@@ -457,6 +464,9 @@ model Booking {
   @@index([status, createdAt])
   @@index([userId, createdAt])
   @@index([tripId, status, createdAt])
+  @@index([tripId, startDate]) // Compound: Find bookings by trip and date
+  @@index([userId, paymentStatus]) // Compound: Find user's pending payments
+  @@index([status, paymentStatus]) // Compound: Find confirmed unpaid bookings
 }
 
 enum PaymentStatus {
@@ -478,20 +488,20 @@ enum PaymentMethod {
 }
 
 model Payment {
-  id                String         @id @default(uuid())
+  id                String        @id @default(uuid())
   bookingId         String
   provider          String // "razorpay"
-  providerOrderId   String         @unique
-  providerPaymentId String?        @unique
-  razorpayRefundId  String?        @unique
+  providerOrderId   String        @unique
+  providerPaymentId String?       @unique
+  razorpayRefundId  String?       @unique
   rawPayload        Json?
   proofUrl          String? // For manual/offline payments (image URL)
   amount            Int // paise
-  currency          String         @default("INR")
-  method            PaymentMethod?
-  refundedAmount    Int            @default(0) // Track cumulative refunds
+  currency          String        @default("INR")
+  method            PaymentMethod @default(OTHER) // Required field - use OTHER if unknown
+  refundedAmount    Int           @default(0) // Track cumulative refunds
   disputeId         String? // ID from provider if disputed
-  status            PaymentStatus  @default(CREATED)
+  status            PaymentStatus @default(CREATED)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -547,11 +557,12 @@ model SavedTrip {
   tripId    String
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade) // Explicit cascade
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade) // Explicit cascade
 
   @@id([userId, tripId])
   @@index([userId])
+  @@index([tripId]) // Add index for reverse lookups
 }
 
 model SiteConfig {
@@ -564,7 +575,7 @@ model TripInquiry {
   id          String            @id @default(uuid())
   name        String
   email       String
-  phoneNumber String?    @unique
+  phoneNumber String? // Removed @unique - nullable fields shouldn't have unique constraints
   destination String
   dates       String?
   budget      String?
@@ -576,13 +587,15 @@ model TripInquiry {
   @@index([createdAt])
   @@index([email, status])
   @@index([status, createdAt])
+  @@index([phoneNumber]) // Add index for phone number lookups
 }
 
 model NewsletterSubscriber {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid())
+  email        String   @unique
+  isSubscribed Boolean  @default(true) // Subscribers start as subscribed
+  createdAt    DateTime @default(now())
 
-  @@index([isActive, createdAt])
+  @@index([isSubscribed, createdAt]) // Query active subscribers
+  @@index([email]) // Explicit index for email lookups
 }
