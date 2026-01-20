@@ -299,7 +299,7 @@ model Trip {
   savedTrips SavedTrip[]
 
   @@index([status])
-  @@index([slug])
+  // @@index([slug]) - Removed: Redundant with @unique
   @@index([category])
   @@index([isFeatured])
   @@index([createdById])
@@ -386,7 +386,7 @@ model Blog {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([slug]) // Explicit index for consistency (unique already creates one)
+  // @@index([slug]) - Removed: Redundant with @unique
   @@index([status])
   @@index([authorId])
   @@index([coverImageId])
@@ -495,10 +495,18 @@ enum PaymentMethod {
   OTHER
 }
 
+enum PaymentProvider {
+  RAZORPAY
+  STRIPE
+  PAYPAL
+  MANUAL
+  UNKNOWN
+}
+
 model Payment {
   id                String        @id @default(uuid())
   bookingId         String
-  provider          String // "razorpay"
+  provider          PaymentProvider @default(RAZORPAY)
   providerOrderId   String        @unique
   providerPaymentId String?       @unique
   razorpayRefundId  String?       @unique
@@ -555,7 +563,7 @@ model Review {
 
   @@unique([userId, tripId]) // One review per trip per user
   @@index([tripId])
-  @@index([userId, tripId])
+  // @@index([userId, tripId]) - Removed: Redundant with @unique
   @@index([tripId, rating])
   @@index([createdAt])
 }

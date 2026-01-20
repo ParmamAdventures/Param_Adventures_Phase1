@@ -74,7 +74,7 @@ export async function initiatePayment(req: Request, res: Response) {
     const payment = await prisma.payment.create({
       data: {
         bookingId: booking.id,
-        provider: "razorpay",
+        provider: "RAZORPAY",
         providerOrderId: order.id,
         amount: amountInPaise,
         currency: order.currency,

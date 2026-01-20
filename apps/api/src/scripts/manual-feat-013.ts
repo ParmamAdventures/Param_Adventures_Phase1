@@ -53,7 +53,7 @@ async function run() {
     const payment = await prisma.payment.create({
       data: {
         bookingId: booking.id,
-        provider: "razorpay",
+        provider: "RAZORPAY",
         providerOrderId: "ord_disp_" + Date.now(),
         providerPaymentId: "pay_disp_" + Date.now(),
         amount: 200000,

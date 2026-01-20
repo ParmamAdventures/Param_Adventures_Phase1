@@ -90,7 +90,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
   const payment = await prisma.payment.create({
     data: {
       bookingId: booking.id,
-      provider: "razorpay",
+      provider: "RAZORPAY",
       providerOrderId: finalOrder.id,
       amount,
       status: "CREATED",

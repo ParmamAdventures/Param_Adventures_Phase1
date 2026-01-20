@@ -253,8 +253,19 @@ async function createUsers(roles: any) {
   console.log("\n👥 Creating users...");
 
   // Use single password for ALL users (super admin, admin, manager, guides, customers)
-  const seedPasswordRaw = process.env.SEED_PASSWORD || "Demo@2026";
-  const seedPassword = await bcrypt.hash(seedPasswordRaw, 10);
+  const seedPasswordRaw = process.env.SEED_PASSWORD;
+
+  if (!seedPasswordRaw) {
+    if (process.env.NODE_ENV === "production" || process.env.ALLOW_PROD_SEED) {
+      throw new Error("❌ SEED_PASSWORD env var is required for production/prod-like seeding");
+    }
+    console.warn(
+      "⚠️  SEED_PASSWORD not set, using insecure default 'Demo@2026' for DEVELOPMENT only.",
+    );
+  }
+
+  const finalPassword = seedPasswordRaw || "Demo@2026";
+  const seedPassword = await bcrypt.hash(finalPassword, 10);
 
   console.log(`\n🔐 PASSWORD FOR ALL USERS:`);
   console.log(`   ${process.env.SEED_PASSWORD ? "(from SEED_PASSWORD env var)" : seedPasswordRaw}`);
