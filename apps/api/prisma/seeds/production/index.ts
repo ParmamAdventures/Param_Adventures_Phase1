@@ -841,7 +841,7 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   await prisma.payment.create({
     data: {
       booking: { connect: { id: booking1.id } },
-      provider: "razorpay",
+      provider: "RAZORPAY",
       providerOrderId: `order_demo_${Date.now()}_1`,
       providerPaymentId: `pay_demo_${Date.now()}_1`,
       amount: 240000,
@@ -867,7 +867,7 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   await prisma.payment.create({
     data: {
       booking: { connect: { id: booking2.id } },
-      provider: "razorpay",
+      provider: "RAZORPAY",
       providerOrderId: `order_demo_${Date.now()}_2`,
       providerPaymentId: `pay_demo_${Date.now()}_2`,
       amount: 85000,
