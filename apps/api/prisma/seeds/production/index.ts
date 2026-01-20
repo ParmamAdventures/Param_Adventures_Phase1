@@ -252,17 +252,13 @@ import * as crypto from "crypto";
 async function createUsers(roles: any) {
   console.log("\n👥 Creating users...");
 
-  const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD!, 10);
+  // Use single password for ALL users (super admin, admin, manager, guides, customers)
+  const seedPasswordRaw = process.env.SEED_PASSWORD || "Demo@2026";
+  const seedPassword = await bcrypt.hash(seedPasswordRaw, 10);
 
-  // Secure Demo Password Generation
-  const demoPasswordRaw = process.env.DEMO_PASSWORD || crypto.randomBytes(12).toString("hex");
-  const demoPassword = await bcrypt.hash(demoPasswordRaw, 10);
-
-  console.log(`\n🔐 DEMO USER CHARTS:`);
-  console.log(
-    `   Password for all demo users: ${process.env.DEMO_PASSWORD ? "(from env)" : demoPasswordRaw}`,
-  );
-  console.log(`   (Save this password! It will not be shown again)\n`);
+  console.log(`\n🔐 PASSWORD FOR ALL USERS:`);
+  console.log(`   ${process.env.SEED_PASSWORD ? "(from SEED_PASSWORD env var)" : seedPasswordRaw}`);
+  console.log(`   All users share this password for easy demo login\n`);
 
   // Super Admin user
   const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || `super.admin@paramadventures.com`;
@@ -271,7 +267,7 @@ async function createUsers(roles: any) {
     update: {},
     create: {
       email: superAdminEmail,
-      password: hashedPassword,
+      password: seedPassword,
       name: "Super Admin",
       status: "ACTIVE",
     },
@@ -289,7 +285,7 @@ async function createUsers(roles: any) {
     update: {},
     create: {
       email: process.env.ADMIN_EMAIL!,
-      password: hashedPassword,
+      password: seedPassword,
       name: "Admin User",
       status: "ACTIVE",
     },
@@ -317,7 +313,7 @@ async function createUsers(roles: any) {
       update: {},
       create: {
         email: "manager@paramadventures.com",
-        password: demoPassword,
+        password: seedPassword,
         name: "Rajesh Kumar",
         phoneNumber: "+91-9876543210",
         status: "ACTIVE",
@@ -344,7 +340,7 @@ async function createUsers(roles: any) {
       update: {},
       create: {
         email: "guide.rahul@paramadventures.com",
-        password: demoPassword,
+        password: seedPassword,
         name: "Rahul Singh",
         phoneNumber: "+91-9876543211",
         status: "ACTIVE",
@@ -356,7 +352,7 @@ async function createUsers(roles: any) {
       update: {},
       create: {
         email: "guide.neha@paramadventures.com",
-        password: demoPassword,
+        password: seedPassword,
         name: "Neha Sharma",
         phoneNumber: "+91-9876543212",
         status: "ACTIVE",
@@ -382,7 +378,7 @@ async function createUsers(roles: any) {
         update: {},
         create: {
           email: customerEmails[i],
-          password: demoPassword,
+          password: seedPassword,
           name: customerNames[i],
           status: "ACTIVE",
         },
