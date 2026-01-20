@@ -41,7 +41,7 @@ function validateEnvironment() {
     throw new Error("❌ Cannot seed production without ALLOW_PROD_SEED=true environment variable");
   }
 
-  const requiredEnvVars = ["ADMIN_EMAIL", "ADMIN_PASSWORD"];
+  const requiredEnvVars = ["ADMIN_EMAIL", "SEED_PASSWORD"];
   const missing = requiredEnvVars.filter((name) => !process.env[name]);
 
   if (missing.length > 0) {
