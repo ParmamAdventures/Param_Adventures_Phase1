@@ -22,11 +22,11 @@ export const subscribe = catchAsync(async (req: Request, res: Response) => {
   });
 
   if (existing) {
-    if (!existing.isActive) {
+    if (!existing.isSubscribed) {
       // Reactivate
       await prisma.newsletterSubscriber.update({
         where: { id: existing.id },
-        data: { isActive: true },
+        data: { isSubscribed: true },
       });
       return ApiResponse.success(res, {}, "Welcome back! Subscription reactivated.");
     }
