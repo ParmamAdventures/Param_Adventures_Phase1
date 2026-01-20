@@ -267,8 +267,8 @@ model Trip {
 
   deletedAt DateTime? // Soft Delete
 
-  createdById String
-  createdBy   User   @relation("TripCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  createdById String?
+  createdBy   User?   @relation("TripCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   approvedById String?
   approvedBy   User?   @relation("TripApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
@@ -402,7 +402,7 @@ model Image {
   duration    Int? // Duration in seconds for videos
 
   uploadedById String
-  uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id], onDelete: Restrict)
+  uploadedBy   User   @relation("UserUploadedImages", fields: [uploadedById], references: [id], onDelete: Cascade)
 
   tripsCover   Trip[]             @relation("TripCoverImage")
   tripsHero    Trip[]             @relation("TripHeroImage")
@@ -467,6 +467,7 @@ model Booking {
   @@index([tripId, startDate]) // Compound: Find bookings by trip and date
   @@index([userId, paymentStatus]) // Compound: Find user's pending payments
   @@index([status, paymentStatus]) // Compound: Find confirmed unpaid bookings
+  @@index([userId, status]) // Compound: Find user's bookings by status
 }
 
 enum PaymentStatus {
