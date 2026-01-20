@@ -43,7 +43,10 @@ export function useFormState<T extends Record<string, any>>(initialValues: T) {
   );
 
   const setField = useCallback((field: keyof T, value: any) => {
-    setValues((prev) => ({ ...prev, [field]: value }));
+    setValues((prev) => ({
+      ...prev,
+      [field]: typeof value === "function" ? value(prev[field]) : value,
+    }));
   }, []);
 
   const reset = useCallback(() => {

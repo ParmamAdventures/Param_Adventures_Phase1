@@ -33,7 +33,10 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     maxDays ||
     startDate ||
     endDate ||
-    capacity;
+    capacity ||
+    (sortBy && sortBy !== "createdAt") ||
+    (sortOrder && sortOrder !== "desc") ||
+    req.query.isFeatured;
 
   if (!hasFilters && !category && page === 1) {
     // Use cache for basic public trips request (first page only to keep cache simple)
@@ -76,7 +79,7 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     if (endDate) where.startDate.lte = new Date(String(endDate));
   }
 
-  if (Boolean(req.query.isFeatured) === true) {
+  if (req.query.isFeatured === "true") {
     where.isFeatured = true;
   }
 
