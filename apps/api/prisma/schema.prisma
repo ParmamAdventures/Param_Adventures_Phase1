@@ -234,6 +234,8 @@ model Trip {
   title        String
   slug         String       @unique
   description  String
+  // Itinerary is JSON so we can't easily GIN index it without raw SQL, 
+  // but title/description are main targets
   itinerary    Json
   durationDays Int
   difficulty   Difficulty
@@ -313,6 +315,9 @@ model Trip {
   @@index([startPoint])
   @@index([deletedAt]) // Optimize queries for active trips
   @@index([status, deletedAt]) // Compound: Published non-deleted trips
+  // Full text search optimization is handled by database extensions usually, 
+  // but standard indexes help simple text matching
+  @@index([title])
 }
 
 model TripGalleryImage {
@@ -332,6 +337,7 @@ model TripsOnGuides {
   tripId     String
   guideId    String
   assignedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   trip  Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
   guide User @relation(fields: [guideId], references: [id], onDelete: Cascade)
@@ -387,6 +393,7 @@ model Blog {
   @@index([tripId])
   @@index([status, createdAt]) // Compound index for filtering by status and sorting
   @@index([deletedAt]) // Optimize queries for active blogs
+  @@index([title])
 }
 
 model Image {
@@ -557,6 +564,7 @@ model SavedTrip {
   userId    String
   tripId    String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade) // Explicit cascade
   trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade) // Explicit cascade
