@@ -267,9 +267,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user } = useAuth();
 
   return (
-    // We allow access if user has internal view OR media upload permissions
-    // This supports both Admins/Managers and Uploaders
-    <PermissionRoute permission={["trip:view:internal", "media:upload"]}>
+    // We allow access if user has internal view OR media view (Library) permissions
+    // This supports both Admins/Managers and Uploaders, but excludes Users (who only have upload)
+    <PermissionRoute permission={["trip:view:internal", "media:view"]}>
       <div className="flex min-h-screen flex-col bg-[var(--background)] pt-16 md:flex-row">
         {/* Sidebar */}
         <aside className="z-20 w-full border-b border-[var(--border)] bg-[var(--card)]/50 backdrop-blur-xl md:w-64 md:border-r md:border-b-0">
