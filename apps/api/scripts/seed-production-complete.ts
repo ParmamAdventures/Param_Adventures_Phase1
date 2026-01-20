@@ -13,7 +13,7 @@
  */
 
 import { PrismaClient, TripStatus } from "@prisma/client";
-import bcryptjs from "bcryptjs";
+import * as bcryptjs from "bcryptjs";
 
 const prisma = new PrismaClient();
 
