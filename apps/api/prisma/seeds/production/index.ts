@@ -945,6 +945,7 @@ async function main() {
 
     console.log("\n🗑️  Clearing existing data...");
     await prisma.$transaction([
+      // Delete dependent records first
       prisma.payment.deleteMany(),
       prisma.booking.deleteMany(),
       prisma.review.deleteMany(),
@@ -957,10 +958,15 @@ async function main() {
       prisma.tripsOnGuides.deleteMany(),
       prisma.trip.deleteMany(),
       prisma.image.deleteMany(),
-      prisma.userRole.deleteMany(),
-      prisma.rolePermission.deleteMany(),
       prisma.auditLog.deleteMany(),
       prisma.siteConfig.deleteMany(),
+      // Delete user relationships
+      prisma.userRole.deleteMany(),
+      prisma.user.deleteMany(),
+      // Delete role relationships and roles
+      prisma.rolePermission.deleteMany(),
+      prisma.role.deleteMany(),
+      prisma.permission.deleteMany(),
     ]);
     console.log("✅ Database cleared");
 
@@ -1009,11 +1015,7 @@ async function main() {
     }
   } catch (error: any) {
     console.error("\n❌ Seed failed:", error);
-    const fs = require("fs");
-    fs.writeFileSync(
-      "C:/Users/akash/Documents/Param_Adventures_Phase1/apps/api/seed_diagnostic.txt",
-      error.stack || String(error),
-    );
+    console.error("Stack trace:", error.stack);
     throw error;
   } finally {
     await prisma.$disconnect();
