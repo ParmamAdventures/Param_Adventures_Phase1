@@ -117,8 +117,11 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         body: JSON.stringify({
           tripId: trip.id,
           startDate: new Date(formData.startDate).toISOString(),
-          guests: formData.guests,
-          guestDetails: formData.guestDetails,
+          guests: Number(formData.guests),
+          guestDetails: formData.guestDetails.map((g: any) => ({
+            ...g,
+            age: g.age ? Number(g.age) : undefined,
+          })),
         }),
       });
 
