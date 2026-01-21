@@ -10,6 +10,9 @@ jest.mock("../../src/lib/prisma", () => ({
       update: jest.fn(),
       findMany: jest.fn(),
     },
+    payment: {
+      update: jest.fn(),
+    },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
   },
@@ -46,6 +49,7 @@ describe("BookingService", () => {
         status: "PUBLISHED",
         title: "Test Trip",
         slug: "test-trip",
+        capacity: 10,
       };
 
       prismaMock.trip.findUnique.mockResolvedValue(mockTrip);
@@ -82,7 +86,7 @@ describe("BookingService", () => {
 
   describe("cancelBooking", () => {
     it("should cancel a booking successfully", async () => {
-      const mockBooking = { id: "b1", userId: "u1", status: "REQUESTED" };
+      const mockBooking = { id: "b1", userId: "u1", status: "REQUESTED", payments: [] };
       prismaMock.booking.findUnique.mockResolvedValue(mockBooking);
       prismaMock.booking.update.mockResolvedValue({ ...mockBooking, status: "CANCELLED" });
 
@@ -91,7 +95,10 @@ describe("BookingService", () => {
       expect(result.status).toBe("CANCELLED");
       expect(prismaMock.booking.update).toHaveBeenCalledWith({
         where: { id: "b1" },
-        data: { status: "CANCELLED" },
+        data: {
+          status: "CANCELLED",
+          paymentStatus: "PENDING",
+        },
       });
     });
 

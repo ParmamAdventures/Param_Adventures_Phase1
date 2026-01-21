@@ -524,6 +524,7 @@ model Payment {
 
   booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
 
+  @@unique([bookingId, providerPaymentId])
   @@index([bookingId])
   @@index([status])
   @@index([method])

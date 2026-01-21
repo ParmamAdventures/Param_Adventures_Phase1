@@ -139,10 +139,16 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         email: user?.email || formData.guestDetails[0]?.email,
       });
 
-      // 3. Success
-      showToast("Booking & Payment Successful!", "success");
-      onBookingSuccess(booking);
-      onClose();
+      // 3. Handle Completion
+      // If result.isDev, we stay open to show simulate button.
+      // If not, we let Razorpay handler/polling take over.
+      // We don't close immediately unless we want to redirect to 'my-bookings'
+      if (!result?.isDev) {
+        // For non-dev, the hook handles toasts and redirections
+        // but we might want to signal success to parent if needed
+        // onBookingSuccess(booking);
+      }
+
       return booking;
     });
   };

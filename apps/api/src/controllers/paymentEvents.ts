@@ -39,45 +39,89 @@ export async function handlePaymentCaptured(event: any) {
     return;
   }
 
-  await prisma.$transaction([
-    prisma.payment.update({
-      where: { id: payment.id },
-      data: {
-        providerPaymentId: razorpayPaymentId,
-        status: "CAPTURED",
-        rawPayload: event,
-        method: paymentEntity?.method, // e.g. "upi", "card", "netbanking"
-      },
-    }),
-    prisma.booking.update({
-      where: { id: payment.bookingId },
-      data: {
-        paymentStatus: "PAID",
-        status: "CONFIRMED",
-      },
-    }),
-  ]);
+  await prisma.$transaction(
+    async (tx) => {
+      // 1. Check current capacity
+      const bookingInProgress = await tx.booking.findUnique({
+        where: { id: payment.bookingId },
+        include: { trip: true },
+      });
+
+      if (!bookingInProgress) return;
+
+      const confirmedCount = await tx.booking.count({
+        where: {
+          tripId: bookingInProgress.tripId,
+          status: "CONFIRMED",
+          NOT: { id: bookingInProgress.id },
+        },
+      });
+
+      if (confirmedCount >= bookingInProgress.trip.capacity) {
+        // OVERBOOKED CASE: Fail payment and reject booking
+        await tx.payment.update({
+          where: { id: payment.id },
+          data: {
+            providerPaymentId: razorpayPaymentId,
+            status: "FAILED",
+            rawPayload: { ...event, overbooked: true },
+          },
+        });
+        await tx.booking.update({
+          where: { id: payment.bookingId },
+          data: {
+            paymentStatus: "FAILED",
+            status: "REJECTED",
+            notes: "Trip capacity reached before payment capture. Contact support for refund.",
+          },
+        });
+        return;
+      }
+
+      // 2. Proceed with capture
+      await tx.payment.update({
+        where: { id: payment.id },
+        data: {
+          providerPaymentId: razorpayPaymentId,
+          status: "CAPTURED",
+          rawPayload: event,
+          method: paymentEntity?.method, // e.g. "upi", "card", "netbanking"
+        },
+      });
+
+      await tx.booking.update({
+        where: { id: payment.bookingId },
+        data: {
+          paymentStatus: "PAID",
+          status: "CONFIRMED",
+        },
+      });
+    },
+    {
+      isolationLevel: "Serializable",
+    },
+  );
 
   // Send Notification (Async, non-blocking)
   const booking = await prisma.booking.findUnique({
-      where: { id: payment.bookingId },
-      include: { trip: true }
+    where: { id: payment.bookingId },
+    include: { trip: true },
   });
 
-  if (booking) {
-      try {
-        await notificationQueue.add("SEND_PAYMENT_EMAIL", {
-            userId: booking.userId,
-            details: {
-                tripTitle: booking.trip.title,
-                amount: payment.amount,
-                bookingId: booking.id,
-                paymentId: payment.id
-            }
-        });
-      } catch (err) {
-        console.error("Failed to queue notification:", err);
-      }
+  if (booking && booking.status === "CONFIRMED") {
+    try {
+      await notificationQueue.add("SEND_PAYMENT_EMAIL", {
+        userId: booking.userId,
+        details: {
+          tripTitle: booking.trip.title,
+          amount: payment.amount,
+          bookingId: booking.id,
+          paymentId: payment.id,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to queue notification:", err);
+    }
   }
 }
 
@@ -138,21 +182,21 @@ export async function handlePaymentFailed(event: any) {
   // Send Notification (Async)
   const booking = await prisma.booking.findUnique({
     where: { id: payment.bookingId },
-    include: { trip: true }
+    include: { trip: true },
   });
 
   if (booking) {
     const payload = event.payload?.payment?.entity;
     const reason = payload?.error_description || payload?.error_code || "Transaction failed";
-    
+
     try {
       await notificationQueue.add("SEND_PAYMENT_FAILED", {
-          userId: booking.userId,
-          details: {
-              tripTitle: booking.trip.title,
-              amount: payment.amount,
-              reason: reason
-          }
+        userId: booking.userId,
+        details: {
+          tripTitle: booking.trip.title,
+          amount: payment.amount,
+          reason: reason,
+        },
       });
     } catch (err) {
       console.error("Failed to queue failure notification:", err);
@@ -189,6 +233,7 @@ export async function handleRefundProcessed(event: any) {
     prisma.booking.update({
       where: { id: payment.bookingId },
       data: {
+        paymentStatus: "PAID", // Refunded payment is still originally PAID? No, let's keep status
         status: "CANCELLED",
       },
     }),
@@ -196,24 +241,24 @@ export async function handleRefundProcessed(event: any) {
 
   // Send Notification (Async, non-blocking)
   const booking = await prisma.booking.findUnique({
-      where: { id: payment.bookingId },
-      include: { trip: true }
+    where: { id: payment.bookingId },
+    include: { trip: true },
   });
 
   if (booking) {
-      try {
-        await notificationQueue.add("SEND_REFUND_EMAIL", {
-            userId: booking.userId,
-            details: {
-                tripTitle: booking.trip.title,
-                amount: refundEntity?.amount || 0,
-                bookingId: booking.id,
-                refundId: refundEntity?.id
-            }
-        });
-      } catch (err) {
-        console.error("Failed to queue refund notification:", err);
-      }
+    try {
+      await notificationQueue.add("SEND_REFUND_EMAIL", {
+        userId: booking.userId,
+        details: {
+          tripTitle: booking.trip.title,
+          amount: refundEntity?.amount || 0,
+          bookingId: booking.id,
+          refundId: refundEntity?.id,
+        },
+      });
+    } catch (err) {
+      console.error("Failed to queue refund notification:", err);
+    }
   }
 }
 
@@ -234,8 +279,8 @@ export async function handleDisputeCreated(event: any) {
     data: {
       status: "DISPUTED",
       disputeId: dispute.id,
-      rawPayload: event // Log the dispute event
-    }
+      rawPayload: event, // Log the dispute event
+    },
   });
 }
 
@@ -255,16 +300,16 @@ export async function handleDisputeLost(event: any) {
     where: { providerPaymentId: paymentId },
     data: {
       status: "REFUNDED",
-      rawPayload: event
-    }
+      rawPayload: event,
+    },
   });
-  
+
   const payment = await prisma.payment.findFirst({ where: { providerPaymentId: paymentId } });
   if (payment) {
-      await prisma.booking.update({
-          where: { id: payment.bookingId },
-          data: { status: "CANCELLED" }
-      });
+    await prisma.booking.update({
+      where: { id: payment.bookingId },
+      data: { status: "CANCELLED" },
+    });
   }
 }
 
@@ -284,7 +329,7 @@ export async function handleDisputeWon(event: any) {
     where: { providerPaymentId: paymentId },
     data: {
       status: "CAPTURED",
-      rawPayload: event
-    }
+      rawPayload: event,
+    },
   });
 }

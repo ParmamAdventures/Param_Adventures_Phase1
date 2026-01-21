@@ -21,7 +21,7 @@ import { env } from "./env";
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: env.NODE_ENV === "production" ? 15 : 1000, 
+  max: env.NODE_ENV === "production" ? 15 : 1000,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res, _next, options) => {
@@ -62,6 +62,22 @@ export const mediaLimiter = rateLimit({
       error: {
         code: "MEDIA_RATE_LIMIT_EXCEEDED",
         message: "Too many uploads, please slow down.",
+      },
+    });
+  },
+});
+
+export const webhookLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Max 100 requests per 15 mins per IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    logger.warn(`Webhook rate limit exceeded for IP ${req.ip}`);
+    res.status(options.statusCode).json({
+      error: {
+        code: "WEBHOOK_RATE_LIMIT_EXCEEDED",
+        message: "Too many webhook requests, please slow down.",
       },
     });
   },
