@@ -826,15 +826,21 @@ async function createBlogs(users: any, trips: any[], images: any[]) {
 async function createBookingsAndPayments(users: any, trips: any[]) {
   console.log("\n📅 Creating bookings and payments...");
 
+  const date1 = new Date("2026-03-15");
   // Completed booking with payment
   const booking1 = await prisma.booking.upsert({
-    where: { id: "demo-booking-1" },
+    where: {
+      userId_tripId_startDate: {
+        userId: users.customers[0].id,
+        tripId: trips[0].id,
+        startDate: date1,
+      },
+    },
     update: {},
     create: {
-      id: "demo-booking-1",
       user: { connect: { id: users.customers[0].id } },
       trip: { connect: { id: trips[0].id } },
-      startDate: new Date("2026-03-15"),
+      startDate: date1,
       guests: 2,
       totalPrice: 240000,
       status: "CONFIRMED",
@@ -861,15 +867,21 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
     },
   });
 
+  const date2 = new Date("2026-06-01");
   // Ongoing trip booking
   const booking2 = await prisma.booking.upsert({
-    where: { id: "demo-booking-2" },
+    where: {
+      userId_tripId_startDate: {
+        userId: users.customers[1].id,
+        tripId: trips[1].id,
+        startDate: date2,
+      },
+    },
     update: {},
     create: {
-      id: "demo-booking-2",
       user: { connect: { id: users.customers[1].id } },
       trip: { connect: { id: trips[1].id } },
-      startDate: new Date("2026-06-01"),
+      startDate: date2,
       guests: 1,
       totalPrice: 85000,
       status: "CONFIRMED",
@@ -892,15 +904,21 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
     },
   });
 
+  const date3 = new Date("2026-04-01");
   // Pending booking
   await prisma.booking.upsert({
-    where: { id: "demo-booking-3" },
+    where: {
+      userId_tripId_startDate: {
+        userId: users.customers[2].id,
+        tripId: trips[2].id,
+        startDate: date3,
+      },
+    },
     update: {},
     create: {
-      id: "demo-booking-3",
       user: { connect: { id: users.customers[2].id } },
       trip: { connect: { id: trips[2].id } },
-      startDate: new Date("2026-04-01"),
+      startDate: date3,
       guests: 4,
       totalPrice: 220000,
       status: "REQUESTED",
