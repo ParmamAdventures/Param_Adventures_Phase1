@@ -34,6 +34,8 @@ interface WindowWithRazorpay extends Window {
 export function useRazorpay() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [lastBookingId, setLastBookingId] = useState<string | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { showToast } = useToast();
   const router = useRouter();
@@ -82,12 +84,17 @@ export function useRazorpay() {
             router.refresh();
           } else if (booking?.paymentStatus === "FAILED") {
             clearPolling();
-            setMessage("Payment failed. Please try again.");
+            const errMsg = "Payment failed. Please try again.";
+            setMessage(errMsg);
+            setError(errMsg);
             setIsLoading(false);
             showToast("Payment verification failed", "error");
           } else if (attempts >= maxAttempts) {
             clearPolling();
-            setMessage("Verification taking longer than expected. Please refresh.");
+            const errMsg =
+              "Verification taking longer than expected. Please check 'My Bookings' or retry.";
+            setMessage(errMsg);
+            setError(errMsg);
             setIsLoading(false);
           }
         } catch (error) {
@@ -100,8 +107,10 @@ export function useRazorpay() {
 
   const initiatePayment = useCallback(
     async (bookingId: string, user?: { name?: string; email?: string }) => {
+      setLastBookingId(bookingId);
       setIsLoading(true);
       setMessage("Initializing payment...");
+      setError(null);
 
       try {
         const res = await apiFetch("/payments/intent", {
@@ -112,7 +121,8 @@ export function useRazorpay() {
 
         if (!res.ok) {
           const errorData = await res.json();
-          const msg = errorData.error?.message || errorData.message || "Failed to create payment intent";
+          const msg =
+            errorData.error?.message || errorData.message || "Failed to create payment intent";
           throw new Error(msg);
         }
 
@@ -189,8 +199,10 @@ export function useRazorpay() {
         rzp.open();
       } catch (error: any) {
         console.error("Payment error:", error);
-        setMessage(error.message || "Payment failed to start");
-        showToast(error.message || "Payment failed", "error");
+        const errMsg = error.message || "Payment failed to start";
+        setMessage(errMsg);
+        setError(errMsg);
+        showToast(errMsg, "error");
         setIsLoading(false);
       }
       return { isDev: false };
@@ -202,6 +214,7 @@ export function useRazorpay() {
     async (bookingId: string, orderId?: string) => {
       setMessage("Simulating success. Verifying...");
       setIsLoading(true);
+      setError(null);
 
       if (orderId) {
         try {
@@ -228,11 +241,22 @@ export function useRazorpay() {
     [startPolling, router, showToast],
   );
 
+  const retryVerification = useCallback(async () => {
+    if (!lastBookingId) return;
+    setIsLoading(true);
+    setError(null);
+    setMessage("Retrying verification...");
+    startPolling(lastBookingId);
+  }, [lastBookingId, startPolling]);
+
   return {
     initiatePayment,
     simulateDevSuccess,
+    retryVerification,
     isLoading,
     message,
+    error,
     setMessage,
+    setError,
   };
 }

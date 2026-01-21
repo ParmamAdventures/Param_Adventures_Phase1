@@ -9,6 +9,7 @@ import { useToast } from "../ui/ToastProvider";
 import { useRazorpay } from "../../hooks/useRazorpay";
 import Link from "next/link";
 import BookingModal from "../bookings/BookingModal";
+import PaymentErrorBoundary from "../bookings/PaymentErrorBoundary";
 
 interface Props {
   trip: any;
@@ -25,7 +26,14 @@ interface Props {
 export default function TripBookingCard({ trip }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { initiatePayment, simulateDevSuccess, isLoading: paymentLoading, message } = useRazorpay();
+  const {
+    initiatePayment,
+    simulateDevSuccess,
+    retryVerification,
+    isLoading: paymentLoading,
+    message,
+    error,
+  } = useRazorpay();
 
   const [isLoading, setIsLoading] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
@@ -121,11 +129,17 @@ export default function TripBookingCard({ trip }: Props) {
                 </Button>
               )}
 
-              {message && (
-                <p className="animate-pulse text-center text-[10px] font-medium text-[var(--accent)]">
+              {message && !error && (
+                <p className="mt-2 animate-pulse text-center text-[10px] font-medium text-[var(--accent)]">
                   {message}
                 </p>
               )}
+
+              <PaymentErrorBoundary
+                error={error}
+                onRetry={retryVerification}
+                onSupport={() => window.open("mailto:support@paramadventures.com")}
+              />
 
               <Link
                 href="/my-bookings"

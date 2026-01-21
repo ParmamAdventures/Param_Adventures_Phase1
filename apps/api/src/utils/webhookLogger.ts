@@ -13,6 +13,7 @@ export function logWebhookReplay(data: {
   event: string;
   paymentId: string;
   providerPaymentId?: string | null;
+  metadata?: any;
 }) {
   // Structured, machine-readable log for webhook replays
   try {

@@ -9,6 +9,7 @@ import { useToast } from "../ui/ToastProvider";
 import { useRazorpay } from "../../hooks/useRazorpay";
 import { useAsyncOperation } from "../../hooks/useAsyncOperation";
 import { useFormState } from "../../hooks/useFormState";
+import PaymentErrorBoundary from "./PaymentErrorBoundary";
 
 interface Trip {
   id: string;
@@ -101,7 +102,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     }
   }, [isOpen, trip.startDate, setField]);
 
-  const { initiatePayment } = useRazorpay();
+  const { initiatePayment, message, error, retryVerification } = useRazorpay();
 
   const handleBooking = async () => {
     if (!formData.startDate) {
@@ -296,6 +297,20 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Payment Status & Recovery */}
+          <div className="space-y-4">
+            {message && !error && (
+              <p className="animate-pulse text-center text-[10px] font-medium text-[var(--accent)]">
+                {message}
+              </p>
+            )}
+            <PaymentErrorBoundary
+              error={error}
+              onRetry={retryVerification}
+              onSupport={() => window.open("mailto:support@paramadventures.com")}
+            />
           </div>
 
           {/* Total */}

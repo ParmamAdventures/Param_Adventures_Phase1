@@ -39,68 +39,83 @@ export async function handlePaymentCaptured(event: any) {
     return;
   }
 
-  await prisma.$transaction(
-    async (tx) => {
-      // 1. Check current capacity
-      const bookingInProgress = await tx.booking.findUnique({
-        where: { id: payment.bookingId },
-        include: { trip: true },
-      });
+  try {
+    await prisma.$transaction(
+      async (tx) => {
+        // 1. Check current capacity
+        const bookingInProgress = await tx.booking.findUnique({
+          where: { id: payment.bookingId },
+          include: { trip: true },
+        });
 
-      if (!bookingInProgress) return;
+        if (!bookingInProgress) return;
 
-      const confirmedCount = await tx.booking.count({
-        where: {
-          tripId: bookingInProgress.tripId,
-          status: "CONFIRMED",
-          NOT: { id: bookingInProgress.id },
-        },
-      });
+        const confirmedCount = await tx.booking.count({
+          where: {
+            tripId: bookingInProgress.tripId,
+            status: "CONFIRMED",
+            NOT: { id: bookingInProgress.id },
+          },
+        });
 
-      if (confirmedCount >= bookingInProgress.trip.capacity) {
-        // OVERBOOKED CASE: Fail payment and reject booking
+        if (confirmedCount >= bookingInProgress.trip.capacity) {
+          // OVERBOOKED CASE: Fail payment and reject booking
+          await tx.payment.update({
+            where: { id: payment.id },
+            data: {
+              providerPaymentId: razorpayPaymentId,
+              status: "FAILED",
+              rawPayload: { ...event, overbooked: true },
+            },
+          });
+          await tx.booking.update({
+            where: { id: payment.bookingId },
+            data: {
+              paymentStatus: "FAILED",
+              status: "REJECTED",
+              notes: "Trip capacity reached before payment capture. Contact support for refund.",
+            },
+          });
+          return;
+        }
+
+        // 2. Proceed with capture
         await tx.payment.update({
           where: { id: payment.id },
           data: {
             providerPaymentId: razorpayPaymentId,
-            status: "FAILED",
-            rawPayload: { ...event, overbooked: true },
+            status: "CAPTURED",
+            rawPayload: event,
+            method: paymentEntity?.method, // e.g. "upi", "card", "netbanking"
           },
         });
+
         await tx.booking.update({
           where: { id: payment.bookingId },
           data: {
-            paymentStatus: "FAILED",
-            status: "REJECTED",
-            notes: "Trip capacity reached before payment capture. Contact support for refund.",
+            paymentStatus: "PAID",
+            status: "CONFIRMED",
           },
         });
-        return;
-      }
-
-      // 2. Proceed with capture
-      await tx.payment.update({
-        where: { id: payment.id },
-        data: {
-          providerPaymentId: razorpayPaymentId,
-          status: "CAPTURED",
-          rawPayload: event,
-          method: paymentEntity?.method, // e.g. "upi", "card", "netbanking"
-        },
+      },
+      {
+        isolationLevel: "Serializable",
+      },
+    );
+  } catch (error: any) {
+    // Handle uniqueness error (P2002) as an idempotent success if providerPaymentId already exists
+    if (error.code === "P2002") {
+      logWebhookReplay({
+        provider: "razorpay",
+        event: "payment.captured",
+        paymentId: payment.id,
+        providerPaymentId: razorpayPaymentId,
+        metadata: { info: "Caught P2002 unique constraint" },
       });
-
-      await tx.booking.update({
-        where: { id: payment.bookingId },
-        data: {
-          paymentStatus: "PAID",
-          status: "CONFIRMED",
-        },
-      });
-    },
-    {
-      isolationLevel: "Serializable",
-    },
-  );
+      return;
+    }
+    throw error;
+  }
 
   // Send Notification (Async, non-blocking)
   const booking = await prisma.booking.findUnique({

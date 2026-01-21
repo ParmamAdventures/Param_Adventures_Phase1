@@ -33,7 +33,28 @@ If the payment flow is behaving erratically, use the following environment varia
 - `ENABLE_BOOKINGS=false`
 - `ENABLE_PAYMENTS=false`
 
-## 4. Incident Response contacts:
+## 4. Incident Response Playbook
+
+In the event of a production failure (e.g., payment loop, data corruption, 500 errors):
+
+### Stage 1: Triage (0-5 mins)
+
+1. **Identify**: Check logs (Vercel/Render) and monitoring dashboards.
+2. **Impact**: Determine if all users are affected or just a subset.
+3. **Notify**: Post in #incident-response slack channel.
+
+### Stage 2: Mitigation (5-15 mins)
+
+1. **Kill Switch**: If the bug is in payments/bookings, set `ENABLE_PAYMENTS=false` in environment variables and redeploy/restart.
+2. **Rollback**: If the latest deployment is the cause, run `./scripts/rollback.sh <stable_tag>`.
+
+### Stage 3: Resolution (15 mins+)
+
+1. **Schema Check**: If a migration broke the app, perform the manual DB restore steps in Section 2.
+2. **Root Cause**: Once stable, analyze logs to find the bug.
+3. **Hotfix**: Prepare a tested fix and deploy.
+
+## 5. Contact List:
 
 - Platform Lead: Principal Engineer
 - DevOps: Site Reliability Engineer
