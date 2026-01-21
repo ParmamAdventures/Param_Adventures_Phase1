@@ -40,11 +40,22 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
 
   if (!hasFilters && !category && page === 1) {
     // Use cache for basic public trips request (first page only to keep cache simple)
-    const trips = await TripCacheService.getPublicTrips();
-    // Cache service returns array, so wrap it.
-    // Note: Cached version doesn't support pagination metadata yet.
-    // For now, we return cached for pure speed on home page.
-    return ApiResponse.success(res, trips, "Trips fetched");
+    const cachedTrips = await TripCacheService.getPublicTrips();
+    const trips = Array.isArray(cachedTrips) ? cachedTrips.slice(0, limit) : [];
+
+    return ApiResponse.success(
+      res,
+      {
+        trips,
+        pagination: {
+          page: 1,
+          limit,
+          total: trips.length,
+          totalPages: 1,
+        },
+      },
+      "Trips fetched (cached)",
+    );
   }
 
   // Build query

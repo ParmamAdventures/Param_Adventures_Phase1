@@ -30,7 +30,9 @@ export default function UsersPage() {
       })
       .then((data) => {
         if (mounted) {
-          setUsers(Array.isArray(data) ? data : []);
+          // Handle ApiResponse wrapper: { success: true, data: [...] }
+          const usersArray = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
+          setUsers(usersArray);
           setError(null);
         }
       })
@@ -80,5 +82,3 @@ export default function UsersPage() {
     </div>
   );
 }
-
-
