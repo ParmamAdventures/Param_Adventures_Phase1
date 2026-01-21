@@ -452,21 +452,23 @@ async function createImages(users: any) {
   const images = [];
   for (const data of imageData) {
     const originalUrl = `${data.url}?w=1920`;
-    const image = await prisma.image.upsert({
-      where: { originalUrl },
-      update: {},
-      create: {
-        originalUrl,
-        mediumUrl: `${data.url}?w=800`,
-        thumbUrl: `${data.url}?w=400`,
-        width: 1920,
-        height: 1080,
-        size: 250000,
-        mimeType: "image/jpeg",
-        type: "IMAGE",
-        uploadedBy: { connect: { id: users.admin.id } },
-      },
-    });
+    // Defensive check to avoid generated type issues with upsert unique inputs
+    let image = await prisma.image.findFirst({ where: { originalUrl } });
+    if (!image) {
+      image = await prisma.image.create({
+        data: {
+          originalUrl,
+          mediumUrl: `${data.url}?w=800`,
+          thumbUrl: `${data.url}?w=400`,
+          width: 1920,
+          height: 1080,
+          size: 250000,
+          mimeType: "image/jpeg",
+          type: "IMAGE",
+          uploadedBy: { connect: { id: users.admin.id } },
+        },
+      });
+    }
     images.push(image);
   }
 
@@ -927,20 +929,25 @@ async function createReviewsAndInquiries(users: any, trips: any[]) {
     });
   }
 
-  await prisma.tripInquiry.upsert({
-    where: { email: "vikram.m@email.com" },
-    update: {},
-    create: {
-      name: "Vikram Mehta",
-      email: "vikram.m@email.com",
-      phoneNumber: "+91-9988776655",
-      destination: "Manali-Leh",
-      dates: "July 2026",
-      budget: "80000-100000",
-      details: "Interested in bike expedition for 2 people",
-      status: "NEW",
-    },
+  // Defensive check for TripInquiry
+  const inquiryEmail = "vikram.m@email.com";
+  const existingInquiry = await prisma.tripInquiry.findFirst({
+    where: { email: inquiryEmail },
   });
+  if (!existingInquiry) {
+    await prisma.tripInquiry.create({
+      data: {
+        name: "Vikram Mehta",
+        email: inquiryEmail,
+        phoneNumber: "+91-9988776655",
+        destination: "Manali-Leh",
+        dates: "July 2026",
+        budget: "80000-100000",
+        details: "Interested in bike expedition for 2 people",
+        status: "NEW",
+      },
+    });
+  }
 
   console.log("✅ Created reviews and inquiries");
 }
