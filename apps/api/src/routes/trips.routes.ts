@@ -253,6 +253,17 @@ router.post(
   requirePermission("trip:approve"),
   approveTrip,
 );
+
+import { rejectTrip } from "../controllers/trips/rejectTrip.controller";
+
+router.post(
+  "/:id/reject",
+  requireAuth,
+  attachPermissions,
+  requirePermission("trip:approve"), // Same permission as approve
+  rejectTrip,
+);
+
 router.post(
   "/:id/publish",
   requireAuth,

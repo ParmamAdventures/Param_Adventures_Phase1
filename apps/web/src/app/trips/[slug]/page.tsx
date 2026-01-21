@@ -13,7 +13,8 @@ import ReviewsSection from "../../../components/reviews/ReviewsSection";
 
 // Enhanced API Base Logic for Server Components
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-console.log(`[TripDetail] Configured API_BASE: "${API_BASE}"`);
+const API_V1 = `${API_BASE}/api/v1`;
+console.log(`[TripDetail] Configured API_BASE: "${API_V1}"`);
 
 import { Trip } from "@/types/trip";
 
@@ -22,7 +23,7 @@ type TripFull = Trip;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   try {
-    const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
+    const res = await fetch(`${API_V1}/trips/public/${slug}`, {
       cache: "no-store",
     });
     if (!res.ok) return constructMetadata({ title: "Adventure not found" });
@@ -50,7 +51,7 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
   let initialTrip = null;
 
   try {
-    const res = await fetch(`${API_BASE}/trips/public/${slug}`, {
+    const res = await fetch(`${API_V1}/trips/public/${slug}`, {
       cache: "no-store",
     });
 

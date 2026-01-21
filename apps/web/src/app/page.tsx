@@ -22,7 +22,7 @@ export const metadata = constructMetadata({
 async function getTrips() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/trips/public`,
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/v1/trips/public`,
       { cache: "no-store" },
     );
     if (!res.ok) return [];
@@ -36,7 +36,7 @@ async function getTrips() {
 async function getBlogs() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/blogs/public`,
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/v1/blogs/public`,
       { cache: "no-store" },
     );
     if (!res.ok) return [];
@@ -51,7 +51,7 @@ async function getBlogs() {
 async function getHeroSlides() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/content/hero-slides`,
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/v1/content/hero-slides`,
       { cache: "no-store" },
     );
     if (!res.ok) return [];
@@ -64,7 +64,7 @@ async function getHeroSlides() {
 async function getFeaturedTrips() {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/trips/public?isFeatured=true`,
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/v1/trips/public?isFeatured=true`,
       { cache: "no-store" },
     );
     if (!res.ok) return [];

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
+import { ApiResponse } from "../../utils/ApiResponse";
 
 /**
  * List Users
@@ -44,18 +45,19 @@ export async function listUsers(req: Request, res: Response) {
     },
   });
 
-  res.json(
-    users.map((u) => ({
-      id: u.id,
-      email: u.email,
-      name: u.name,
-      status: u.status,
-      roles: u.roles.map((r) => r.role.name),
-      createdAt: u.createdAt,
-      avatarImage: u.avatarImage,
-    })),
-  );
+  const formattedUsers = users.map((u) => ({
+    id: u.id,
+    email: u.email,
+    name: u.name,
+    status: u.status,
+    roles: u.roles.map((r) => r.role.name),
+    createdAt: u.createdAt,
+    avatarImage: u.avatarImage,
+  }));
+
+  return ApiResponse.success(res, formattedUsers);
 }
+
 /**
  * Update User Status
  * @param {Request} req - Express request object
@@ -67,7 +69,7 @@ export async function updateUserStatus(req: Request, res: Response) {
   const { status, reason } = req.body;
 
   if (!["ACTIVE", "SUSPENDED", "BANNED"].includes(status)) {
-    return res.status(400).json({ error: "Invalid status" });
+    return ApiResponse.badRequest(res, "Invalid status");
   }
 
   const user = await prisma.user.update({
@@ -91,7 +93,7 @@ export async function updateUserStatus(req: Request, res: Response) {
     metadata: { status, reason },
   });
 
-  res.json(user);
+  return ApiResponse.updated(res, user, "User status updated successfully");
 }
 
 /**
@@ -117,7 +119,7 @@ export async function deleteUser(req: Request, res: Response) {
     metadata: { deletedAt: new Date().toISOString() },
   });
 
-  res.json({ message: "User deleted successfully" });
+  return ApiResponse.deleted(res, "User deleted successfully");
 }
 
 /**
@@ -142,5 +144,5 @@ export async function unsuspendUser(req: Request, res: Response) {
     metadata: { status: "ACTIVE", action: "unsuspended" },
   });
 
-  res.json(user);
+  return ApiResponse.updated(res, user, "User unsuspended successfully");
 }

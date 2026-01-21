@@ -40,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // Dynamic Trip routes
-  const trips = await safeFetch(`${apiBase}/trips/public`);
+  const trips = await safeFetch(`${apiBase}/api/v1/trips/public`);
   const tripRoutes = trips.map((trip: any) => ({
     url: `${baseUrl}/trips/${trip.slug}`,
     lastModified: trip.updatedAt || trip.createdAt,
@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Dynamic Blog routes
-  const blogs = await safeFetch(`${apiBase}/blogs/public`);
+  const blogs = await safeFetch(`${apiBase}/api/v1/blogs/public`);
   const blogRoutes = blogs.map((blog: any) => ({
     url: `${baseUrl}/blogs/${blog.slug}`,
     lastModified: blog.updatedAt || blog.createdAt,

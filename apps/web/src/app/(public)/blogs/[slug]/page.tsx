@@ -5,14 +5,15 @@ import Link from "next/link";
 import { headers } from "next/headers";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const apiV1 = `${baseUrl}/api/v1`;
 
 async function fetchBlog(slug: string) {
   try {
     const headersList = await headers();
     const cookie = headersList.get("cookie");
 
-    console.log(`[BlogDetail] Fetching: ${baseUrl}/blogs/public/${slug}`);
-    const response = await fetch(`${baseUrl}/blogs/public/${slug}`, {
+    console.log(`[BlogDetail] Fetching: ${apiV1}/blogs/public/${slug}`);
+    const response = await fetch(`${apiV1}/blogs/public/${slug}`, {
       cache: "no-store",
       headers: {
         Cookie: cookie || "",

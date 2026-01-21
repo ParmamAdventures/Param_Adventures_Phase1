@@ -155,6 +155,33 @@ export class TripService {
     });
     return updated;
   }
+
+  async rejectTrip(id: string, userId: string, reason?: string) {
+    const trip = await prisma.trip.findUnique({ where: { id } });
+    if (!trip) throw new Error("Trip not found");
+
+    // Rejecting a trip sends it back to DRAFT status for revision
+    const updated = await prisma.trip.update({
+      where: { id },
+      data: {
+        status: EntityStatus.DRAFT,
+      },
+    });
+
+    await auditService.logAudit({
+      actorId: userId,
+      action: "TRIP_UPDATED", // Using TRIP_UPDATED since TRIP_REJECTED not in enum
+      targetType: "TRIP",
+      targetId: updated.id,
+      metadata: {
+        action: "rejected",
+        previousStatus: trip.status,
+        newStatus: updated.status,
+        reason,
+      },
+    });
+    return updated;
+  }
 }
 
 export const tripService = new TripService();

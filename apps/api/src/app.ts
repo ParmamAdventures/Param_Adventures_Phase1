@@ -115,32 +115,35 @@ app.get("/health", healthCheck);
 // API Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+// API v1 Routes
+const API_V1 = "/api/v1";
+
 // Base routes
-app.use("/auth", authLimiter, authRoutes);
-app.use("/users", authLimiter, userRoutes);
-app.use("/trips", tripRoutes);
-app.use("/bookings", bookingsRoutes);
-app.use("/payments", paymentLimiter, paymentsRoutes);
-app.use("/media", mediaLimiter, mediaRoutes);
-app.use("/blogs", blogRoutes);
-app.use("/metrics", metricsRoutes);
-app.use("/content", contentRoutes);
-app.use("/reviews", reviewRoutes);
-app.use("/wishlist", wishlistRoutes);
-app.use("/inquiries", inquiryRoutes);
-app.use("/newsletter", newsletterRoutes);
+app.use(`${API_V1}/auth`, authLimiter, authRoutes);
+app.use(`${API_V1}/users`, authLimiter, userRoutes);
+app.use(`${API_V1}/trips`, tripRoutes);
+app.use(`${API_V1}/bookings`, bookingsRoutes);
+app.use(`${API_V1}/payments`, paymentLimiter, paymentsRoutes);
+app.use(`${API_V1}/media`, mediaLimiter, mediaRoutes);
+app.use(`${API_V1}/blogs`, blogRoutes);
+app.use(`${API_V1}/metrics`, metricsRoutes);
+app.use(`${API_V1}/content`, contentRoutes);
+app.use(`${API_V1}/reviews`, reviewRoutes);
+app.use(`${API_V1}/wishlist`, wishlistRoutes);
+app.use(`${API_V1}/inquiries`, inquiryRoutes);
+app.use(`${API_V1}/newsletter`, newsletterRoutes);
 
 // Admin routes
-app.use("/admin/users", adminUsersRoutes);
-app.use("/admin/roles", adminRolesRoutes);
-app.use("/admin/trips", adminTripBookingsRoutes);
-app.use("/admin/bookings", adminBookingsRoutes);
-app.use("/admin/analytics", adminAnalyticsRoutes);
-app.use("/admin/audit-logs", adminAuditRoutes);
-app.use("/admin/dashboard", dashboardRoutes);
-app.use("/admin/trip-assignments", tripAssignmentRoutes);
-app.use("/admin/inquiries", adminInquiryRoutes);
-app.use("/admin/refunds", adminRefundRoutes);
+app.use(`${API_V1}/admin/users`, adminUsersRoutes);
+app.use(`${API_V1}/admin/roles`, adminRolesRoutes);
+app.use(`${API_V1}/admin/trips`, adminTripBookingsRoutes);
+app.use(`${API_V1}/admin/bookings`, adminBookingsRoutes);
+app.use(`${API_V1}/admin/analytics`, adminAnalyticsRoutes);
+app.use(`${API_V1}/admin/audit-logs`, adminAuditRoutes);
+app.use(`${API_V1}/admin/dashboard`, dashboardRoutes);
+app.use(`${API_V1}/admin/trip-assignments`, tripAssignmentRoutes);
+app.use(`${API_V1}/admin/inquiries`, adminInquiryRoutes);
+app.use(`${API_V1}/admin/refunds`, adminRefundRoutes);
 
 // must be LAST
 app.use(errorHandler);

@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**", 
+        hostname: "**",
       },
       {
         protocol: "https",
@@ -30,8 +30,9 @@ const nextConfig: NextConfig = {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
     return [
       {
+        // Frontend /api/* proxies to backend /api/v1/*
         source: "/api/:path*",
-        destination: `${apiBase}/:path*`,
+        destination: `${apiBase}/api/v1/:path*`,
       },
       {
         source: "/uploads/:path*",
