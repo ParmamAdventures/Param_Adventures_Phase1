@@ -25,10 +25,11 @@ import {
   PaymentMethod,
   Difficulty,
 } from "@prisma/client";
-// ... (skip lines)
+import { RAW_TRIP_DATA, TRIP_IMAGES } from "./seed_data";
 
 // (Code removed)
 import * as bcrypt from "bcryptjs";
+import * as crypto from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -246,8 +247,6 @@ async function assignPermissions(roleId: string, permissionIds: string[]) {
     });
   }
 }
-
-import * as crypto from "crypto";
 
 async function createUsers(roles: any) {
   console.log("\n👥 Creating users...");
@@ -477,246 +476,94 @@ async function createImages(users: any) {
 }
 
 async function createTrips(users: any, images: any[]) {
-  console.log("\n🌍 Creating trips...");
-
-  const tripsData = [
-    {
-      title: "Everest Base Camp Trek",
-      slug: "everest-base-camp-trek",
-      description:
-        "Embark on the world's most iconic trek to reach the base camp of Mount Everest. Experience breathtaking Himalayan scenery and Sherpa culture.",
-      location: "Everest Region, Nepal",
-      startPoint: "Kathmandu",
-      endPoint: "Everest Base Camp",
-      altitude: "5,364m",
-      distance: "130 km",
-      durationDays: 14,
-      difficulty: "HARD",
-      price: 120000,
-      capacity: 15,
-      category: "TREK",
-      status: "PUBLISHED",
-      isFeatured: true,
-      coverImageId: images[0]?.id,
-      heroImageId: images[1]?.id,
-      startDate: new Date("2026-03-15"),
-      endDate: new Date("2026-03-29"),
-      highlights: ["Trek to world's highest base camp", "Summit Kala Patthar", "Sherpa culture"],
-      inclusions: ["Guide", "Porter", "Meals", "Accommodation", "Permits"],
-      exclusions: ["Flights", "Visa", "Insurance"],
-      thingsToPack: ["Warm jacket", "Trekking boots", "Sleeping bag"],
-      seasons: ["Spring (Mar-May)", "Autumn (Sep-Nov)"],
-      itinerary: {
-        days: [
-          { day: 1, title: "Arrival in Kathmandu", description: "Orientation" },
-          { day: 2, title: "Fly to Lukla", description: "Trek to Phakding" },
-          { day: 14, title: "Return", description: "Fly back to Kathmandu" },
-        ],
-      },
-    },
-    {
-      title: "Manali to Leh Bike Expedition",
-      slug: "manali-leh-bike",
-      description:
-        "Conquer the legendary Manali-Leh Highway on Royal Enfield bikes. Navigate 5 high-altitude passes.",
-      location: "Ladakh, India",
-      startPoint: "Manali",
-      endPoint: "Leh",
-      altitude: "5,359m",
-      distance: "480 km",
-      durationDays: 10,
-      difficulty: "HARD",
-      price: 85000,
-      capacity: 12,
-      category: "TREK",
-      status: "PUBLISHED",
-      isFeatured: true,
-      coverImageId: images[5]?.id,
-      startDate: new Date("2026-06-01"),
-      endDate: new Date("2026-06-11"),
-      highlights: ["Royal Enfield bikes", "5 high passes", "Pangong Lake"],
-      inclusions: ["Bike rental", "Fuel", "Support vehicle", "Camping"],
-      exclusions: ["Insurance", "Damage deposit"],
-      thingsToPack: ["Helmet", "Jacket", "Gloves"],
-      seasons: ["Summer (Jun-Sep)"],
-      itinerary: {
-        days: [
-          { day: 1, title: "Manali briefing", description: "Bike allocation" },
-          { day: 2, title: "Manali to Sarchu", description: "240km ride" },
-        ],
-      },
-    },
-    {
-      title: "Kerala Backwaters Houseboat",
-      slug: "kerala-backwaters",
-      description:
-        "Cruise through enchanting backwaters on traditional houseboats. Experience village life.",
-      location: "Kerala, India",
-      startPoint: "Cochin",
-      endPoint: "Alleppey",
-      altitude: "Sea level",
-      distance: "100+ km",
-      durationDays: 5,
-      difficulty: "EASY",
-      price: 55000,
-      capacity: 20,
-      category: "SPIRITUAL",
-      status: "PUBLISHED",
-      isFeatured: false,
-      coverImageId: images[2]?.id,
-      startDate: new Date("2026-04-01"),
-      endDate: new Date("2026-04-06"),
-      highlights: ["Houseboat cruise", "Beaches", "Ayurveda spa"],
-      inclusions: ["Houseboat", "Meals", "Tours"],
-      exclusions: ["Activities not mentioned"],
-      thingsToPack: ["Light clothes", "Sunscreen"],
-      seasons: ["Year-round"],
-      itinerary: {
-        days: [
-          { day: 1, title: "Cochin tour", description: "Fort and beaches" },
-          { day: 2, title: "Houseboat", description: "Backwater cruise" },
-        ],
-      },
-    },
-    {
-      title: "Rishikesh White Water Rafting",
-      slug: "rishikesh-rafting",
-      description: "Adrenaline-pumping white water rafting on the Ganges. Camp under stars.",
-      location: "Rishikesh, India",
-      startPoint: "Rishikesh",
-      endPoint: "Rishikesh",
-      altitude: "340m",
-      distance: "16 km rapids",
-      durationDays: 2,
-      difficulty: "MODERATE",
-      price: 12000,
-      capacity: 30,
-      category: "TREK",
-      status: "PUBLISHED",
-      isFeatured: false,
-      coverImageId: images[3]?.id,
-      startDate: new Date("2026-03-01"),
-      endDate: new Date("2026-03-03"),
-      highlights: ["Grade III & IV rapids", "Cliff jumping", "Bonfire"],
-      inclusions: ["Raft", "Safety gear", "Guide", "Meals"],
-      exclusions: ["Insurance"],
-      thingsToPack: ["Swimwear", "Towel"],
-      seasons: ["Sep-Jun"],
-      itinerary: {
-        days: [
-          { day: 1, title: "Rafting", description: "Morning and afternoon" },
-          { day: 2, title: "Adventure", description: "Cliff jumping" },
-        ],
-      },
-    },
-    {
-      title: "Himalayan Camping Adventure",
-      slug: "himalayan-camping",
-      description: "Experience pristine camping in the Himalayas with stargazing and bonfires.",
-      location: "Himachal Pradesh, India",
-      startPoint: "Shimla",
-      endPoint: "Shimla",
-      altitude: "2,500m",
-      distance: "25 km",
-      durationDays: 3,
-      difficulty: "EASY",
-      price: 18000,
-      capacity: 25,
-      category: "CAMPING",
-      status: "PUBLISHED",
-      isFeatured: true,
-      coverImageId: images[4]?.id,
-      startDate: new Date("2026-05-10"),
-      endDate: new Date("2026-05-13"),
-      highlights: ["Mountain camping", "Stargazing", "Nature walks"],
-      inclusions: ["Tents", "Meals", "Guides"],
-      exclusions: ["Transport to Shimla"],
-      thingsToPack: ["Warm clothes", "Flashlight"],
-      seasons: ["Apr-Oct"],
-      itinerary: {
-        days: [
-          { day: 1, title: "Trek to camp", description: "Setup and bonfire" },
-          { day: 2, title: "Exploration", description: "Nature trails" },
-        ],
-      },
-    },
-  ];
+  console.log("\n🌍 Creating a massive expedition fleet (35+ trips)...");
 
   const trips = [];
-  for (const data of tripsData) {
-    console.log(`   - Processing trip: ${data.title}`);
+  let count = 0;
+
+  for (const data of RAW_TRIP_DATA) {
+    count++;
+    const slug = data.title
+      .toLowerCase()
+      .replace(/ /g, "-")
+      .replace(/[^\w-]/g, "");
+
+    // Rotate images from our pool
+    const coverImage = images[count % images.length];
+    const heroImage = images[(count + 1) % images.length];
+
+    // Determine status and assignments based on count for variety
+    let status: TripStatus = "PUBLISHED";
+    let isFeatured = count <= 5;
+
+    if (count % 10 === 0) status = "DRAFT";
+    if (count % 15 === 0) status = "IN_PROGRESS";
+    if (count % 12 === 0) status = "COMPLETED";
+
     const tripData: any = {
       title: data.title,
-      description: data.description,
+      slug,
+      description: `Join us for an unforgettable ${data.category.toLowerCase()} adventure in ${data.location}. Experience the best of ${data.title} with our professional team.`,
       location: data.location,
       price: data.price,
-      durationDays: data.durationDays,
+      durationDays: data.duration,
       difficulty: data.difficulty as Difficulty,
-      status: data.status as TripStatus,
+      status,
       category: data.category as TripCategory,
-      capacity: data.capacity,
-      isFeatured: data.isFeatured,
-      startPoint: data.startPoint,
-      endPoint: data.endPoint,
-      altitude: data.altitude,
-      distance: data.distance,
-      startDate: data.startDate,
-      endDate: data.endDate,
-      highlights: data.highlights,
-      inclusions: data.inclusions,
-      exclusions: data.exclusions,
-      thingsToPack: data.thingsToPack,
-      seasons: data.seasons,
-      itinerary: data.itinerary as any,
+      capacity: 10 + (count % 20),
+      isFeatured,
+      startPoint: "Base Camp",
+      endPoint: data.location,
+      altitude: "Varies",
+      distance: "Varies",
+      startDate: new Date(Date.now() + (10 + count) * 24 * 60 * 60 * 1000), // Future dates
+      endDate: new Date(Date.now() + (10 + count + data.duration) * 24 * 60 * 60 * 1000),
+      highlights: ["Experienced Guides", "All inclusive meals", "Safety First"],
+      inclusions: ["Equipment", "Meals", "Permits"],
+      exclusions: ["Flights", "Personal Gear"],
+      thingsToPack: ["Warm clothes", "Boots", "Spirit of adventure"],
+      seasons: ["Spring", "Autumn"],
+      itinerary: {
+        days: [
+          { day: 1, title: "Briefing", description: "Base camp orientation" },
+          { day: data.duration, title: "Farewell", description: "Return journey" },
+        ],
+      },
     };
 
-    if (data.coverImageId) {
-      tripData.coverImage = { connect: { id: data.coverImageId } };
-    }
-    if (data.heroImageId) {
-      tripData.heroImage = { connect: { id: data.heroImageId } };
-    }
+    const trip = await prisma.trip.upsert({
+      where: { slug },
+      update: tripData,
+      create: {
+        ...tripData,
+        createdBy: { connect: { id: users.admin.id } },
+        approvedBy: { connect: { id: users.admin.id } },
+        // Assign manager to every trip
+        manager: { connect: { id: users.manager.id } },
+        publishedAt: status === "PUBLISHED" ? new Date() : null,
+      },
+    });
 
-    let trip;
-    try {
-      trip = await prisma.trip.upsert({
-        where: { slug: data.slug },
-        update: tripData,
-        create: {
-          ...tripData,
-          slug: data.slug,
-          createdBy: { connect: { id: users.admin.id } },
-          approvedBy: { connect: { id: users.admin.id } },
-          manager: { connect: { id: users.manager.id } },
-          publishedAt: new Date(),
-        },
-      });
-      trips.push(trip);
-    } catch (e: any) {
-      console.error(`❌ Failed to upsert trip: ${data.title}`);
-      console.error(e.message);
-      throw e;
-    }
+    trips.push(trip);
 
-    // Assign guides
-    if (trip.id) {
+    // Assign guides to some trips
+    if (count % 2 === 0) {
       await prisma.tripsOnGuides.upsert({
-        where: {
-          tripId_guideId: {
-            tripId: trip.id,
-            guideId: users.guide1.id,
-          },
-        },
+        where: { tripId_guideId: { tripId: trip.id, guideId: users.guide1.id } },
         update: {},
-        create: {
-          tripId: trip.id,
-          guideId: users.guide1.id,
-        },
+        create: { tripId: trip.id, guideId: users.guide1.id },
+      });
+    }
+    if (count % 3 === 0) {
+      await prisma.tripsOnGuides.upsert({
+        where: { tripId_guideId: { tripId: trip.id, guideId: users.guide2.id } },
+        update: {},
+        create: { tripId: trip.id, guideId: users.guide2.id },
       });
     }
   }
 
-  console.log(`✅ Created ${trips.length} trips`);
+  console.log(`✅ Successfully seeded ${trips.length} trips!`);
   return trips;
 }
 
