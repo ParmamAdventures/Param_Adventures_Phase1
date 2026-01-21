@@ -20,7 +20,7 @@ Comprehensive guide for deploying Param Adventures to production.
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────┐
@@ -49,7 +49,7 @@ Comprehensive guide for deploying Param Adventures to production.
 
 ---
 
-## ✅ Prerequisites
+## Prerequisites
 
 Before deploying, ensure you have:
 
@@ -64,7 +64,7 @@ Before deploying, ensure you have:
 
 ---
 
-## 🗄️ Database Setup
+## Database Setup
 
 ### Option 1: Render PostgreSQL (Recommended)
 
@@ -90,7 +90,7 @@ Alternatives: Supabase, Neon, AWS RDS, DigitalOcean
 
 ---
 
-## 🖥️ Backend Deployment (Render.com)
+## Backend Deployment (Render.com)
 
 ### Step 1: Create Web Service
 
@@ -490,7 +490,7 @@ export const emailQueue = new Queue("email-queue", {
 
 ---
 
-## 🌐 Frontend Deployment (Vercel)
+## Frontend Deployment (Vercel)
 
 ### Step 1: Import Project
 
@@ -544,7 +544,7 @@ Add variables from `apps/web/.env.example`:
 
 ---
 
-## 🔄 Database Migrations
+## Database Migrations
 
 ### Understanding Prisma Migrations
 
@@ -672,7 +672,7 @@ If migration fails:
 
 ---
 
-## 💾 Backup & Restore Procedures
+## Backup & Restore Procedures
 
 ### Automated Backups (Render PostgreSQL)
 
@@ -780,7 +780,7 @@ psql $DATABASE_URL -c "SELECT COUNT(*) FROM users;"
 
 ---
 
-## ✅ Post-Deployment Checklist
+## Post-Deployment Checklist
 
 After deploying both frontend and backend:
 
@@ -792,6 +792,26 @@ After deploying both frontend and backend:
 - [ ] **Database**: Backend logs show successful Prisma connection
 - [ ] **Redis**: No Redis connection errors in logs
 - [ ] **Job Queues**: Email worker and payment worker started successfully
+
+### Automated Verification 🚀
+
+We provide a script to automatically verify the health of the deployment:
+
+```bash
+# Set your production URL
+export PRODUCTION_API_URL="https://your-api-url.onrender.com"
+
+# Run the verification script
+npx ts-node scripts/verify-prod.ts
+```
+
+This script will check:
+
+1. API Health (`/health`)
+2. Trip accessibility (`/api/v1/trips`)
+3. Documentation availability (`/api-docs/`)
+
+If any check fails, investigate the backend logs immediately.
 
 ### Service Health Checks:
 
@@ -863,7 +883,7 @@ After deploying both frontend and backend:
 
 ---
 
-## 📊 Monitoring & Alerts
+## Monitoring & Alerts
 
 ### Sentry Setup
 
@@ -928,7 +948,7 @@ app.use((req, res, next) => {
 
 ---
 
-## 🔙 Rollback Procedures
+## Rollback Procedures
 
 If deployment fails or introduces critical bugs:
 
@@ -979,7 +999,7 @@ If migration caused issues:
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues:
 
@@ -1175,6 +1195,6 @@ Add `DEBUG_MODE=true` to Render environment variables, then remove after debuggi
 
 **Internal:**
 
-- DevOps Lead: [Your contact]
-- Backend Lead: [Your contact]
-- Frontend Lead: [Your contact]
+- DevOps Lead: admin@paramadventures.com
+- Backend Lead: admin@paramadventures.com
+- Frontend Lead: admin@paramadventures.com

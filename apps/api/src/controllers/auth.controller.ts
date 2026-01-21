@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { authService } from "../services/auth.service";
+import { tokenDenylistService } from "../services/tokenDenylist.service";
+import * as jwt from "jsonwebtoken";
 import { catchAsync } from "../utils/catchAsync";
 import { ApiResponse } from "../utils/ApiResponse";
 
@@ -136,7 +138,28 @@ export const refresh = catchAsync(async (req: Request, res: Response) => {
  * @param {Response} res - Express response with cleared refresh_token cookie
  * @returns {Promise<void>} - Sends success response
  */
-export const logout = catchAsync(async (_req: Request, res: Response) => {
+export const logout = catchAsync(async (req: Request, res: Response) => {
+  // Revoke Access Token if present
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.decode(token) as any;
+    if (decoded?.jti && decoded?.exp) {
+      const ttl = Math.max(0, decoded.exp - Math.floor(Date.now() / 1000));
+      await tokenDenylistService.denylistToken(decoded.jti, ttl);
+    }
+  }
+
+  // Revoke Refresh Token if present in cookie
+  const refreshToken = req.cookies?.refresh_token;
+  if (refreshToken) {
+    const decoded = jwt.decode(refreshToken) as any;
+    if (decoded?.jti && decoded?.exp) {
+      const ttl = Math.max(0, decoded.exp - Math.floor(Date.now() / 1000));
+      await tokenDenylistService.denylistToken(decoded.jti, ttl);
+    }
+  }
+
   res.clearCookie("refresh_token", {
     httpOnly: true,
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

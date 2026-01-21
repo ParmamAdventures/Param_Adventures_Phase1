@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../utils/jwt";
-
-// ... keep existing imports ...
-
 import { prisma } from "../lib/prisma";
+import { tokenDenylistService } from "../services/tokenDenylist.service";
 
 /**
  * Middleware to verify Bearer token and attach authenticated user to request.
@@ -23,6 +21,11 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 
   try {
     const payload = verifyAccessToken(token);
+
+    // Check if token is revoked
+    if (payload.jti && (await tokenDenylistService.isTokenRevoked(payload.jti))) {
+      return res.status(401).json({ error: "Token has been revoked" });
+    }
 
     // Fetch user with roles and permissions
     const user = await prisma.user.findUnique({
@@ -173,6 +176,11 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
 
   try {
     const payload = verifyAccessToken(token);
+
+    // Check if token is revoked
+    if (payload.jti && (await tokenDenylistService.isTokenRevoked(payload.jti))) {
+      return next();
+    }
 
     // Optional Auth: If token is valid, try to fetch full user to get permissions
     // This allows mixed Views (Public vs Draft) to work correctly

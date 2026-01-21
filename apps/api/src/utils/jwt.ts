@@ -1,13 +1,16 @@
 import * as jwt from "jsonwebtoken";
+import { v4 as uuidv4 } from "uuid";
 import { env } from "../config/env";
 
 /**
  * JWT payload interface.
  * @interface JwtPayload
  * @property {string} sub - Subject (user ID)
+ * @property {string} jti - JWT ID for revocation
  */
 export interface JwtPayload {
   sub: string; // userId
+  jti: string; // unique token ID
 }
 
 /**
@@ -17,7 +20,11 @@ export interface JwtPayload {
  */
 export function signAccessToken(userId: string) {
   const opts: jwt.SignOptions = { expiresIn: env.ACCESS_TOKEN_TTL as any };
-  return jwt.sign({ sub: userId }, env.JWT_ACCESS_SECRET as unknown as jwt.Secret, opts);
+  return jwt.sign(
+    { sub: userId, jti: uuidv4() },
+    env.JWT_ACCESS_SECRET as unknown as jwt.Secret,
+    opts,
+  );
 }
 
 /**
@@ -27,7 +34,11 @@ export function signAccessToken(userId: string) {
  */
 export function signRefreshToken(userId: string) {
   const opts: jwt.SignOptions = { expiresIn: env.REFRESH_TOKEN_TTL as any };
-  return jwt.sign({ sub: userId }, env.JWT_REFRESH_SECRET as unknown as jwt.Secret, opts);
+  return jwt.sign(
+    { sub: userId, jti: uuidv4() },
+    env.JWT_REFRESH_SECRET as unknown as jwt.Secret,
+    opts,
+  );
 }
 
 /**
@@ -46,7 +57,7 @@ export function verifyRefreshToken(token: string) {
 
 export function signResetToken(userId: string) {
   return jwt.sign(
-    { sub: userId },
+    { sub: userId, jti: uuidv4() },
     env.JWT_ACCESS_SECRET as unknown as jwt.Secret, // Resusing access secret for now, ideally dedicated secret
     { expiresIn: "15m" },
   );
