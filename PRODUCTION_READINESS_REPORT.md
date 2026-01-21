@@ -191,12 +191,12 @@ npm run dev
 
 ## 🔐 Test Credentials
 
-| Role      | Email                | Password       |
-| --------- | -------------------- | -------------- |
-| Admin     | `admin@test.com`     | `AdminPass123` |
-| Organizer | `organizer@test.com` | `UserPass123`  |
-| User      | `user1@test.com`     | `UserPass123`  |
-| User      | `user2@test.com`     | `UserPass123`  |
+| Role      | Email               | Password       |
+| --------- | ------------------- | -------------- |
+| Admin     | `admin@example.com` | `[SECURE_PWD]` |
+| Organizer | `org@example.com`   | `[SECURE_PWD]` |
+| User      | `user1@example.com` | `[SECURE_PWD]` |
+| User      | `user2@example.com` | `[SECURE_PWD]` |
 
 ---
 

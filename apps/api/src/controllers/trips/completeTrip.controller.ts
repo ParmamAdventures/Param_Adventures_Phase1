@@ -6,6 +6,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { getTripOrThrowError } from "../../utils/entityHelpers";
 import { ErrorMessages } from "../../constants/errorMessages";
+import { notificationService } from "../../services/notification.service";
 
 export const completeTrip = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -49,7 +50,26 @@ export const completeTrip = catchAsync(async (req: Request, res: Response) => {
 
   logger.info("Trip Completed", { tripId: id, closedBy: userId });
 
-  // TODO: Trigger Badge Awards / Review Requests here
+  // Trigger Review Requests for all participants
+  try {
+    const bookings = await prisma.booking.findMany({
+      where: { tripId: id, status: "COMPLETED" },
+      include: { user: true },
+    });
+
+    await Promise.all(
+      bookings.map((booking) =>
+        notificationService.sendReviewInvitation(booking.user.email, {
+          tripTitle: updatedTrip.title,
+          reviewLink: `${process.env.FRONTEND_URL}/trips/${updatedTrip.slug}#reviews`,
+        }),
+      ),
+    );
+    logger.info(`Sent review invitations to ${bookings.length} participants.`);
+  } catch (err) {
+    logger.error("Failed to send review invitations", { error: err, tripId: id });
+    // Non-blocking
+  }
 
   return ApiResponse.success(res, { trip: updatedTrip }, "Trip completed successfully");
 });

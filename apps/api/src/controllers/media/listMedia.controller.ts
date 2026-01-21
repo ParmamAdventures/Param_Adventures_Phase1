@@ -70,10 +70,37 @@ export async function listMedia(req: Request, res: Response) {
 export async function deleteMedia(req: Request, res: Response) {
   const { id } = req.params;
   try {
-    await prisma.image.delete({
+    // 1. Delete from DB first to get the URLs for disk cleanup
+    const media = await prisma.image.delete({
       where: { id },
     });
-    // TODO: Delete actual file from disk to save space
+
+    // 2. Delete actual files from disk
+    const path = await import("path");
+    const fs = await import("fs/promises");
+
+    // Helper to extract relative path and delete
+    const deleteFile = async (url: string) => {
+      if (url && url.startsWith("/uploads/")) {
+        // url starts with /uploads, so we join with process.cwd()
+        // /uploads/original/uuid.webp -> C:/.../apps/api/uploads/original/uuid.webp
+        const fullPath = path.join(process.cwd(), url);
+        try {
+          await fs.unlink(fullPath);
+        } catch (err) {
+          // If file not found, ignore (it might have been deleted manually)
+          console.warn(`[MediaCleanup] File not found or couldn't unlink: ${fullPath}`);
+        }
+      }
+    };
+
+    // Run unlinks in background (settled so one failure doesn't block others)
+    await Promise.allSettled([
+      deleteFile(media.originalUrl),
+      deleteFile(media.mediumUrl),
+      deleteFile(media.thumbUrl),
+    ]);
+
     res.json({ success: true });
   } catch (error: any) {
     console.error("Delete media error:", error);

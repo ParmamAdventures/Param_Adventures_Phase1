@@ -161,7 +161,11 @@ class NotificationService {
         <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
       </div>
     `;
-    return this.sendEmail({ to: email, subject: "Refund Processed: " + refundDetails.tripTitle, html });
+    return this.sendEmail({
+      to: email,
+      subject: "Refund Processed: " + refundDetails.tripTitle,
+      html,
+    });
   }
 
   async sendPaymentInitiated(email: string, details: any) {
@@ -198,6 +202,28 @@ class NotificationService {
       </div>
     `;
     return this.sendEmail({ to: email, subject: "Action Required: Payment Failed", html });
+  }
+
+  async sendReviewInvitation(email: string, details: { tripTitle: string; reviewLink: string }) {
+    const html = `
+      <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
+        <h2 style="color: #f97316;">How was your trip? 🎒</h2>
+        <p>Hi there,</p>
+        <p>We hope you had an incredible time on your recent trip: <strong>${details.tripTitle}</strong>!</p>
+        <p>Your feedback helps us curate the best adventures and helps other travelers plan their journeys. Could you take a minute to share your experience?</p>
+        <div style="margin: 20px 0;">
+          <a href="${details.reviewLink}" style="background: #f97316; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">Leave a Review</a>
+        </div>
+        <p>Thank you for traveling with Param Adventures.</p>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-size: 12px; color: #666;">Param Adventures — Premium Travel Experiences</p>
+      </div>
+    `;
+    return this.sendEmail({
+      to: email,
+      subject: `Share your experience: ${details.tripTitle}`,
+      html,
+    });
   }
 }
 

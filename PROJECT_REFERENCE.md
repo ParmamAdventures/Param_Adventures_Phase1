@@ -409,14 +409,14 @@ router.post("/media/upload",
 
 ```
 Super Admin Account:
-├─ Email: admin@paramadventures.com
-├─ Password: Admin@123
+├─ Email: [REDACTED]@paramadventures.com
+├─ Password: [SET_IN_ENV]
 ├─ Roles: SUPER_ADMIN + ADMIN
 └─ Permissions: 67+ (full access)
 
 Regular User Account:
-├─ Email: user@paramadventures.com
-├─ Password: User@123
+├─ Email: [REDACTED]@paramadventures.com
+├─ Password: [SET_IN_ENV]
 ├─ Role: USER
 └─ Permissions: 5 (read-only)
 ```
