@@ -2,11 +2,12 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { slugify } from "../../utils/slugify";
-import { createAuditLog } from "../../utils/auditLog";
+import { auditService } from "../../services/audit.service";
 import { sanitizeHtml } from "../../utils/sanitize";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
+import { EntityStatus } from "../../constants/status";
 
 /**
  * Update Blog
@@ -32,8 +33,8 @@ export const updateBlog = catchAsync(async (req: Request, res: Response) => {
   };
 
   // If editing an approved or published blog, revert to pending review
-  if (["APPROVED", "PUBLISHED"].includes(blog.status)) {
-    updateData.status = "PENDING_REVIEW";
+  if ([EntityStatus.APPROVED, EntityStatus.PUBLISHED].includes(blog.status as any)) {
+    updateData.status = EntityStatus.PENDING_REVIEW;
   }
 
   if (title && title !== blog.title) {
@@ -45,7 +46,7 @@ export const updateBlog = catchAsync(async (req: Request, res: Response) => {
     data: updateData,
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: user.id,
     action: "BLOG_UPDATED",
     targetType: "BLOG",

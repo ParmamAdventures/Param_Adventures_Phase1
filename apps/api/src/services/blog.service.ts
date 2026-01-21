@@ -1,8 +1,8 @@
 import { prisma } from "../lib/prisma";
-import { auditService } from "./audit.service";
-import { AuditActions } from "../utils/auditLog";
+import { auditService, AuditActions } from "./audit.service";
 import { HttpError } from "../utils/httpError";
 import { slugify } from "../utils/slugify";
+import { EntityStatus } from "../constants/status";
 
 export class BlogService {
   /**
@@ -76,9 +76,9 @@ export class BlogService {
     if (!canViewInternal) {
       if (userId) {
         // Allow if PUBLISHED or if the user is the author
-        whereCondition.OR = [{ status: "PUBLISHED" }, { authorId: userId }];
+        whereCondition.OR = [{ status: EntityStatus.PUBLISHED }, { authorId: userId }];
       } else {
-        whereCondition.status = "PUBLISHED";
+        whereCondition.status = EntityStatus.PUBLISHED;
       }
     }
 
@@ -118,9 +118,9 @@ export class BlogService {
 
     if (!canViewInternal) {
       if (userId) {
-        whereCondition.OR = [{ status: "PUBLISHED" }, { authorId: userId }];
+        whereCondition.OR = [{ status: EntityStatus.PUBLISHED }, { authorId: userId }];
       } else {
-        whereCondition.status = "PUBLISHED";
+        whereCondition.status = EntityStatus.PUBLISHED;
       }
     }
 
@@ -169,9 +169,9 @@ export class BlogService {
 
     if (!canViewInternal) {
       if (userId) {
-        whereCondition.OR = [{ status: "PUBLISHED" }, { authorId: userId }];
+        whereCondition.OR = [{ status: EntityStatus.PUBLISHED }, { authorId: userId }];
       } else {
-        whereCondition.status = "PUBLISHED";
+        whereCondition.status = EntityStatus.PUBLISHED;
       }
     }
 
@@ -242,8 +242,8 @@ export class BlogService {
     };
 
     // If editing an approved or published blog, revert to pending review
-    if (["APPROVED", "PUBLISHED"].includes(blog.status)) {
-      updateData.status = "PENDING_REVIEW";
+    if ([EntityStatus.APPROVED, EntityStatus.PUBLISHED].includes(blog.status as any)) {
+      updateData.status = EntityStatus.PENDING_REVIEW;
     }
 
     if (title && title !== blog.title) {
@@ -308,13 +308,13 @@ export class BlogService {
       throw new HttpError(404, "NOT_FOUND", "Blog not found");
     }
 
-    if (blog.status !== "DRAFT" && blog.status !== "REJECTED") {
+    if (blog.status !== EntityStatus.DRAFT && blog.status !== EntityStatus.REJECTED) {
       throw new HttpError(403, "INVALID_STATE", "Cannot submit blog in its current state");
     }
 
     const updated = await prisma.blog.update({
       where: { id },
-      data: { status: "PENDING_REVIEW" },
+      data: { status: EntityStatus.PENDING_REVIEW },
     });
 
     await auditService.logAudit({
@@ -340,13 +340,13 @@ export class BlogService {
       throw new HttpError(404, "NOT_FOUND", "Blog not found");
     }
 
-    if (blog.status !== "PENDING_REVIEW") {
+    if (blog.status !== EntityStatus.PENDING_REVIEW) {
       throw new HttpError(403, "INVALID_STATE", "Only blogs in review can be approved");
     }
 
     const updated = await prisma.blog.update({
       where: { id },
-      data: { status: "APPROVED" },
+      data: { status: EntityStatus.APPROVED },
     });
 
     await auditService.logAudit({
@@ -369,7 +369,7 @@ export class BlogService {
   async rejectBlog(id: string, userId: string, reason?: string) {
     const updated = await prisma.blog.update({
       where: { id },
-      data: { status: "REJECTED" },
+      data: { status: EntityStatus.REJECTED },
     });
 
     await auditService.logAudit({
@@ -399,7 +399,7 @@ export class BlogService {
     const updated = await prisma.blog.update({
       where: { id },
       data: {
-        status: "PUBLISHED",
+        status: EntityStatus.PUBLISHED,
       },
     });
 

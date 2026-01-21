@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 
 /**
  * Assign Role
@@ -36,7 +36,7 @@ export async function assignRole(req: Request, res: Response) {
     create: { userId, roleId: role.id },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: actor.id,
     action: AuditActions.USER_ROLE_ASSIGNED,
     targetType: AuditTargetTypes.USER,

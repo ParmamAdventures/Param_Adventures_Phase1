@@ -1,5 +1,6 @@
 import { TripStatus, BlogStatus, BookingStatus } from "@prisma/client";
 import { HttpError } from "./httpError";
+import { EntityStatus } from "../constants/status";
 
 /**
  * Status transition validation utilities
@@ -11,34 +12,34 @@ import { HttpError } from "./httpError";
  * Defines allowed state changes for trip workflow
  */
 const TRIP_STATUS_TRANSITIONS: Record<TripStatus, TripStatus[]> = {
-  DRAFT: ["PENDING_REVIEW"],
-  PENDING_REVIEW: ["APPROVED", "DRAFT"], // Can go back to draft for edits
-  APPROVED: ["PUBLISHED", "DRAFT"], // Admin can send back to draft
-  PUBLISHED: ["IN_PROGRESS", "ARCHIVED"],
-  IN_PROGRESS: ["COMPLETED", "ARCHIVED"],
-  COMPLETED: ["ARCHIVED"],
-  ARCHIVED: ["DRAFT", "PUBLISHED"], // Can restore archived trips
+  [EntityStatus.DRAFT]: [EntityStatus.PENDING_REVIEW],
+  [EntityStatus.PENDING_REVIEW]: [EntityStatus.APPROVED, EntityStatus.DRAFT], // Can go back to draft for edits
+  [EntityStatus.APPROVED]: [EntityStatus.PUBLISHED, EntityStatus.DRAFT], // Admin can send back to draft
+  [EntityStatus.PUBLISHED]: ["IN_PROGRESS", EntityStatus.ARCHIVED],
+  IN_PROGRESS: ["COMPLETED", EntityStatus.ARCHIVED],
+  COMPLETED: [EntityStatus.ARCHIVED],
+  [EntityStatus.ARCHIVED]: [EntityStatus.DRAFT, EntityStatus.PUBLISHED], // Can restore archived trips
 };
 
 /**
  * Valid blog status transitions
  */
 const BLOG_STATUS_TRANSITIONS: Record<BlogStatus, BlogStatus[]> = {
-  DRAFT: ["PENDING_REVIEW"],
-  PENDING_REVIEW: ["APPROVED", "REJECTED", "DRAFT"],
-  APPROVED: ["PUBLISHED", "DRAFT"],
-  PUBLISHED: [], // Cannot change once published
-  REJECTED: ["DRAFT"], // Can edit and resubmit
+  [EntityStatus.DRAFT]: [EntityStatus.PENDING_REVIEW],
+  [EntityStatus.PENDING_REVIEW]: [EntityStatus.APPROVED, EntityStatus.REJECTED, EntityStatus.DRAFT],
+  [EntityStatus.APPROVED]: [EntityStatus.PUBLISHED, EntityStatus.DRAFT],
+  [EntityStatus.PUBLISHED]: [], // Cannot change once published
+  [EntityStatus.REJECTED]: [EntityStatus.DRAFT], // Can edit and resubmit
 };
 
 /**
  * Valid booking status transitions
  */
 const BOOKING_STATUS_TRANSITIONS: Record<BookingStatus, BookingStatus[]> = {
-  REQUESTED: ["CONFIRMED", "CANCELLED", "REJECTED"],
+  REQUESTED: ["CONFIRMED", "CANCELLED", EntityStatus.REJECTED],
   CONFIRMED: ["COMPLETED", "CANCELLED"],
   CANCELLED: [], // Terminal state
-  REJECTED: [], // Terminal state
+  [EntityStatus.REJECTED]: [], // Terminal state
   COMPLETED: [], // Terminal state
 };
 
@@ -48,7 +49,7 @@ const BOOKING_STATUS_TRANSITIONS: Record<BookingStatus, BookingStatus[]> = {
  */
 export function validateTripStatusTransition(
   currentStatus: TripStatus,
-  newStatus: TripStatus
+  newStatus: TripStatus,
 ): void {
   // Allow staying in same status
   if (currentStatus === newStatus) {
@@ -61,7 +62,7 @@ export function validateTripStatusTransition(
     throw new HttpError(
       400,
       "INVALID_STATUS_TRANSITION",
-      `Cannot transition trip from ${currentStatus} to ${newStatus}. Allowed transitions: ${allowedTransitions.join(", ")}`
+      `Cannot transition trip from ${currentStatus} to ${newStatus}. Allowed transitions: ${allowedTransitions.join(", ")}`,
     );
   }
 }
@@ -72,7 +73,7 @@ export function validateTripStatusTransition(
  */
 export function validateBlogStatusTransition(
   currentStatus: BlogStatus,
-  newStatus: BlogStatus
+  newStatus: BlogStatus,
 ): void {
   // Allow staying in same status
   if (currentStatus === newStatus) {
@@ -89,7 +90,7 @@ export function validateBlogStatusTransition(
         allowedTransitions.length > 0
           ? `Allowed transitions: ${allowedTransitions.join(", ")}`
           : "No transitions allowed from this state"
-      }`
+      }`,
     );
   }
 }
@@ -100,7 +101,7 @@ export function validateBlogStatusTransition(
  */
 export function validateBookingStatusTransition(
   currentStatus: BookingStatus,
-  newStatus: BookingStatus
+  newStatus: BookingStatus,
 ): void {
   // Allow staying in same status
   if (currentStatus === newStatus) {
@@ -117,7 +118,7 @@ export function validateBookingStatusTransition(
         allowedTransitions.length > 0
           ? `Allowed transitions: ${allowedTransitions.join(", ")}`
           : "This is a terminal state"
-      }`
+      }`,
     );
   }
 }
@@ -127,7 +128,7 @@ export function validateBookingStatusTransition(
  */
 export function isTripStatusTransitionValid(
   currentStatus: TripStatus,
-  newStatus: TripStatus
+  newStatus: TripStatus,
 ): boolean {
   if (currentStatus === newStatus) return true;
   return TRIP_STATUS_TRANSITIONS[currentStatus].includes(newStatus);
@@ -138,7 +139,7 @@ export function isTripStatusTransitionValid(
  */
 export function isBlogStatusTransitionValid(
   currentStatus: BlogStatus,
-  newStatus: BlogStatus
+  newStatus: BlogStatus,
 ): boolean {
   if (currentStatus === newStatus) return true;
   return BLOG_STATUS_TRANSITIONS[currentStatus].includes(newStatus);
@@ -149,7 +150,7 @@ export function isBlogStatusTransitionValid(
  */
 export function isBookingStatusTransitionValid(
   currentStatus: BookingStatus,
-  newStatus: BookingStatus
+  newStatus: BookingStatus,
 ): boolean {
   if (currentStatus === newStatus) return true;
   return BOOKING_STATUS_TRANSITIONS[currentStatus].includes(newStatus);

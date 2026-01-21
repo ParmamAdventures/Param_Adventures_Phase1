@@ -9,7 +9,7 @@ import { requireAuth } from "../../middlewares/auth.middleware";
 import { attachPermissions } from "../../middlewares/permission.middleware";
 import { requirePermission } from "../../middlewares/require-permission.middleware";
 import { autoLog } from "../../middlewares/audit.middleware";
-import { AuditActions } from "../../utils/auditLog";
+import { AuditActions } from "../../services/audit.service";
 
 const router = Router();
 

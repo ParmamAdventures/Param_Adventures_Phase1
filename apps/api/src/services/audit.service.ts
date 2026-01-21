@@ -10,6 +10,18 @@ export interface AuditLogData {
   metadata?: any;
 }
 
+export const AuditTargetTypes = {
+  TRIP: "TRIP",
+  BLOG: "BLOG",
+  BOOKING: "BOOKING",
+  USER: "USER",
+  PAYMENT: "PAYMENT",
+  ROLE: "ROLE",
+  PERMISSION: "PERMISSION",
+} as const;
+
+export { AuditAction as AuditActions } from "@prisma/client";
+
 export class AuditService {
   async logAudit(data: AuditLogData) {
     try {

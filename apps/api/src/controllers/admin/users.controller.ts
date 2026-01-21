@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 
 /**
  * List Users
@@ -83,7 +83,7 @@ export async function updateUserStatus(req: Request, res: Response) {
     },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: (req as any).user.id,
     action: AuditActions.USER_STATUS_CHANGED,
     targetType: AuditTargetTypes.USER,
@@ -109,7 +109,7 @@ export async function deleteUser(req: Request, res: Response) {
     data: { status: "BANNED", statusReason: "DELETED_BY_ADMIN" },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: (req as any).user.id,
     action: AuditActions.USER_BANNED,
     targetType: AuditTargetTypes.USER,
@@ -134,7 +134,7 @@ export async function unsuspendUser(req: Request, res: Response) {
     data: { status: "ACTIVE", statusReason: null },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: (req as any).user.id,
     action: AuditActions.USER_STATUS_CHANGED,
     targetType: AuditTargetTypes.USER,

@@ -1,6 +1,9 @@
 import { prisma } from "../lib/prisma";
 import { notificationQueue } from "../lib/queue";
 import { HttpError } from "../utils/httpError";
+import { assertBookingTransition } from "../domain/booking/bookingTransitions";
+import { ErrorMessages } from "../constants/errorMessages";
+import { auditService, AuditActions, AuditTargetTypes } from "./audit.service";
 
 import type { Prisma } from "@prisma/client";
 
@@ -151,6 +154,60 @@ export class BookingService {
     }
 
     return booking;
+  }
+
+  async approveBooking(id: string, adminId: string) {
+    return prisma.$transaction(async (tx) => {
+      const booking = await tx.booking.findUnique({ where: { id } });
+      if (!booking) throw new HttpError(404, "NOT_FOUND", ErrorMessages.BOOKING_NOT_FOUND);
+
+      if (booking.status === "CONFIRMED" || booking.status === "REJECTED") {
+        throw new HttpError(403, "INVALID_STATE", "Booking already processed");
+      }
+
+      try {
+        assertBookingTransition(booking.status as any, "approve");
+      } catch {
+        throw new HttpError(
+          403,
+          "INVALID_BOOKING_TRANSITION",
+          "Booking cannot be approved in its current state",
+        );
+      }
+
+      const confirmedCount = await tx.booking.count({
+        where: { tripId: booking.tripId, status: "CONFIRMED" },
+      });
+
+      const trip = await tx.trip.findUnique({ where: { id: booking.tripId } });
+      if (!trip) throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
+
+      if (confirmedCount >= trip.capacity) {
+        await auditService.logAudit({
+          actorId: adminId,
+          action: AuditActions.BOOKING_REJECTED,
+          targetType: AuditTargetTypes.BOOKING,
+          targetId: booking.id,
+          metadata: { tripId: booking.tripId, reason: "capacity_full" },
+        });
+        throw new HttpError(409, "CAPACITY_FULL", "Trip capacity is full");
+      }
+
+      const updated = await tx.booking.update({
+        where: { id },
+        data: { status: "CONFIRMED" },
+      });
+
+      await auditService.logAudit({
+        actorId: adminId,
+        action: AuditActions.BOOKING_CONFIRMED,
+        targetType: AuditTargetTypes.BOOKING,
+        targetId: booking.id,
+        metadata: { tripId: booking.tripId },
+      });
+
+      return updated;
+    });
   }
 }
 

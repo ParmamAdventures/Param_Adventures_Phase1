@@ -4,7 +4,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { getTripOrThrow } from "../../utils/entityHelpers";
 import { validateTripStatusTransition } from "../../utils/statusValidation";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
 
 export const restoreTrip = catchAsync(async (req: Request, res: Response) => {
@@ -18,12 +18,7 @@ export const restoreTrip = catchAsync(async (req: Request, res: Response) => {
   try {
     validateTripStatusTransition(trip.status, "DRAFT");
   } catch (error: any) {
-    return ApiResponse.error(
-      res,
-      ErrorCodes.INVALID_STATUS_TRANSITION,
-      error.message,
-      400
-    );
+    return ApiResponse.error(res, ErrorCodes.INVALID_STATUS_TRANSITION, error.message, 400);
   }
 
   const updated = await prisma.trip.update({
@@ -31,7 +26,7 @@ export const restoreTrip = catchAsync(async (req: Request, res: Response) => {
     data: { status: "DRAFT" },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: user.id,
     action: AuditActions.TRIP_RESTORED,
     targetType: AuditTargetTypes.TRIP,

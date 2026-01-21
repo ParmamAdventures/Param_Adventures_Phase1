@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 import { TripIncludes } from "../../constants/prismaIncludes";
 
 export const createTrip = catchAsync(async (req: Request, res: Response) => {
@@ -52,7 +52,7 @@ export const createTrip = catchAsync(async (req: Request, res: Response) => {
     include: TripIncludes.withMedia, // Use shared include pattern
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: user.id,
     action: AuditActions.TRIP_CREATED,
     targetType: AuditTargetTypes.TRIP,

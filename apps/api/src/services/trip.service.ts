@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { auditService } from "./audit.service";
+import { EntityStatus } from "../constants/status";
 
 export class TripService {
   /**
@@ -118,7 +119,7 @@ export class TripService {
     const updated = await prisma.trip.update({
       where: { id },
       data: {
-        status: "APPROVED",
+        status: EntityStatus.APPROVED,
         approvedById: userId,
       },
     });
@@ -140,7 +141,7 @@ export class TripService {
     const updated = await prisma.trip.update({
       where: { id },
       data: {
-        status: "PUBLISHED",
+        status: EntityStatus.PUBLISHED,
         publishedAt: new Date(),
       },
     });

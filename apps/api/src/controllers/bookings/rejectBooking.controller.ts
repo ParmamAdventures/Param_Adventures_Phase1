@@ -3,7 +3,7 @@ import { prisma } from "../../lib/prisma";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
 import { HttpError } from "../../utils/httpError";
 import { ErrorMessages } from "../../constants/errorMessages";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 
 /**
  * Reject Booking
@@ -38,7 +38,7 @@ export async function rejectBooking(req: Request, res: Response) {
       data: { status: "REJECTED" },
     });
 
-    await createAuditLog({
+    await auditService.logAudit({
       actorId: admin.id,
       action: AuditActions.BOOKING_REJECTED,
       targetType: AuditTargetTypes.BOOKING,

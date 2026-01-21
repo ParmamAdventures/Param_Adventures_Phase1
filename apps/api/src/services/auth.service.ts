@@ -7,8 +7,7 @@ import {
   signResetToken,
   verifyResetToken,
 } from "../utils/jwt";
-import { auditService } from "./audit.service";
-import { AuditActions } from "../utils/auditLog";
+import { auditService, AuditActions } from "./audit.service";
 import { notificationService } from "./notification.service";
 import { HttpError } from "../utils/httpError";
 

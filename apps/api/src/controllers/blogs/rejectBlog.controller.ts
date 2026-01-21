@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import { createAuditLog } from "../../utils/auditLog";
+import { auditService } from "../../services/audit.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { catchAsync } from "../../utils/catchAsync";
@@ -29,7 +29,7 @@ export const rejectBlog = catchAsync(async (req: Request, res: Response) => {
     data: { status: "REJECTED" },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: user.id,
     action: "BLOG_REJECTED",
     targetType: "BLOG",

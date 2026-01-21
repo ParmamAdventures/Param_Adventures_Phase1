@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
-import { AuditActions } from "../utils/auditLog";
+import { auditService, AuditActions } from "./audit.service";
 
 export class AdminService {
   /**
@@ -120,14 +120,12 @@ export class AdminService {
       },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        actorId,
-        action: AuditActions.USER_STATUS_UPDATED,
-        targetType: "USER",
-        targetId: user.id,
-        metadata: { status, reason },
-      },
+    await auditService.logAudit({
+      actorId,
+      action: AuditActions.USER_STATUS_UPDATED,
+      targetType: "USER",
+      targetId: user.id,
+      metadata: { status, reason },
     });
 
     return user;
@@ -145,14 +143,12 @@ export class AdminService {
       data: { status: "BANNED", statusReason: "DELETED_BY_ADMIN" },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        actorId,
-        action: AuditActions.USER_DELETED,
-        targetType: "USER",
-        targetId: user.id,
-        metadata: { deletedAt: new Date().toISOString() },
-      },
+    await auditService.logAudit({
+      actorId,
+      action: AuditActions.USER_DELETED,
+      targetType: "USER",
+      targetId: user.id,
+      metadata: { deletedAt: new Date().toISOString() },
     });
 
     return { message: "User deleted successfully", userId: user.id };
@@ -170,13 +166,11 @@ export class AdminService {
       data: { status: "ACTIVE", statusReason: null },
     });
 
-    await prisma.auditLog.create({
-      data: {
-        actorId,
-        action: AuditActions.USER_UNSUSPENDED,
-        targetType: "USER",
-        targetId: user.id,
-      },
+    await auditService.logAudit({
+      actorId,
+      action: AuditActions.USER_UNSUSPENDED,
+      targetType: "USER",
+      targetId: user.id,
     });
 
     return user;

@@ -4,7 +4,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { TripCacheService } from "../../services/trip-cache.service";
 import { getTripOrThrow } from "../../utils/entityHelpers";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
 import { TripIncludes } from "../../constants/prismaIncludes";
 
@@ -86,7 +86,7 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
   // Invalidate cache after update
   await TripCacheService.invalidateTrip(updated);
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: user.id,
     action: AuditActions.TRIP_UPDATED,
     targetType: AuditTargetTypes.TRIP,

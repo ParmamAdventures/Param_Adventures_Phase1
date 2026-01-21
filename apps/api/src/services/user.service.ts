@@ -1,6 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { auditService } from "./audit.service";
-import { AuditActions } from "../utils/auditLog";
+import { auditService, AuditActions } from "./audit.service";
 
 export class UserService {
   /**

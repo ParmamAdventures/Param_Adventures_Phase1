@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { isLastSuperAdmin } from "../../utils/roleGuards";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 
 /**
  * List Roles
@@ -111,7 +111,7 @@ export async function assignRole(req: Request, res: Response) {
     create: { userId, roleId: role.id },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: actor.id,
     action: AuditActions.USER_ROLE_ASSIGNED,
     targetType: AuditTargetTypes.USER,
@@ -158,7 +158,7 @@ export async function revokeRole(req: Request, res: Response) {
     where: { userId_roleId: { userId, roleId: role.id } },
   });
 
-  await createAuditLog({
+  await auditService.logAudit({
     actorId: actor.id,
     action: AuditActions.USER_ROLE_REVOKED,
     targetType: AuditTargetTypes.USER,

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import { createAuditLog } from "../../utils/auditLog";
+import { auditService } from "../../services/audit.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { blogService } from "../../services/blog.service";

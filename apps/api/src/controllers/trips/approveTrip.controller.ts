@@ -4,9 +4,10 @@ import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { getTripOrThrow } from "../../utils/entityHelpers";
 import { validateTripStatusTransition } from "../../utils/statusValidation";
-import { createAuditLog, AuditActions, AuditTargetTypes } from "../../utils/auditLog";
+import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
 import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
 import { tripService } from "../../services/trip.service";
+import { EntityStatus } from "../../constants/status";
 
 export const approveTrip = catchAsync(async (req: Request, res: Response) => {
   const user = (req as any).user;
@@ -17,7 +18,7 @@ export const approveTrip = catchAsync(async (req: Request, res: Response) => {
 
   // Validate status transition
   try {
-    validateTripStatusTransition(trip.status, "APPROVED");
+    validateTripStatusTransition(trip.status, EntityStatus.APPROVED);
   } catch (error: any) {
     return ApiResponse.error(res, ErrorCodes.INVALID_STATUS_TRANSITION, error.message, 400);
   }
