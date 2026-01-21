@@ -469,6 +469,10 @@ describe("BlogService", () => {
       const blogId = "blog_123";
       const userId = "admin_123";
 
+      (prisma.blog.findUnique as jest.Mock).mockResolvedValue({
+        id: blogId,
+        status: "PENDING_REVIEW",
+      });
       (prisma.blog.update as jest.Mock).mockResolvedValue({
         id: blogId,
         status: "APPROVED",
@@ -487,6 +491,10 @@ describe("BlogService", () => {
       const blogId = "blog_123";
       const userId = "admin_123";
 
+      (prisma.blog.findUnique as jest.Mock).mockResolvedValue({
+        id: blogId,
+        status: "PENDING_REVIEW",
+      });
       (prisma.blog.update as jest.Mock).mockResolvedValue({ id: blogId });
 
       await blogService.approveBlog(blogId, userId);
@@ -516,6 +524,10 @@ describe("BlogService", () => {
       const userId = "admin_123";
       const reason = "Content needs improvement";
 
+      (prisma.blog.findUnique as jest.Mock).mockResolvedValue({
+        id: blogId,
+        status: "PENDING_REVIEW",
+      });
       (prisma.blog.update as jest.Mock).mockResolvedValue({
         id: blogId,
         status: "REJECTED",

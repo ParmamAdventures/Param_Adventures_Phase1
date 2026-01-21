@@ -72,7 +72,7 @@ describe("TripService", () => {
         description: "Trek with images",
         category: "TREK",
         durationDays: 3,
-        difficulty: "Easy",
+        difficulty: "EASY",
         price: 10000,
         gallery: [
           { id: "img_1", order: 0 },

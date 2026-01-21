@@ -18,7 +18,8 @@ describe("AdminService", () => {
         5, // pendingBlogs
         100, // totalUsers
         20, // activeTrips
-        [ // recentActivity
+        [
+          // recentActivity
           {
             id: "log_1",
             action: "USER_CREATED",
@@ -180,9 +181,9 @@ describe("AdminService", () => {
       const actorId = "admin_456";
       const invalidStatus = "INVALID";
 
-      await expect(
-        adminService.updateUserStatus(userId, invalidStatus, actorId),
-      ).rejects.toThrow("Invalid status");
+      await expect(adminService.updateUserStatus(userId, invalidStatus, actorId)).rejects.toThrow(
+        "Invalid status",
+      );
     });
 
     it("updates user status without reason", async () => {
@@ -288,6 +289,7 @@ describe("AdminService", () => {
           action: "USER_UNSUSPENDED",
           targetType: "USER",
           targetId: userId,
+          metadata: {},
         },
       });
 
@@ -351,10 +353,7 @@ describe("AdminService", () => {
         statusReason: null,
         createdAt: new Date(),
         avatarImage: null,
-        roles: [
-          { role: { name: "USER" } },
-          { role: { name: "CONTENT_CREATOR" } },
-        ],
+        roles: [{ role: { name: "USER" } }, { role: { name: "CONTENT_CREATOR" } }],
         _count: {
           bookings: 5,
           blogs: 3,

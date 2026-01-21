@@ -64,7 +64,7 @@ describe("Trip Creation Flow (Mocked)", () => {
     prismaMock.auditLog.create.mockResolvedValue({ id: "audit-123" } as any);
 
     const res = await request(app)
-      .post("/trips")
+      .post("/api/v1/trips")
       .set("Authorization", `Bearer ${token}`)
       .send(tripData);
 
@@ -82,7 +82,7 @@ describe("Trip Creation Flow (Mocked)", () => {
     } as any);
 
     const res = await request(app)
-      .post("/trips")
+      .post("/api/v1/trips")
       .set("Authorization", `Bearer ${token}`)
       .send({ title: "No Permission Trip" });
 

@@ -128,7 +128,7 @@ describe("User Endpoints Integration", () => {
   describe("GET /users/profile", () => {
     it("should return current user profile with authentication", async () => {
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.status).toBe(200);
@@ -140,14 +140,14 @@ describe("User Endpoints Integration", () => {
     });
 
     it("should return 401 without authentication", async () => {
-      const res = await request(app).get("/users/profile");
+      const res = await request(app).get("/api/v1/users/profile");
 
       expect(res.status).toBe(401);
     });
 
     it("should return 401 with invalid token", async () => {
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", "Bearer invalid-token");
 
       expect(res.status).toBe(401);
@@ -168,7 +168,7 @@ describe("User Endpoints Integration", () => {
       };
 
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send(updateData);
 
@@ -192,7 +192,7 @@ describe("User Endpoints Integration", () => {
       };
 
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send(partialUpdate);
 
@@ -207,7 +207,7 @@ describe("User Endpoints Integration", () => {
       };
 
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send(preferencesUpdate);
 
@@ -220,7 +220,7 @@ describe("User Endpoints Integration", () => {
 
     it("should handle empty preferences object", async () => {
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ preferences: {} });
 
@@ -230,7 +230,7 @@ describe("User Endpoints Integration", () => {
 
     it("should handle null values for optional fields", async () => {
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           bio: null,
@@ -243,7 +243,7 @@ describe("User Endpoints Integration", () => {
     });
 
     it("should return 401 without authentication", async () => {
-      const res = await request(app).patch("/users/profile").send({
+      const res = await request(app).patch("/api/v1/users/profile").send({
         name: "Hacker Name",
       });
 
@@ -252,7 +252,7 @@ describe("User Endpoints Integration", () => {
 
     it("should convert age string to number", async () => {
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ age: "35" });
 
@@ -278,7 +278,7 @@ describe("User Endpoints Integration", () => {
       };
 
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send(complexPreferences);
 
@@ -313,7 +313,7 @@ describe("User Endpoints Integration", () => {
 
     it("should return trips assigned to the guide", async () => {
       const res = await request(app)
-        .get("/users/guide/trips")
+        .get("/api/v1/users/guide/trips")
         .set("Authorization", `Bearer ${guideToken}`);
 
       expect(res.status).toBe(200);
@@ -330,7 +330,7 @@ describe("User Endpoints Integration", () => {
 
     it("should include booking details with user info", async () => {
       const res = await request(app)
-        .get("/users/guide/trips")
+        .get("/api/v1/users/guide/trips")
         .set("Authorization", `Bearer ${guideToken}`);
 
       expect(res.status).toBe(200);
@@ -357,7 +357,7 @@ describe("User Endpoints Integration", () => {
       const newGuideToken = signAccessToken(newGuide.id);
 
       const res = await request(app)
-        .get("/users/guide/trips")
+        .get("/api/v1/users/guide/trips")
         .set("Authorization", `Bearer ${newGuideToken}`);
 
       expect(res.status).toBe(200);
@@ -369,14 +369,14 @@ describe("User Endpoints Integration", () => {
     });
 
     it("should return 401 without authentication", async () => {
-      const res = await request(app).get("/users/guide/trips");
+      const res = await request(app).get("/api/v1/users/guide/trips");
 
       expect(res.status).toBe(401);
     });
 
     it("should work for regular users (returns empty if not a guide)", async () => {
       const res = await request(app)
-        .get("/users/guide/trips")
+        .get("/api/v1/users/guide/trips")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.status).toBe(200);
@@ -387,7 +387,7 @@ describe("User Endpoints Integration", () => {
 
     it("should include coverImage in trip details", async () => {
       const res = await request(app)
-        .get("/users/guide/trips")
+        .get("/api/v1/users/guide/trips")
         .set("Authorization", `Bearer ${guideToken}`);
 
       expect(res.status).toBe(200);
@@ -402,7 +402,7 @@ describe("User Endpoints Integration", () => {
       // This test ensures users can only update their own profile
       // The endpoint uses req.user.id from token, so it's implicitly secure
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ name: "Attempt to change" });
 
@@ -415,7 +415,7 @@ describe("User Endpoints Integration", () => {
 
     it("should not expose sensitive data in profile response", async () => {
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.status).toBe(200);
@@ -428,7 +428,7 @@ describe("User Endpoints Integration", () => {
       // Note: Based on user.controller.ts, email might not be updatable via this endpoint
       // This test verifies the current behavior
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ name: "Valid User" });
 
@@ -439,7 +439,7 @@ describe("User Endpoints Integration", () => {
       const longBio = "A".repeat(1000);
 
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ bio: longBio });
 
@@ -456,7 +456,7 @@ describe("User Endpoints Integration", () => {
       };
 
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send(specialData);
 

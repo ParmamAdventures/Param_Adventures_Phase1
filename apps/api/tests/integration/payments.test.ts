@@ -114,8 +114,10 @@ describe("Payment Integration Tests", () => {
     await prisma.user.deleteMany();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await prisma.payment.deleteMany();
+    await prisma.booking.deleteMany();
   });
 
   describe("POST /bookings/:id/initiate-payment", () => {
@@ -145,7 +147,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${bookingId}/initiate-payment`)
+        .post(`/api/v1/bookings/${bookingId}/initiate-payment`)
         .set("Authorization", `Bearer ${userToken}`);
 
       // Assert
@@ -167,7 +169,7 @@ describe("Payment Integration Tests", () => {
     it("should reject payment for non-existent booking", async () => {
       // Act
       const res = await request(app)
-        .post(`/bookings/invalid-booking-id/initiate-payment`)
+        .post(`/api/v1/bookings/invalid-booking-id/initiate-payment`)
         .set("Authorization", `Bearer ${userToken}`);
 
       // Assert
@@ -191,7 +193,7 @@ describe("Payment Integration Tests", () => {
       await prisma.payment.create({
         data: {
           bookingId: paidBooking.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_existing",
           amount: 5000,
           status: "CAPTURED",
@@ -200,7 +202,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${paidBooking.id}/initiate-payment`)
+        .post(`/api/v1/bookings/${paidBooking.id}/initiate-payment`)
         .set("Authorization", `Bearer ${userToken}`);
 
       // Assert
@@ -223,7 +225,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${cancelledBooking.id}/initiate-payment`)
+        .post(`/api/v1/bookings/${cancelledBooking.id}/initiate-payment`)
         .set("Authorization", `Bearer ${userToken}`);
 
       // Assert
@@ -248,7 +250,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${failBooking.id}/initiate-payment`)
+        .post(`/api/v1/bookings/${failBooking.id}/initiate-payment`)
         .set("Authorization", `Bearer ${userToken}`);
 
       // Assert
@@ -273,7 +275,7 @@ describe("Payment Integration Tests", () => {
       const payment = await prisma.payment.create({
         data: {
           bookingId: booking.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_verify123",
           amount: 5000,
           status: "CREATED",
@@ -285,7 +287,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${booking.id}/verify-payment`)
+        .post(`/api/v1/bookings/${booking.id}/verify-payment`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           orderId: "order_verify123",
@@ -326,7 +328,7 @@ describe("Payment Integration Tests", () => {
       await prisma.payment.create({
         data: {
           bookingId: booking.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_invalid123",
           amount: 5000,
           status: "CREATED",
@@ -338,7 +340,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${booking.id}/verify-payment`)
+        .post(`/api/v1/bookings/${booking.id}/verify-payment`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           orderId: "order_invalid123",
@@ -360,7 +362,7 @@ describe("Payment Integration Tests", () => {
     it("should reject payment with missing fields", async () => {
       // Act
       const res = await request(app)
-        .post(`/bookings/${bookingId}/verify-payment`)
+        .post(`/api/v1/bookings/${bookingId}/verify-payment`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           orderId: "order_123",
@@ -389,7 +391,7 @@ describe("Payment Integration Tests", () => {
       const payment = await prisma.payment.create({
         data: {
           bookingId: booking.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_refund123",
           providerPaymentId: "pay_refund456",
           amount: 5000,
@@ -407,7 +409,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${booking.id}/refund`)
+        .post(`/api/v1/bookings/${booking.id}/refund`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send({ reason: "User request" });
 
@@ -450,7 +452,7 @@ describe("Payment Integration Tests", () => {
       await prisma.payment.create({
         data: {
           bookingId: booking.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_nonadmin",
           providerPaymentId: "pay_nonadmin",
           amount: 5000,
@@ -460,7 +462,7 @@ describe("Payment Integration Tests", () => {
 
       // Act - Use regular user token
       const res = await request(app)
-        .post(`/bookings/${booking.id}/refund`)
+        .post(`/api/v1/bookings/${booking.id}/refund`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({ reason: "User request" });
 
@@ -484,7 +486,7 @@ describe("Payment Integration Tests", () => {
       await prisma.payment.create({
         data: {
           bookingId: booking.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_alreadyrefund",
           providerPaymentId: "pay_alreadyrefund",
           amount: 5000,
@@ -494,7 +496,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${booking.id}/refund`)
+        .post(`/api/v1/bookings/${booking.id}/refund`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send({ reason: "Duplicate request" });
 
@@ -519,7 +521,7 @@ describe("Payment Integration Tests", () => {
       await prisma.payment.create({
         data: {
           bookingId: booking.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_failrefund",
           providerPaymentId: "pay_failrefund",
           amount: 5000,
@@ -533,7 +535,7 @@ describe("Payment Integration Tests", () => {
 
       // Act
       const res = await request(app)
-        .post(`/bookings/${booking.id}/refund`)
+        .post(`/api/v1/bookings/${booking.id}/refund`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send({ reason: "Test failure" });
 
@@ -570,7 +572,7 @@ describe("Payment Integration Tests", () => {
       await prisma.payment.create({
         data: {
           bookingId: booking1.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_replay1",
           amount: 5000,
           status: "CREATED",
@@ -580,7 +582,7 @@ describe("Payment Integration Tests", () => {
       await prisma.payment.create({
         data: {
           bookingId: booking2.id,
-          provider: "razorpay",
+          provider: "RAZORPAY",
           providerOrderId: "order_replay2",
           amount: 5000,
           status: "CREATED",
@@ -594,7 +596,7 @@ describe("Payment Integration Tests", () => {
 
       // Act 1 - Confirm first booking
       const res1 = await request(app)
-        .post(`/bookings/${booking1.id}/verify-payment`)
+        .post(`/api/v1/bookings/${booking1.id}/verify-payment`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           orderId: "order_replay1",
@@ -606,7 +608,7 @@ describe("Payment Integration Tests", () => {
 
       // Act 2 - Try to reuse same payment on second booking
       const res2 = await request(app)
-        .post(`/bookings/${booking2.id}/verify-payment`)
+        .post(`/api/v1/bookings/${booking2.id}/verify-payment`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           orderId: "order_replay2", // Different order!
@@ -642,7 +644,7 @@ describe("Payment Integration Tests", () => {
 
       // Act - Try to initiate payment as different user
       const res = await request(app)
-        .post(`/bookings/${victimBooking.id}/initiate-payment`)
+        .post(`/api/v1/bookings/${victimBooking.id}/initiate-payment`)
         .set("Authorization", `Bearer ${hackerToken}`);
 
       // Assert

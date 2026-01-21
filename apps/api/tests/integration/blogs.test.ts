@@ -139,13 +139,15 @@ describe("Blog Endpoints", () => {
         description: "A test trek for blogs",
         category: "TREK",
         durationDays: 3,
-        difficulty: "Easy",
+        difficulty: "EASY",
         location: "Himalayas",
         price: 10000,
         capacity: 20,
         itinerary: {},
         createdById: adminId,
         status: "PUBLISHED",
+        startDate: new Date(),
+        endDate: new Date(),
       },
     });
     tripId = trip.id;
@@ -173,7 +175,7 @@ describe("Blog Endpoints", () => {
       };
 
       const response = await request(app)
-        .post("/blogs")
+        .post("/api/v1/blogs")
         .set("Authorization", `Bearer ${userToken}`)
         .send(blogData);
 
@@ -193,7 +195,7 @@ describe("Blog Endpoints", () => {
         tripId,
       };
 
-      const response = await request(app).post("/blogs").send(blogData);
+      const response = await request(app).post("/api/v1/blogs").send(blogData);
 
       expect(response.status).toBe(401);
     });
@@ -205,7 +207,7 @@ describe("Blog Endpoints", () => {
       };
 
       const response = await request(app)
-        .post("/blogs")
+        .post("/api/v1/blogs")
         .set("Authorization", `Bearer ${userToken}`)
         .send(blogData);
 
@@ -221,12 +223,14 @@ describe("Blog Endpoints", () => {
           description: "Not completed",
           category: "TREK",
           durationDays: 2,
-          difficulty: "Easy",
+          difficulty: "EASY",
           location: "Mountains",
           price: 8000,
           capacity: 15,
           itinerary: {},
           createdById: adminId,
+          startDate: new Date(),
+          endDate: new Date(),
         },
       });
 
@@ -237,7 +241,7 @@ describe("Blog Endpoints", () => {
       };
 
       const response = await request(app)
-        .post("/blogs")
+        .post("/api/v1/blogs")
         .set("Authorization", `Bearer ${userToken}`)
         .send(blogData);
 
@@ -247,7 +251,7 @@ describe("Blog Endpoints", () => {
 
   describe("GET /blogs/public - Get public blogs", () => {
     it("returns published blogs without authentication", async () => {
-      const response = await request(app).get("/blogs/public");
+      const response = await request(app).get("/api/v1/blogs/public");
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
@@ -266,7 +270,7 @@ describe("Blog Endpoints", () => {
         },
       });
 
-      const response = await request(app).get("/blogs/public");
+      const response = await request(app).get("/api/v1/blogs/public");
 
       expect(response.status).toBe(200);
       if (Array.isArray(response.body)) {
@@ -289,14 +293,14 @@ describe("Blog Endpoints", () => {
         },
       });
 
-      const response = await request(app).get(`/blogs/public/${publishedBlog.slug}`);
+      const response = await request(app).get(`/api/v1/blogs/public/${publishedBlog.slug}`);
 
       expect(response.status).toBe(200);
       expect(response.body.id).toBe(publishedBlog.id);
     });
 
     it("returns 404 for non-existent slug", async () => {
-      const response = await request(app).get("/blogs/public/non-existent-slug-123");
+      const response = await request(app).get("/api/v1/blogs/public/non-existent-slug-123");
 
       expect(response.status).toBe(404);
     });
@@ -313,7 +317,7 @@ describe("Blog Endpoints", () => {
         },
       });
 
-      const response = await request(app).get(`/blogs/public/${draftBlog.slug}`);
+      const response = await request(app).get(`/api/v1/blogs/public/${draftBlog.slug}`);
 
       expect(response.status).toBe(404);
     });
@@ -322,7 +326,7 @@ describe("Blog Endpoints", () => {
   describe("GET /blogs/my-blogs - Get user's blogs", () => {
     it("returns blogs authored by authenticated user", async () => {
       const response = await request(app)
-        .get("/blogs/my-blogs")
+        .get("/api/v1/blogs/my-blogs")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(200);
@@ -330,7 +334,7 @@ describe("Blog Endpoints", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/blogs/my-blogs");
+      const response = await request(app).get("/api/v1/blogs/my-blogs");
 
       expect(response.status).toBe(401);
     });
@@ -347,26 +351,28 @@ describe("Blog Endpoints", () => {
       };
 
       const response = await request(app)
-        .put(`/blogs/${blogId}`)
+        .put(`/api/v1/blogs/${blogId}`)
         .set("Authorization", `Bearer ${userToken}`)
         .send(updateData);
 
       expect(response.status).toBe(200);
-      expect(response.body.title).toBe(updateData.title);
-      expect(response.body.slug).toBe("updated-blog-title");
+      expect(response.body.data.title).toBe(updateData.title);
+      expect(response.body.data.slug).toBe("updated-blog-title");
     });
 
     it("returns 401 without authentication", async () => {
       if (!blogId) return;
 
-      const response = await request(app).put(`/blogs/${blogId}`).send({ title: "New Title" });
+      const response = await request(app)
+        .put(`/api/v1/blogs/${blogId}`)
+        .send({ title: "New Title" });
 
       expect(response.status).toBe(401);
     });
 
     it("returns 404 for non-existent blog", async () => {
       const response = await request(app)
-        .put("/blogs/non-existent-id-123")
+        .put("/api/v1/blogs/non-existent-id-123")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ title: "New Title" });
 
@@ -377,7 +383,7 @@ describe("Blog Endpoints", () => {
       if (!blogId) return;
 
       const response = await request(app)
-        .put(`/blogs/${blogId}`)
+        .put(`/api/v1/blogs/${blogId}`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send({ title: "Admin Update" });
 
@@ -390,17 +396,17 @@ describe("Blog Endpoints", () => {
       if (!blogId) return;
 
       const response = await request(app)
-        .post(`/blogs/${blogId}/submit`)
+        .post(`/api/v1/blogs/${blogId}/submit`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect([200, 201]).toContain(response.status);
-      expect(response.body.status).toBe("PENDING_REVIEW");
+      expect(response.body.data.status).toBe("PENDING_REVIEW");
     });
 
     it("returns 401 without authentication", async () => {
       if (!blogId) return;
 
-      const response = await request(app).post(`/blogs/${blogId}/submit`);
+      const response = await request(app).post(`/api/v1/blogs/${blogId}/submit`);
 
       expect(response.status).toBe(401);
     });
@@ -411,11 +417,11 @@ describe("Blog Endpoints", () => {
       if (!blogId) return;
 
       const response = await request(app)
-        .post(`/blogs/${blogId}/approve`)
+        .post(`/api/v1/blogs/${blogId}/approve`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 201]).toContain(response.status);
-      expect(response.body.status).toBe("APPROVED");
+      expect(response.body.data.status).toBe("APPROVED");
     });
 
     it("returns 403 when non-admin user tries to approve", async () => {
@@ -432,7 +438,7 @@ describe("Blog Endpoints", () => {
       });
 
       const response = await request(app)
-        .post(`/blogs/${testBlog.id}/approve`)
+        .post(`/api/v1/blogs/${testBlog.id}/approve`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -453,11 +459,11 @@ describe("Blog Endpoints", () => {
       });
 
       const response = await request(app)
-        .post(`/blogs/${testBlog.id}/reject`)
+        .post(`/api/v1/blogs/${testBlog.id}/reject`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.status).toBe("REJECTED");
+      expect(response.body.data.status).toBe("REJECTED");
     });
 
     it("returns 403 when non-admin user tries to reject", async () => {
@@ -473,7 +479,7 @@ describe("Blog Endpoints", () => {
       });
 
       const response = await request(app)
-        .post(`/blogs/${testBlog.id}/reject`)
+        .post(`/api/v1/blogs/${testBlog.id}/reject`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -485,17 +491,17 @@ describe("Blog Endpoints", () => {
       if (!blogId) return;
 
       const response = await request(app)
-        .post(`/blogs/${blogId}/publish`)
+        .post(`/api/v1/blogs/${blogId}/publish`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect([200, 201]).toContain(response.status);
-      expect(response.body.status).toBe("PUBLISHED");
+      expect(response.body.data.status).toBe("PUBLISHED");
     });
 
     it("returns 401 without authentication", async () => {
       if (!blogId) return;
 
-      const response = await request(app).post(`/blogs/${blogId}/publish`);
+      const response = await request(app).post(`/api/v1/blogs/${blogId}/publish`);
 
       expect(response.status).toBe(401);
     });
@@ -506,24 +512,24 @@ describe("Blog Endpoints", () => {
       if (!blogId) return;
 
       const response = await request(app)
-        .get(`/blogs/${blogId}`)
+        .get(`/api/v1/blogs/${blogId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.id).toBe(blogId);
+      expect(response.body.data.id).toBe(blogId);
     });
 
     it("returns 401 without authentication", async () => {
       if (!blogId) return;
 
-      const response = await request(app).get(`/blogs/${blogId}`);
+      const response = await request(app).get(`/api/v1/blogs/${blogId}`);
 
       expect(response.status).toBe(401);
     });
 
     it("returns 404 for non-existent blog", async () => {
       const response = await request(app)
-        .get("/blogs/non-existent-id-789")
+        .get("/api/v1/blogs/non-existent-id-789")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);

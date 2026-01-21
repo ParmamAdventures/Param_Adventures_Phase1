@@ -107,7 +107,7 @@ describe("Trip Endpoints", () => {
       };
 
       const response = await request(app)
-        .post("/trips")
+        .post("/api/v1/trips")
         .set("Authorization", `Bearer ${adminToken}`)
         .send(tripData);
 
@@ -132,7 +132,7 @@ describe("Trip Endpoints", () => {
         category: "TREK",
       };
 
-      const response = await request(app).post("/trips").send(tripData);
+      const response = await request(app).post("/api/v1/trips").send(tripData);
 
       expect(response.status).toBe(401);
     });
@@ -140,14 +140,14 @@ describe("Trip Endpoints", () => {
 
   describe("GET /trips/public - Get public trips", () => {
     it("returns published trips without authentication", async () => {
-      const response = await request(app).get("/trips/public");
+      const response = await request(app).get("/api/v1/trips/public");
 
       expect(response.status).toBe(200);
       expect(response.body).toBeDefined();
     });
 
     it("returns metadata for filtering", async () => {
-      const response = await request(app).get("/trips/public/meta");
+      const response = await request(app).get("/api/v1/trips/public/meta");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("minPrice");
@@ -157,7 +157,7 @@ describe("Trip Endpoints", () => {
 
   describe("GET /trips/public/:slug - Get trip by slug", () => {
     it("returns 404 for non-existent trip", async () => {
-      const response = await request(app).get("/trips/public/non-existent-slug-123");
+      const response = await request(app).get("/api/v1/trips/public/non-existent-slug-123");
 
       expect(response.status).toBe(404);
     });
@@ -168,7 +168,7 @@ describe("Trip Endpoints", () => {
       if (!tripId) {
         // Create trip first
         const createRes = await request(app)
-          .post("/trips")
+          .post("/api/v1/trips")
           .set("Authorization", `Bearer ${adminToken}`)
           .send({
             title: "Trip to Update",
@@ -200,7 +200,7 @@ describe("Trip Endpoints", () => {
       };
 
       const response = await request(app)
-        .put(`/trips/${tripId}`)
+        .put(`/api/v1/trips/${tripId}`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send(updateData);
 
@@ -213,14 +213,14 @@ describe("Trip Endpoints", () => {
     it("returns 401 without authentication", async () => {
       if (!tripId) return; // Skip if no tripId
 
-      const response = await request(app).put(`/trips/${tripId}`).send({ title: "New Title" });
+      const response = await request(app).put(`/api/v1/trips/${tripId}`).send({ title: "New Title" });
 
       expect(response.status).toBe(401);
     });
 
     it("returns 404 for non-existent trip", async () => {
       const response = await request(app)
-        .put("/trips/non-existent-id-123")
+        .put("/api/v1/trips/non-existent-id-123")
         .set("Authorization", `Bearer ${adminToken}`)
         .send({ title: "New Title" });
 
@@ -232,7 +232,7 @@ describe("Trip Endpoints", () => {
     it("deletes a trip with admin auth", async () => {
       // Create a trip to delete
       const createRes = await request(app)
-        .post("/trips")
+        .post("/api/v1/trips")
         .set("Authorization", `Bearer ${adminToken}`)
         .send({
           title: "Trip to Delete",
@@ -256,7 +256,7 @@ describe("Trip Endpoints", () => {
       const deleteId = createRes.body.data.id;
 
       const response = await request(app)
-        .delete(`/trips/${deleteId}`)
+        .delete(`/api/v1/trips/${deleteId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 204]).toContain(response.status);
@@ -265,14 +265,14 @@ describe("Trip Endpoints", () => {
     it("returns 401 without authentication", async () => {
       if (!tripId) return; // Skip if no tripId
 
-      const response = await request(app).delete(`/trips/${tripId}`);
+      const response = await request(app).delete(`/api/v1/trips/${tripId}`);
 
       expect(response.status).toBe(401);
     });
 
     it("returns 404 for non-existent trip", async () => {
       const response = await request(app)
-        .delete("/trips/non-existent-id-456")
+        .delete("/api/v1/trips/non-existent-id-456")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);
@@ -282,7 +282,7 @@ describe("Trip Endpoints", () => {
   describe("GET /trips/internal - Internal trip list", () => {
     it("returns all trips for admins", async () => {
       const response = await request(app)
-        .get("/trips/internal")
+        .get("/api/v1/trips/internal")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -290,7 +290,7 @@ describe("Trip Endpoints", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/trips/internal");
+      const response = await request(app).get("/api/v1/trips/internal");
 
       expect(response.status).toBe(401);
     });
@@ -300,7 +300,7 @@ describe("Trip Endpoints", () => {
     it("returns trip details with authentication", async () => {
       if (!tripId) {
         const createRes = await request(app)
-          .post("/trips")
+          .post("/api/v1/trips")
           .set("Authorization", `Bearer ${adminToken}`)
           .send({
             title: "Trip for Retrieval",
@@ -324,7 +324,7 @@ describe("Trip Endpoints", () => {
       }
 
       const response = await request(app)
-        .get(`/trips/${tripId}`)
+        .get(`/api/v1/trips/${tripId}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -336,14 +336,14 @@ describe("Trip Endpoints", () => {
     it("returns 401 without authentication", async () => {
       if (!tripId) return; // Skip if no tripId
 
-      const response = await request(app).get(`/trips/${tripId}`);
+      const response = await request(app).get(`/api/v1/trips/${tripId}`);
 
       expect(response.status).toBe(401);
     });
 
     it("returns 404 for non-existent trip", async () => {
       const response = await request(app)
-        .get("/trips/non-existent-id-789")
+        .get("/api/v1/trips/non-existent-id-789")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);

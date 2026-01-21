@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { ApiResponse } from "../../utils/ApiResponse";
 import { bookingService } from "../../services/booking.service";
 
 /**
@@ -11,8 +12,8 @@ export async function getMyBookings(req: Request, res: Response) {
   try {
     const userId = (req as any).user.id;
     const bookings = await bookingService.getMyBookings(userId);
-    res.json(bookings);
-  } catch {
-    res.status(500).json({ error: "Failed to load bookings" });
+    return ApiResponse.success(res, bookings, "Bookings retrieved successfully");
+  } catch (error) {
+    return ApiResponse.error(res, "INTERNAL_SERVER_ERROR", "Failed to load bookings", 500);
   }
 }

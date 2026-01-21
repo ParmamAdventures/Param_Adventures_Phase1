@@ -28,7 +28,7 @@ const buildPaymentCapturedEvent = (orderId: string, paymentId: string) => ({
       entity: {
         id: paymentId,
         order_id: orderId,
-        method: "upi",
+        method: "UPI",
       },
     },
   },
@@ -158,7 +158,7 @@ describe("Razorpay Webhooks", () => {
     const payment = await prisma.payment.create({
       data: {
         bookingId: booking.id,
-        provider: "razorpay",
+        provider: "RAZORPAY",
         providerOrderId: "order_captured",
         amount: 500000,
         status: "CREATED",
@@ -172,7 +172,7 @@ describe("Razorpay Webhooks", () => {
     const updatedPayment = await prisma.payment.findUnique({ where: { id: payment.id } });
     expect(updatedPayment?.status).toBe("CAPTURED");
     expect(updatedPayment?.providerPaymentId).toBe("pay_captured");
-    expect(updatedPayment?.method).toBe("upi");
+    expect(updatedPayment?.method).toBe("UPI");
 
     const updatedBooking = await prisma.booking.findUnique({ where: { id: booking.id } });
     expect(updatedBooking?.status).toBe("CONFIRMED");
@@ -202,7 +202,7 @@ describe("Razorpay Webhooks", () => {
     await prisma.payment.create({
       data: {
         bookingId: booking.id,
-        provider: "razorpay",
+        provider: "RAZORPAY",
         providerOrderId: "order_failed",
         amount: 500000,
         status: "CREATED",
@@ -242,7 +242,7 @@ describe("Razorpay Webhooks", () => {
     await prisma.payment.create({
       data: {
         bookingId: booking.id,
-        provider: "razorpay",
+        provider: "RAZORPAY",
         providerOrderId: "order_refund",
         providerPaymentId: "pay_refund",
         amount: 500000,

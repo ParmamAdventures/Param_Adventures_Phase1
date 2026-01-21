@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
-import { auditService, AuditActions } from "./audit.service";
+import { auditService } from "./audit.service";
+import { AuditAction } from "@prisma/client";
 
 export class AdminService {
   /**
@@ -122,7 +123,7 @@ export class AdminService {
 
     await auditService.logAudit({
       actorId,
-      action: AuditActions.USER_STATUS_UPDATED,
+      action: AuditAction.USER_STATUS_UPDATED,
       targetType: "USER",
       targetId: user.id,
       metadata: { status, reason },
@@ -145,7 +146,7 @@ export class AdminService {
 
     await auditService.logAudit({
       actorId,
-      action: AuditActions.USER_DELETED,
+      action: AuditAction.USER_DELETED,
       targetType: "USER",
       targetId: user.id,
       metadata: { deletedAt: new Date().toISOString() },
@@ -168,7 +169,7 @@ export class AdminService {
 
     await auditService.logAudit({
       actorId,
-      action: AuditActions.USER_UNSUSPENDED,
+      action: AuditAction.USER_UNSUSPENDED,
       targetType: "USER",
       targetId: user.id,
     });

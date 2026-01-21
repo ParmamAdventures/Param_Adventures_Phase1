@@ -30,7 +30,7 @@ describe("User Registration Flow (Mocked)", () => {
     // Mock audit log creation
     prismaMock.auditLog.create.mockResolvedValue({ id: "audit-123" } as any);
 
-    const res = await request(app).post("/auth/register").send({
+    const res = await request(app).post("/api/v1/auth/register").send({
       email: "newuser@example.com",
       password: "Password123!",
       name: "New User",
@@ -44,7 +44,7 @@ describe("User Registration Flow (Mocked)", () => {
   it("should fail if email is already registered", async () => {
     prismaMock.user.findUnique.mockResolvedValue({ id: "existing-123" } as any);
 
-    const res = await request(app).post("/auth/register").send({
+    const res = await request(app).post("/api/v1/auth/register").send({
       email: "existing@example.com",
       password: "Password123!",
       name: "Existing User",

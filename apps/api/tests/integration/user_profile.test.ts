@@ -35,7 +35,7 @@ describe("User Profile Integration", () => {
 
   it("should update user profile (preferences and bio)", async () => {
     const res = await request(app)
-      .patch("/users/profile")
+      .patch("/api/v1/users/profile")
       .set("Authorization", `Bearer ${userToken}`)
       .send({
         nickname: "Pro",
@@ -55,7 +55,7 @@ describe("User Profile Integration", () => {
   });
 
   it("should return 401 if unauthorized", async () => {
-    const res = await request(app).patch("/users/profile").send({
+    const res = await request(app).patch("/api/v1/users/profile").send({
       nickname: "Hacker",
     });
 

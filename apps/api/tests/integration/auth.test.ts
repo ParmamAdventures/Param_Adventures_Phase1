@@ -86,7 +86,7 @@ describe("Auth Integration", () => {
   });
 
   it("should register a new user", async () => {
-    const res = await request(app).post("/auth/register").send({
+    const res = await request(app).post("/api/v1/auth/register").send({
       email: "test@example.com",
       password: "Password123!",
       name: "Test User",
@@ -108,7 +108,7 @@ describe("Auth Integration", () => {
   });
 
   it("should fail on duplicate email", async () => {
-    const res = await request(app).post("/auth/register").send({
+    const res = await request(app).post("/api/v1/auth/register").send({
       email: "test@example.com",
       password: "Password123!",
       name: "Test User 2",
@@ -119,7 +119,7 @@ describe("Auth Integration", () => {
   });
 
   it("should fail on invalid email (Zod)", async () => {
-    const res = await request(app).post("/auth/register").send({
+    const res = await request(app).post("/api/v1/auth/register").send({
       email: "invalid-email",
       password: "Password123!",
       name: "Test User",
@@ -137,11 +137,11 @@ describe("Auth Integration", () => {
     };
 
     beforeAll(async () => {
-      await request(app).post("/auth/register").send(credentials);
+      await request(app).post("/api/v1/auth/register").send(credentials);
     });
 
     it("should login successfully and return access token + user", async () => {
-      const res = await request(app).post("/auth/login").send({
+      const res = await request(app).post("/api/v1/auth/login").send({
         email: credentials.email,
         password: credentials.password,
       });
@@ -154,7 +154,7 @@ describe("Auth Integration", () => {
     });
 
     it("should fail login with wrong password", async () => {
-      const res = await request(app).post("/auth/login").send({
+      const res = await request(app).post("/api/v1/auth/login").send({
         email: credentials.email,
         password: "wrongpassword",
       });
@@ -164,26 +164,26 @@ describe("Auth Integration", () => {
     });
 
     it("should get current user profile with valid token", async () => {
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         email: credentials.email,
         password: credentials.password,
       });
       const token = loginRes.body.data.accessToken;
 
-      const res = await request(app).get("/auth/me").set("Authorization", `Bearer ${token}`);
+      const res = await request(app).get("/api/v1/auth/me").set("Authorization", `Bearer ${token}`);
 
       expect(res.status).toBe(200);
       expect(res.body.data.email).toBe(credentials.email);
     });
 
     it("should refresh access token using cookie", async () => {
-      const loginRes = await request(app).post("/auth/login").send({
+      const loginRes = await request(app).post("/api/v1/auth/login").send({
         email: credentials.email,
         password: credentials.password,
       });
       const cookies = loginRes.headers["set-cookie"];
 
-      const res = await request(app).post("/auth/refresh").set("Cookie", cookies);
+      const res = await request(app).post("/api/v1/auth/refresh").set("Cookie", cookies);
 
       expect(res.status).toBe(200);
       expect(res.body.data).toHaveProperty("accessToken");

@@ -108,13 +108,15 @@ describe("Media Endpoints", () => {
         description: "A test trek for media",
         category: "TREK",
         durationDays: 3,
-        difficulty: "Easy",
+        difficulty: "EASY",
         location: "Himalayas",
         price: 10000,
         capacity: 20,
         itinerary: {},
         createdById: adminId,
         status: "DRAFT",
+        startDate: new Date(),
+        endDate: new Date(),
       },
     });
     tripId = trip.id;
@@ -140,7 +142,7 @@ describe("Media Endpoints", () => {
   describe("GET /media - List media", () => {
     it("returns media list with authentication", async () => {
       const response = await request(app)
-        .get("/media")
+        .get("/api/v1/media")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -150,14 +152,14 @@ describe("Media Endpoints", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/media");
+      const response = await request(app).get("/api/v1/media");
 
       expect(response.status).toBe(401);
     });
 
     it("supports pagination parameters", async () => {
       const response = await request(app)
-        .get("/media?page=1&limit=10")
+        .get("/api/v1/media?page=1&limit=10")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -170,7 +172,7 @@ describe("Media Endpoints", () => {
 
     it("supports type filtering", async () => {
       const response = await request(app)
-        .get("/media?type=IMAGE")
+        .get("/api/v1/media?type=IMAGE")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -197,14 +199,14 @@ describe("Media Endpoints", () => {
       });
 
       const response = await request(app)
-        .delete(`/media/${mediaToDelete.id}`)
+        .delete(`/api/v1/media/${mediaToDelete.id}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 204]).toContain(response.status);
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).delete(`/media/${imageId}`);
+      const response = await request(app).delete(`/api/v1/media/${imageId}`);
 
       expect(response.status).toBe(401);
     });
@@ -226,7 +228,7 @@ describe("Media Endpoints", () => {
       });
 
       const response = await request(app)
-        .delete(`/media/${mediaItem.id}`)
+        .delete(`/api/v1/media/${mediaItem.id}`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -234,7 +236,7 @@ describe("Media Endpoints", () => {
 
     it("returns 404 for non-existent media", async () => {
       const response = await request(app)
-        .delete("/media/non-existent-id-123")
+        .delete("/api/v1/media/non-existent-id-123")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(404);
@@ -264,7 +266,7 @@ describe("Media Endpoints", () => {
       });
 
       const response = await request(app)
-        .delete(`/media/${inUseMedia.id}`)
+        .delete(`/api/v1/media/${inUseMedia.id}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       // Note: Currently deletion succeeds even when in-use due to lack of FK constraints
@@ -275,7 +277,7 @@ describe("Media Endpoints", () => {
 
   describe("POST /media/upload - Upload media", () => {
     it("returns 401 without authentication", async () => {
-      const response = await request(app).post("/media/upload");
+      const response = await request(app).post("/api/v1/media/upload");
 
       expect(response.status).toBe(401);
     });
@@ -287,14 +289,14 @@ describe("Media Endpoints", () => {
 
   describe("POST /media/trips/:tripId/cover - Upload trip cover", () => {
     it("returns 401 without authentication", async () => {
-      const response = await request(app).post(`/media/trips/${tripId}/cover`);
+      const response = await request(app).post(`/api/v1/media/trips/${tripId}/cover`);
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without trip:edit permission", async () => {
       const response = await request(app)
-        .post(`/media/trips/${tripId}/cover`)
+        .post(`/api/v1/media/trips/${tripId}/cover`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -304,7 +306,7 @@ describe("Media Endpoints", () => {
   describe("POST /media/trips/:tripId/cover/attach - Attach existing image as cover", () => {
     it("returns 401 without authentication", async () => {
       const response = await request(app)
-        .post(`/media/trips/${tripId}/cover/attach`)
+        .post(`/api/v1/media/trips/${tripId}/cover/attach`)
         .send({ imageId });
 
       expect(response.status).toBe(401);
@@ -312,7 +314,7 @@ describe("Media Endpoints", () => {
 
     it("returns 403 without trip:edit permission", async () => {
       const response = await request(app)
-        .post(`/media/trips/${tripId}/cover/attach`)
+        .post(`/api/v1/media/trips/${tripId}/cover/attach`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({ imageId });
 
@@ -322,14 +324,14 @@ describe("Media Endpoints", () => {
 
   describe("POST /media/trips/:tripId/gallery - Upload trip gallery images", () => {
     it("returns 401 without authentication", async () => {
-      const response = await request(app).post(`/media/trips/${tripId}/gallery`);
+      const response = await request(app).post(`/api/v1/media/trips/${tripId}/gallery`);
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without trip:edit permission", async () => {
       const response = await request(app)
-        .post(`/media/trips/${tripId}/gallery`)
+        .post(`/api/v1/media/trips/${tripId}/gallery`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);

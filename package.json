@@ -25,6 +25,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
+    "husky": "^9.1.7",
     "prettier": "^3.7.4",
     "prisma": "4.16.2",
     "typescript": "^5.9.3"
@@ -32,7 +33,8 @@
   "scripts": {
     "dev": "concurrently \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
     "build": "npm run build -w apps/api && npm run build -w apps/web",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "concurrently \"npm run test -w apps/api\" \"npm run test -w apps/web\"",
+    "prepare": "husky"
   },
   "repository": {
     "type": "git",

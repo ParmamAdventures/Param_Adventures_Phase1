@@ -118,23 +118,23 @@ describe("Admin Operations", () => {
   describe("GET /admin/users - List users", () => {
     it("returns users list when user has permission", async () => {
       const response = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThan(0);
+      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(response.body.data.length).toBeGreaterThan(0);
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/admin/users");
+      const response = await request(app).get("/api/v1/admin/users");
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without permission", async () => {
       const response = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -142,18 +142,18 @@ describe("Admin Operations", () => {
 
     it("filters users by role", async () => {
       const response = await request(app)
-        .get("/admin/users?role=USER")
+        .get("/api/v1/admin/users?role=USER")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.body)).toBe(true);
+      expect(Array.isArray(response.body.data)).toBe(true);
     });
   });
 
   describe("PATCH /admin/users/:id/status - Update user status", () => {
     it("suspends a user with admin permission", async () => {
       const response = await request(app)
-        .patch(`/admin/users/${testUserId}/status`)
+        .patch(`/api/v1/admin/users/${testUserId}/status`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send({
           status: "SUSPENDED",
@@ -161,12 +161,12 @@ describe("Admin Operations", () => {
         });
 
       expect(response.status).toBe(200);
-      expect(response.body.status).toBe("SUSPENDED");
+      expect(response.body.data.status).toBe("SUSPENDED");
     });
 
     it("returns 400 for invalid status", async () => {
       const response = await request(app)
-        .patch(`/admin/users/${testUserId}/status`)
+        .patch(`/api/v1/admin/users/${testUserId}/status`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send({
           status: "INVALID_STATUS",
@@ -176,7 +176,7 @@ describe("Admin Operations", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).patch(`/admin/users/${testUserId}/status`).send({
+      const response = await request(app).patch(`/api/v1/admin/users/${testUserId}/status`).send({
         status: "ACTIVE",
       });
 
@@ -185,7 +185,7 @@ describe("Admin Operations", () => {
 
     it("returns 403 without permission", async () => {
       const response = await request(app)
-        .patch(`/admin/users/${testUserId}/status`)
+        .patch(`/api/v1/admin/users/${testUserId}/status`)
         .set("Authorization", `Bearer ${userToken}`)
         .send({
           status: "ACTIVE",
@@ -199,28 +199,28 @@ describe("Admin Operations", () => {
     it("unsuspends a user", async () => {
       // First suspend the user
       await request(app)
-        .patch(`/admin/users/${testUserId}/status`)
+        .patch(`/api/v1/admin/users/${testUserId}/status`)
         .set("Authorization", `Bearer ${adminToken}`)
         .send({ status: "SUSPENDED", reason: "Test" });
 
       // Then unsuspend
       const response = await request(app)
-        .patch(`/admin/users/${testUserId}/unsuspend`)
+        .patch(`/api/v1/admin/users/${testUserId}/unsuspend`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.status).toBe("ACTIVE");
+      expect(response.body.data.status).toBe("ACTIVE");
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).patch(`/admin/users/${testUserId}/unsuspend`);
+      const response = await request(app).patch(`/api/v1/admin/users/${testUserId}/unsuspend`);
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without permission", async () => {
       const response = await request(app)
-        .patch(`/admin/users/${testUserId}/unsuspend`)
+        .patch(`/api/v1/admin/users/${testUserId}/unsuspend`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -239,7 +239,7 @@ describe("Admin Operations", () => {
       });
 
       const response = await request(app)
-        .delete(`/admin/users/${userToDelete.id}`)
+        .delete(`/api/v1/admin/users/${userToDelete.id}`)
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -253,14 +253,14 @@ describe("Admin Operations", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).delete(`/admin/users/${testUserId}`);
+      const response = await request(app).delete(`/api/v1/admin/users/${testUserId}`);
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without permission", async () => {
       const response = await request(app)
-        .delete(`/admin/users/${testUserId}`)
+        .delete(`/api/v1/admin/users/${testUserId}`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -270,7 +270,7 @@ describe("Admin Operations", () => {
   describe("GET /admin/dashboard - Dashboard stats", () => {
     it("returns dashboard statistics", async () => {
       const response = await request(app)
-        .get("/admin/dashboard/stats")
+        .get("/api/v1/admin/dashboard/stats")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -281,14 +281,14 @@ describe("Admin Operations", () => {
     });
 
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/admin/dashboard/stats");
+      const response = await request(app).get("/api/v1/admin/dashboard/stats");
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without permission", async () => {
       const response = await request(app)
-        .get("/admin/dashboard/stats")
+        .get("/api/v1/admin/dashboard/stats")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -298,7 +298,7 @@ describe("Admin Operations", () => {
   describe("GET /admin/analytics/* - Analytics endpoints", () => {
     it("returns revenue summary", async () => {
       const response = await request(app)
-        .get("/admin/analytics/revenue")
+        .get("/api/v1/admin/analytics/revenue")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 500]).toContain(response.status); // May fail if analytics service has issues
@@ -306,7 +306,7 @@ describe("Admin Operations", () => {
 
     it("returns trip performance", async () => {
       const response = await request(app)
-        .get("/admin/analytics/trips")
+        .get("/api/v1/admin/analytics/trips")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 500]).toContain(response.status);
@@ -314,7 +314,7 @@ describe("Admin Operations", () => {
 
     it("returns booking stats", async () => {
       const response = await request(app)
-        .get("/admin/analytics/bookings")
+        .get("/api/v1/admin/analytics/bookings")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 500]).toContain(response.status);
@@ -322,7 +322,7 @@ describe("Admin Operations", () => {
 
     it("returns payment stats", async () => {
       const response = await request(app)
-        .get("/admin/analytics/payments")
+        .get("/api/v1/admin/analytics/payments")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 500]).toContain(response.status);
@@ -330,7 +330,7 @@ describe("Admin Operations", () => {
 
     it("returns moderation summary", async () => {
       const response = await request(app)
-        .get("/admin/analytics/moderation")
+        .get("/api/v1/admin/analytics/moderation")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(response.status).toBe(200);
@@ -340,7 +340,7 @@ describe("Admin Operations", () => {
 
     it("blocks analytics access without permission", async () => {
       const response = await request(app)
-        .get("/admin/analytics/revenue")
+        .get("/api/v1/admin/analytics/revenue")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
@@ -349,14 +349,14 @@ describe("Admin Operations", () => {
 
   describe("GET /admin/audit-logs - Audit logs", () => {
     it("returns 401 without authentication", async () => {
-      const response = await request(app).get("/admin/audit-logs");
+      const response = await request(app).get("/api/v1/admin/audit-logs");
 
       expect(response.status).toBe(401);
     });
 
     it("returns 403 without permission", async () => {
       const response = await request(app)
-        .get("/admin/audit-logs")
+        .get("/api/v1/admin/audit-logs")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);

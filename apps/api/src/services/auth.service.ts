@@ -7,7 +7,8 @@ import {
   signResetToken,
   verifyResetToken,
 } from "../utils/jwt";
-import { auditService, AuditActions } from "./audit.service";
+import { auditService } from "./audit.service";
+import { AuditAction } from "@prisma/client";
 import { notificationService } from "./notification.service";
 import { HttpError } from "../utils/httpError";
 
@@ -36,7 +37,7 @@ export class AuthService {
 
     await auditService.logAudit({
       actorId: user.id,
-      action: AuditActions.USER_REGISTER,
+      action: AuditAction.USER_REGISTER,
       targetType: "User",
       targetId: user.id,
     });
@@ -63,7 +64,7 @@ export class AuthService {
 
     await auditService.logAudit({
       actorId: user.id,
-      action: AuditActions.USER_LOGIN,
+      action: AuditAction.USER_LOGIN,
       targetType: "User",
       targetId: user.id,
     });
@@ -129,7 +130,7 @@ export class AuthService {
 
     await auditService.logAudit({
       actorId: user.id,
-      action: AuditActions.USER_CHANGE_PASSWORD,
+      action: AuditAction.USER_CHANGE_PASSWORD,
       targetType: "User",
       targetId: user.id,
     });

@@ -209,7 +209,7 @@ describe("RBAC & Permission Integration", () => {
   describe("Role Assignment", () => {
     it("should list user roles in profile", async () => {
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -226,7 +226,7 @@ describe("RBAC & Permission Integration", () => {
       });
 
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -236,7 +236,7 @@ describe("RBAC & Permission Integration", () => {
 
     it("should display correct roles for different users", async () => {
       const guideRes = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${guideToken}`);
 
       expect(guideRes.status).toBe(200);
@@ -249,7 +249,7 @@ describe("RBAC & Permission Integration", () => {
     it("should allow SUPER_ADMIN to access all endpoints", async () => {
       // Test accessing admin panel
       const res = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${superAdminToken}`);
 
       expect(res.status).toBe(200);
@@ -257,7 +257,7 @@ describe("RBAC & Permission Integration", () => {
 
     it("should allow ADMIN to access admin endpoints", async () => {
       const res = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -265,7 +265,7 @@ describe("RBAC & Permission Integration", () => {
 
     it("should deny regular users from accessing admin endpoints", async () => {
       const res = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.status).toBe(403);
@@ -274,7 +274,7 @@ describe("RBAC & Permission Integration", () => {
 
     it("should deny guides from accessing admin endpoints", async () => {
       const res = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${guideToken}`);
 
       expect(res.status).toBe(403);
@@ -284,7 +284,7 @@ describe("RBAC & Permission Integration", () => {
   describe("Trip Permission Authorization", () => {
     it("should allow TRIP_MANAGER to view internal trips", async () => {
       const res = await request(app)
-        .get("/trips/internal")
+        .get("/api/v1/trips/internal")
         .set("Authorization", `Bearer ${tripManagerToken}`);
 
       expect([200, 401, 403]).toContain(res.status);
@@ -293,7 +293,7 @@ describe("RBAC & Permission Integration", () => {
 
     it("should allow TRIP_GUIDE to view internal trips", async () => {
       const res = await request(app)
-        .get("/trips/internal")
+        .get("/api/v1/trips/internal")
         .set("Authorization", `Bearer ${guideToken}`);
 
       expect([200, 401, 403]).toContain(res.status);
@@ -301,7 +301,7 @@ describe("RBAC & Permission Integration", () => {
 
     it("should deny regular users from viewing internal trips", async () => {
       const res = await request(app)
-        .get("/trips/internal")
+        .get("/api/v1/trips/internal")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.status).toBe(403);
@@ -311,7 +311,7 @@ describe("RBAC & Permission Integration", () => {
   describe("User Profile Permissions", () => {
     it("should allow authenticated user to view own profile", async () => {
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.status).toBe(200);
@@ -320,7 +320,7 @@ describe("RBAC & Permission Integration", () => {
 
     it("should allow authenticated user to update own profile", async () => {
       const res = await request(app)
-        .patch("/users/profile")
+        .patch("/api/v1/users/profile")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ bio: "Updated bio" });
 
@@ -328,13 +328,13 @@ describe("RBAC & Permission Integration", () => {
     });
 
     it("should deny unauthenticated users from viewing profile", async () => {
-      const res = await request(app).get("/users/profile");
+      const res = await request(app).get("/api/v1/users/profile");
 
       expect(res.status).toBe(401);
     });
 
     it("should deny unauthenticated users from updating profile", async () => {
-      const res = await request(app).patch("/users/profile").send({ bio: "Hack attempt" });
+      const res = await request(app).patch("/api/v1/users/profile").send({ bio: "Hack attempt" });
 
       expect(res.status).toBe(401);
     });
@@ -474,7 +474,7 @@ describe("RBAC & Permission Integration", () => {
     it("should correctly verify user has specific permission", async () => {
       // This would require an endpoint like GET /auth/me which includes permissions
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -487,7 +487,7 @@ describe("RBAC & Permission Integration", () => {
     it("should deny access when user lacks required permission", async () => {
       // User has no special permissions, so should be denied from admin panel
       const res = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(res.status).toBe(403);
@@ -504,14 +504,14 @@ describe("RBAC & Permission Integration", () => {
 
       // Should still be able to access public endpoints and own profile
       const res = await request(app)
-        .get("/users/profile")
+        .get("/api/v1/users/profile")
         .set("Authorization", `Bearer ${orphanToken}`);
 
       expect(res.status).toBe(200);
 
       // But should be denied from admin
       const adminRes = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${orphanToken}`);
 
       expect(adminRes.status).toBe(403);
@@ -523,7 +523,7 @@ describe("RBAC & Permission Integration", () => {
     it("should handle permission lookup with non-existent permission", async () => {
       // Try to access endpoint that requires non-existent permission
       const res = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${userToken}`);
 
       // Should fail with 403 (not 404)
@@ -544,7 +544,7 @@ describe("RBAC & Permission Integration", () => {
 
       // Should be able to access admin
       const res1 = await request(app)
-        .get("/admin/users")
+        .get("/api/v1/admin/users")
         .set("Authorization", `Bearer ${tempToken}`);
       expect(res1.status).toBe(200);
 

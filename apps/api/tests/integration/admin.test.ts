@@ -115,20 +115,24 @@ describe("Admin RBAC Integration", () => {
   });
 
   it("should allow admin to list users", async () => {
-    const res = await request(app).get("/admin/users").set("Authorization", `Bearer ${adminToken}`);
+    const res = await request(app)
+      .get("/api/v1/admin/users")
+      .set("Authorization", `Bearer ${adminToken}`);
 
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
+    expect(Array.isArray(res.body.data)).toBe(true);
   });
 
   it("should forbid normal user", async () => {
-    const res = await request(app).get("/admin/users").set("Authorization", `Bearer ${userToken}`);
+    const res = await request(app)
+      .get("/api/v1/admin/users")
+      .set("Authorization", `Bearer ${userToken}`);
 
     expect(res.status).toBe(403);
   });
 
   it("should require authentication", async () => {
-    const res = await request(app).get("/admin/users");
+    const res = await request(app).get("/api/v1/admin/users");
     expect(res.status).toBe(401);
   });
 });

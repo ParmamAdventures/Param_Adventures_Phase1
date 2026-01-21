@@ -77,9 +77,11 @@ describe("Admin Analytics Integration", () => {
         slug: "analytics-expedition",
         location: "Test",
         durationDays: 3,
-        difficulty: "MEDIUM",
+        difficulty: "MODERATE",
         itinerary: [],
         status: "PUBLISHED",
+        startDate: new Date(),
+        endDate: new Date(),
         createdById: userId,
       },
     });
@@ -102,7 +104,7 @@ describe("Admin Analytics Integration", () => {
         amount: 200000, // 2000 INR
         currency: "INR",
         status: "CAPTURED",
-        provider: "RAZORPAY",
+        provider: "RAZORPAY" as any,
         providerPaymentId: "pay_1",
         providerOrderId: "order_1",
       },
@@ -123,7 +125,7 @@ describe("Admin Analytics Integration", () => {
   describe("GET /admin/analytics/revenue", () => {
     it("should return revenue stats with growth and potential", async () => {
       const res = await request(app)
-        .get("/admin/analytics/revenue")
+        .get("/api/v1/admin/analytics/revenue")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -141,7 +143,7 @@ describe("Admin Analytics Integration", () => {
   describe("GET /admin/analytics/bookings", () => {
     it("should return booking stats and success rate", async () => {
       const res = await request(app)
-        .get("/admin/analytics/bookings")
+        .get("/api/v1/admin/analytics/bookings")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
@@ -156,7 +158,7 @@ describe("Admin Analytics Integration", () => {
   describe("GET /admin/analytics/trips", () => {
     it("should return trip performance with impact labels", async () => {
       const res = await request(app)
-        .get("/admin/analytics/trips")
+        .get("/api/v1/admin/analytics/trips")
         .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
