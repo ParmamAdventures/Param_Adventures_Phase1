@@ -21,7 +21,17 @@ export async function handlePaymentCaptured(event: any) {
 
   if (!payment) return;
 
-  if (payment.status === "CAPTURED") {
+  // IDEMPOTENCY CHECK: Check if this specific payment ID was already processed for this booking
+  // This handles the case where Razorpay sends the same webhook multiple times
+  const existingCapturedPayment = await prisma.payment.findFirst({
+    where: {
+      bookingId: payment.bookingId,
+      providerPaymentId: razorpayPaymentId,
+      status: "CAPTURED",
+    },
+  });
+
+  if (existingCapturedPayment || payment.status === "CAPTURED") {
     // Log replayed capture event for observability
     logWebhookReplay({
       provider: "razorpay",

@@ -48,6 +48,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     startDate: "",
     guestDetails: [] as any[],
   });
+  const [pendingBooking, setPendingBooking] = React.useState<any>(null);
 
   // Update guest details when guest count changes
   useEffect(() => {
@@ -88,6 +89,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
+      setPendingBooking(null); // Reset pending booking
       setField("guests", 1);
 
       // Auto-fill date if trip has a fixed start date
@@ -110,33 +112,38 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     }
 
     await execute(async () => {
-      // 1. Create Booking
-      const res = await apiFetch("/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tripId: trip.id,
-          startDate: new Date(formData.startDate).toISOString(),
-          guests: formData.guests,
-          guestDetails: formData.guestDetails,
-        }),
-      });
+      let booking = pendingBooking;
 
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.error || "Failed to create booking");
+      // 1. Create Booking (if not already created)
+      if (!booking) {
+        const res = await apiFetch("/bookings", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tripId: trip.id,
+            startDate: new Date(formData.startDate).toISOString(),
+            guests: formData.guests,
+            guestDetails: formData.guestDetails,
+          }),
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || "Failed to create booking");
+        }
+
+        const response = await res.json();
+        booking = response.data;
+        setPendingBooking(booking);
       }
 
-      const response = await res.json();
-      const booking = response.data;
-
-      // 2. Initiate Payment (Razorpay)
-      const result = await initiatePayment(booking.id, {
+      // 2. Initiate Payment (Razorpay) - Awaits verification now
+      await initiatePayment(booking.id, {
         name: user?.name || formData.guestDetails[0]?.name,
         email: user?.email || formData.guestDetails[0]?.email,
       });
 
-      // 3. Success
+      // 3. Success (Only reached if payment verified)
       showToast("Booking & Payment Successful!", "success");
       onBookingSuccess(booking);
       onClose();
