@@ -451,9 +451,12 @@ async function createImages(users: any) {
 
   const images = [];
   for (const data of imageData) {
-    const image = await prisma.image.create({
-      data: {
-        originalUrl: `${data.url}?w=1920`,
+    const originalUrl = `${data.url}?w=1920`;
+    const image = await prisma.image.upsert({
+      where: { originalUrl },
+      update: {},
+      create: {
+        originalUrl,
         mediumUrl: `${data.url}?w=800`,
         thumbUrl: `${data.url}?w=400`,
         width: 1920,
@@ -822,8 +825,11 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   console.log("\n📅 Creating bookings and payments...");
 
   // Completed booking with payment
-  const booking1 = await prisma.booking.create({
-    data: {
+  const booking1 = await prisma.booking.upsert({
+    where: { id: "demo-booking-1" },
+    update: {},
+    create: {
+      id: "demo-booking-1",
       user: { connect: { id: users.customers[0].id } },
       trip: { connect: { id: trips[0].id } },
       startDate: new Date("2026-03-15"),
@@ -838,12 +844,14 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
     },
   });
 
-  await prisma.payment.create({
-    data: {
+  await prisma.payment.upsert({
+    where: { providerOrderId: "order_demo_fixed_1" },
+    update: {},
+    create: {
       booking: { connect: { id: booking1.id } },
       provider: "RAZORPAY",
-      providerOrderId: `order_demo_${Date.now()}_1`,
-      providerPaymentId: `pay_demo_${Date.now()}_1`,
+      providerOrderId: "order_demo_fixed_1",
+      providerPaymentId: "pay_demo_fixed_1",
       amount: 240000,
       currency: "INR",
       status: "CAPTURED",
@@ -852,8 +860,11 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   });
 
   // Ongoing trip booking
-  const booking2 = await prisma.booking.create({
-    data: {
+  const booking2 = await prisma.booking.upsert({
+    where: { id: "demo-booking-2" },
+    update: {},
+    create: {
+      id: "demo-booking-2",
       user: { connect: { id: users.customers[1].id } },
       trip: { connect: { id: trips[1].id } },
       startDate: new Date("2026-06-01"),
@@ -864,12 +875,14 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
     },
   });
 
-  await prisma.payment.create({
-    data: {
+  await prisma.payment.upsert({
+    where: { providerOrderId: "order_demo_fixed_2" },
+    update: {},
+    create: {
       booking: { connect: { id: booking2.id } },
       provider: "RAZORPAY",
-      providerOrderId: `order_demo_${Date.now()}_2`,
-      providerPaymentId: `pay_demo_${Date.now()}_2`,
+      providerOrderId: "order_demo_fixed_2",
+      providerPaymentId: "pay_demo_fixed_2",
       amount: 85000,
       currency: "INR",
       status: "CAPTURED",
@@ -878,8 +891,11 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   });
 
   // Pending booking
-  await prisma.booking.create({
-    data: {
+  await prisma.booking.upsert({
+    where: { id: "demo-booking-3" },
+    update: {},
+    create: {
+      id: "demo-booking-3",
       user: { connect: { id: users.customers[2].id } },
       trip: { connect: { id: trips[2].id } },
       startDate: new Date("2026-04-01"),
@@ -896,17 +912,25 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
 async function createReviewsAndInquiries(users: any, trips: any[]) {
   console.log("\n⭐ Creating reviews and inquiries...");
 
-  await prisma.review.create({
-    data: {
-      user: { connect: { id: users.customers[0].id } },
-      trip: { connect: { id: trips[3].id } },
-      rating: 5,
-      comment: "Amazing experience! The guides were professional and the rapids were thrilling.",
-    },
+  // Use count check or unique key for reviews if possible, but here we'll just check existence
+  const existingReview = await prisma.review.findFirst({
+    where: { userId: users.customers[0].id, tripId: trips[3].id },
   });
+  if (!existingReview) {
+    await prisma.review.create({
+      data: {
+        user: { connect: { id: users.customers[0].id } },
+        trip: { connect: { id: trips[3].id } },
+        rating: 5,
+        comment: "Amazing experience! The guides were professional and the rapids were thrilling.",
+      },
+    });
+  }
 
-  await prisma.tripInquiry.create({
-    data: {
+  await prisma.tripInquiry.upsert({
+    where: { email: "vikram.m@email.com" },
+    update: {},
+    create: {
       name: "Vikram Mehta",
       email: "vikram.m@email.com",
       phoneNumber: "+91-9988776655",
@@ -954,32 +978,36 @@ async function main() {
 
     validateEnvironment();
 
-    console.log("\n🗑️  Clearing existing data...");
-    await prisma.$transaction([
-      // Delete dependent records first
-      prisma.payment.deleteMany(),
-      prisma.booking.deleteMany(),
-      prisma.review.deleteMany(),
-      prisma.savedTrip.deleteMany(),
-      prisma.tripInquiry.deleteMany(),
-      prisma.newsletterSubscriber.deleteMany(),
-      prisma.heroSlide.deleteMany(),
-      prisma.blog.deleteMany(),
-      prisma.tripGalleryImage.deleteMany(),
-      prisma.tripsOnGuides.deleteMany(),
-      prisma.trip.deleteMany(),
-      prisma.image.deleteMany(),
-      prisma.auditLog.deleteMany(),
-      prisma.siteConfig.deleteMany(),
-      // Delete user relationships
-      prisma.userRole.deleteMany(),
-      prisma.user.deleteMany(),
-      // Delete role relationships and roles
-      prisma.rolePermission.deleteMany(),
-      prisma.role.deleteMany(),
-      prisma.permission.deleteMany(),
-    ]);
-    console.log("✅ Database cleared");
+    if (process.env.FORCE_RESET === "true") {
+      console.log("\n🗑️  Clearing existing data (FORCE_RESET=true)...");
+      await prisma.$transaction([
+        // Delete dependent records first
+        prisma.payment.deleteMany(),
+        prisma.booking.deleteMany(),
+        prisma.review.deleteMany(),
+        prisma.savedTrip.deleteMany(),
+        prisma.tripInquiry.deleteMany(),
+        prisma.newsletterSubscriber.deleteMany(),
+        prisma.heroSlide.deleteMany(),
+        prisma.blog.deleteMany(),
+        prisma.tripGalleryImage.deleteMany(),
+        prisma.tripsOnGuides.deleteMany(),
+        prisma.trip.deleteMany(),
+        prisma.image.deleteMany(),
+        prisma.auditLog.deleteMany(),
+        prisma.siteConfig.deleteMany(),
+        // Delete user relationships
+        prisma.userRole.deleteMany(),
+        prisma.user.deleteMany(),
+        // Delete role relationships and roles
+        prisma.rolePermission.deleteMany(),
+        prisma.role.deleteMany(),
+        prisma.permission.deleteMany(),
+      ]);
+      console.log("✅ Database cleared");
+    } else {
+      console.log("\n🛡️  Skipping database clear (idempotent mode)");
+    }
 
     const roles = await createRolesAndPermissions();
     const users = await createUsers(roles);

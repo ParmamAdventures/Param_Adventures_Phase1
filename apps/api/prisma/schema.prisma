@@ -398,7 +398,7 @@ model Blog {
 
 model Image {
   id          String    @id @default(uuid())
-  originalUrl String
+  originalUrl String    @unique
   mediumUrl   String
   thumbUrl    String
   width       Int
@@ -592,7 +592,7 @@ model SiteConfig {
 model TripInquiry {
   id          String            @id @default(uuid())
   name        String
-  email       String
+  email       String            @unique
   phoneNumber String? // Removed @unique - nullable fields shouldn't have unique constraints
   destination String
   dates       String?
