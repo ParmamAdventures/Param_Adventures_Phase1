@@ -1,4 +1,4 @@
-import PDFDocument = require("pdfkit");
+import PDFDocument from "pdfkit";
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
 import fs from "fs";
