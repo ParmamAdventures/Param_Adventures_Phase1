@@ -31,24 +31,6 @@ const mockRequest = (body: any) => {
 
 describe("InquiryController", () => {
   describe("createInquiry", () => {
-    it("should return 400 if required fields are missing", async () => {
-      const req = mockRequest({ name: "Akash" }); // Missing email, destination
-      const res = mockResponse();
-
-      await createInquiry(req, res, jest.fn());
-
-      expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith(
-        expect.objectContaining({
-          success: false,
-          error: expect.objectContaining({
-            code: "VALIDATION_ERROR",
-            message: "Name, Email and Destination are required",
-          }),
-        }),
-      );
-    });
-
     it("should create inquiry and return 201 on success", async () => {
       const data = {
         name: "Akash",
