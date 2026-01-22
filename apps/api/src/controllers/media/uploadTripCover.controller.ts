@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import { buildImageUrls, resolvePublicId } from "../../utils/cloudinary.utils";
+import { resolvePublicId } from "../../utils/cloudinary.utils";
+import { createImageInput } from "../../utils/mediaFactory";
 
 /**
  * Upload Trip Cover
@@ -22,24 +23,8 @@ export async function uploadTripCover(req: Request, res: Response) {
     throw new HttpError(500, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID");
   }
 
-  const version = (file as any).version;
-  const urls = buildImageUrls(publicId, version, file.path);
-
-  // Create Image record
-  const image = await prisma.image.create({
-    data: {
-      originalUrl: urls.originalUrl,
-      mediumUrl: urls.mediumUrl,
-      thumbUrl: urls.thumbUrl,
-      mimeType: file.mimetype,
-      size: file.size,
-      width: file.width || 0,
-      height: file.height || 0,
-      uploadedById: (req as any).user.id,
-      type: "IMAGE",
-      duration: 0,
-    },
-  });
+  const imageInput = createImageInput(file, (req as any).user.id);
+  const image = await prisma.image.create({ data: imageInput });
 
   // Update Trip
   await prisma.trip.update({
@@ -50,12 +35,12 @@ export async function uploadTripCover(req: Request, res: Response) {
   });
 
   res.status(201).json({
-    image: urls.originalUrl,
+    image: imageInput.originalUrl,
     imageId: image.id,
     urls: {
-      original: urls.originalUrl,
-      medium: urls.mediumUrl,
-      thumb: urls.thumbUrl,
+      original: imageInput.originalUrl,
+      medium: imageInput.mediumUrl,
+      thumb: imageInput.thumbUrl,
     },
   });
 }

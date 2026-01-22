@@ -1,12 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import {
-  buildImageUrls,
-  buildVideoUrls,
-  inferResourceType,
-  resolvePublicId,
-} from "../../utils/cloudinary.utils";
+import { resolvePublicId } from "../../utils/cloudinary.utils";
+import { createImageInput } from "../../utils/mediaFactory";
 
 /**
  * Upload Trip Gallery
@@ -37,33 +33,12 @@ export async function uploadTripGallery(req: Request, res: Response) {
       throw new HttpError(500, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID");
     }
 
-    const version = (file as any).version;
-    const resourceType = inferResourceType(file.mimetype);
-    const urls =
-      resourceType === "video"
-        ? buildVideoUrls(publicId, version, file.path)
-        : buildImageUrls(publicId, version, file.path);
-
-    const image = await prisma.image.create({
-      data: {
-        originalUrl: urls.originalUrl,
-        mediumUrl: urls.mediumUrl,
-        thumbUrl: urls.thumbUrl,
-        mimeType: file.mimetype,
-        size: file.size,
-        width: file.width || 0,
-        height: file.height || 0,
-        uploadedById: (req as any).user.id,
-        type: resourceType === "video" ? "VIDEO" : "IMAGE",
-        duration: resourceType === "video" ? file.duration || 0 : 0,
-        tripsGallery: {
-          create: {
-            tripId,
-            order: nextOrder++,
-          },
-        },
-      },
+    const imageInput = createImageInput(file, (req as any).user.id, {
+      tripId,
+      galleryOrder: nextOrder++,
     });
+
+    const image = await prisma.image.create({ data: imageInput });
     imageRecords.push(image);
   }
 

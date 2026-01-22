@@ -3,6 +3,7 @@ import { logAudit, AuditAction } from "../utils/audit.helper";
 import { HttpError } from "../utils/httpError";
 import { slugify } from "../utils/slugify";
 import { EntityStatus } from "../constants/status";
+import { applyPublicOrAuthorFilter } from "../utils/queryHelpers";
 
 export class BlogService {
   /**
@@ -69,14 +70,7 @@ export class BlogService {
 
     const whereCondition: any = { id };
 
-    if (!canViewInternal) {
-      if (userId) {
-        // Allow if PUBLISHED or if the user is the author
-        whereCondition.OR = [{ status: EntityStatus.PUBLISHED }, { authorId: userId }];
-      } else {
-        whereCondition.status = EntityStatus.PUBLISHED;
-      }
-    }
+    applyPublicOrAuthorFilter(whereCondition, userId, canViewInternal);
 
     return prisma.blog.findFirst({
       where: whereCondition,
@@ -112,13 +106,7 @@ export class BlogService {
 
     const whereCondition: any = { slug };
 
-    if (!canViewInternal) {
-      if (userId) {
-        whereCondition.OR = [{ status: EntityStatus.PUBLISHED }, { authorId: userId }];
-      } else {
-        whereCondition.status = EntityStatus.PUBLISHED;
-      }
-    }
+    applyPublicOrAuthorFilter(whereCondition, userId, canViewInternal);
 
     return prisma.blog.findFirst({
       where: whereCondition,
@@ -163,13 +151,7 @@ export class BlogService {
       whereCondition.authorId = authorId;
     }
 
-    if (!canViewInternal) {
-      if (userId) {
-        whereCondition.OR = [{ status: EntityStatus.PUBLISHED }, { authorId: userId }];
-      } else {
-        whereCondition.status = EntityStatus.PUBLISHED;
-      }
-    }
+    applyPublicOrAuthorFilter(whereCondition, userId, canViewInternal);
 
     const skip = (page - 1) * limit;
 
@@ -181,6 +163,7 @@ export class BlogService {
             select: {
               id: true,
               name: true,
+              // avatarUrl: true, // If needed
             },
           },
           coverImage: true,
