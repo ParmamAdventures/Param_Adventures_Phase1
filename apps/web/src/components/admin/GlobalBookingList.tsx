@@ -5,6 +5,8 @@ import { Select } from "../ui/Select";
 import Link from "next/link";
 import ManualPaymentModal from "./ManualPaymentModal";
 import { apiFetch } from "../../lib/api";
+import TableLoading from "../ui/DataTable/TableLoading";
+import TableEmptyState from "../ui/DataTable/TableEmptyState";
 
 interface Booking {
   id: string;
@@ -69,13 +71,7 @@ export default function GlobalBookingList({
   }, [bookings, search, statusFilter]);
 
   if (loading) {
-    return (
-      <div className="space-y-4">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-20 w-full animate-pulse rounded-2xl bg-[var(--border)]/20" />
-        ))}
-      </div>
-    );
+    return <TableLoading message="Loading bookings..." />;
   }
 
   return (
@@ -207,29 +203,35 @@ export default function GlobalBookingList({
                     </Button>
                   )}
                   {booking.paymentStatus === "PAID" && booking.status !== "CANCELLED" && (
-                     <Button
-                       variant="danger"
-                       className="ml-2 h-8 rounded-lg text-xs bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
-                       onClick={async () => {
-                         if (confirm("Are you sure you want to refund this booking? This action cannot be undone.")) {
-                            try {
-                              const res = await apiFetch(`/bookings/${booking.id}/refund`, { method: "POST" });
-                              if (res.ok) {
-                                alert("Refund processed successfully");
-                                onRefresh();
-                              } else {
-                                const data = await res.json();
-                                alert(data.message || "Refund failed");
-                              }
-                            } catch (e) {
-                              console.error(e);
-                              alert("Refund failed");
+                    <Button
+                      variant="danger"
+                      className="ml-2 h-8 rounded-lg bg-red-500/10 text-xs text-red-500 hover:bg-red-500 hover:text-white"
+                      onClick={async () => {
+                        if (
+                          confirm(
+                            "Are you sure you want to refund this booking? This action cannot be undone.",
+                          )
+                        ) {
+                          try {
+                            const res = await apiFetch(`/bookings/${booking.id}/refund`, {
+                              method: "POST",
+                            });
+                            if (res.ok) {
+                              alert("Refund processed successfully");
+                              onRefresh();
+                            } else {
+                              const data = await res.json();
+                              alert(data.message || "Refund failed");
                             }
-                         }
-                       }}
-                     >
-                       Refund
-                     </Button>
+                          } catch (e) {
+                            console.error(e);
+                            alert("Refund failed");
+                          }
+                        }
+                      }}
+                    >
+                      Refund
+                    </Button>
                   )}
                 </td>
               </tr>
@@ -238,10 +240,15 @@ export default function GlobalBookingList({
         </table>
 
         {filteredBookings.length === 0 && (
-          <div className="py-20 text-center">
-            <p className="text-muted-foreground italic">
-              No bookings match your current search/filter.
-            </p>
+          <div className="py-12">
+            <TableEmptyState
+              message="No bookings match your current search/filter."
+              actionLabel="Clear Filters"
+              onAction={() => {
+                setSearch("");
+                setStatusFilter("ALL");
+              }}
+            />
           </div>
         )}
       </div>

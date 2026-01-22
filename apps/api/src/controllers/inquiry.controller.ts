@@ -13,14 +13,7 @@ import { catchAsync } from "../utils/catchAsync";
 export const createInquiry = catchAsync(async (req: Request, res: Response) => {
   const { name, email, phoneNumber, destination, dates, budget, details } = req.body;
 
-  if (!name || !email || !destination) {
-    return ApiResponse.error(
-      res,
-      "VALIDATION_ERROR",
-      "Name, Email and Destination are required",
-      400,
-    );
-  }
+  // Validation handled by middleware
 
   const inquiry = await prisma.tripInquiry.create({
     data: {

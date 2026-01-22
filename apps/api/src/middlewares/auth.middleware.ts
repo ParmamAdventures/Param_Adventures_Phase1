@@ -94,6 +94,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       // System
       permissions.add("system:settings");
       permissions.add("admin:dashboard");
+      permissions.add("content:manage");
     }
 
     // Failsafe: Ensure ADMIN has most permissions (except system settings and user delete)
@@ -138,6 +139,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       permissions.add("audit:view");
 
       permissions.add("admin:dashboard");
+      permissions.add("content:manage");
     }
 
     req.user = {

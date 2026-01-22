@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../../src/app";
 import { prisma } from "../../src/lib/prisma";
 import { signAccessToken } from "../../src/utils/jwt";
+import { resetDb } from "../utils/test-db";
 
 describe("Trip Endpoints", () => {
   let adminToken: string;
@@ -11,14 +12,7 @@ describe("Trip Endpoints", () => {
   beforeAll(async () => {
     // Clean up existing data
     try {
-      await prisma.payment?.deleteMany();
-      await prisma.booking?.deleteMany();
-      await prisma.trip?.deleteMany();
-      await prisma.rolePermission?.deleteMany();
-      await prisma.userRole?.deleteMany();
-      await prisma.user?.deleteMany();
-      await prisma.role?.deleteMany();
-      await prisma.permission?.deleteMany();
+      await resetDb(prisma);
     } catch (_e) {
       /* cleanup errors ignored */
     }
@@ -213,7 +207,9 @@ describe("Trip Endpoints", () => {
     it("returns 401 without authentication", async () => {
       if (!tripId) return; // Skip if no tripId
 
-      const response = await request(app).put(`/api/v1/trips/${tripId}`).send({ title: "New Title" });
+      const response = await request(app)
+        .put(`/api/v1/trips/${tripId}`)
+        .send({ title: "New Title" });
 
       expect(response.status).toBe(401);
     });

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Button } from "../ui/Button";
 import StatusBadge from "../ui/StatusBadge";
 import Spinner from "../ui/Spinner";
+import TableLoading from "../ui/DataTable/TableLoading";
+import TableEmptyState from "../ui/DataTable/TableEmptyState";
 
 type Blog = {
   id: string;
@@ -37,42 +39,16 @@ type Props = {
  */
 export default function BlogListTable({ blogs, loading, onAction, onRefresh }: Props) {
   if (loading) {
-    return (
-      <div className="text-muted-foreground flex flex-col items-center gap-3 p-12 text-center">
-        <Spinner size={32} />
-        <p className="animate-pulse tracking-wide italic">Fetching stories...</p>
-      </div>
-    );
+    return <TableLoading message="Fetching stories..." />;
   }
 
   if (blogs.length === 0) {
     return (
-      <div className="bg-muted/5 hover:bg-muted/10 flex flex-col items-center gap-4 rounded-3xl border-2 border-dashed p-16 text-center transition-all">
-        <div className="bg-muted/20 mb-2 flex h-16 w-16 items-center justify-center rounded-full">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-muted-foreground/50"
-          >
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5z" />
-            <path d="M8 7h6" />
-            <path d="M8 11h8" />
-          </svg>
-        </div>
-        <p className="text-muted-foreground text-lg font-medium">
-          All clear! No blogs pending review.
-        </p>
-        <Button variant="subtle" onClick={onRefresh} className="rounded-full px-8">
-          Refresh Queue
-        </Button>
-      </div>
+      <TableEmptyState
+        message="All clear! No blogs pending review."
+        actionLabel="Refresh Queue"
+        onAction={onRefresh}
+      />
     );
   }
 
@@ -175,10 +151,14 @@ export default function BlogListTable({ blogs, loading, onAction, onRefresh }: P
                 </Button>
               )}
 
-              <Link href={`/blogs/${blog.slug || blog.id}`} target="_blank" className="ml-0 md:ml-4">
+              <Link
+                href={`/blogs/${blog.slug || blog.id}`}
+                target="_blank"
+                className="ml-0 md:ml-4"
+              >
                 <Button
                   variant="outline"
-                  className="flex h-10 items-center justify-center rounded-full px-4 text-xs font-bold uppercase tracking-wider"
+                  className="flex h-10 items-center justify-center rounded-full px-4 text-xs font-bold tracking-wider uppercase"
                   title="Full Preview"
                 >
                   Preview

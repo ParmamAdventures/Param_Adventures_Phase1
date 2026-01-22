@@ -4,6 +4,7 @@ import { getPublicStats } from "../controllers/content/stats.controller";
 import * as SiteConfigController from "../controllers/siteConfig.controller";
 import { requireAuth } from "../middlewares/auth.middleware";
 import { attachPermissions } from "../middlewares/permission.middleware";
+import { requirePermission } from "../middlewares/require-permission.middleware";
 
 const router = Router();
 
@@ -19,7 +20,7 @@ router.put(
   "/hero-slides/:id",
   requireAuth,
   attachPermissions,
-  // requirePermission("hero:update"), // We don't have this yet.
+  requirePermission("content:manage"), // Allow super_admin fallback if key missing
   updateHeroSlide,
 );
 
