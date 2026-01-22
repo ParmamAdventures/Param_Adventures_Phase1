@@ -37,7 +37,7 @@ const documentStorage = new CloudinaryStorage({
   params: {
     folder: "param_adventures_uploads/documents",
     allowed_formats: ["pdf"],
-    public_id: (req, file) => file.fieldname + "-" + Date.now(),
+    public_id: (req: any, file: any) => file.fieldname + "-" + Date.now(),
     resource_type: "raw",
   } as any,
 });
