@@ -1,9 +1,4 @@
 import { Request, Response } from "express";
-import path from "path";
-import fs from "fs/promises";
-import crypto from "crypto";
-
-const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 
 /**
  * Upload Document
@@ -16,34 +11,14 @@ export async function uploadDocument(req: Request, res: Response) {
     return res.status(400).json({ error: "NO_FILE_UPLOADED" });
   }
 
-  try {
-    // Ensure documents directory exists
-    const docDir = path.join(UPLOAD_DIR, "documents");
-    await fs.mkdir(docDir, { recursive: true });
+  // The 'uploadDocument' middleware now uses Cloudinary.
+  // The req.file object contains the response from Cloudinary.
+  // The `path` property is the URL to the uploaded file.
+  const file = req.file as any;
 
-    // Generate unique filename
-    const id = crypto.randomUUID();
-    const originalName = req.file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_"); // Sanitize
-    const filename = `${id}_${originalName}`;
-    const filePath = path.join(docDir, filename);
-
-    // Save file
-    await fs.writeFile(filePath, req.file.buffer);
-
-    // Construct public URL
-    // Assuming 'uploads' is served statically via /uploads
-    const url = `/uploads/documents/${filename}`;
-
-    res.status(201).json({
-      url,
-      filename,
-      size: req.file.size,
-    });
-  } catch (err: any) {
-    console.error("Document Upload Error:", err);
-    res.status(500).json({
-      error: "UPLOAD_FAILED",
-      details: err.message,
-    });
-  }
+  res.status(201).json({
+    url: file.path,
+    filename: file.originalname,
+    size: file.size,
+  });
 }

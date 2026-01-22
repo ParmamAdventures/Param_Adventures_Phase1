@@ -1,5 +1,14 @@
+import { cloudinary } from "../config/cloudinary";
+import { logger } from "../lib/logger";
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
+import {
+  buildImageUrls,
+  buildVideoUrls,
+  inferResourceType,
+  extractPublicIdFromUrl,
+  resolvePublicId,
+} from "../utils/cloudinary.utils";
 
 interface UploadedFile {
   path: string;
@@ -32,23 +41,33 @@ export class MediaService {
       throw new HttpError(400, "NO_FILE", "No file uploaded");
     }
 
-    const originalUrl = file.path;
-    // Apply Cloudinary transformations for display versions
-    const mediumUrl = file.path.replace("/upload/", "/upload/c_limit,w_1200/");
-    const thumbUrl = file.path.replace("/upload/", "/upload/c_fill,w_800,h_500/");
+    const publicId = resolvePublicId(file);
+    if (!publicId) {
+      throw new HttpError(500, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID");
+    }
+
+    const version = (file as any).version;
+    const resourceType = inferResourceType(file.mimetype);
+    const urls =
+      resourceType === "video"
+        ? buildVideoUrls(publicId, version, file.path)
+        : buildImageUrls(publicId, version, file.path);
+
+    const resolvedType = mediaType === "VIDEO" || resourceType === "video" ? "VIDEO" : "IMAGE";
+    const duration = resolvedType === "VIDEO" ? (file as any).duration || 0 : 0;
 
     return prisma.image.create({
       data: {
-        originalUrl,
-        mediumUrl,
-        thumbUrl,
+        originalUrl: urls.originalUrl,
+        mediumUrl: urls.mediumUrl,
+        thumbUrl: urls.thumbUrl,
         mimeType: file.mimetype,
         size: file.size,
         width: file.width || 0,
         height: file.height || 0,
         uploadedById,
-        type: mediaType,
-        duration: 0,
+        type: resolvedType,
+        duration,
       },
     });
   }
@@ -128,11 +147,16 @@ export class MediaService {
    * @returns Success status.
    */
   async deleteMedia(id: string) {
+    const image = await prisma.image.findUnique({ where: { id } });
+
+    if (!image) {
+      throw new HttpError(404, "NOT_FOUND", "Media not found.");
+    }
+
     try {
       await prisma.image.delete({
         where: { id },
       });
-      return { success: true };
     } catch (error: any) {
       if (error.code === "P2003") {
         throw new HttpError(
@@ -146,6 +170,29 @@ export class MediaService {
       }
       throw error;
     }
+
+    const publicId = extractPublicIdFromUrl(image.originalUrl);
+    const resourceType = image.type === "VIDEO" ? "video" : "image";
+
+    if (!publicId) {
+      logger.warn(`Deleted media record without Cloudinary public ID derivation: ${id}`);
+      return { success: true };
+    }
+
+    try {
+      await cloudinary.api.delete_resources([publicId], {
+        resource_type: resourceType,
+        invalidate: true,
+      });
+    } catch (error) {
+      logger.warn(
+        `Cloudinary cleanup failed for media ${id} (publicId=${publicId}): ${
+          (error as Error).message
+        }`,
+      );
+    }
+
+    return { success: true };
   }
 
   /**

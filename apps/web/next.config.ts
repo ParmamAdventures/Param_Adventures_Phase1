@@ -6,7 +6,6 @@ import { withSentryConfig } from "@sentry/nextjs";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: "http",
@@ -18,13 +17,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "**",
-      },
-      {
-        protocol: "https",
         hostname: "res.cloudinary.com",
       },
     ],
+    formats: ["image/avif", "image/webp"],
   },
   async rewrites() {
     const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";

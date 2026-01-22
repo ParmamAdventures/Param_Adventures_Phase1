@@ -5,7 +5,7 @@ import { assertBookingTransition } from "../domain/booking/bookingTransitions";
 import { ErrorMessages } from "../constants/errorMessages";
 import { auditService, AuditActions, AuditTargetTypes } from "./audit.service";
 
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "../generated/client";
 
 export class BookingService {
   async createBooking(data: {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/client";
 
 const prisma = new PrismaClient();
 

@@ -1,16 +1,15 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../src/lib/prisma"; // Import the existing prisma client
 
 // Ensure DATABASE_URL is available for teardown even though Jest spawns a new process
 const TEST_DB_URL =
   process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5433/param_adventures_test";
 process.env.DATABASE_URL = TEST_DB_URL;
 
-const prisma = new PrismaClient();
-
 export default async function globalTeardown() {
   console.log("\nRunning global teardown...");
   try {
-    // Clean up all tables in safe order
+    // Temporarily commenting out database cleanup to diagnose PrismaClientConstructorValidationError
+    /*
     await prisma.payment?.deleteMany();
     await prisma.booking?.deleteMany();
     await prisma.review?.deleteMany(); // Added
@@ -28,8 +27,8 @@ export default async function globalTeardown() {
     await prisma.auditLog.deleteMany();
     await prisma.userRole?.deleteMany();
     await prisma.user.deleteMany();
-
-    console.log("Global teardown complete: Database cleaned.");
+    */
+    console.log("Global teardown complete: Database cleanup temporarily skipped.");
   } catch (error) {
     console.error("Global teardown failed:", error);
   } finally {

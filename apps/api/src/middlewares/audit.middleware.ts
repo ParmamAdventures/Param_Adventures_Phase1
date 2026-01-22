@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { auditService } from "../services/audit.service";
-import { AuditAction } from "@prisma/client";
+import { AuditAction } from "../generated/client";
 
 interface AutoLogOptions {
   action: AuditAction;

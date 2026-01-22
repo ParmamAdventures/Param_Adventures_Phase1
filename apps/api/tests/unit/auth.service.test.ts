@@ -78,4 +78,80 @@ describe("AuthService", () => {
       await expect(authService.login("a", "p")).rejects.toThrow("Invalid credentials");
     });
   });
+
+  describe("socialLogin", () => {
+    const googleProfile = {
+      id: "google123",
+      email: "google@example.com",
+      name: "Google User",
+    };
+
+    it("should login user if googleId exists", async () => {
+      const user = { id: "user1", email: googleProfile.email, name: googleProfile.name, googleId: googleProfile.id, password: null };
+      prismaMock.user.findUnique.mockResolvedValue(user); // Mock finding by googleId
+
+      (signAccessToken as jest.Mock).mockReturnValue("at_social");
+      (signRefreshToken as jest.Mock).mockReturnValue("rt_social");
+      (auditService.logAudit as jest.Mock).mockResolvedValue({});
+
+      const res = await authService.socialLogin(googleProfile);
+      expect(res.accessToken).toBe("at_social");
+      expect(res.user.id).toBe("user1");
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({ where: { googleId: googleProfile.id } });
+      expect(prismaMock.user.update).not.toHaveBeenCalled(); // No update needed if googleId found
+      expect(prismaMock.user.create).not.toHaveBeenCalled();
+    });
+
+    it("should link googleId to existing user with matching email and login", async () => {
+      const existingUser = { id: "2", email: googleProfile.email, name: "Existing User", password: "hp" };
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null) // Not found by googleId
+        .mockResolvedValueOnce(existingUser); // Found by email
+
+      const updatedUser = { ...existingUser, googleId: googleProfile.id, password: existingUser.password }; // Keep existing password if present
+      prismaMock.user.update.mockResolvedValue(updatedUser);
+
+      (signAccessToken as jest.Mock).mockReturnValue("at_social_linked");
+      (signRefreshToken as jest.Mock).mockReturnValue("rt_social_linked");
+      (auditService.logAudit as jest.Mock).mockResolvedValue({});
+
+      const res = await authService.socialLogin(googleProfile);
+      expect(res.accessToken).toBe("at_social_linked");
+      expect(res.user.id).toBe("2");
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({ where: { googleId: googleProfile.id } });
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({ where: { email: googleProfile.email } });
+      expect(prismaMock.user.update).toHaveBeenCalledWith({
+        where: { id: existingUser.id },
+        data: { googleId: googleProfile.id },
+      });
+      expect(prismaMock.user.create).not.toHaveBeenCalled();
+    });
+
+    it("should create new user if neither googleId nor email exists and login", async () => {
+      const newUser = { id: "user3", email: googleProfile.email, name: googleProfile.name, googleId: googleProfile.id, password: null };
+      prismaMock.user.findUnique
+        .mockResolvedValueOnce(null) // Not found by googleId
+        .mockResolvedValueOnce(null); // Not found by email
+
+      prismaMock.user.create.mockResolvedValue(newUser);
+
+      (signAccessToken as jest.Mock).mockReturnValue("at_social_new");
+      (signRefreshToken as jest.Mock).mockReturnValue("rt_social_new");
+      (auditService.logAudit as jest.Mock).mockResolvedValue({});
+
+      const res = await authService.socialLogin(googleProfile);
+      expect(res.accessToken).toBe("at_social_new");
+      expect(res.user.id).toBe("user3");
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({ where: { googleId: googleProfile.id } });
+      expect(prismaMock.user.findUnique).toHaveBeenCalledWith({ where: { email: googleProfile.email } });
+      expect(prismaMock.user.create).toHaveBeenCalledWith({
+        data: {
+          email: googleProfile.email,
+          name: googleProfile.name,
+          googleId: googleProfile.id,
+        },
+      });
+      expect(prismaMock.user.update).not.toHaveBeenCalled();
+    });
+  });
 });

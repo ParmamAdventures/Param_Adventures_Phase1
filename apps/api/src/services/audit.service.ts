@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { AuditAction } from "@prisma/client";
+import { AuditAction } from "../generated/client";
 
 export interface AuditLogData {
   action: AuditAction;
@@ -20,7 +20,7 @@ export const AuditTargetTypes = {
   PERMISSION: "PERMISSION",
 } as const;
 
-export { AuditAction as AuditActions } from "@prisma/client";
+export { AuditAction as AuditActions } from "../generated/client";
 
 export class AuditService {
   async logAudit(data: AuditLogData) {

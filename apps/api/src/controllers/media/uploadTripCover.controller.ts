@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
+import { buildImageUrls, resolvePublicId } from "../../utils/cloudinary.utils";
 
 /**
  * Upload Trip Cover
@@ -16,18 +17,20 @@ export async function uploadTripCover(req: Request, res: Response) {
   const { tripId } = req.params;
   const file = req.file as any; // Cloudinary File
 
-  // Construct URLs
-  const originalUrl = file.path;
-  // Apply Cloudinary transformations for display versions
-  const mediumUrl = file.path.replace("/upload/", "/upload/c_limit,w_1200/");
-  const thumbUrl = file.path.replace("/upload/", "/upload/c_fill,w_800,h_500/"); // 16:10 aspect roughly
+  const publicId = resolvePublicId(file);
+  if (!publicId) {
+    throw new HttpError(500, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID");
+  }
+
+  const version = (file as any).version;
+  const urls = buildImageUrls(publicId, version, file.path);
 
   // Create Image record
   const image = await prisma.image.create({
     data: {
-      originalUrl: originalUrl,
-      mediumUrl: mediumUrl,
-      thumbUrl: thumbUrl,
+      originalUrl: urls.originalUrl,
+      mediumUrl: urls.mediumUrl,
+      thumbUrl: urls.thumbUrl,
       mimeType: file.mimetype,
       size: file.size,
       width: file.width || 0,
@@ -47,12 +50,12 @@ export async function uploadTripCover(req: Request, res: Response) {
   });
 
   res.status(201).json({
-    image: originalUrl,
+    image: urls.originalUrl,
     imageId: image.id,
     urls: {
-      original: originalUrl,
-      medium: mediumUrl,
-      thumb: thumbUrl,
+      original: urls.originalUrl,
+      medium: urls.mediumUrl,
+      thumb: urls.thumbUrl,
     },
   });
 }

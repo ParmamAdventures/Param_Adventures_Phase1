@@ -54,11 +54,16 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline often needed for dev/some analytics
-        styleSrc: ["'self'", "'unsafe-inline'", "fonts.googleapis.com"],
-        fontSrc: ["'self'", "fonts.gstatic.com"],
-        imgSrc: ["'self'", "data:", "blob:"],
-        connectSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "blob:", "https://res.cloudinary.com"],
+        mediaSrc: ["'self'", "https://res.cloudinary.com"],
+        connectSrc: ["'self'", "https://res.cloudinary.com", "https://*.ingest.sentry.io"],
+        frameAncestors: ["'self'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        workerSrc: ["'self'", "blob:"],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
       },
@@ -103,7 +108,6 @@ app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 Sentry.setupExpressErrorHandler(app);
 
 app.use(express.static(path.join(__dirname, "../public")));
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use(
   morgan("combined", { stream: { write: (message: string) => logger.info(message.trim()) } }),
 );

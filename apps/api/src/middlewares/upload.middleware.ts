@@ -1,13 +1,13 @@
 import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { cloudinary, storage } from "../config/cloudinary"; // Cloudinary Storage
 
-const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
-
-import { storage } from "../config/cloudinary"; // Cloudinary Storage
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB ceiling to avoid oversized uploads
 
 /**
  * Multer middleware for file uploads to Cloudinary.
  * Supports images (JPEG, PNG, WebP) and videos (MP4, WebM, MOV).
- * Maximum file size: 500MB.
+ * Maximum file size: 100MB.
  * @type {multer.Multer}
  */
 export const upload = multer({
@@ -32,8 +32,18 @@ export const upload = multer({
   },
 });
 
+const documentStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "param_adventures_uploads/documents",
+    allowed_formats: ["pdf"],
+    public_id: (req, file) => file.fieldname + "-" + Date.now(),
+    resource_type: "raw",
+  },
+});
+
 export const uploadDocument = multer({
-  storage: multer.memoryStorage(),
+  storage: documentStorage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB
   },

@@ -26,6 +26,18 @@ type RolePermissionRow = {
   permission: { key: string };
 };
 
+interface GoogleProfile {
+  id: string; // Google ID
+  displayName: string;
+  name: {
+    givenName: string;
+    familyName: string;
+  };
+  emails: Array<{ value: string; verified: boolean }>;
+  photos: Array<{ value: string }>;
+  provider: string;
+}
+
 /**
  * Register a new user account with email, password, and name.
  * @param {Request} req - Express request with email, password, name in body
@@ -249,14 +261,18 @@ export const changePassword = catchAsync(async (req: Request, res: Response) => 
 
 export const googleCallback = catchAsync(async (req: Request, res: Response) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const user = (req as any).user as UserWithRoles | undefined; // User attached by Passport Strategy
+  const user = (req as any).user as GoogleProfile | undefined; // User attached by Passport Strategy
   if (!user) {
     return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
   }
 
   // Generate Session
-  const { refreshToken } = await authService.login(user.email);
-
+  // Use socialLogin to handle user provisioning and login for social accounts
+  const { refreshToken } = await authService.socialLogin({
+    id: user.id, // This is the googleId
+    email: user.emails[0].value, // Get email from the emails array
+    name: user.displayName || `${user.name.givenName} ${user.name.familyName}`, // Use displayName or construct from name object
+  });
   // Set Refresh Cookie
   res.cookie("refresh_token", refreshToken, {
     httpOnly: true,

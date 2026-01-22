@@ -48,7 +48,12 @@ describe("Query Performance Tests - OPT-016", () => {
           slug: true,
           price: true,
           durationDays: true,
-          coverImage: true, // Include to prevent N+1
+          coverImage: {
+            select: {
+              id: true,
+              thumbUrl: true,
+            },
+          }, // Include to prevent N+1
           gallery: {
             include: { image: true },
             orderBy: { order: "asc" },
@@ -145,7 +150,12 @@ describe("Query Performance Tests - OPT-016", () => {
               title: true,
               slug: true,
               price: true,
-              coverImage: true,
+              coverImage: {
+                select: {
+                  id: true,
+                  thumbUrl: true,
+                },
+              },
             },
           },
           user: {
@@ -175,7 +185,12 @@ describe("Query Performance Tests - OPT-016", () => {
         include: {
           trip: {
             include: {
-              coverImage: true,
+              coverImage: {
+                select: {
+                  id: true,
+                  thumbUrl: true,
+                },
+              },
               manager: { select: { name: true } },
             },
           },

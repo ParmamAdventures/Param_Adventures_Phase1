@@ -8,7 +8,7 @@ import {
   verifyResetToken,
 } from "../utils/jwt";
 import { auditService } from "./audit.service";
-import { AuditAction } from "@prisma/client";
+import { AuditAction } from "../generated/client";
 import { notificationService } from "./notification.service";
 import { HttpError } from "../utils/httpError";
 
@@ -65,6 +65,51 @@ export class AuthService {
     await auditService.logAudit({
       actorId: user.id,
       action: AuditAction.USER_LOGIN,
+      targetType: "User",
+      targetId: user.id,
+    });
+
+    const { password: _, ...cleanUser } = user;
+    return { user: cleanUser, accessToken, refreshToken };
+  }
+
+  async socialLogin(profile: { id: string; email: string; name: string }) {
+    const normalizedEmail = profile.email.toLowerCase().trim();
+
+    // 1. Check if user already exists with this googleId
+    let user = await prisma.user.findUnique({ where: { googleId: profile.id } });
+
+    if (!user) {
+      // 2. If not, check if a user exists with this email (might be an existing local account)
+      user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+
+      if (user) {
+        // Link the Google account to the existing user
+        user = await prisma.user.update({
+          where: { id: user.id },
+          data: { googleId: profile.id },
+        });
+        console.log(`[AuthService] Linked Google account ${profile.id} to existing user ${user.id}`);
+      } else {
+        // 3. If no user found by googleId or email, create a new user
+        user = await prisma.user.create({
+          data: {
+            email: normalizedEmail,
+            name: profile.name,
+            googleId: profile.id,
+            // Password can be null for social logins
+          },
+        });
+        console.log(`[AuthService] Created new user ${user.id} via Google login`);
+      }
+    }
+
+    const accessToken = signAccessToken(user.id);
+    const refreshToken = signRefreshToken(user.id);
+
+    await auditService.logAudit({
+      actorId: user.id,
+      action: AuditAction.USER_LOGIN, // Using USER_LOGIN for social as well
       targetType: "User",
       targetId: user.id,
     });

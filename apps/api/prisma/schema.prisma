@@ -1,11 +1,10 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearch"]
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 //////////////////////
@@ -97,7 +96,7 @@ enum TripInquiryStatus {
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
-  password     String
+  password     String?
   name         String
   nickname     String?
   bio          String?
