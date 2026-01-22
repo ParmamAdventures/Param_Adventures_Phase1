@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { AuditAction } from "../generated/client";
+import { AuditAction } from "@prisma/client";
 import { auditService } from "./audit.service";
 
 export class UserService {

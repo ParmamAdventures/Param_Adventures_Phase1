@@ -1,8 +1,16 @@
 jest.mock("../../src/lib/prisma");
+jest.mock("../../src/utils/cloudinary.utils"); // Added mock for cloudinary.utils
+jest.mock("../../src/config/cloudinary"); // Explicitly mock the config file
+jest.mock("../../src/lib/logger"); // Mock the logger to spy on its methods
 
 import { prisma } from "../../src/lib/prisma";
 import { MediaService } from "../../src/services/media.service";
 import { HttpError } from "../../src/utils/httpError";
+import * as cloudinaryUtils from "../../src/utils/cloudinary.utils"; // Import the mocked cloudinary.utils module
+
+// Import the mocked modules using jest.mocked
+const mockedCloudinary = jest.mocked(require("../../src/config/cloudinary"));
+const mockedLogger = jest.mocked(require("../../src/lib/logger"));
 
 describe("MediaService", () => {
   let mediaService: MediaService;
@@ -16,18 +24,29 @@ describe("MediaService", () => {
     it("creates an image record with valid file", async () => {
       const userId = "user_123";
       const file = {
-        path: "https://cloudinary.com/upload/image123.jpg",
+        path: "https://cloudinary.com/upload/v12345/image123.jpg", // Changed path to include version for mock publicId
         mimetype: "image/jpeg",
         size: 102400,
         width: 1920,
         height: 1080,
       };
 
+      const mockPublicId = "image123";
+      (cloudinaryUtils.resolvePublicId as jest.Mock).mockReturnValue(mockPublicId);
+      (cloudinaryUtils.buildImageUrls as jest.Mock).mockReturnValue({
+        originalUrl: file.path,
+        mediumUrl: "https://res.cloudinary.com/mock-cloud/image/upload/c_limit,w_1200/image123",
+        thumbUrl:
+          "https://res.cloudinary.com/mock-cloud/image/upload/c_fill,g_auto,h_500,w_800/image123",
+      });
+      (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image");
+
       const mockImage = {
         id: "image_123",
         originalUrl: file.path,
-        mediumUrl: "https://cloudinary.com/upload/c_limit,w_1200/image123.jpg",
-        thumbUrl: "https://cloudinary.com/upload/c_fill,w_800,h_500/image123.jpg",
+        mediumUrl: "https://res.cloudinary.com/mock-cloud/image/upload/c_limit,w_1200/image123",
+        thumbUrl:
+          "https://res.cloudinary.com/mock-cloud/image/upload/c_fill,g_auto,h_500,w_800/image123",
         mimeType: file.mimetype,
         size: file.size,
         width: file.width,
@@ -42,11 +61,18 @@ describe("MediaService", () => {
 
       const result = await mediaService.createImage(file, userId);
 
+      expect(cloudinaryUtils.resolvePublicId).toHaveBeenCalledWith(file);
+      expect(cloudinaryUtils.buildImageUrls).toHaveBeenCalledWith(
+        mockPublicId,
+        undefined,
+        file.path,
+      ); // version is undefined in mock file
       expect(prisma.image.create as jest.Mock).toHaveBeenCalledWith({
         data: {
           originalUrl: file.path,
-          mediumUrl: "https://cloudinary.com/upload/c_limit,w_1200/image123.jpg",
-          thumbUrl: "https://cloudinary.com/upload/c_fill,w_800,h_500/image123.jpg",
+          mediumUrl: "https://res.cloudinary.com/mock-cloud/image/upload/c_limit,w_1200/image123",
+          thumbUrl:
+            "https://res.cloudinary.com/mock-cloud/image/upload/c_fill,g_auto,h_500,w_800/image123",
           mimeType: file.mimetype,
           size: file.size,
           width: 1920,
@@ -72,10 +98,21 @@ describe("MediaService", () => {
     it("creates image with custom media type", async () => {
       const userId = "user_123";
       const file = {
-        path: "https://cloudinary.com/upload/document.pdf",
+        path: "https://cloudinary.com/upload/v12345/document.pdf", // Updated for consistency
         mimetype: "application/pdf",
         size: 204800,
       };
+
+      const mockPublicId = "document";
+      (cloudinaryUtils.resolvePublicId as jest.Mock).mockReturnValue(mockPublicId);
+      (cloudinaryUtils.buildVideoUrls as jest.Mock).mockReturnValue({
+        // Assuming it might be a video based on the original test's expected type
+        originalUrl: file.path,
+        mediumUrl: "https://res.cloudinary.com/mock-cloud/video/upload/c_limit,w_1200/document",
+        thumbUrl:
+          "https://res.cloudinary.com/mock-cloud/video/upload/c_fill,g_auto,h_500,w_800/document",
+      });
+      (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("video"); // Adjusted to 'video' for consistency with buildVideoUrls
 
       const mockImage = {
         id: "video_123",
@@ -86,10 +123,16 @@ describe("MediaService", () => {
 
       await mediaService.createImage(file, userId, "VIDEO");
 
+      expect(cloudinaryUtils.resolvePublicId).toHaveBeenCalledWith(file);
+      expect(cloudinaryUtils.inferResourceType).toHaveBeenCalledWith(file.mimetype);
       expect(prisma.image.create as jest.Mock).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
             type: "VIDEO",
+            originalUrl: file.path,
+            mediumUrl: "https://res.cloudinary.com/mock-cloud/video/upload/c_limit,w_1200/document",
+            thumbUrl:
+              "https://res.cloudinary.com/mock-cloud/video/upload/c_fill,g_auto,h_500,w_800/document",
           }),
         }),
       );
@@ -98,10 +141,20 @@ describe("MediaService", () => {
     it("handles files without width/height", async () => {
       const userId = "user_123";
       const file = {
-        path: "https://cloudinary.com/upload/file.jpg",
+        path: "https://cloudinary.com/upload/v12345/file.jpg", // Updated for consistency
         mimetype: "image/jpeg",
         size: 100000,
       };
+
+      const mockPublicId = "file";
+      (cloudinaryUtils.resolvePublicId as jest.Mock).mockReturnValue(mockPublicId);
+      (cloudinaryUtils.buildImageUrls as jest.Mock).mockReturnValue({
+        originalUrl: file.path,
+        mediumUrl: "https://res.cloudinary.com/mock-cloud/image/upload/c_limit,w_1200/file",
+        thumbUrl:
+          "https://res.cloudinary.com/mock-cloud/image/upload/c_fill,g_auto,h_500,w_800/file",
+      });
+      (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image");
 
       const mockImage = { id: "image_456", width: 0, height: 0 };
 
@@ -109,11 +162,21 @@ describe("MediaService", () => {
 
       await mediaService.createImage(file, userId);
 
+      expect(cloudinaryUtils.resolvePublicId).toHaveBeenCalledWith(file);
+      expect(cloudinaryUtils.buildImageUrls).toHaveBeenCalledWith(
+        mockPublicId,
+        undefined,
+        file.path,
+      );
       expect(prisma.image.create as jest.Mock).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
             width: 0,
             height: 0,
+            originalUrl: file.path,
+            mediumUrl: "https://res.cloudinary.com/mock-cloud/image/upload/c_limit,w_1200/file",
+            thumbUrl:
+              "https://res.cloudinary.com/mock-cloud/image/upload/c_fill,g_auto,h_500,w_800/file",
           }),
         }),
       );
@@ -262,16 +325,39 @@ describe("MediaService", () => {
   });
 
   describe("deleteMedia", () => {
+    // Mock a valid image to be returned by findUnique
+    const mockFoundImage = {
+      id: "media_123",
+      originalUrl: "https://cloudinary.com/upload/v12345/some_image.jpg",
+      type: "IMAGE",
+      mimeType: "image/jpeg",
+      size: 1000,
+      width: 100,
+      height: 100,
+      uploadedById: "user_id",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
     it("deletes media successfully", async () => {
       const mediaId = "media_123";
 
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique to return an image
       (prisma.image.delete as jest.Mock).mockResolvedValue({ id: mediaId });
+      (cloudinaryUtils.extractPublicIdFromUrl as jest.Mock).mockReturnValue("some_image");
+      // Removed incorrect expectation: (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image");
+      (mockedCloudinary.cloudinary.api.delete_resources as jest.Mock).mockResolvedValue({}); // Explicitly mock the delete_resources call from the mocked cloudinary config
 
       const result = await mediaService.deleteMedia(mediaId);
 
+      expect(prisma.image.findUnique as jest.Mock).toHaveBeenCalledWith({ where: { id: mediaId } });
       expect(prisma.image.delete as jest.Mock).toHaveBeenCalledWith({
         where: { id: mediaId },
       });
+      expect(cloudinaryUtils.extractPublicIdFromUrl).toHaveBeenCalledWith(
+        mockFoundImage.originalUrl,
+      );
+      // Removed incorrect expectation: expect(cloudinaryUtils.inferResourceType).toHaveBeenCalledWith(mockFoundImage.mimeType);
 
       expect(result.success).toBe(true);
     });
@@ -281,11 +367,16 @@ describe("MediaService", () => {
       const error = new Error("Foreign key constraint failed");
       (error as any).code = "P2003";
 
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique
       (prisma.image.delete as jest.Mock).mockRejectedValue(error);
+      (cloudinaryUtils.extractPublicIdFromUrl as jest.Mock).mockReturnValue("some_image");
+      // (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image"); // Removed incorrect expectation
 
       await expect(mediaService.deleteMedia(mediaId)).rejects.toThrow(
         "Cannot delete media because it is being used by other records",
       );
+      expect(prisma.image.findUnique).toHaveBeenCalledWith({ where: { id: mediaId } });
+      expect(prisma.image.delete).toHaveBeenCalledWith({ where: { id: mediaId } });
     });
 
     it("throws error when media not found (P2025)", async () => {
@@ -293,18 +384,65 @@ describe("MediaService", () => {
       const error = new Error("Record not found");
       (error as any).code = "P2025";
 
+      // For P2025, the findUnique should succeed, but the delete should fail
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique
       (prisma.image.delete as jest.Mock).mockRejectedValue(error);
+      (cloudinaryUtils.extractPublicIdFromUrl as jest.Mock).mockReturnValue("non_existent_image"); // Needs a publicId to attempt cloudinary delete
+      // (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image"); // Removed incorrect expectation
 
       await expect(mediaService.deleteMedia(mediaId)).rejects.toThrow("Media not found");
+      expect(prisma.image.findUnique).toHaveBeenCalledWith({ where: { id: mediaId } });
+      expect(prisma.image.delete).toHaveBeenCalledWith({ where: { id: mediaId } });
     });
 
     it("propagates other database errors", async () => {
       const mediaId = "media_error";
       const error = new Error("Database connection error");
 
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique
       (prisma.image.delete as jest.Mock).mockRejectedValue(error);
+      (cloudinaryUtils.extractPublicIdFromUrl as jest.Mock).mockReturnValue("some_image");
+      // (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image"); // Removed incorrect expectation
 
       await expect(mediaService.deleteMedia(mediaId)).rejects.toThrow("Database connection error");
+      expect(prisma.image.findUnique).toHaveBeenCalledWith({ where: { id: mediaId } });
+      expect(prisma.image.delete).toHaveBeenCalledWith({ where: { id: mediaId } });
+    });
+
+    it("throws HttpError when media not found by findUnique", async () => {
+      // New test case
+      const mediaId = "non_existent";
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(null); // findUnique returns null
+
+      await expect(mediaService.deleteMedia(mediaId)).rejects.toThrow("Media not found.");
+      expect(prisma.image.findUnique).toHaveBeenCalledWith({ where: { id: mediaId } });
+      expect(prisma.image.delete).not.toHaveBeenCalled(); // delete should not be called
+    });
+
+    // Add a test case for Cloudinary cleanup failure
+    it("logs warning when Cloudinary cleanup fails", async () => {
+      const mediaId = "media_123";
+      const cloudinaryError = new Error("Cloudinary API error");
+
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage);
+      (prisma.image.delete as jest.Mock).mockResolvedValue({ id: mediaId });
+      (cloudinaryUtils.extractPublicIdFromUrl as jest.Mock).mockReturnValue("some_image");
+      // (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image"); // Removed incorrect expectation
+      (mockedCloudinary.cloudinary.api.delete_resources as jest.Mock).mockRejectedValue(
+        cloudinaryError,
+      ); // Mock cloudinary API call through the mocked config
+
+      const loggerWarnSpy = jest.spyOn(mockedLogger.logger, "warn"); // Spy on mocked logger.warn
+
+      const result = await mediaService.deleteMedia(mediaId);
+
+      // The actual logger.warn call uses a single template literal string
+      expect(loggerWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Cloudinary cleanup failed for media"),
+      );
+      expect(result.success).toBe(true); // Still returns success as DB deletion passed
+
+      loggerWarnSpy.mockRestore(); // Restore original console.warn
     });
   });
 
