@@ -421,6 +421,8 @@ model Image {
   updatedAt DateTime @updatedAt
 
   @@index([uploadedById])
+  @@index([createdAt]) // Added: Sort by upload date
+  @@index([type]) // Added: Filter by media type
 }
 
 enum BookingStatus {
@@ -591,8 +593,8 @@ model SiteConfig {
 model TripInquiry {
   id          String            @id @default(uuid())
   name        String
-  email       String            @unique
-  phoneNumber String? // Removed @unique - nullable fields shouldn't have unique constraints
+  email       String            // Removed @unique - same person can submit multiple inquiries
+  phoneNumber String?
   destination String
   dates       String?
   budget      String?
@@ -602,17 +604,18 @@ model TripInquiry {
 
   @@index([status])
   @@index([createdAt])
+  @@index([email]) // Index for email lookups (not unique)
   @@index([email, status])
   @@index([status, createdAt])
-  @@index([phoneNumber]) // Add index for phone number lookups
+  @@index([phoneNumber])
 }
 
 model NewsletterSubscriber {
   id           String   @id @default(uuid())
   email        String   @unique
-  isSubscribed Boolean  @default(true) // Subscribers start as subscribed
+  isSubscribed Boolean  @default(true)
   createdAt    DateTime @default(now())
 
   @@index([isSubscribed, createdAt]) // Query active subscribers
-  @@index([email]) // Explicit index for email lookups
+  // Removed redundant @@index([email]) - @unique already creates index
 }
