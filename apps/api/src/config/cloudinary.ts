@@ -4,15 +4,15 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 const requiredEnv = ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
 const missingEnv = requiredEnv.filter((key) => !process.env[key]);
 
-if (missingEnv.length > 0) {
+if (missingEnv.length > 0 && process.env.NODE_ENV !== "test") {
   const message = `Missing Cloudinary environment variables: ${missingEnv.join(", ")}`;
   throw new Error(message);
 }
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "mock-cloud",
+  api_key: process.env.CLOUDINARY_API_KEY || "mock-key",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "mock-secret",
 });
 
 const storage = new CloudinaryStorage({

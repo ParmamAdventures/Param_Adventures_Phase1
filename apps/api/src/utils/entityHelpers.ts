@@ -2,7 +2,7 @@ import { Response } from "express";
 import { prisma } from "../lib/prisma";
 import { ApiResponse } from "./ApiResponse";
 import { HttpError } from "./httpError";
-import { Trip, Blog, Booking, User } from "@prisma/client";
+import { Trip, Blog, Booking, User } from "../generated/client";
 
 /**
  * Fetches a trip or returns 404 error (for use in controllers with Response)
@@ -11,7 +11,7 @@ import { Trip, Blog, Booking, User } from "@prisma/client";
 export async function getTripOrThrow(
   tripId: string,
   res: Response,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<Trip | null> {
   const trip = await prisma.trip.findUnique({
     where: { id: tripId },
@@ -31,7 +31,7 @@ export async function getTripOrThrow(
  */
 export async function getTripOrThrowError(
   tripId: string,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<Trip> {
   const trip = await prisma.trip.findUnique({
     where: { id: tripId },
@@ -51,7 +51,7 @@ export async function getTripOrThrowError(
 export async function getBlogOrThrow(
   blogId: string,
   res: Response,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<Blog | null> {
   const blog = await prisma.blog.findUnique({
     where: { id: blogId },
@@ -71,7 +71,7 @@ export async function getBlogOrThrow(
  */
 export async function getBlogOrThrowError(
   blogId: string,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<Blog> {
   const blog = await prisma.blog.findUnique({
     where: { id: blogId },
@@ -91,7 +91,7 @@ export async function getBlogOrThrowError(
 export async function getBookingOrThrow(
   bookingId: string,
   res: Response,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<Booking | null> {
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
@@ -111,7 +111,7 @@ export async function getBookingOrThrow(
  */
 export async function getBookingOrThrowError(
   bookingId: string,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<Booking> {
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
@@ -131,7 +131,7 @@ export async function getBookingOrThrowError(
 export async function getUserOrThrow(
   userId: string,
   res: Response,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<User | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -151,7 +151,7 @@ export async function getUserOrThrow(
  */
 export async function getUserOrThrowError(
   userId: string,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<User> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -174,7 +174,7 @@ export async function getEntityOrThrow<T>(
   res: Response,
   errorCode: string,
   errorMessage: string,
-  options?: { include?: any; select?: any }
+  options?: { include?: any; select?: any },
 ): Promise<T | null> {
   const entity = await model.findUnique({
     where: { id },

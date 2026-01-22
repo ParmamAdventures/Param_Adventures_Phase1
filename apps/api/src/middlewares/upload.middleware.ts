@@ -39,7 +39,7 @@ const documentStorage = new CloudinaryStorage({
     allowed_formats: ["pdf"],
     public_id: (req, file) => file.fieldname + "-" + Date.now(),
     resource_type: "raw",
-  },
+  } as any,
 });
 
 export const uploadDocument = multer({

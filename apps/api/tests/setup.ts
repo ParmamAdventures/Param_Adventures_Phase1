@@ -10,6 +10,7 @@ process.env.FRONTEND_URL = "http://localhost:3001";
 process.env.RAZORPAY_WEBHOOK_SECRET = "test-webhook-secret";
 process.env.RAZORPAY_KEY_ID = "test-key-id";
 process.env.RAZORPAY_KEY_SECRET = "test-key-secret";
+process.env.PRISMA_CLIENT_ENGINE_TYPE = "binary";
 
 try {
   execSync("npx prisma migrate deploy --schema prisma/schema.prisma", {
