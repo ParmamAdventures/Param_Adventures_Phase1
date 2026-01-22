@@ -7,8 +7,7 @@ import {
   signResetToken,
   verifyResetToken,
 } from "../utils/jwt";
-import { auditService } from "./audit.service";
-import { AuditAction } from "../generated/client";
+import { logAudit, AuditAction } from "../utils/audit.helper";
 import { notificationService } from "./notification.service";
 import { HttpError } from "../utils/httpError";
 
@@ -35,12 +34,7 @@ export class AuthService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: user.id,
-      action: AuditAction.USER_REGISTER,
-      targetType: "User",
-      targetId: user.id,
-    });
+    await logAudit({ id: user.id }, AuditAction.USER_REGISTER, "User", user.id);
 
     return { id: user.id, email: user.email, name: user.name };
   }
@@ -62,12 +56,7 @@ export class AuthService {
     const accessToken = signAccessToken(user.id);
     const refreshToken = signRefreshToken(user.id);
 
-    await auditService.logAudit({
-      actorId: user.id,
-      action: AuditAction.USER_LOGIN,
-      targetType: "User",
-      targetId: user.id,
-    });
+    await logAudit({ id: user.id }, AuditAction.USER_LOGIN, "User", user.id);
 
     const { password: _, ...cleanUser } = user;
     return { user: cleanUser, accessToken, refreshToken };
@@ -89,7 +78,9 @@ export class AuthService {
           where: { id: user.id },
           data: { googleId: profile.id },
         });
-        console.log(`[AuthService] Linked Google account ${profile.id} to existing user ${user.id}`);
+        console.log(
+          `[AuthService] Linked Google account ${profile.id} to existing user ${user.id}`,
+        );
       } else {
         // 3. If no user found by googleId or email, create a new user
         user = await prisma.user.create({
@@ -107,12 +98,12 @@ export class AuthService {
     const accessToken = signAccessToken(user.id);
     const refreshToken = signRefreshToken(user.id);
 
-    await auditService.logAudit({
-      actorId: user.id,
-      action: AuditAction.USER_LOGIN, // Using USER_LOGIN for social as well
-      targetType: "User",
-      targetId: user.id,
-    });
+    await logAudit(
+      { id: user.id },
+      AuditAction.USER_LOGIN, // Using USER_LOGIN for social as well
+      "User",
+      user.id,
+    );
 
     const { password: _, ...cleanUser } = user;
     return { user: cleanUser, accessToken, refreshToken };
@@ -173,12 +164,7 @@ export class AuthService {
       data: { password: hashedPassword },
     });
 
-    await auditService.logAudit({
-      actorId: user.id,
-      action: AuditAction.USER_CHANGE_PASSWORD,
-      targetType: "User",
-      targetId: user.id,
-    });
+    await logAudit({ id: user.id }, AuditAction.USER_CHANGE_PASSWORD, "User", user.id);
   }
 }
 

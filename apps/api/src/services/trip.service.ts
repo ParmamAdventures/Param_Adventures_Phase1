@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { auditService } from "./audit.service";
+import { logAudit, AuditAction } from "../utils/audit.helper";
 import { EntityStatus } from "../constants/status";
 
 export class TripService {
@@ -35,12 +35,8 @@ export class TripService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "TRIP_CREATED",
-      targetType: "TRIP",
-      targetId: trip.id,
-      metadata: { status: trip.status },
+    await logAudit({ id: userId }, AuditAction.TRIP_CREATED, "TRIP", trip.id, {
+      status: trip.status,
     });
 
     return trip;
@@ -92,12 +88,7 @@ export class TripService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "TRIP_UPDATED",
-      targetType: "TRIP",
-      targetId: trip.id,
-    });
+    await logAudit({ id: userId }, AuditAction.TRIP_UPDATED, "TRIP", trip.id);
 
     return trip;
   }
@@ -124,12 +115,8 @@ export class TripService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "TRIP_APPROVED",
-      targetType: "TRIP",
-      targetId: updated.id,
-      metadata: { status: updated.status },
+    await logAudit({ id: userId }, AuditAction.TRIP_APPROVED, "TRIP", updated.id, {
+      status: updated.status,
     });
     return updated;
   }
@@ -146,12 +133,8 @@ export class TripService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "TRIP_PUBLISHED",
-      targetType: "TRIP",
-      targetId: updated.id,
-      metadata: { status: updated.status },
+    await logAudit({ id: userId }, AuditAction.TRIP_PUBLISHED, "TRIP", updated.id, {
+      status: updated.status,
     });
     return updated;
   }
@@ -168,17 +151,11 @@ export class TripService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "TRIP_UPDATED", // Using TRIP_UPDATED since TRIP_REJECTED not in enum
-      targetType: "TRIP",
-      targetId: updated.id,
-      metadata: {
-        action: "rejected",
-        previousStatus: trip.status,
-        newStatus: updated.status,
-        reason,
-      },
+    await logAudit({ id: userId }, AuditAction.TRIP_UPDATED, "TRIP", updated.id, {
+      action: "rejected",
+      previousStatus: trip.status,
+      newStatus: updated.status,
+      reason,
     });
     return updated;
   }

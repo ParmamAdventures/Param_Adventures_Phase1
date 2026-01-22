@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { apiFetch } from "@/lib/api";
 import imageCompression from "browser-image-compression";
+import { useUpload } from "@/hooks/useUpload";
 
 type UploadedImage = {
   id: string;
@@ -27,12 +27,8 @@ type Props = {
 export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-
-
-// ... existing code ...
+  const { upload, isUploading, error, setError } = useUpload(); // Using hook
 
   function handleSelect(file: File) {
     if (!file.type.startsWith("image/")) {
@@ -40,17 +36,13 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
       return;
     }
 
-    // Removed 5MB check - we will compress instead
     setError(null);
     setFile(file);
     setPreview(URL.createObjectURL(file));
   }
 
-  async function upload() {
+  async function handleUpload() {
     if (!file) return;
-
-    setIsLoading(true);
-    setError(null);
 
     try {
       // Compress image if larger than 1MB
@@ -61,28 +53,15 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
       };
 
       const compressedFile = await (imageCompression as any)(file, options);
-      
-      const form = new FormData();
-      form.append("file", compressedFile);
 
-      const res = await apiFetch("/media/upload", {
-        method: "POST",
-        body: form,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed");
-      }
+      const data = await upload(compressedFile);
 
       onUpload(data.data?.image || data.image);
       setFile(null);
       setPreview(null);
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
+    } catch (e) {
+      // Error handled by hook
+      console.error(e);
     }
   }
 
@@ -142,11 +121,11 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
 
       {file && (
         <Button
-          onClick={upload}
-          disabled={isLoading}
+          onClick={handleUpload}
+          disabled={isUploading}
           className="w-full bg-blue-600 text-white shadow-md shadow-blue-100 hover:bg-blue-700"
         >
-          {isLoading ? (
+          {isUploading ? (
             <div className="flex items-center gap-2">
               <Spinner className="h-4 w-4" />
               <span>Uploading...</span>
@@ -159,4 +138,3 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
     </div>
   );
 }
-

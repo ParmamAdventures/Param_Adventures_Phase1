@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { verifyAccessToken } from "../utils/jwt";
 import { prisma } from "../lib/prisma";
 import { tokenDenylistService } from "../services/tokenDenylist.service";
+import { USER_WITH_ROLES_INCLUDE } from "../utils/prismaSelects";
 
 /**
  * Middleware to verify Bearer token and attach authenticated user to request.
@@ -22,7 +23,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   try {
     const payload = verifyAccessToken(token);
 
-    // Check if token is revoked
+    // Check if process token is revoked
     if (payload.jti && (await tokenDenylistService.isTokenRevoked(payload.jti))) {
       return res.status(401).json({ error: "Token has been revoked" });
     }
@@ -30,19 +31,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     // Fetch user with roles and permissions
     const user = await prisma.user.findUnique({
       where: { id: payload.sub },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: { permission: true },
-                },
-              },
-            },
-          },
-        },
-      },
+      include: USER_WITH_ROLES_INCLUDE,
     });
 
     if (!user) return res.status(401).json({ error: "User not found" });
@@ -186,19 +175,7 @@ export async function optionalAuth(req: Request, res: Response, next: NextFuncti
     // This allows mixed Views (Public vs Draft) to work correctly
     const user = await prisma.user.findUnique({
       where: { id: payload.sub },
-      include: {
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: {
-                  include: { permission: true },
-                },
-              },
-            },
-          },
-        },
-      },
+      include: USER_WITH_ROLES_INCLUDE,
     });
 
     if (user) {

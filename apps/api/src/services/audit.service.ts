@@ -20,7 +20,8 @@ export const AuditTargetTypes = {
   PERMISSION: "PERMISSION",
 } as const;
 
-export { AuditAction as AuditActions } from "../generated/client";
+export { AuditAction } from "../generated/client";
+export { AuditAction as AuditActions } from "../generated/client"; // Keep alias for backward compat if needed
 
 export class AuditService {
   async logAudit(data: AuditLogData) {

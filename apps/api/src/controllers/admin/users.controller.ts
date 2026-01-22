@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
+import { logReqAudit, AuditAction } from "../../utils/audit.helper";
 import { ApiResponse } from "../../utils/ApiResponse";
 
 /**
@@ -85,12 +85,9 @@ export async function updateUserStatus(req: Request, res: Response) {
     },
   });
 
-  await auditService.logAudit({
-    actorId: (req as any).user.id,
-    action: AuditActions.USER_STATUS_CHANGED,
-    targetType: AuditTargetTypes.USER,
-    targetId: user.id,
-    metadata: { status, reason },
+  await logReqAudit(req, AuditAction.USER_STATUS_CHANGED, "USER", user.id, {
+    status,
+    reason,
   });
 
   return ApiResponse.updated(res, user, "User status updated successfully");
@@ -111,12 +108,8 @@ export async function deleteUser(req: Request, res: Response) {
     data: { status: "BANNED", statusReason: "DELETED_BY_ADMIN" },
   });
 
-  await auditService.logAudit({
-    actorId: (req as any).user.id,
-    action: AuditActions.USER_BANNED,
-    targetType: AuditTargetTypes.USER,
-    targetId: user.id,
-    metadata: { deletedAt: new Date().toISOString() },
+  await logReqAudit(req, AuditAction.USER_BANNED, "USER", user.id, {
+    deletedAt: new Date().toISOString(),
   });
 
   return ApiResponse.deleted(res, "User deleted successfully");
@@ -136,12 +129,9 @@ export async function unsuspendUser(req: Request, res: Response) {
     data: { status: "ACTIVE", statusReason: null },
   });
 
-  await auditService.logAudit({
-    actorId: (req as any).user.id,
-    action: AuditActions.USER_STATUS_CHANGED,
-    targetType: AuditTargetTypes.USER,
-    targetId: user.id,
-    metadata: { status: "ACTIVE", action: "unsuspended" },
+  await logReqAudit(req, AuditAction.USER_STATUS_CHANGED, "USER", user.id, {
+    status: "ACTIVE",
+    action: "unsuspended",
   });
 
   return ApiResponse.updated(res, user, "User unsuspended successfully");

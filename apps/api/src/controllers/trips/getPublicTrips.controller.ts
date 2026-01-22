@@ -3,6 +3,7 @@ import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { TripCacheService } from "../../services/trip-cache.service";
+import { TRIP_LIST_INCLUDE } from "../../utils/prismaSelects";
 
 export const getPublicTrips = catchAsync(async (req: Request, res: Response) => {
   const {
@@ -104,9 +105,7 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
     prisma.trip.findMany({
       where,
       orderBy: { [finalSortField]: finalSortOrder },
-      include: {
-        coverImage: true,
-      },
+      include: TRIP_LIST_INCLUDE,
       skip,
       take: limit,
     }),

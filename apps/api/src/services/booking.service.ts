@@ -3,7 +3,7 @@ import { notificationQueue } from "../lib/queue";
 import { HttpError } from "../utils/httpError";
 import { assertBookingTransition } from "../domain/booking/bookingTransitions";
 import { ErrorMessages } from "../constants/errorMessages";
-import { auditService, AuditActions, AuditTargetTypes } from "./audit.service";
+import { logAudit, AuditAction } from "../utils/audit.helper";
 
 import type { Prisma } from "../generated/client";
 
@@ -214,12 +214,9 @@ export class BookingService {
         if (!trip) throw new HttpError(404, "NOT_FOUND", ErrorMessages.TRIP_NOT_FOUND);
 
         if (confirmedCount >= trip.capacity) {
-          await auditService.logAudit({
-            actorId: adminId,
-            action: AuditActions.BOOKING_REJECTED,
-            targetType: AuditTargetTypes.BOOKING,
-            targetId: booking.id,
-            metadata: { tripId: booking.tripId, reason: "capacity_full" },
+          await logAudit({ id: adminId }, AuditAction.BOOKING_REJECTED, "BOOKING", booking.id, {
+            tripId: booking.tripId,
+            reason: "capacity_full",
           });
           throw new HttpError(409, "CAPACITY_FULL", "Trip capacity is full");
         }
@@ -229,12 +226,8 @@ export class BookingService {
           data: { status: "CONFIRMED" },
         });
 
-        await auditService.logAudit({
-          actorId: adminId,
-          action: AuditActions.BOOKING_CONFIRMED,
-          targetType: AuditTargetTypes.BOOKING,
-          targetId: booking.id,
-          metadata: { tripId: booking.tripId },
+        await logAudit({ id: adminId }, AuditAction.BOOKING_CONFIRMED, "BOOKING", booking.id, {
+          tripId: booking.tripId,
         });
 
         return updated;

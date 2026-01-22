@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { auditService, AuditActions } from "./audit.service";
+import { logAudit, AuditAction } from "../utils/audit.helper";
 import { HttpError } from "../utils/httpError";
 import { slugify } from "../utils/slugify";
 import { EntityStatus } from "../constants/status";
@@ -49,12 +49,8 @@ export class BlogService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "BLOG_CREATED",
-      targetType: "BLOG",
-      targetId: blog.id,
-      metadata: { status: blog.status },
+    await logAudit({ id: userId }, AuditAction.BLOG_CREATED, "BLOG", blog.id, {
+      status: blog.status,
     });
 
     return blog;
@@ -255,12 +251,7 @@ export class BlogService {
       data: updateData,
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "BLOG_UPDATED",
-      targetType: "BLOG",
-      targetId: blog.id,
-    });
+    await logAudit({ id: userId }, AuditAction.BLOG_UPDATED, "BLOG", blog.id);
 
     return updated;
   }
@@ -285,12 +276,7 @@ export class BlogService {
 
     const deleted = await prisma.blog.delete({ where: { id } });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: AuditActions.BLOG_DELETED,
-      targetType: "BLOG",
-      targetId: id,
-    });
+    await logAudit({ id: userId }, AuditAction.BLOG_DELETED, "BLOG", id);
 
     return deleted;
   }
@@ -317,12 +303,7 @@ export class BlogService {
       data: { status: EntityStatus.PENDING_REVIEW },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "BLOG_SUBMITTED",
-      targetType: "BLOG",
-      targetId: id,
-    });
+    await logAudit({ id: userId }, AuditAction.BLOG_SUBMITTED, "BLOG", id);
 
     return updated;
   }
@@ -349,12 +330,7 @@ export class BlogService {
       data: { status: EntityStatus.APPROVED },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "BLOG_APPROVED",
-      targetType: "BLOG",
-      targetId: id,
-    });
+    await logAudit({ id: userId }, AuditAction.BLOG_APPROVED, "BLOG", id);
 
     return updated;
   }
@@ -372,13 +348,7 @@ export class BlogService {
       data: { status: EntityStatus.REJECTED },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "BLOG_REJECTED",
-      targetType: "BLOG",
-      targetId: id,
-      metadata: { reason },
-    });
+    await logAudit({ id: userId }, AuditAction.BLOG_REJECTED, "BLOG", id, { reason });
 
     return updated;
   }
@@ -403,12 +373,7 @@ export class BlogService {
       },
     });
 
-    await auditService.logAudit({
-      actorId: userId,
-      action: "BLOG_PUBLISHED",
-      targetType: "BLOG",
-      targetId: id,
-    });
+    await logAudit({ id: userId }, AuditAction.BLOG_PUBLISHED, "BLOG", id);
 
     return updated;
   }

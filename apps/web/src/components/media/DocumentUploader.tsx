@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { apiFetch } from "@/lib/api";
+import { useUpload } from "@/hooks/useUpload";
 
 type Props = {
   onUpload: (url: string) => void;
@@ -19,9 +19,11 @@ type Props = {
  */
 export function DocumentUploader({ onUpload, label = "Upload Document", existingUrl }: Props) {
   const [file, setFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(existingUrl || null);
+
+  const { upload, isUploading, error, setError } = useUpload({
+    endpoint: "/media/upload-doc",
+  });
 
   function handleSelect(file: File) {
     if (file.type !== "application/pdf") {
@@ -39,35 +41,19 @@ export function DocumentUploader({ onUpload, label = "Upload Document", existing
     setSuccess(null); // Reset success state when new file selected
   }
 
-  async function upload() {
+  async function handleUpload() {
     if (!file) return;
 
-    setIsLoading(true);
-    setError(null);
-
-    const form = new FormData();
-    form.append("file", file);
-
     try {
-      const res = await apiFetch("/media/upload-doc", {
-        method: "POST",
-        body: form,
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Upload failed");
-      }
+      const data = await upload(file);
 
       const fullUrl = `${process.env.NEXT_PUBLIC_API_URL}${data.url}`;
       onUpload(fullUrl);
       setSuccess(data.filename);
       setFile(null); // Clear file after successful upload
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-      setIsLoading(false);
+    } catch (e) {
+      // Error handled by hook
+      console.error(e);
     }
   }
 
@@ -143,12 +129,12 @@ export function DocumentUploader({ onUpload, label = "Upload Document", existing
         <Button
           onClick={(e) => {
             e.stopPropagation();
-            upload();
+            handleUpload();
           }}
-          disabled={isLoading}
+          disabled={isUploading}
           className="w-full bg-blue-600 text-white shadow-md shadow-blue-100 hover:bg-blue-700"
         >
-          {isLoading ? (
+          {isUploading ? (
             <div className="flex items-center gap-2">
               <Spinner className="h-4 w-4" />
               <span>Uploading...</span>
@@ -161,4 +147,3 @@ export function DocumentUploader({ onUpload, label = "Upload Document", existing
     </div>
   );
 }
-

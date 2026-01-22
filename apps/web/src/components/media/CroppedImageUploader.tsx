@@ -10,7 +10,7 @@ import {
   DialogFooter,
 } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
-import { apiFetch } from "@/lib/api";
+import { useUpload } from "@/hooks/useUpload";
 import getCroppedImg from "@/lib/canvasUtils";
 import imageCompression from "browser-image-compression";
 import { Loader2, Image as ImageIcon, Crop as CropIcon } from "lucide-react";
@@ -45,7 +45,8 @@ export default function CroppedImageUploader({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const { upload, isUploading, error } = useUpload();
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,11 +72,6 @@ export default function CroppedImageUploader({
   const handleUpload = async () => {
     if (!imageSrc || !croppedAreaPixels) return;
 
-    setIsLoading(true);
-
-
-// ... inside handleUpload ...
-
     try {
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
       if (!croppedImageBlob) throw new Error("Could not crop image");
@@ -90,19 +86,8 @@ export default function CroppedImageUploader({
       };
       const compressedFile = await (imageCompression as any)(file, options);
 
-      const formData = new FormData();
-      formData.append("file", compressedFile);
-
-      const res = await apiFetch("/media/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) throw new Error("Upload failed");
-
-      const json = await res.json();
-      const data = json.data; // ApiResponse wrapper
-      const image = data.image;
+      const data = await upload(compressedFile);
+      const image = data.data?.image || data.image; // Handle inconsistencies if any
       const finalUrl = image.originalUrl || image.mediumUrl;
 
       setUploadedUrl(finalUrl);
@@ -111,8 +96,6 @@ export default function CroppedImageUploader({
     } catch (e) {
       console.error(e);
       alert("Failed to upload image");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -131,13 +114,7 @@ export default function CroppedImageUploader({
         </div>
       )}
 
-      <input
-        id={id}
-        type="file"
-        accept="image/*"
-        onChange={onFileChange}
-        className="hidden"
-      />
+      <input id={id} type="file" accept="image/*" onChange={onFileChange} className="hidden" />
 
       {uploadedUrl && (
         <div className="border-border group relative overflow-hidden rounded-xl border">
@@ -195,8 +172,8 @@ export default function CroppedImageUploader({
             <Button variant="ghost" onClick={() => setImageSrc(null)}>
               Cancel
             </Button>
-            <Button onClick={handleUpload} disabled={isLoading}>
-              {isLoading ? (
+            <Button onClick={handleUpload} disabled={isUploading}>
+              {isUploading ? (
                 <Loader2 className="mr-2 animate-spin" />
               ) : (
                 <CropIcon className="mr-2" size={16} />
@@ -209,4 +186,3 @@ export default function CroppedImageUploader({
     </div>
   );
 }
-

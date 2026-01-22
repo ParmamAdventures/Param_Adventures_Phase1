@@ -1,8 +1,35 @@
 import { z } from "zod";
 
 // User validation schemas
+const baseUserProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  nickname: z.string().optional(),
+  bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
+  age: z.number().int().min(13, "Must be at least 13 years old").max(120).optional(),
+  gender: z.enum(["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"]).optional(),
+  phoneNumber: z
+    .string()
+    .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number")
+    .optional(),
+  address: z.string().max(200).optional(),
+  preferences: z
+    .object({
+      theme: z.enum(["light", "dark", "system"]).optional(),
+      language: z.string().min(2).max(10).optional(),
+      notifications: z
+        .object({
+          email: z.boolean().optional(),
+          push: z.boolean().optional(),
+          sms: z.boolean().optional(),
+          marketing: z.boolean().optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+});
+
 export const createUserSchema = z.object({
-  body: z.object({
+  body: baseUserProfileSchema.extend({
     email: z.string().email("Invalid email format"),
     password: z
       .string()
@@ -11,60 +38,12 @@ export const createUserSchema = z.object({
       .regex(/[a-z]/, "Password must contain at least one lowercase letter")
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    nickname: z.string().optional(),
-    bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
-    age: z.number().int().min(13, "Must be at least 13 years old").max(120).optional(),
-    gender: z.enum(["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"]).optional(),
-    phoneNumber: z
-      .string()
-      .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number")
-      .optional(),
-    address: z.string().max(200).optional(),
-    preferences: z
-      .object({
-        theme: z.enum(["light", "dark", "system"]).optional(),
-        language: z.string().min(2).max(10).optional(),
-        notifications: z
-          .object({
-            email: z.boolean().optional(),
-            push: z.boolean().optional(),
-            sms: z.boolean().optional(),
-            marketing: z.boolean().optional(),
-          })
-          .optional(),
-      })
-      .optional(),
   }),
 });
 
 export const updateUserSchema = z.object({
-  body: z.object({
-    name: z.string().min(2).optional(),
-    nickname: z.string().optional(),
-    bio: z.string().max(500).optional(),
-    age: z.number().int().min(13).max(120).optional(),
-    gender: z.enum(["MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"]).optional(),
-    phoneNumber: z
-      .string()
-      .regex(/^\+?[1-9]\d{1,14}$/)
-      .optional(),
-    address: z.string().max(200).optional(),
+  body: baseUserProfileSchema.partial().extend({
     avatarImageId: z.string().uuid().optional(),
-    preferences: z
-      .object({
-        theme: z.enum(["light", "dark", "system"]).optional(),
-        language: z.string().min(2).max(10).optional(),
-        notifications: z
-          .object({
-            email: z.boolean().optional(),
-            push: z.boolean().optional(),
-            sms: z.boolean().optional(),
-            marketing: z.boolean().optional(),
-          })
-          .optional(),
-      })
-      .optional(),
   }),
 });
 
