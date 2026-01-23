@@ -22,7 +22,7 @@ export function StatsCounter() {
   const [statsData, setStatsData] = useState<any>(null);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/content/stats`)
+    fetch("/api/content/stats")
       .then((res) => res.json())
       .then((data) => setStatsData(data))
       .catch((err) => console.error("Failed to load stats", err));

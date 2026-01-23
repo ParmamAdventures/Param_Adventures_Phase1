@@ -289,7 +289,7 @@ async function createUsers(roles: any) {
   // Admin user (from env vars)
   const admin = await prisma.user.upsert({
     where: { email: process.env.ADMIN_EMAIL! },
-    update: {},
+    update: { password: seedPassword },
     create: {
       email: process.env.ADMIN_EMAIL!,
       password: seedPassword,

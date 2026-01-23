@@ -149,5 +149,10 @@ app.use(`${API_V1}/admin/trip-assignments`, tripAssignmentRoutes);
 app.use(`${API_V1}/admin/inquiries`, adminInquiryRoutes);
 app.use(`${API_V1}/admin/refunds`, adminRefundRoutes);
 
+// 404 handler for unmatched routes
+app.use((_req, res) => {
+  return ApiResponse.error(res, "NOT_FOUND", "Resource not found", 404);
+});
+
 // must be LAST
 app.use(errorHandler);
