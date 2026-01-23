@@ -18,6 +18,12 @@ import { useAuth } from "@/context/AuthContext";
 export default function TripsClient() {
   const [trips, setTrips] = useState<any[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<{
+    page: number;
+    totalPages: number;
+    total: number;
+  } | null>(null);
 
   // Metadata for boundaries
   const [meta, setMeta] = useState({
@@ -55,61 +61,87 @@ export default function TripsClient() {
   // Use Custom Hook for Filter State
   const { filters, setFilter, clearFilters, activeFilterCount } = useTripFilters(meta.maxPrice);
 
-  const loadTrips = useCallback(async () => {
-    setTrips(null);
-    try {
-      const params = new URLSearchParams();
-      if (filters.search) params.append("search", filters.search);
-      if (filters.category) params.append("category", filters.category);
-      if (filters.difficulty) params.append("difficulty", filters.difficulty);
-      if (filters.capacity) params.append("capacity", filters.capacity);
+  const loadTrips = useCallback(
+    async (pageNum = 1) => {
+      // Don't clear trips if loading more, only if resetting (page 1)
+      if (pageNum === 1) setTrips(null);
+      setError(null);
 
-      // Sorting
-      params.append("sortBy", filters.sortBy);
-      params.append("sortOrder", filters.sortOrder);
+      try {
+        const params = new URLSearchParams();
+        // Pagination
+        params.append("page", pageNum.toString());
+        params.append("limit", "10");
 
-      // Price
-      if (filters.priceRange < meta.maxPrice)
-        params.append("maxPrice", filters.priceRange.toString());
+        if (filters.search) params.append("search", filters.search);
+        if (filters.category) params.append("category", filters.category);
+        if (filters.difficulty) params.append("difficulty", filters.difficulty);
+        if (filters.capacity) params.append("capacity", filters.capacity);
 
-      // Duration
-      if (filters.minDays) params.append("minDays", filters.minDays);
-      if (filters.maxDays) params.append("maxDays", filters.maxDays);
+        // Sorting
+        params.append("sortBy", filters.sortBy);
+        params.append("sortOrder", filters.sortOrder);
 
-      // Dates
-      if (filters.startDate) params.append("startDate", filters.startDate);
-      if (filters.endDate) params.append("endDate", filters.endDate);
+        // Price
+        if (filters.priceRange < meta.maxPrice)
+          params.append("maxPrice", filters.priceRange.toString());
 
-      const res = await apiFetch(`/trips/public?${params.toString()}`);
+        // Duration
+        if (filters.minDays) params.append("minDays", filters.minDays);
+        if (filters.maxDays) params.append("maxDays", filters.maxDays);
 
-      if (!res.ok) {
-        setError("Failed to load trips");
-        setTrips([]);
-        return;
+        // Dates
+        if (filters.startDate) params.append("startDate", filters.startDate);
+        if (filters.endDate) params.append("endDate", filters.endDate);
+
+        const res = await apiFetch(`/trips/public?${params.toString()}`);
+
+        if (!res.ok) {
+          setError("Failed to load trips");
+          if (pageNum === 1) setTrips([]);
+          return;
+        }
+        const json = await res.json();
+
+        // Handle standardized ApiResponse with pagination
+        let newTrips = [];
+        if (json.data && json.data.trips && Array.isArray(json.data.trips)) {
+          newTrips = json.data.trips;
+          if (json.data.pagination) {
+            setPagination(json.data.pagination);
+          }
+        } else {
+          // Fallback
+          newTrips = json.data?.data || json.data || json;
+        }
+
+        if (pageNum === 1) {
+          setTrips(newTrips);
+        } else {
+          setTrips((prev) => [...(prev || []), ...newTrips]);
+        }
+        setPage(pageNum);
+      } catch (e) {
+        console.error(e);
+        setError("Network error");
+        if (pageNum === 1) setTrips([]);
       }
-      const json = await res.json();
+    },
+    [filters, meta.maxPrice],
+  );
 
-      // Handle standardized ApiResponse with pagination
-      if (json.data && json.data.trips && Array.isArray(json.data.trips)) {
-        setTrips(json.data.trips);
-        // TODO: handle json.data.pagination if we want to show page buttons
-      } else {
-        // Fallback for legacy or direct array returns
-        setTrips(json.data?.data || json.data || json);
-      }
-    } catch (e) {
-      console.error(e);
-      setError("Network error");
-      setTrips([]);
-    }
-  }, [filters, meta.maxPrice]);
-
+  // Debounced Filter Effect - always resets to page 1
   useEffect(() => {
     const timer = setTimeout(() => {
-      loadTrips();
+      loadTrips(1);
     }, 300);
     return () => clearTimeout(timer);
   }, [loadTrips]);
+
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    loadTrips(nextPage);
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -120,12 +152,12 @@ export default function TripsClient() {
         clearFilters={clearFilters}
         activeFilterCount={activeFilterCount}
         meta={meta}
-        totalTrips={trips?.length}
+        totalTrips={pagination?.total || trips?.length}
       />
 
       {/* Main Grid */}
       <div className="min-h-[400px]">
-        {trips === null ? (
+        {trips === null && page === 1 ? (
           <TripsGridSkeleton />
         ) : error ? (
           <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] py-20 text-center">
@@ -137,13 +169,13 @@ export default function TripsClient() {
               Something went wrong while fetching adventures.
             </p>
             <button
-              onClick={loadTrips}
+              onClick={() => loadTrips(1)}
               className="rounded-2xl bg-[var(--accent)] px-8 py-3 font-bold text-white shadow-[var(--accent)]/20 shadow-xl transition-all hover:scale-105"
             >
               Try Again
             </button>
           </div>
-        ) : trips.length === 0 ? (
+        ) : trips && trips.length === 0 ? (
           <div className="rounded-3xl border border-[var(--border)] bg-[var(--card)] py-24 text-center">
             <div className="mx-auto mb-4 w-fit rounded-full bg-[var(--accent)]/10 p-4 text-[var(--accent)]">
               <Filter size={32} />
@@ -160,7 +192,21 @@ export default function TripsClient() {
             </button>
           </div>
         ) : (
-          <TripsGrid trips={trips} savedTripIds={savedTripIds} />
+          <>
+            <TripsGrid trips={trips || []} savedTripIds={savedTripIds} />
+
+            {/* Load More Button */}
+            {pagination && pagination.page < pagination.totalPages && (
+              <div className="mt-12 flex justify-center">
+                <button
+                  onClick={handleLoadMore}
+                  className="rounded-full border border-black/10 bg-white px-8 py-3 font-bold text-black shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-zinc-900 dark:text-white"
+                >
+                  Load More Adventures
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

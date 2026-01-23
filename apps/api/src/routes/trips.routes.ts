@@ -64,19 +64,29 @@ import { paginate } from "../middlewares/pagination.middleware";
  *       200:
  *         description: Metadata returned
  */
-router.get("/public/meta", async (req, res) => {
-  const aggs = await prisma.trip.aggregate({
-    _min: { price: true, durationDays: true },
-    _max: { price: true, durationDays: true },
-    where: { status: "PUBLISHED" },
-  });
+import TripCacheService from "../services/trip-cache.service";
 
-  res.json({
-    minPrice: aggs._min.price || 0,
-    maxPrice: aggs._max.price || 100000,
-    minDuration: aggs._min.durationDays || 1,
-    maxDuration: aggs._max.durationDays || 30,
-  });
+// ... previous imports ...
+
+// Public metadata for filters (Must be before /public route)
+/**
+ * @swagger
+ * /trips/public/meta:
+ *   get:
+ *     summary: Get metadata for trip filtering (min/max price, duration)
+ *     tags: [Trips]
+ *     responses:
+ *       200:
+ *         description: Metadata returned
+ */
+router.get("/public/meta", async (req, res) => {
+  try {
+    const meta = await TripCacheService.getTripMetadata();
+    res.json(meta);
+  } catch (error) {
+    console.error("Failed to fetch meta", error);
+    res.status(500).json({ error: "Failed to fetch metadata" });
+  }
 });
 
 // Public list with search and filtering

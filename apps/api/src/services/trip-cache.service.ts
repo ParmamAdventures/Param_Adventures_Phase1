@@ -18,6 +18,7 @@ export class TripCacheService {
     TRIPS_CATEGORY: (category: string) => `trips:category:${category}`,
     TRIPS_FEATURED: () => "trips:featured",
     TRIPS_PATTERN: () => "trip:*",
+    TRIPS_META: () => "trips:meta",
   };
 
   /**
@@ -27,7 +28,32 @@ export class TripCacheService {
     TRIP: 3600, // 1 hour
     TRIPS_LIST: 1800, // 30 minutes
     FEATURED: 1800, // 30 minutes
+    TRIP_META: 3600, // 1 hour
   };
+  /**
+   * Get public trips metadata (min/max price, duration)
+   */
+  static async getTripMetadata() {
+    return await cacheService.getOrSet(
+      this.KEYS.TRIPS_META(),
+      async () => {
+        logger.debug("Fetching trip metadata from database");
+        const aggs = await prisma.trip.aggregate({
+          _min: { price: true, durationDays: true },
+          _max: { price: true, durationDays: true },
+          where: { status: TripStatus.PUBLISHED },
+        });
+
+        return {
+          minPrice: aggs._min.price || 0,
+          maxPrice: aggs._max.price || 100000,
+          minDuration: aggs._min.durationDays || 1,
+          maxDuration: aggs._max.durationDays || 30,
+        };
+      },
+      this.TTL.TRIP_META,
+    );
+  }
 
   /**
    * Get public trips with caching
@@ -218,6 +244,7 @@ export class TripCacheService {
       this.KEYS.TRIPS_PUBLIC(),
       this.KEYS.TRIPS_FEATURED(),
       this.KEYS.TRIPS_CATEGORY(trip.category),
+      this.KEYS.TRIPS_META(),
     ];
 
     logger.debug(`Invalidating cache for trip: ${trip.id}`);
