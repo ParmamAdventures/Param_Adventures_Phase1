@@ -34,6 +34,10 @@ const envSchema = z.object({
   // OAuth
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
+  // Cloudinary
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -45,9 +49,9 @@ if (!parsed.success) {
     console.error(`  - ${field}: ${errors?.join(", ")}`);
   });
 
-  if (process.env.NODE_ENV === "production") {
-    console.warn("⚠️ Continuing in production despite invalid env - monitoring health...");
-  }
+  // Always exit if environment is invalid, regardless of NODE_ENV
+  // This prevents the app from starting in an unstable state
+  process.exit(1);
 }
 
-export const env = parsed.success ? parsed.data : (process.env as any);
+export const env = parsed.data;

@@ -4,7 +4,7 @@
   "stack": "node18",
   "env_variables": {
     "NODE_ENV": "production",
-    "DATABASE_URL": "postgresql://postgres1:emimHme3GNnsmP7kTixZGkMNqKkVeAb9@dpg-d5aco1ali9vc73b3u85g-a.oregon-postgres.render.com/param_adventures"
+    "DATABASE_URL": "postgresql://username:password@localhost:5433/param_adventures?schema=public"
   },
   "memory": 1024
 }
