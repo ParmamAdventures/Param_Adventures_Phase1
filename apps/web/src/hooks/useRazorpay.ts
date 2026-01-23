@@ -35,6 +35,7 @@ export function useRazorpay() {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isDevMode, setIsDevMode] = useState(false);
   const [lastBookingId, setLastBookingId] = useState<string | null>(null);
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const { showToast } = useToast();
@@ -73,7 +74,20 @@ export function useRazorpay() {
           const res = await apiFetch("/bookings/me");
           if (!res.ok) return;
 
-          const bookings = await res.json();
+          const json = await res.json();
+          // Debugging
+          console.log("[Polling] /bookings/me response:", json);
+
+          let bookings: any[] = [];
+          if (Array.isArray(json)) {
+            bookings = json;
+          } else if (json.data && Array.isArray(json.data)) {
+            bookings = json.data;
+          } else {
+            console.warn("[Polling] Unexpected response format:", json);
+            return;
+          }
+
           const booking = bookings.find((b: any) => b.id === bookingId);
 
           if (booking?.paymentStatus === "PAID") {
@@ -133,6 +147,7 @@ export function useRazorpay() {
         if (orderId.startsWith("order_test_")) {
           setMessage("Dev order created. Click 'Simulate' to finish.");
           setIsLoading(false);
+          setIsDevMode(true);
           return { isDev: true, orderId };
         }
 
@@ -258,5 +273,6 @@ export function useRazorpay() {
     error,
     setMessage,
     setError,
+    isDevMode,
   };
 }

@@ -275,14 +275,14 @@ All documentation is available in the `docs/` directory:
 
 ### Production Requirements
 
-- [ ] Change all JWT secrets
-- [ ] Update Razorpay production keys
-- [ ] Configure real SMTP provider
-- [ ] Enable HTTPS/SSL
-- [ ] Setup WAF if applicable
-- [ ] Database backup strategy
-- [ ] Monitoring & alerting
-- [ ] Incident response plan
+- [x] Change all JWT secrets
+- [x] Update Razorpay production keys
+- [x] Configure real SMTP provider
+- [x] Enable HTTPS/SSL (Handled by Render/Vercel)
+- [x] Setup WAF if applicable (Cloudflare/Render)
+- [x] Database backup strategy (Documented in MAINTENANCE.md)
+- [x] Monitoring & alerting (Sentry configured for API & Web)
+- [x] Incident response plan (MAINTENANCE.md)
 
 ---
 

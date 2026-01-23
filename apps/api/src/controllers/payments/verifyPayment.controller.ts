@@ -14,11 +14,12 @@ import { notificationQueue } from "../../lib/queue";
 export async function verifyPayment(req: Request, res: Response) {
   const { orderId, paymentId, signature } = req.body;
 
+  // Check if it's a dev simulation first (allows missing paymentId/signature)
+  if (orderId?.startsWith("order_test_") && process.env.NODE_ENV !== "production") {
+    return await handleDevSimulation(orderId, res);
+  }
+
   if (!orderId || !paymentId || !signature) {
-    // Check if it's a dev simulation
-    if (orderId?.startsWith("order_test_") && process.env.NODE_ENV !== "production") {
-      return await handleDevSimulation(orderId, res);
-    }
     throw new HttpError(400, "INVALID_REQUEST", "Missing required payment fields");
   }
 
@@ -30,7 +31,7 @@ export async function verifyPayment(req: Request, res: Response) {
     // Often invalid signature means tampering, but sometimes safe to check remote status.
     const payRec = await prisma.payment.findUnique({ where: { providerOrderId: orderId } });
     if (payRec) {
-        await notificationQueue.add("RECONCILE_PAYMENT", { paymentId: payRec.id });
+      await notificationQueue.add("RECONCILE_PAYMENT", { paymentId: payRec.id });
     }
     throw new HttpError(400, "INVALID_SIGNATURE", "Payment verification failed");
   }

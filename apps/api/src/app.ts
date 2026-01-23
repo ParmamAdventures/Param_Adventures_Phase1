@@ -98,15 +98,18 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 // The request handler must be the first middleware on the app
+// Sentry.setupExpressErrorHandler(app); // Moved to after middleware registration (or before?)
+// Actually, setupExpressErrorHandler is for ERROR handling, but Sentry docs say:
+// "requestHandler must be the first middleware"
+// "errorHandler must be the first error middleware"
+// v8 SDK uses `setupExpressErrorHandler`.
+// It should be registered ONCE.
 Sentry.setupExpressErrorHandler(app);
 
 // Webhooks must be registered before the JSON parser
 app.use("/webhooks", webhooksRoutes);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
-
-// The request handler must be the first middleware on the app
-Sentry.setupExpressErrorHandler(app);
 
 app.use(express.static(path.join(__dirname, "../public")));
 app.use(

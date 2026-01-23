@@ -44,6 +44,8 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
   const { user } = useAuth();
   const { showToast } = useToast();
   const { state, execute } = useAsyncOperation();
+  // Store the booking/order details for successful/dev transactions
+  const [bookingResult, setBookingResult] = React.useState<any>(null);
   const { values: formData, setField } = useFormState({
     guests: 1,
     startDate: "",
@@ -102,7 +104,8 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     }
   }, [isOpen, trip.startDate, setField]);
 
-  const { initiatePayment, message, error, retryVerification } = useRazorpay();
+  const { initiatePayment, simulateDevSuccess, isDevMode, message, error, retryVerification } =
+    useRazorpay();
 
   const handleBooking = async () => {
     if (!formData.startDate) {
@@ -142,8 +145,14 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
 
       // 3. Handle Completion
       // If result.isDev, we stay open to show simulate button.
-      // If not, we let Razorpay handler/polling take over.
-      // We don't close immediately unless we want to redirect to 'my-bookings'
+      if (result?.isDev) {
+        setBookingResult({
+          id: booking.id,
+          // Order ID helps to verify specific transaction
+          orderId: result.orderId,
+        });
+      }
+
       if (!result?.isDev) {
         // For non-dev, the hook handles toasts and redirections
         // but we might want to signal success to parent if needed
@@ -298,6 +307,22 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
               ))}
             </div>
           </div>
+
+          {/* Dev Simulation Button (Only visible in dev mode when triggered) */}
+          {isDevMode && (
+            <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-4 text-center">
+              <p className="mb-2 text-xs font-semibold tracking-wider text-yellow-600 uppercase">
+                Development Mode
+              </p>
+              <Button
+                variant="outline"
+                className="w-full border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white"
+                onClick={() => simulateDevSuccess(bookingResult?.id, bookingResult?.orderId)}
+              >
+                Simulate Successful Payment
+              </Button>
+            </div>
+          )}
 
           {/* Payment Status & Recovery */}
           <div className="space-y-4">

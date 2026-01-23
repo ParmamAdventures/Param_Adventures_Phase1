@@ -64,27 +64,27 @@ export async function createPaymentIntent(req: Request, res: Response) {
       receipt: booking.id,
     });
     finalOrder = order;
-  } catch {
-    if (!razorpayConfigured) {
-      if (env.NODE_ENV === "production") {
-        throw new HttpError(
-          500,
-          "PAYMENT_PROVIDER_NOT_CONFIGURED",
-          "Payment service is temporarily unavailable",
-        );
-      }
-
-      // DEV / TEST fallback
-      console.warn("[Payments] Using dev fallback Razorpay order", { bookingId });
-      finalOrder = {
-        id: `order_test_${Date.now()}`,
-        amount: amount,
-        currency: "INR",
-        receipt: booking.id,
-      } as any;
-    } else {
-      throw new HttpError(500, "INTERNAL_ERROR", "Failed to create provider order");
+  } catch (err: any) {
+    // CRITICAL: Never allow fallback in production
+    if (env.NODE_ENV === "production") {
+      throw new HttpError(
+        500,
+        "PAYMENT_PROVIDER_ERROR",
+        "Payment service unavailable. Please try again later.",
+      );
     }
+
+    // In DEV/TEST, allow fallback if not configured or if call fails
+    console.warn("[Payments] Using dev fallback Razorpay order", {
+      bookingId,
+      error: err?.message,
+    });
+    finalOrder = {
+      id: `order_test_${Date.now()}`,
+      amount: amount,
+      currency: "INR",
+      receipt: booking.id,
+    } as any;
   }
 
   const payment = await prisma.payment.create({
