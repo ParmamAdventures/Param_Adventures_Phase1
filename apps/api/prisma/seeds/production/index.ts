@@ -16,15 +16,12 @@
  * - Can be safely run in production for demos/staging
  */
 
-import {
-  PrismaClient,
-  Prisma,
   TripStatus,
   BlogStatus,
   TripCategory,
   PaymentMethod,
   Difficulty,
-} from "@prisma/client";
+} from "../../../src/generated/client";
 import { RAW_TRIP_DATA, TRIP_IMAGES } from "./seed_data";
 
 // (Code removed)
