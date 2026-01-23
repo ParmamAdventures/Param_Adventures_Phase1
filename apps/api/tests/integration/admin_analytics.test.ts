@@ -107,6 +107,7 @@ describe("Admin Analytics Integration", () => {
         provider: "RAZORPAY" as any,
         providerPaymentId: "pay_1",
         providerOrderId: "order_1",
+        method: "CARD",
       },
     });
 

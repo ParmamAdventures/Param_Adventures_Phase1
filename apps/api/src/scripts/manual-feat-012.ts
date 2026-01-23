@@ -79,6 +79,7 @@ async function run() {
         providerPaymentId: "pay_ref_" + Date.now(),
         amount: 100000,
         status: "CAPTURED",
+        method: "OTHER",
       },
     });
 

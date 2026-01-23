@@ -54,6 +54,7 @@ async function run() {
         providerOrderId: "ord_inv_" + Date.now(),
         amount: 500000,
         status: "CAPTURED",
+        method: "OTHER",
       },
     });
 

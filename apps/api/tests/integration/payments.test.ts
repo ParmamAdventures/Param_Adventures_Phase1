@@ -197,6 +197,7 @@ describe("Payment Integration Tests", () => {
           providerOrderId: "order_existing",
           amount: 5000,
           status: "CAPTURED",
+          method: "CARD",
         },
       });
 
@@ -279,6 +280,7 @@ describe("Payment Integration Tests", () => {
           providerOrderId: "order_verify123",
           amount: 5000,
           status: "CREATED",
+          method: "CARD",
         },
       });
 
@@ -332,6 +334,7 @@ describe("Payment Integration Tests", () => {
           providerOrderId: "order_invalid123",
           amount: 5000,
           status: "CREATED",
+          method: "CARD",
         },
       });
 
@@ -396,6 +399,7 @@ describe("Payment Integration Tests", () => {
           providerPaymentId: "pay_refund456",
           amount: 5000,
           status: "CAPTURED",
+          method: "CARD",
         },
       });
 
@@ -457,6 +461,7 @@ describe("Payment Integration Tests", () => {
           providerPaymentId: "pay_nonadmin",
           amount: 5000,
           status: "CAPTURED",
+          method: "CARD",
         },
       });
 
@@ -491,6 +496,7 @@ describe("Payment Integration Tests", () => {
           providerPaymentId: "pay_alreadyrefund",
           amount: 5000,
           status: "REFUNDED",
+          method: "CARD",
         },
       });
 
@@ -526,6 +532,7 @@ describe("Payment Integration Tests", () => {
           providerPaymentId: "pay_failrefund",
           amount: 5000,
           status: "CAPTURED",
+          method: "CARD",
         },
       });
 
@@ -576,6 +583,7 @@ describe("Payment Integration Tests", () => {
           providerOrderId: "order_replay1",
           amount: 5000,
           status: "CREATED",
+          method: "CARD",
         },
       });
 
@@ -586,6 +594,7 @@ describe("Payment Integration Tests", () => {
           providerOrderId: "order_replay2",
           amount: 5000,
           status: "CREATED",
+          method: "CARD",
         },
       });
 

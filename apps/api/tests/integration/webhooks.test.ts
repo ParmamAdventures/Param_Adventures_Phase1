@@ -162,6 +162,7 @@ describe("Razorpay Webhooks", () => {
         providerOrderId: "order_captured",
         amount: 500000,
         status: "CREATED",
+        method: "UPI",
       },
     });
 
@@ -206,6 +207,7 @@ describe("Razorpay Webhooks", () => {
         providerOrderId: "order_failed",
         amount: 500000,
         status: "CREATED",
+        method: "CARD",
       },
     });
 
@@ -247,6 +249,7 @@ describe("Razorpay Webhooks", () => {
         providerPaymentId: "pay_refund",
         amount: 500000,
         status: "CAPTURED",
+        method: "CARD",
       },
     });
 

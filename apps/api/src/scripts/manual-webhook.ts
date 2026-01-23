@@ -63,6 +63,7 @@ async function run() {
         providerOrderId: orderId,
         amount: 100000,
         status: "CREATED",
+        method: "OTHER",
       },
     });
 
