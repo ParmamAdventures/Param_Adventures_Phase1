@@ -37,7 +37,6 @@
     "build": "npm run build -w apps/api && npm run build -w apps/web",
     "lint": "npm run lint -w apps/api && npm run lint -w apps/web",
     "test": "concurrently \"npm run test -w apps/api\" \"npm run test -w apps/web\"",
-    "test": "concurrently \"npm run test -w apps/api\" \"npm run test -w apps/web\"",
     "test:ci": "concurrently \"npm run test:ci -w apps/api\" \"npm run test:ci -w apps/web\"",
     "test:e2e": "npm test -w apps/e2e",
     "prepare": "node -e \"if (process.env.NODE_ENV !== 'production') { try { require('child_process').execSync('husky', { stdio: 'inherit' }); } catch (e) { console.warn('Husky skip:', e.message); } }\""

@@ -15,7 +15,6 @@
     "seed:prod": "cross-env ALLOW_PROD_SEED=true SEED_DEMO_DATA=true npx ts-node prisma/seeds/production/index.ts",
     "seed:minimal": "node prisma/seeds/test/seed_minimal.cjs",
     "seed:test": "node prisma/seeds/test/seed_comprehensive.js",
-    "seed:test": "node prisma/seeds/test/seed_comprehensive.js",
     "seed:e2e": "node prisma/seeds/test/seed_e2e.js",
     "test:ci": "jest --ci --runInBand --forceExit --detectOpenHandles --config jest.config.js"
   },
