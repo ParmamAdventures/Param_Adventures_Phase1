@@ -35,6 +35,7 @@ export async function createManualPayment(req: Request, res: Response) {
   const payment = await prisma.payment.create({
     data: {
       bookingId,
+      method: "OTHER",
       provider: "MANUAL", // Was method, but provider needs to be enum. We store method in rawPayload or dedicated method field if exists
       providerOrderId: `MANUAL_${Date.now()}`, // Fake order ID
       providerPaymentId: transactionId || `MANUAL_${Date.now()}`,

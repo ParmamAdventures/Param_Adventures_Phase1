@@ -79,6 +79,7 @@ export async function initiatePayment(req: Request, res: Response) {
         amount: amountInPaise,
         currency: order.currency,
         status: "CREATED",
+        method: "OTHER",
         rawPayload: order as any,
       },
     });

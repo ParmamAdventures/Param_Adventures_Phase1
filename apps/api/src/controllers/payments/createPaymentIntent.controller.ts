@@ -94,6 +94,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
       providerOrderId: finalOrder.id,
       amount,
       status: "CREATED",
+      method: "OTHER",
     },
   });
 

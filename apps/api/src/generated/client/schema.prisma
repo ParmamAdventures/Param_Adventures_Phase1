@@ -1,8 +1,7 @@
 generator client {
   provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
   output        = "../src/generated/client"
-  binaryTargets = ["native", "windows"]
-  engineType    = "binary"
 }
 
 datasource db {
@@ -148,6 +147,7 @@ model User {
   @@index([avatarImageId])
   @@index([deletedAt]) // Optimize queries for active users (WHERE deletedAt IS NULL)
   @@index([email, deletedAt]) // Compound: Check active user by email
+  @@index([phoneNumber]) // Optimize phone number lookups
 }
 
 model Role {
@@ -424,6 +424,8 @@ model Image {
   updatedAt DateTime @updatedAt
 
   @@index([uploadedById])
+  @@index([createdAt]) // Added: Sort by upload date
+  @@index([type]) // Added: Filter by media type
 }
 
 enum BookingStatus {
@@ -516,10 +518,10 @@ model Payment {
   proofUrl          String? // For manual/offline payments (image URL)
   amount            Int // paise
   currency          String          @default("INR")
-  method            PaymentMethod   @default(OTHER) // Required field - use OTHER if unknown
   refundedAmount    Int             @default(0) // Track cumulative refunds
   disputeId         String? // ID from provider if disputed
   status            PaymentStatus   @default(CREATED)
+  method            PaymentMethod // Required field - explicit assignment required
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -565,8 +567,7 @@ model Review {
   trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
 
   @@unique([userId, tripId]) // One review per trip per user
-  @@index([tripId])
-  // @@index([userId, tripId]) - Removed: Redundant with @unique
+  // @@index([tripId]) - Removed: Redundant with @@index([tripId, rating])
   @@index([tripId, rating])
   @@index([createdAt])
 }
@@ -594,8 +595,8 @@ model SiteConfig {
 model TripInquiry {
   id          String            @id @default(uuid())
   name        String
-  email       String            @unique
-  phoneNumber String? // Removed @unique - nullable fields shouldn't have unique constraints
+  email       String // Removed @unique - same person can submit multiple inquiries
+  phoneNumber String?
   destination String
   dates       String?
   budget      String?
@@ -605,17 +606,18 @@ model TripInquiry {
 
   @@index([status])
   @@index([createdAt])
+  @@index([email]) // Index for email lookups (not unique)
   @@index([email, status])
   @@index([status, createdAt])
-  @@index([phoneNumber]) // Add index for phone number lookups
+  @@index([phoneNumber])
 }
 
 model NewsletterSubscriber {
   id           String   @id @default(uuid())
   email        String   @unique
-  isSubscribed Boolean  @default(true) // Subscribers start as subscribed
+  isSubscribed Boolean  @default(true)
   createdAt    DateTime @default(now())
+  // Removed redundant @@index([email]) - @unique already creates index
 
   @@index([isSubscribed, createdAt]) // Query active subscribers
-  @@index([email]) // Explicit index for email lookups
 }

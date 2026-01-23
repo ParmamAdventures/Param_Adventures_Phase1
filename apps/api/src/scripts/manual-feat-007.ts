@@ -51,6 +51,7 @@ async function run() {
         providerPaymentId: "pay_fake_" + Date.now(), // Fake ID will cause fetch failure -> Retry
         amount: 100000,
         status: "CREATED",
+        method: "OTHER",
       },
     });
 
