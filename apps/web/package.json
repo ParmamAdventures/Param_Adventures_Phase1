@@ -10,7 +10,9 @@
     "format": "prettier --write .",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test"
+    "test:watch": "jest --watch",
+    "test:e2e": "playwright test",
+    "test:ci": "jest --ci --runInBand --passWithNoTests"
   },
   "dependencies": {
     "@sentry/nextjs": "^10.32.1",
