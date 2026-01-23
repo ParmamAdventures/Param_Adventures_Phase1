@@ -140,4 +140,24 @@ describe("paymentService.reconcilePayment", () => {
       expect.objectContaining({ error: expect.any(Error) }),
     );
   });
+
+  it("should throw error on network timeout during fetchPayment (Edge Case)", async () => {
+    (prisma.payment.findUnique as jest.Mock).mockResolvedValue({
+      id: paymentId,
+      providerPaymentId,
+      status: "AUTHORIZED",
+      bookingId,
+    });
+
+    const timeoutError = new Error("Gateway Timeout");
+    (timeoutError as any).code = "ETIMEDOUT"; // Simulate network code if relevant, or just generic error
+    (razorpayService.fetchPayment as jest.Mock).mockRejectedValue(timeoutError);
+
+    await expect(paymentService.reconcilePayment(paymentId)).rejects.toThrow("Gateway Timeout");
+
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining("Reconciliation failed"),
+      expect.objectContaining({ error: timeoutError }),
+    );
+  });
 });

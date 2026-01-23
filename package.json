@@ -1,8 +1,10 @@
 {
   "private": true,
   "dependencies": {
+    "cloudinary": "2.9.0",
     "dotenv": "^17.2.3",
     "express-async-errors": "^3.1.1",
+    "multer-storage-cloudinary": "2.2.1",
     "zod": "^4.2.1"
   },
   "name": "param_adventures_phase1",
@@ -27,7 +29,7 @@
     "eslint-plugin-import": "^2.32.0",
     "husky": "^9.1.7",
     "prettier": "^3.7.4",
-    "prisma": "7.3.0",
+    "prisma": "^6.19.2",
     "typescript": "^5.9.3"
   },
   "scripts": {

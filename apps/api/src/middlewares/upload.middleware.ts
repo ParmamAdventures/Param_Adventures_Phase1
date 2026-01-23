@@ -1,5 +1,5 @@
 import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+const CloudinaryStorage = require("multer-storage-cloudinary");
 import { cloudinary, storage } from "../config/cloudinary"; // Cloudinary Storage
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB ceiling to avoid oversized uploads
@@ -32,7 +32,7 @@ export const upload = multer({
   },
 });
 
-const documentStorage = new CloudinaryStorage({
+const documentStorage = CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "param_adventures_uploads/documents",

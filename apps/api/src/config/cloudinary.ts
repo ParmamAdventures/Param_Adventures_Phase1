@@ -1,5 +1,5 @@
+const CloudinaryStorage = require("multer-storage-cloudinary");
 import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const requiredEnv = ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
 const missingEnv = requiredEnv.filter((key) => !process.env[key]);
@@ -15,9 +15,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET || "mock-secret",
 });
 
-const storage = new CloudinaryStorage({
+const storage = CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
+  params: async (req: any, file: any) => {
     const isVideo = file.mimetype.startsWith("video/");
     return {
       folder: isVideo ? "param_adventures_uploads/videos" : "param_adventures_uploads/images",

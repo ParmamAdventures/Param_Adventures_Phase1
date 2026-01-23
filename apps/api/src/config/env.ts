@@ -22,7 +22,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string(),
 
   // Frontend
-  FRONTEND_URL: z.string().default("*"),
+  FRONTEND_URL: z.string(),
 
   // SMTP (Email)
   SMTP_HOST: z.string().optional(),
