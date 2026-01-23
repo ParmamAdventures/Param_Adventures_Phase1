@@ -1,4 +1,4 @@
-import { BookingStatus } from "../../generated/client";
+import { BookingStatus } from "@prisma/client";
 
 type Action = "approve" | "reject";
 

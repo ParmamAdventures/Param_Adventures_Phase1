@@ -11,7 +11,7 @@
  * 6. USER - Regular user access
  */
 
-import { PrismaClient } from "../src/generated/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 

@@ -24,7 +24,7 @@ import {
   TripCategory,
   PaymentMethod,
   Difficulty,
-} from "../../../src/generated/client";
+} from "@prisma/client";
 import { RAW_TRIP_DATA, TRIP_IMAGES } from "./seed_data";
 
 // (Code removed)

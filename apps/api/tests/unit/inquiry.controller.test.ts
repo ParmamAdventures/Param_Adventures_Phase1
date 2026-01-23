@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { mockDeep } from "jest-mock-extended";
-import { PrismaClient } from "../../src/generated/client";
+import { PrismaClient } from "@prisma/client";
 
 // 1. Setup Mock
 const prismaMock = mockDeep<PrismaClient>();

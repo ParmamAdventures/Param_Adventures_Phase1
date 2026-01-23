@@ -1,4 +1,4 @@
-import { TripStatus, BlogStatus, BookingStatus } from "../generated/client";
+import { TripStatus, BlogStatus, BookingStatus } from "@prisma/client";
 import { HttpError } from "./httpError";
 import { EntityStatus } from "../constants/status";
 

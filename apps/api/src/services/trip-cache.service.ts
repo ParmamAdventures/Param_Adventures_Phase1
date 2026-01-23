@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { Prisma, Trip, TripCategory, TripStatus } from "../generated/client";
+import { Prisma, Trip, TripCategory, TripStatus } from "@prisma/client";
 import CacheService, { cacheService } from "./cache.service";
 import { logger } from "../lib/logger";
 
