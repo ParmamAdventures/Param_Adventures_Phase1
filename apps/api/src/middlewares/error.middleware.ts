@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/node";
 
 import { logger } from "../lib/logger";
 import { HttpError } from "../utils/httpError";
+import { ApiResponse } from "../utils/ApiResponse";
 
 type MaybeHttpError = {
   status?: number;
@@ -63,7 +64,7 @@ export function errorHandler(err: Error, _req: Request, res: Response, next: Nex
     const status = httpErr.status ?? 500;
     const code = httpErr.code ?? "INTERNAL_ERROR";
     const message = httpErr.message ?? "Internal Server Error";
-    return res.status(status).json(buildError(code, message));
+    return ApiResponse.error(res, code, message, status);
   }
 
   // Handle Prisma known request errors (e.g., unique constraint violations)
@@ -72,19 +73,28 @@ export function errorHandler(err: Error, _req: Request, res: Response, next: Nex
     const code = err.code === "P2002" ? "CONFLICT" : "DATABASE_ERROR";
     const message = err.code === "P2002" ? "Resource already exists" : "Database request error";
 
-    return res.status(status).json(buildError(code, isDev ? message : "Database error", err.meta));
+    return ApiResponse.error(
+      res,
+      code,
+      isDev ? message : "Database error",
+      status,
+      isDev ? err.meta : undefined,
+    );
   }
 
   // Handle Prisma Validation errors
   if (err.name === "PrismaClientValidationError") {
-    return res
-      .status(400)
-      .json(buildError("DATABASE_VALIDATION_ERROR", "Invalid data format provided to database"));
+    return ApiResponse.error(
+      res,
+      "DATABASE_VALIDATION_ERROR",
+      "Invalid data format provided to database",
+      400,
+    );
   }
 
   // Handle Multer errors
   if (err.name === "MulterError") {
-    return res.status(400).json(buildError("UPLOAD_ERROR", err.message));
+    return ApiResponse.error(res, "UPLOAD_ERROR", err.message, 400);
   }
 
   // Fallback: try read status/code if present on unknown error
@@ -93,7 +103,11 @@ export function errorHandler(err: Error, _req: Request, res: Response, next: Nex
   const code = typeof maybe.code === "string" ? maybe.code : "INTERNAL_ERROR";
   const message = err.message || "Internal Server Error";
 
-  res
-    .status(status)
-    .json(buildError(code, isDev ? message : "Internal Server Error", null, err.stack));
+  return ApiResponse.error(
+    res,
+    code,
+    isDev ? message : "Internal Server Error",
+    status,
+    isDev ? err.stack : undefined,
+  );
 }

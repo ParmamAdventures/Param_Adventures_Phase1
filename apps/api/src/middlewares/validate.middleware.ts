@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema, ZodError } from "zod";
 import { logger } from "../lib/logger";
+import { ApiResponse } from "../utils/ApiResponse";
 
 /**
  * Factory function to create request validation middleware using Zod.
@@ -22,10 +23,7 @@ export const validate =
       if (error instanceof ZodError) {
         const details = error.flatten().fieldErrors;
         logger.warn("Validation failed", { details });
-        return res.status(400).json({
-          error: "Validation failed",
-          details,
-        });
+        return ApiResponse.error(res, "VALIDATION_ERROR", "Validation failed", 400, details);
       }
       next(error as Error);
     }

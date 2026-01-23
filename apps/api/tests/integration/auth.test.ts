@@ -61,7 +61,8 @@ describe("Auth Integration", () => {
     });
 
     expect(res.status).toBe(400);
-    expect(res.body.error).toBe("Validation failed");
+    expect(res.body.error.message).toBe("Validation failed");
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
   });
 
   describe("Session & Refresh", () => {
