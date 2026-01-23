@@ -40,6 +40,7 @@ import newsletterRoutes from "./routes/newsletter.routes";
 import adminRefundRoutes from "./routes/admin/refunds.routes";
 
 import { errorHandler } from "./middlewares/error.middleware";
+import { ApiResponse } from "./utils/ApiResponse";
 
 import { globalLimiter, authLimiter, paymentLimiter, mediaLimiter } from "./config/rate-limit";
 
