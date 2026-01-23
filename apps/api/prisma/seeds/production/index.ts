@@ -16,6 +16,9 @@
  * - Can be safely run in production for demos/staging
  */
 
+import {
+  PrismaClient,
+  Prisma,
   TripStatus,
   BlogStatus,
   TripCategory,
