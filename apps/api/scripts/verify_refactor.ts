@@ -1,4 +1,4 @@
-import { PrismaClient } from "../src/generated/client";
+import { PrismaClient } from "@prisma/client";
 import { bookingService } from "../src/services/booking.service";
 import { tripService } from "../src/services/trip.service";
 import { auditService, AuditActions, AuditTargetTypes } from "../src/services/audit.service";

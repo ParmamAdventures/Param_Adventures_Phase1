@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../../src/app";
-import { PrismaClient } from "../../src/generated/client";
+import { PrismaClient } from "@prisma/client";
 import { signAccessToken } from "../../src/utils/jwt";
 
 const prisma = new PrismaClient();

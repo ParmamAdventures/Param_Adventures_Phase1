@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { AuditAction } from "../generated/client";
+import { AuditAction } from "@prisma/client";
 
 export interface AuditLogData {
   action: AuditAction;
@@ -20,8 +20,8 @@ export const AuditTargetTypes = {
   PERMISSION: "PERMISSION",
 } as const;
 
-export { AuditAction } from "../generated/client";
-export { AuditAction as AuditActions } from "../generated/client"; // Keep alias for backward compat if needed
+export { AuditAction } from "@prisma/client";
+export { AuditAction as AuditActions } from "@prisma/client"; // Keep alias for backward compat if needed
 
 export class AuditService {
   async logAudit(data: AuditLogData) {

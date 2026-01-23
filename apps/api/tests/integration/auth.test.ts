@@ -1,6 +1,6 @@
 import request from "supertest";
 import { app } from "../../src/app";
-import { PrismaClient } from "../../src/generated/client";
+import { PrismaClient } from "@prisma/client";
 import { writeFileSync } from "fs";
 import { resetDb } from "../utils/test-db";
 

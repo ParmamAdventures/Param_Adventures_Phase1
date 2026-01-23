@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Prisma } from "../generated/client";
+import { Prisma } from "@prisma/client";
 import * as Sentry from "@sentry/node";
 
 import { logger } from "../lib/logger";

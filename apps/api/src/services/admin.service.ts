@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
 import { auditService } from "./audit.service";
-import { AuditAction } from "../generated/client";
+import { AuditAction } from "@prisma/client";
 
 export class AdminService {
   /**
