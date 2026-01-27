@@ -1,4 +1,8 @@
-import "dotenv/config";
+// Only load .env in local development, not in CI
+if (process.env.CI !== "true" && process.env.NODE_ENV !== "test") {
+  require("dotenv").config();
+}
+
 import { defineConfig, env } from "prisma/config";
 
 export default defineConfig({

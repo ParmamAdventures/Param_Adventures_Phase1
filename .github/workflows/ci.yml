@@ -50,11 +50,13 @@ jobs:
       - name: Build API
         run: npm run build --workspace=api
         env:
+          CI: "true"
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/param_adventures_test"
 
       - name: Run API Tests
         run: npm test --workspace=api
         env:
+          CI: "true"
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/param_adventures_test"
           REDIS_URL: "redis://localhost:6379"
           JWT_ACCESS_SECRET: "test-secret"
