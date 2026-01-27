@@ -13,7 +13,13 @@ import type { Trip } from "@/types/trip";
  * @param {Object} [props.pagination] - Pagination config
  * @returns {React.ReactElement} Table component
  */
-export default function TripsGrid({ trips, savedTripIds }: { trips: Trip[], savedTripIds?: Set<string> }) {
+export default function TripsGrid({
+  trips,
+  savedTripIds,
+}: {
+  trips: Trip[];
+  savedTripIds?: Set<string>;
+}) {
   if (!trips || trips.length === 0) {
     return (
       <Card className="py-16 text-center">

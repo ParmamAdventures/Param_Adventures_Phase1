@@ -54,7 +54,10 @@ export default function SignupPage() {
         let errorMessage = data.error || data.message || "Registration failed";
         if (data.details) {
           const details = Object.entries(data.details)
-            .map(([field, msgs]: [string, unknown]) => `${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
+            .map(
+              ([field, msgs]: [string, unknown]) =>
+                `${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`,
+            )
             .join(" | ");
           errorMessage = `${errorMessage} (${details})`;
         }

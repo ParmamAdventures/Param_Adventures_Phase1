@@ -3,6 +3,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "../../../lib/api";
+import { useAuth } from "@/context/AuthContext";
+import ManualPaymentModal from "@/components/bookings/ManualPaymentModal";
+import InvoiceModal from "@/components/bookings/InvoiceModal";
+import type { Booking } from "@/types/booking";
 import { Button } from "../../../components/ui/Button";
 import StatusBadge from "../../../components/ui/StatusBadge";
 import Spinner from "../../../components/ui/Spinner";
@@ -15,18 +19,18 @@ import ReviewBookingModal from "@/components/reviews/ReviewBookingModal";
 
 export default function MyBookingsPage() {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Modal States
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
 
   const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
-  const [invoiceBooking, setInvoiceBooking] = useState<any>(null);
+  const [invoiceBooking, setInvoiceBooking] = useState<Booking | null>(null);
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false);
-  const [reviewBooking, setReviewBooking] = useState<any>(null);
+  const [reviewBooking, setReviewBooking] = useState<Booking | null>(null);
 
   const fetchBookings = async () => {
     try {
@@ -47,17 +51,17 @@ export default function MyBookingsPage() {
     fetchBookings();
   }, []);
 
-  const openCancelModal = (booking: any) => {
+  const openCancelModal = (booking: Booking) => {
     setSelectedBooking(booking);
     setCancelModalOpen(true);
   };
 
-  const openInvoiceModal = (booking: any) => {
+  const openInvoiceModal = (booking: Booking) => {
     setInvoiceBooking(booking);
     setInvoiceModalOpen(true);
   };
 
-  const openReviewModal = (booking: any) => {
+  const openReviewModal = (booking: Booking) => {
     setReviewBooking(booking);
     setReviewModalOpen(true);
   };
