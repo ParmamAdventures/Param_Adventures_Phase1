@@ -8,9 +8,10 @@ describe("Admin Server Configuration API", () => {
   let adminToken: string;
 
   beforeAll(async () => {
-    // Clean relevant tables
+    // Clean relevant tables (order matters due to foreign keys)
     await prisma.auditLog.deleteMany();
     await prisma.serverConfiguration.deleteMany();
+    await prisma.booking.deleteMany();
     await prisma.userRole.deleteMany();
     await prisma.rolePermission.deleteMany();
     await prisma.permission.deleteMany();
