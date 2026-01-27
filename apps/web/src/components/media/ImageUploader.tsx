@@ -52,7 +52,9 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
         useWebWorker: true,
       };
 
-      const compressedFile = await (imageCompression as any)(file, options);
+      const compressedFile = await (
+        imageCompression as (file: File, options: Record<string, unknown>) => Promise<File>
+      )(file, options);
 
       const data = await upload(compressedFile);
 

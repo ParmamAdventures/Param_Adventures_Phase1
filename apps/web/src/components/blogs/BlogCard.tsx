@@ -4,8 +4,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import BlogMeta from "./BlogMeta";
 import { MediaCard } from "../ui/MediaCard";
+import { Blog } from "@/types/blog";
 
-export default function BlogCard({ blog, index = 0 }: { blog: any; index?: number }) {
+export default function BlogCard({ blog, index = 0 }: { blog: Blog; index?: number }) {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   let imageUrl = blog.coverImage?.mediumUrl || blog.image;
 

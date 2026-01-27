@@ -21,7 +21,9 @@ describe("ToastProvider", () => {
   beforeAll(() => {
     // jsdom in Jest may not provide crypto.randomUUID; mock it for tests
     if (!(global as unknown as { crypto?: { randomUUID: () => string } }).crypto) {
-      (global as unknown as { crypto: { randomUUID: () => string } }).crypto = { randomUUID: () => "test-uuid" };
+      (global as unknown as { crypto: { randomUUID: () => string } }).crypto = {
+        randomUUID: () => "test-uuid",
+      };
     }
   });
 

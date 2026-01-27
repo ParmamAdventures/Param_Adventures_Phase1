@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
+import { useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
 const defaultStats = [
@@ -19,7 +19,7 @@ const defaultStats = [
 export function StatsCounter() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
-  const [statsData, setStatsData] = useState<any>(null);
+  const [statsData, setStatsData] = useState<Record<string, number> | null>(null);
 
   useEffect(() => {
     fetch("/api/content/stats")
@@ -65,7 +65,9 @@ function CountUp({ end, duration }: { end: number; duration: number }) {
   useEffect(() => {
     let start = 0;
     if (end === 0) {
-      setCount((prev) => (prev !== 0 ? 0 : prev));
+      setTimeout(() => {
+        setCount((prev) => (prev !== 0 ? 0 : prev));
+      }, 0);
       return;
     }
     const increment = end / (duration * 60);

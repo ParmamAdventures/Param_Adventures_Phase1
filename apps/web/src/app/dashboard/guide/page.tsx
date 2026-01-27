@@ -16,8 +16,26 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
 
+type GuideBooking = {
+  id: string;
+  guestName?: string;
+  guestEmail?: string;
+  status?: string;
+};
+
+type GuideAssignment = {
+  id: string;
+  title: string;
+  startDate: string;
+  location: string;
+  status?: string;
+  coverImage?: { mediumUrl?: string };
+  coverImageLegacy?: string;
+  bookings?: GuideBooking[];
+};
+
 export default function GuideViewPage() {
-  const [assignments, setAssignments] = useState<any[] | null>(null);
+  const [assignments, setAssignments] = useState<GuideAssignment[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
@@ -29,9 +47,11 @@ export default function GuideViewPage() {
       const res = await apiFetch("/users/guide/trips");
       if (!res.ok) throw new Error("Failed to load guide assignments");
       const data = await res.json();
-      setAssignments(data);
-    } catch (err: any) {
-      setError(err.message);
+      const parsed = Array.isArray(data) ? data : data?.data;
+      setAssignments((parsed || []) as GuideAssignment[]);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Unknown error";
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +96,7 @@ export default function GuideViewPage() {
         </div>
       ) : (
         <div className="grid gap-6">
-          {assignments.map((trip: any) => (
+          {assignments.map((trip) => (
             <div
               key={trip.id}
               className="overflow-hidden rounded-[32px] border border-[var(--border)] bg-[var(--card)] shadow-sm transition-all duration-300 hover:shadow-xl"
@@ -132,7 +152,7 @@ export default function GuideViewPage() {
                     Manifest / Guest List
                   </h3>
                   <div className="grid gap-3">
-                    {trip.bookings?.map((booking: any) => (
+                    {trip.bookings?.map((booking: GuideBooking) => (
                       <div
                         key={booking.id}
                         className="group flex flex-col justify-between rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 transition-all hover:border-[var(--accent)]/30 sm:flex-row sm:items-center"
@@ -228,4 +248,3 @@ export default function GuideViewPage() {
 import { Button } from "@/components/ui/Button";
 import UploadDocsModal from "@/components/guide/UploadDocsModal";
 import { FileText } from "lucide-react";
-

@@ -60,9 +60,13 @@ export default function ItineraryBuilder({ days = [], onChange, disabled }: Itin
     setExpandedDays([nextDayCounter]); // Expand the new day
   };
 
-  const updateDay = (index: number, field: keyof ItineraryDay, value: any) => {
+  const updateDay = (
+    index: number,
+    field: keyof ItineraryDay,
+    value: string | boolean | string[] | ItineraryDay["meals"],
+  ) => {
     const newDays = [...days];
-    newDays[index] = { ...newDays[index], [field]: value };
+    (newDays[index] as Record<string, unknown>)[field] = value;
     onChange(newDays);
   };
 

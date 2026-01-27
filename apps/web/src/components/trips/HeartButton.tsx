@@ -56,7 +56,7 @@ export default function HeartButton({
       // Actually, fetching all wishlist IDs is cheap.
       apiFetch("/wishlist")
         .then((res) => res.json())
-        .then((data: any[]) => {
+        .then((data: Trip[]) => {
           const saved = data.some((t) => t.id === tripId);
           setIsSaved(saved);
         })
@@ -122,4 +122,3 @@ export default function HeartButton({
     </button>
   );
 }
-

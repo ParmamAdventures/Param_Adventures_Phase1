@@ -52,7 +52,7 @@ export function Newsletter() {
 
         {status === "success" ? (
           <div className="inline-block rounded-lg bg-green-500/10 p-4 text-green-600">
-            Thank you! You've been subscribed to our newsletter.
+            Thank you! You&apos;ve been subscribed to our newsletter.
           </div>
         ) : (
           <form

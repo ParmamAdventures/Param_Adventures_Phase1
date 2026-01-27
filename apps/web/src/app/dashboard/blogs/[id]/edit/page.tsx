@@ -14,8 +14,8 @@ export default function EditBlogPage() {
   const id = params?.id as string;
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
-  const [coverImage, setCoverImage] = useState<any>(null);
-  const [content, setContent] = useState<any>(null);
+  const [coverImage, setCoverImage] = useState<Record<string, unknown> | null>(null);
+  const [content, setContent] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const router = useRouter();

@@ -6,10 +6,11 @@ import { apiFetch } from "../../../lib/api";
 import { Loader2, ShieldAlert, Briefcase } from "lucide-react";
 import ManagerTripCard from "../../../components/manager/ManagerTripCard";
 import { useRouter } from "next/navigation";
+import { Trip } from "@/types/trip";
 
 export default function ManagerDashboard() {
   const { user, isLoading } = useAuth();
-  const [trips, setTrips] = useState<any[]>([]);
+  const [trips, setTrips] = useState<Trip[]>([]);
   const [fetching, setFetching] = useState(true);
   const router = useRouter();
 
@@ -77,7 +78,7 @@ export default function ManagerDashboard() {
           <Briefcase className="text-muted-foreground mx-auto mb-4 h-12 w-12 opacity-50" />
           <h3 className="text-lg font-medium">No Trips Assigned</h3>
           <p className="text-muted-foreground">
-            You haven't been assigned to manage any trips yet.
+            You haven&apos;t been assigned to manage any trips yet.
           </p>
         </div>
       ) : (

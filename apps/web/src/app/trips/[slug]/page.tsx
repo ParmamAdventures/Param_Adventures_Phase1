@@ -1,5 +1,4 @@
 import { constructMetadata } from "../../../lib/metadata";
-import { notFound } from "next/navigation";
 import TripHero from "../../../components/trips/TripHero";
 import TripHighlights from "../../../components/trips/TripHighlights";
 import TripBookingCard from "../../../components/trips/TripBookingCard";
@@ -30,10 +29,18 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const json = await res.json();
     const trip = (json.data || json) as TripFull;
 
+    const coverImage = trip.coverImage;
+    const coverImageUrl =
+      coverImage && typeof coverImage === "object"
+        ? coverImage.mediumUrl || ("originalUrl" in coverImage ? coverImage.originalUrl : undefined)
+        : typeof coverImage === "string"
+          ? coverImage
+          : undefined;
+
     return constructMetadata({
       title: trip.title,
       description: trip.description || undefined,
-      image: (trip as any).coverImage?.mediumUrl || "/og-image.jpg",
+      image: coverImageUrl || "/og-image.jpg",
     });
   } catch {
     return constructMetadata({ title: "Adventure" });
@@ -48,7 +55,7 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
 
   console.log(`[TripDetail] Server-side fetching: ${API_BASE}/trips/public/${slug}`);
 
-  let initialTrip = null;
+  let initialTrip: Trip | null = null;
 
   try {
     const res = await fetch(`${API_V1}/trips/public/${slug}`, {
@@ -58,7 +65,8 @@ export default async function TripDetailPage({ params }: { params: Promise<{ slu
     if (res.ok) {
       const json = await res.json();
       // Robust unpacking on server side too
-      initialTrip = json.data?.data || json.data || json;
+      const parsedTrip = (json.data?.data || json.data || json) as Trip | null;
+      initialTrip = parsedTrip;
     } else {
       console.warn(
         `[TripDetail] Server fetch failed (Status: ${res.status}). Falling back to client.`,
@@ -176,7 +184,7 @@ function renderTrip(trip: TripFull) {
               <section>
                 <h2 className="mb-6 text-2xl font-bold">Gallery</h2>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {trip.gallery.map((item: any, i: number) => (
+                  {trip.gallery.map((item: { image: { mediumUrl: string } }, i: number) => (
                     <div
                       key={i}
                       className="group relative aspect-square cursor-zoom-in overflow-hidden rounded-xl"

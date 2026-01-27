@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import TripCard from "@/components/trips/TripCard";
 import { Loader2, Heart } from "lucide-react";
+import { Trip } from "@/types/trip";
 
-interface SavedTrip {
+interface SavedTrip extends Partial<Trip> {
   id: string;
   title: string;
   slug: string;
@@ -79,7 +80,7 @@ export default function WishlistPage() {
           {trips.map((trip) => (
             <TripCard
               key={trip.id}
-              trip={trip as any}
+              trip={trip as Trip}
               initialSaved={true}
               onToggle={(isSaved) => {
                 if (!isSaved) handleRemove(trip.id);
@@ -91,4 +92,3 @@ export default function WishlistPage() {
     </div>
   );
 }
-

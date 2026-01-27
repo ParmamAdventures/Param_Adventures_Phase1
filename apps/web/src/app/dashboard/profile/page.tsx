@@ -32,7 +32,7 @@ export default function ProfilePage() {
   const [address, setAddress] = useState("");
   const [avatarImageId, setAvatarImageId] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [preferences, setPreferences] = useState<any>({});
+  const [preferences, setPreferences] = useState<Record<string, unknown>>({});
 
   // Cropper State
   const [showCropper, setShowCropper] = useState(false);

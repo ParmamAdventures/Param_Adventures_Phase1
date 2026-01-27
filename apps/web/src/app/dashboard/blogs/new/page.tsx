@@ -13,20 +13,24 @@ export default function NewBlogPage() {
   const [title, setTitle] = useState("");
   const [theme, setTheme] = useState("modern");
   const [excerpt, setExcerpt] = useState("");
-  const [coverImage, setCoverImage] = useState<any>(null);
-  const [content, setContent] = useState<any>(null);
+  const [coverImage, setCoverImage] = useState<Record<string, unknown> | null>(null);
+  const [content, setContent] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const searchParams = useSearchParams();
   const tripIdParam = searchParams?.get("tripId");
-  const [tripDetails, setTripDetails] = useState<any>(null);
+  const [tripDetails, setTripDetails] = useState<Record<string, unknown> | null>(null);
 
-  const BLOG_TEMPLATES: Record<string, any> = {
+  const BLOG_TEMPLATES: Record<string, Record<string, unknown> | null> = {
     journal: {
       type: "doc",
       content: [
-        { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Day 1: The Beginning" }] },
+        {
+          type: "heading",
+          attrs: { level: 2 },
+          content: [{ type: "text", text: "Day 1: The Beginning" }],
+        },
         { type: "paragraph", content: [{ type: "text", text: "We started our journey..." }] },
         { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Day 2" }] },
         { type: "paragraph" },
@@ -35,15 +39,18 @@ export default function NewBlogPage() {
     minimal: {
       type: "doc",
       content: [
-         { type: "paragraph", content: [{ type: "text", text: "Just the essentials." }] },
-         { type: "image", attrs: { src: "https://placehold.co/600x400", alt: "Placeholder" } }
+        { type: "paragraph", content: [{ type: "text", text: "Just the essentials." }] },
+        { type: "image", attrs: { src: "https://placehold.co/600x400", alt: "Placeholder" } },
       ],
     },
     vibrant: {
       type: "doc",
       content: [
         { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Highlights!" }] },
-        { type: "paragraph", content: [{ type: "text", text: "An explosion of colors and experiences." }] },
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "An explosion of colors and experiences." }],
+        },
       ],
     },
     modern: null, // Empty
@@ -53,9 +60,9 @@ export default function NewBlogPage() {
     setTheme(t);
     // Ask user or auto-apply? Let's auto-apply if content is empty.
     if (!content || (content.content && content.content.length <= 1)) {
-        if (BLOG_TEMPLATES[t]) {
-            setContent(BLOG_TEMPLATES[t]);
-        }
+      if (BLOG_TEMPLATES[t]) {
+        setContent(BLOG_TEMPLATES[t]);
+      }
     }
   };
 
@@ -262,5 +269,3 @@ export default function NewBlogPage() {
     </div>
   );
 }
-
-

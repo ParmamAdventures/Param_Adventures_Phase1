@@ -82,10 +82,11 @@ export default function RolesPage() {
         if (!res.ok) throw new Error("Failed to fetch roles");
         const data = await res.json();
         if (mounted) setRoles(data || []);
-      } catch (err: any) {
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to fetch roles";
         if (mounted) {
-          setError(err.message);
-          showToast(err.message, "error");
+          setError(message);
+          showToast(message, "error");
         }
       } finally {
         if (mounted) setIsLoading(false);
@@ -139,7 +140,7 @@ export default function RolesPage() {
         const data = await refreshRes.json();
         setRoles(data || []);
       }
-    } catch (err: any) {
+    } catch (err: Error) {
       showToast(err.message, "error");
     } finally {
       setIsSaving(false);

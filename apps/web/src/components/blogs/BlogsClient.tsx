@@ -116,7 +116,7 @@ export default function BlogsClient() {
             </div>
             <h3 className="text-2xl font-bold">No stories found</h3>
             <p className="text-muted-foreground mx-auto mt-2 max-w-xs font-medium">
-              We couldn't find any matches for "{search}". Try another keyword?
+              We couldn&apos;t find any matches for &quot;{search}&quot;. Try another keyword?
             </p>
           </Card>
         ) : (

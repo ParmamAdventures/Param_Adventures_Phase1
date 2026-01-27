@@ -57,8 +57,9 @@ function ResetPasswordForm() {
 
       setMessage("Password successfully reset! You can now log in.");
       setTimeout(() => router.push("/login"), 3000);
-    } catch (err: any) {
-      setError(err.message || "An error occurred");
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "An error occurred";
+      setError(errMsg);
     } finally {
       setIsLoading(false);
     }
@@ -162,5 +163,3 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
-
-

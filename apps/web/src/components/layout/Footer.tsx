@@ -22,7 +22,7 @@ export default function Footer() {
             <span className="text-xl font-bold tracking-tight">Param Adventures</span>
           </Link>
           <p className="text-muted-foreground mb-6 max-w-sm">
-            Curated adventure experiences for the modern explorer. Discover the world's most
+            Curated adventure experiences for the modern explorer. Discover the world&apos;s most
             breathtaking destinations.
           </p>
           <div className="flex gap-4">

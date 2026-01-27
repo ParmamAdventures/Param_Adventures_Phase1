@@ -1,10 +1,12 @@
+import { Blog } from "@/types/blog";
+
 /**
  * BlogMeta - React component for UI presentation and interaction.
  * @param {Object} props - Component props
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function BlogMeta({ blog }: { blog: any }) {
+export default function BlogMeta({ blog }: { blog: Blog }) {
   const authorName = blog.author?.name || blog.author?.email || blog.author || "Param Adventures";
   const dateStr = blog.createdAt || blog.publishedAt;
   const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString() : "";

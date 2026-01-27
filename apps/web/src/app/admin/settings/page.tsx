@@ -50,7 +50,7 @@ export default function AdminSettingsPage() {
         setError(
           typeof errorData?.message === "string"
             ? errorData.message
-            : "Failed to load configurations"
+            : "Failed to load configurations",
         );
       }
     } catch (e) {
@@ -77,7 +77,7 @@ export default function AdminSettingsPage() {
         {/* Warning Banner */}
         <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4">
           <p className="text-sm font-medium text-yellow-700 dark:text-yellow-400">
-            ⚠️ Important: Changes to server configuration affect your application's behavior.
+            ⚠️ Important: Changes to server configuration affect your application&apos;s behavior.
             Proceed with caution and test thoroughly before applying in production.
           </p>
         </div>
@@ -95,7 +95,7 @@ export default function AdminSettingsPage() {
             <button
               key={category.id}
               onClick={() => setActiveTab(category.id)}
-              className={`px-4 py-2 text-sm font-medium transition-colors rounded-t-lg ${
+              className={`rounded-t-lg px-4 py-2 text-sm font-medium transition-colors ${
                 activeTab === category.id
                   ? "border-b-2 border-[var(--accent)] text-[var(--accent)]"
                   : "text-muted-foreground hover:text-foreground"
@@ -121,11 +121,7 @@ export default function AdminSettingsPage() {
             ) : (
               <div className="grid gap-6">
                 {getCategoryConfigs().map((config) => (
-                  <ServerConfigForm
-                    key={config.id}
-                    config={config}
-                    onUpdate={loadConfigurations}
-                  />
+                  <ServerConfigForm key={config.id} config={config} onUpdate={loadConfigurations} />
                 ))}
               </div>
             )}

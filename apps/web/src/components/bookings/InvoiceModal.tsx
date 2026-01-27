@@ -3,12 +3,13 @@
 import React, { useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Button } from "../ui/Button";
-import { Printer, Download } from "lucide-react";
+import { Printer } from "lucide-react";
+import { Booking } from "@/types/booking";
 
 interface InvoiceModalProps {
   isOpen: boolean;
   onClose: () => void;
-  booking: any;
+  booking: Booking | null;
 }
 
 /**

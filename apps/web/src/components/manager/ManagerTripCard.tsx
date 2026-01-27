@@ -2,14 +2,15 @@ import Link from "next/link";
 import { Button } from "../ui/Button";
 import { Users, Calendar, MapPin, AlertCircle, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react"; // Added useState import
-import { FileText } from "lucide-react"; // Added FileText import
-import AssignCrewModal from "./AssignCrewModal"; // Assuming this import exists
-import ReviewDocsModal from "./ReviewDocsModal"; // Assuming this import exists
+import { useState } from "react";
+import { FileText } from "lucide-react";
+import AssignCrewModal from "./AssignCrewModal";
+import ReviewDocsModal from "./ReviewDocsModal";
+import { Trip } from "../../types/trip";
 
 interface ManagerTripCardProps {
-  trip: any;
-  onUpdate: () => void; // Changed from onAssignGuide to onUpdate
+  trip: Trip;
+  onUpdate: () => void;
 }
 
 /**
@@ -90,24 +91,28 @@ export default function ManagerTripCard({ trip, onUpdate }: ManagerTripCardProps
             </span>
             {trip.guides && trip.guides.length > 0 ? (
               <div className="flex -space-x-2">
-                {trip.guides.map((g: any) => (
-                  <div
-                    key={g.guide.id}
-                    title={g.guide.name}
-                    className="border-background bg-accent relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border text-[10px] text-white"
-                  >
-                    {g.guide.avatarImage?.mediumUrl ? (
-                      <Image
-                        src={g.guide.avatarImage.mediumUrl}
-                        fill
-                        alt={g.guide.name}
-                        className="object-cover"
-                      />
-                    ) : (
-                      g.guide.name[0]
-                    )}
-                  </div>
-                ))}
+                {trip.guides.map(
+                  (g: {
+                    guide: { id: string; name: string; avatarImage?: { mediumUrl: string } };
+                  }) => (
+                    <div
+                      key={g.guide.id}
+                      title={g.guide.name}
+                      className="border-background bg-accent relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border text-[10px] text-white"
+                    >
+                      {g.guide.avatarImage?.mediumUrl ? (
+                        <Image
+                          src={g.guide.avatarImage.mediumUrl}
+                          fill
+                          alt={g.guide.name}
+                          className="object-cover"
+                        />
+                      ) : (
+                        g.guide.name[0]
+                      )}
+                    </div>
+                  ),
+                )}
               </div>
             ) : (
               <span className="flex items-center gap-1 text-xs text-orange-500">

@@ -3,8 +3,10 @@
 import { BLOG_TEMPLATES } from "@/data/blogTemplates";
 import { cn } from "@/lib/utils";
 
+type ContentValue = string | number | boolean | null | Record<string, unknown> | ContentValue[];
+
 type Props = {
-  onSelect: (content: any, theme?: string) => void;
+  onSelect: (content: ContentValue, theme?: string) => void;
   className?: string;
 };
 

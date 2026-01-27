@@ -103,7 +103,7 @@ export default function MyBookingsPage() {
       {bookings.length === 0 ? (
         <div className="bg-muted/20 rounded-2xl border-2 border-dashed py-16 text-center">
           <h3 className="text-muted-foreground mb-4 text-xl font-medium">
-            You haven't booked any trips yet.
+            You haven&apos;t booked any trips yet.
           </h3>
           <Link href="/trips">
             <Button variant="primary" className="px-6 py-2.5">

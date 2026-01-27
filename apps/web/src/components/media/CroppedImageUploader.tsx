@@ -44,7 +44,12 @@ export default function CroppedImageUploader({
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
 
   const { upload, isUploading, error } = useUpload();
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
@@ -65,9 +70,20 @@ export default function CroppedImageUploader({
     });
   };
 
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
+  const onCropComplete = useCallback(
+    (
+      croppedArea: { x: number; y: number; width: number; height: number },
+      croppedAreaPixels: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+      },
+    ) => {
+      setCroppedAreaPixels(croppedAreaPixels);
+    },
+    [],
+  );
 
   const handleUpload = async () => {
     if (!imageSrc || !croppedAreaPixels) return;
@@ -84,7 +100,9 @@ export default function CroppedImageUploader({
         maxWidthOrHeight: 1920,
         useWebWorker: true,
       };
-      const compressedFile = await (imageCompression as any)(file, options);
+      const compressedFile = await (
+        imageCompression as (file: File, options: Record<string, unknown>) => Promise<File>
+      )(file, options);
 
       const data = await upload(compressedFile);
       const image = data.data?.image || data.image; // Handle inconsistencies if any

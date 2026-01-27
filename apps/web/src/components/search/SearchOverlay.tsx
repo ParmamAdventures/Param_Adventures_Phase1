@@ -5,10 +5,12 @@ import { Search, X, Loader2, MapPin, Calendar, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { apiFetch } from "../../lib/api";
 import Link from "next/link";
+import { Trip } from "@/types/trip";
+import { Blog } from "@/types/blog";
 
 interface SearchResult {
-  trips: any[];
-  blogs: any[];
+  trips: Trip[];
+  blogs: Blog[];
 }
 
 /**
@@ -56,10 +58,10 @@ export default function SearchOverlay({
         ]);
 
         const [tripsData, blogsData] = await Promise.all([tripsRes.json(), blogsRes.json()]);
-        
+
         // Handle ApiResponse wrapper: { success: true, data: [...] }
-        const trips = Array.isArray(tripsData) ? tripsData : (tripsData.data || []);
-        const blogs = Array.isArray(blogsData) ? blogsData : (blogsData.data || []);
+        const trips = Array.isArray(tripsData) ? tripsData : tripsData.data || [];
+        const blogs = Array.isArray(blogsData) ? blogsData : blogsData.data || [];
 
         setResults({ trips: trips.slice(0, 5), blogs: blogs.slice(0, 5) });
       } catch (err) {
@@ -130,7 +132,7 @@ export default function SearchOverlay({
                     </h3>
                     <div className="space-y-2">
                       {results.trips.length > 0 ? (
-                        results.trips.map((trip: any) => (
+                        results.trips.map((trip: Trip) => (
                           <Link
                             key={trip.id}
                             href={`/trips/${trip.slug}`}
@@ -172,7 +174,7 @@ export default function SearchOverlay({
                     </h3>
                     <div className="space-y-2">
                       {results.blogs.length > 0 ? (
-                        results.blogs.map((blog: any) => (
+                        results.blogs.map((blog: Blog) => (
                           <Link
                             key={blog.id}
                             href={`/blogs/${blog.slug}`}
@@ -221,4 +223,3 @@ export default function SearchOverlay({
     </AnimatePresence>
   );
 }
-

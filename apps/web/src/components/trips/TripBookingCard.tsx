@@ -11,8 +11,10 @@ import Link from "next/link";
 import BookingModal from "../bookings/BookingModal";
 import PaymentErrorBoundary from "../bookings/PaymentErrorBoundary";
 
+import { Trip } from "../../types/trip";
+
 interface Props {
-  trip: any;
+  trip: Trip;
 }
 
 /**
@@ -51,7 +53,7 @@ export default function TripBookingCard({ trip }: Props) {
     setIsModalOpen(true);
   };
 
-  const handleBookingSuccess = (booking: any) => {
+  const handleBookingSuccess = (booking: { id: string }) => {
     setBookingId(booking.id);
     // BookingModal handles the success toast
   };

@@ -49,7 +49,7 @@ export function Testimonials({ tripId }: { tripId?: string }) {
     if (tripId) return null; // Don't show empty section on trip page
     // For home page, keep it hidden or show empty state? Let's hide it for now or keep hardcoded fallback if preferred.
     // User requested dynamic, so hidden if empty is better than fake data.
-    return null; 
+    return null;
   }
 
   return (
@@ -67,39 +67,39 @@ export function Testimonials({ tripId }: { tripId?: string }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.2 }}
-              className="bg-card border-border relative rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-md flex flex-col justify-between"
+              className="bg-card border-border relative flex flex-col justify-between rounded-2xl border p-8 shadow-sm transition-shadow hover:shadow-md"
             >
               <div>
-                 <div className="text-accent absolute top-4 left-6 font-serif text-4xl">"</div>
-                 <p className="text-muted-foreground relative z-10 mb-6 pt-4 italic line-clamp-4">
-                   {t.comment}
-                 </p>
+                <div className="text-accent absolute top-4 left-6 font-serif text-4xl">&quot;</div>
+                <p className="text-muted-foreground relative z-10 mb-6 line-clamp-4 pt-4 italic">
+                  {t.comment}
+                </p>
               </div>
-              <div className="flex items-center gap-4 mt-4">
-                 {t.user.avatarImage?.thumbUrl ? (
-                    <img 
-                      src={t.user.avatarImage.thumbUrl} 
-                      alt={t.user.name} 
-                      className="h-10 w-10 rounded-full object-cover"
-                    />
-                 ) : (
-                    <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center text-lg font-bold text-muted-foreground">
-                      {t.user.name.charAt(0)}
+              <div className="mt-4 flex items-center gap-4">
+                {t.user.avatarImage?.thumbUrl ? (
+                  <img
+                    src={t.user.avatarImage.thumbUrl}
+                    alt={t.user.name}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold">
+                    {t.user.name.charAt(0)}
+                  </div>
+                )}
+                <div>
+                  <h4 className="text-foreground text-sm font-bold">{t.user.name}</h4>
+                  {tripId ? (
+                    <span className="text-xs tracking-widest text-amber-500">
+                      {"★".repeat(t.rating)}
+                    </span>
+                  ) : (
+                    <div className="text-muted-foreground mt-0.5 flex flex-col text-xs">
+                      <span className="text-accent font-medium">{t.trip?.title}</span>
+                      <span>{t.trip?.location}</span>
                     </div>
-                 )}
-                 <div>
-                    <h4 className="text-foreground font-bold text-sm">{t.user.name}</h4>
-                    {tripId ? (
-                       <span className="text-amber-500 text-xs tracking-widest">
-                         {"★".repeat(t.rating)}
-                       </span>
-                    ) : (
-                       <div className="flex flex-col text-xs text-muted-foreground mt-0.5">
-                         <span className="font-medium text-accent">{t.trip?.title}</span>
-                         <span>{t.trip?.location}</span>
-                       </div>
-                    )}
-                 </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           ))}
@@ -108,4 +108,3 @@ export function Testimonials({ tripId }: { tripId?: string }) {
     </section>
   );
 }
-

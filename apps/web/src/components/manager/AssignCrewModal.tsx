@@ -7,12 +7,14 @@ import { apiFetch } from "../../lib/api";
 import { Loader2, Search, UserPlus, Check, Trash2, X } from "lucide-react";
 import Image from "next/image";
 
+import { User } from "../../types/auth";
+
 interface AssignCrewModalProps {
   isOpen: boolean;
   onClose: () => void;
   tripId: string | null;
   onSuccess: () => void;
-  currentGuides?: any[]; // Already assigned guides
+  currentGuides?: User[]; // Already assigned guides
 }
 
 /**
@@ -31,7 +33,7 @@ export default function AssignCrewModal({
   onSuccess,
   currentGuides = [],
 }: AssignCrewModalProps) {
-  const [guides, setGuides] = useState<any[]>([]);
+  const [guides, setGuides] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [assigningId, setAssigningId] = useState<string | null>(null);
@@ -96,9 +98,9 @@ export default function AssignCrewModal({
 
   // Filter guides: Exclude those already assigned (handled by visual check mostly)
   const availableGuides = guides.filter(
-    (g) =>
-      g.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      g.email.toLowerCase().includes(searchTerm.toLowerCase()),
+    (g: User) =>
+      g.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      g.email?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -130,26 +132,26 @@ export default function AssignCrewModal({
               <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                 Assigned
               </p>
-              {currentGuides.map((item: any) => (
+              {currentGuides.map((item: User) => (
                 <div
-                  key={item.guide.id}
+                  key={item.id}
                   className="flex items-center justify-between rounded-lg border border-green-500/20 bg-green-500/10 p-2"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">
-                      {item.guide.name[0]}
+                      {item.name?.[0]}
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-foreground text-sm font-medium">{item.guide.name}</span>
-                      <span className="text-muted-foreground text-xs">{item.guide.email}</span>
+                      <span className="text-foreground text-sm font-medium">{item.name}</span>
+                      <span className="text-muted-foreground text-xs">{item.email}</span>
                     </div>
                   </div>
                   <Button
                     size="sm"
                     variant="ghost"
                     className="text-muted-foreground h-8 w-8 p-0 hover:bg-red-500/10 hover:text-red-500"
-                    onClick={() => handleRemove(item.guide.id)}
-                    disabled={assigningId === item.guide.id}
+                    onClick={() => handleRemove(item.id)}
+                    disabled={assigningId === item.id}
                   >
                     {assigningId === item.guide.id ? (
                       <Loader2 className="animate-spin" size={14} />
@@ -213,4 +215,3 @@ export default function AssignCrewModal({
     </Dialog>
   );
 }
-

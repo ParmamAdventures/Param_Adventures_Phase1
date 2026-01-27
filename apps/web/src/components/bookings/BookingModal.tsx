@@ -10,6 +10,7 @@ import { useRazorpay } from "../../hooks/useRazorpay";
 import { useAsyncOperation } from "../../hooks/useAsyncOperation";
 import { useFormState } from "../../hooks/useFormState";
 import PaymentErrorBoundary from "./PaymentErrorBoundary";
+import { Booking } from "@/types/booking";
 
 interface Trip {
   id: string;
@@ -19,11 +20,25 @@ interface Trip {
   startDate?: string | Date;
 }
 
+interface GuestDetail {
+  name: string;
+  email: string;
+  phone: string;
+  age?: string | number;
+  gender?: string;
+}
+
+interface BookingForm {
+  guests: number;
+  startDate: string;
+  guestDetails: GuestDetail[];
+}
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   trip: Trip;
-  onBookingSuccess: (booking: any) => void;
+  onBookingSuccess: (booking: Booking) => void;
 }
 
 /**
@@ -43,21 +58,22 @@ interface Props {
 export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { state, execute } = useAsyncOperation();
+  const { state, execute } = useAsyncOperation<Booking>();
   // Store the booking/order details for successful/dev transactions
-  const [bookingResult, setBookingResult] = React.useState<any>(null);
-  const { values: formData, setField } = useFormState({
+  const [bookingResult, setBookingResult] = React.useState<Booking | null>(null);
+  const { values: formData, setField } = useFormState<BookingForm>({
     guests: 1,
     startDate: "",
-    guestDetails: [] as any[],
+    guestDetails: [],
   });
 
   // Update guest details when guest count changes
   useEffect(() => {
-    if (!formData.guestDetails) formData.guestDetails = [];
+    const currentDetails = formData.guestDetails || [];
 
-    setField("guestDetails", (prev: any[]) => {
-      const newDetails = [...(prev || [])];
+    setField("guestDetails", (prev) => {
+      const previous = (prev as GuestDetail[] | undefined) || [];
+      const newDetails = [...previous];
       if (formData.guests > newDetails.length) {
         // Add new guests
         for (let i = newDetails.length; i < formData.guests; i++) {
@@ -82,7 +98,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     });
   }, [formData.guests, user, setField]);
 
-  const updateGuestDetail = (index: number, field: string, value: string) => {
+  const updateGuestDetail = (index: number, field: keyof GuestDetail, value: string) => {
     const updated = [...(formData.guestDetails || [])];
     updated[index] = { ...updated[index], [field]: value };
     setField("guestDetails", updated);
@@ -122,7 +138,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
           tripId: trip.id,
           startDate: new Date(formData.startDate).toISOString(),
           guests: Number(formData.guests),
-          guestDetails: formData.guestDetails.map((g: any) => ({
+          guestDetails: formData.guestDetails.map((g) => ({
             ...g,
             age: g.age ? Number(g.age) : undefined,
           })),

@@ -12,6 +12,8 @@ import { StatsCounter } from "@/components/home/StatsCounter";
 import { Newsletter } from "@/components/home/Newsletter";
 import { AdventureCategories } from "@/components/home/AdventureCategories";
 import { CustomTripForm } from "@/components/home/CustomTripForm";
+import { Trip } from "@/types/trip";
+import { Blog } from "@/types/blog";
 
 export const metadata = constructMetadata({
   title: "Param Adventures | Expedition into the Unknown",
@@ -19,7 +21,7 @@ export const metadata = constructMetadata({
     "Join premium adventure travel experiences across the globe. From Spiti Valley to the Himalayas, discover the unseen with Param Adventures.",
 });
 
-async function getTrips() {
+async function getTrips(): Promise<Trip[]> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/v1/trips/public`,
@@ -28,13 +30,13 @@ async function getTrips() {
     if (!res.ok) return [];
     const json = await res.json();
     const data = json.data?.trips || (Array.isArray(json.data) ? json.data : []);
-    return data;
+    return data as Trip[];
   } catch {
     return [];
   }
 }
 
-async function getBlogs() {
+async function getBlogs(): Promise<Blog[]> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/v1/blogs/public`,
@@ -43,7 +45,7 @@ async function getBlogs() {
     if (!res.ok) return [];
     const json = await res.json();
     const blogs = Array.isArray(json.data) ? json.data : [];
-    return blogs.slice(0, 3);
+    return (blogs as Blog[]).slice(0, 3);
   } catch {
     return [];
   }
@@ -62,7 +64,7 @@ async function getHeroSlides() {
   }
 }
 
-async function getFeaturedTrips() {
+async function getFeaturedTrips(): Promise<Trip[]> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/v1/trips/public?isFeatured=true`,
@@ -71,7 +73,7 @@ async function getFeaturedTrips() {
     if (!res.ok) return [];
     const json = await res.json();
     const data = json.data?.trips || (Array.isArray(json.data) ? json.data : []);
-    return data;
+    return data as Trip[];
   } catch {
     return [];
   }
@@ -111,7 +113,7 @@ export default async function Home() {
       {/* Category Feeds */}
       {categorySections.map((section) => {
         const categoryTrips = allTrips.filter(
-          (t: any) =>
+          (t: Trip) =>
             t.category === section.category || (section.category === "TREK" && !t.category),
         ); // Fallback for old data
         if (categoryTrips.length === 0) return null;
@@ -187,7 +189,7 @@ export default async function Home() {
               }
             >
               <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-                {blogs.map((blog: any) => (
+                {blogs.map((blog: Blog) => (
                   <BlogCard key={blog.id} blog={blog} />
                 ))}
               </div>

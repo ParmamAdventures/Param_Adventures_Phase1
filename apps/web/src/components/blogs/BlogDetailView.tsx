@@ -4,9 +4,10 @@ import { BlogClientContent } from "@/components/blogs/BlogClientContent";
 import { motion, useScroll, useSpring } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { Blog } from "@/types/blog";
 
 interface BlogDetailViewProps {
-  blog: any;
+  blog: Blog;
 }
 
 /**
@@ -38,11 +39,11 @@ export function BlogDetailView({ blog }: BlogDetailViewProps) {
           {blog.coverImage ? (
             <div className="absolute inset-0 -z-10">
               <Image
-                src={
-                  blog.coverImage.originalUrl.startsWith("/uploads")
-                    ? `${baseUrl}${blog.coverImage.originalUrl}`
-                    : blog.coverImage.originalUrl
-                }
+                src={(() => {
+                  if (typeof blog.coverImage === "string") return blog.coverImage;
+                  const src = blog.coverImage.originalUrl;
+                  return src.startsWith("/uploads") ? `${baseUrl}${src}` : src;
+                })()}
                 alt={blog.title}
                 fill
                 priority

@@ -25,7 +25,7 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Eligibility State
   const [checkingEligibility, setCheckingEligibility] = useState(true);
   const [isEligible, setIsEligible] = useState(false);
@@ -69,7 +69,9 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
   }
 
   if (checkingEligibility) {
-     return <div className="p-4 text-center text-sm text-muted-foreground">Checking eligibility...</div>;
+    return (
+      <div className="text-muted-foreground p-4 text-center text-sm">Checking eligibility...</div>
+    );
   }
 
   if (!isEligible) {
@@ -80,16 +82,16 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
     //     {ineligibilityReason || "You can only review trips you have completed."}
     //   </div>
     // );
-    // User asked "only be visible to user who finished". So "return null" is strictest. 
-    // BUT "return null" might confuse user who expects to see it? 
-    // I'll leave a small note or return null based on strict instruction. 
+    // User asked "only be visible to user who finished". So "return null" is strictest.
+    // BUT "return null" might confuse user who expects to see it?
+    // I'll leave a small note or return null based on strict instruction.
     // Instruction: "stricter write a review should only be visible... not to everyone".
     // I will return NULL to hide it completely.
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-// ... (rest is same)
+    // ... (rest is same)
     if (rating === 0) {
       setError("Please select a star rating.");
       return;
@@ -113,8 +115,9 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
       setRating(0);
       setComment("");
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Unknown error";
+      setError(errMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -123,7 +126,7 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
   return (
     <div className="bg-card rounded-xl border p-6 shadow-sm">
       <h3 className="mb-4 text-xl font-bold">Write a Review</h3>
-      
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Rating Field */}
         <div className="space-y-2">
@@ -138,14 +141,12 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="How was your experience?"
-            className="bg-background focus:ring-primary h-32 w-full rounded-md border p-3 focus:outline-none focus:ring-2"
+            className="bg-background focus:ring-primary h-32 w-full rounded-md border p-3 focus:ring-2 focus:outline-none"
           />
         </div>
 
         {error && (
-          <div className="bg-destructive/10 text-destructive text-sm rounded-md p-3">
-            {error}
-          </div>
+          <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">{error}</div>
         )}
 
         <button

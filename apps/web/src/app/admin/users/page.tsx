@@ -12,7 +12,49 @@ export default function UsersPage() {
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
 
-  const fetchUsers = useCallback(() => {
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      try {
+        const r = await apiFetch("/admin/users");
+        if (!r.ok) {
+          const errData = await r.json().catch(() => ({}));
+          const errMsg =
+            (typeof errData.error === "object" ? errData.error.message : errData.error) ||
+            errData.message ||
+            `HTTP error! status: ${r.status}`;
+          throw new Error(errMsg);
+        }
+        const data = await r.json();
+        if (mounted) {
+          // Handle ApiResponse wrapper: { success: true, data: [...] }
+          const usersArray = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
+          setUsers(usersArray);
+          setError(null);
+        }
+      } catch (e) {
+        console.error("Failed to fetch users", e);
+        if (mounted) {
+          const errMsg = e instanceof Error ? e.message : "Unknown error";
+          setError(errMsg);
+          showToast(errMsg, "error");
+        }
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+
+    return () => {
+      mounted = false;
+    };
+  }, [showToast]);
+
+  const refetchUsers = useCallback(() => {
+    // For manual refetch button if needed
     let mounted = true;
     setIsLoading(true);
 
@@ -30,7 +72,6 @@ export default function UsersPage() {
       })
       .then((data) => {
         if (mounted) {
-          // Handle ApiResponse wrapper: { success: true, data: [...] }
           const usersArray = Array.isArray(data.data) ? data.data : Array.isArray(data) ? data : [];
           setUsers(usersArray);
           setError(null);
@@ -50,12 +91,7 @@ export default function UsersPage() {
     return () => {
       mounted = false;
     };
-  }, []);
-
-  useEffect(() => {
-    const cleanup = fetchUsers();
-    return cleanup;
-  }, [fetchUsers]);
+  }, [showToast]);
 
   return (
     <div className="space-y-6">
@@ -70,14 +106,14 @@ export default function UsersPage() {
         <div className="border-destructive/50 bg-destructive/5 rounded-xl border border-dashed p-8 text-center">
           <p className="text-destructive font-medium">Failed to load users: {error}</p>
           <button
-            onClick={() => fetchUsers()}
+            onClick={() => refetchUsers()}
             className="mt-2 text-xs font-bold tracking-widest text-[var(--accent)] uppercase hover:underline"
           >
             Try Again ➔
           </button>
         </div>
       ) : (
-        <UserListTable users={users} loading={isLoading} onRefresh={fetchUsers} />
+        <UserListTable users={users} loading={isLoading} onRefresh={refetchUsers} />
       )}
     </div>
   );

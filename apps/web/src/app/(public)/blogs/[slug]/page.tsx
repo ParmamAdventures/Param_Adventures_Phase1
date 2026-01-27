@@ -71,7 +71,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         </div>
         <h1 className="text-3xl font-black tracking-tighter uppercase italic">Blog not found</h1>
         <p className="text-muted-foreground max-w-xs font-medium">
-          The story you're looking for doesn't exist.
+          The story you&apos;re looking for doesn&apos;t exist.
         </p>
         <Link
           href="/blogs"

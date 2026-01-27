@@ -72,7 +72,7 @@ export function CustomTripForm() {
               Plan Your Dream Trip
             </h2>
             <p className="text-muted-foreground text-lg">
-              Tell us what you want, and we'll craft the perfect itinerary for you.
+              Tell us what you want, and we&apos;ll craft the perfect itinerary for you.
             </p>
           </div>
 
@@ -145,9 +145,7 @@ export function CustomTripForm() {
                     name="destination"
                     required
                     value={formData.destination}
-                    onChange={(val) =>
-                      handleChange({ target: { name: "destination", value: val } } as any)
-                    }
+                    onChange={(val) => setField("destination", val)}
                     placeholder="Select a region..."
                     options={[
                       { value: "himalayas", label: "Himalayas" },

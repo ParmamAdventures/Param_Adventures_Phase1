@@ -9,10 +9,11 @@ import Card from "../../components/ui/Card";
 import ErrorBlock from "../../components/ui/ErrorBlock";
 import Spinner from "../../components/ui/Spinner";
 import BookingList from "../../components/bookings/BookingList";
+import { Booking } from "@/types/booking";
 
 export default function MyBookingsPage() {
   const { user, isLoading: authLoading } = useAuth();
-  const [bookings, setBookings] = useState<any[] | null>(null);
+  const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,7 +34,7 @@ export default function MyBookingsPage() {
         }
         const data = await res.json();
         const bookingsList = data.data?.bookings || data.data || data;
-        setBookings(Array.isArray(bookingsList) ? bookingsList : []);
+        setBookings(Array.isArray(bookingsList) ? (bookingsList as Booking[]) : []);
       } catch (err) {
         setError("Network connectivity issue. Please try again.");
       } finally {

@@ -36,15 +36,16 @@ import {
   Undo,
   Redo,
   Highlighter,
-  Type,
   CheckSquare,
   Strikethrough,
   Eraser,
 } from "lucide-react";
 
+type ContentValue = string | number | boolean | null | Record<string, unknown> | ContentValue[];
+
 interface BlogEditorProps {
-  value: any;
-  onChange?: (v: any) => void;
+  value: ContentValue;
+  onChange?: (v: ContentValue) => void;
   readOnly?: boolean;
 }
 
@@ -169,8 +170,9 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
       if (editor && !editor.isDestroyed) {
         editor.chain().focus().setImage({ src: imageUrl }).run();
       }
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : "Upload failed";
+      alert(errMsg);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

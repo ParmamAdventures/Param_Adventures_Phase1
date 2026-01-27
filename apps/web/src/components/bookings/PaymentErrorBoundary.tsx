@@ -53,8 +53,8 @@ export default function PaymentErrorBoundary({ error, onRetry, onSupport }: Prop
       </div>
 
       <p className="text-muted-foreground mt-4 text-[10px] italic">
-        If money was deducted from your account, don't worry. Our team will verify it manually if
-        needed.
+        If money was deducted from your account, don&apos;t worry. Our team will verify it manually
+        if needed.
       </p>
     </div>
   );

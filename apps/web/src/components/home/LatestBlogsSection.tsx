@@ -5,6 +5,7 @@ import Card from "../ui/Card";
 import { apiFetch } from "@/lib/api";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { Blog } from "@/types/blog";
 
 /**
  * LatestBlogsSection - React component for UI presentation and interaction.
@@ -13,7 +14,7 @@ import { ArrowRight } from "lucide-react";
  * @returns {React.ReactElement} Component element
  */
 export default function LatestBlogsSection() {
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +23,8 @@ export default function LatestBlogsSection() {
         const res = await apiFetch("/blogs/public?limit=3");
         if (res.ok) {
           const data = await res.json();
-          setBlogs(data.data || (Array.isArray(data) ? data : []));
+          const parsedBlogs = (data.data || (Array.isArray(data) ? data : [])) as Blog[];
+          setBlogs(parsedBlogs);
         }
       } catch (err) {
         console.error("Failed to fetch latest blogs:", err);
@@ -69,7 +71,7 @@ export default function LatestBlogsSection() {
               <h3 className="group-hover:text-accent font-medium transition-colors">
                 {blog.title}
               </h3>
-              <p className="mt-2 text-sm opacity-70 line-clamp-2">
+              <p className="mt-2 line-clamp-2 text-sm opacity-70">
                 {blog.excerpt || "Reading this story from our recent mountain journey."}
               </p>
             </Card>
@@ -79,4 +81,3 @@ export default function LatestBlogsSection() {
     </section>
   );
 }
-
