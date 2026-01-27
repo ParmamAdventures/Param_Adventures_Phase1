@@ -6,13 +6,21 @@ import Spinner from "@/components/ui/Spinner";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import Modal from "@/components/ui/Modal";
+import type { Entity } from "@/types/common";
+
+interface AuditLog extends Entity {
+  action: string;
+  targetType: string;
+  targetId: string;
+  details?: Record<string, unknown>;
+}
 
 export default function AuditLogsPage() {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState<AuditLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
-  const [selectedLog, setSelectedLog] = useState<any>(null);
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
   useEffect(() => {
     async function loadLogs() {

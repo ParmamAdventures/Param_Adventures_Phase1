@@ -11,7 +11,7 @@ export default function BlogPreviewPage() {
   const params = useParams();
   const id = params?.id as string;
   const router = useRouter();
-  const [blog, setBlog] = useState<any>(null);
+  const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

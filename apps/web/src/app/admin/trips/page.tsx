@@ -8,9 +8,10 @@ import { Button } from "../../../components/ui/Button";
 import TripListTable from "../../../components/admin/TripListTable";
 import AssignGuideModal from "../../../components/admin/trips/AssignGuideModal";
 import AssignManagerModal from "../../../components/admin/AssignManagerModal";
+import type { Trip } from "@/types/trip";
 
 export default function AdminTripsPage() {
-  const [trips, setTrips] = useState<any[]>([]);
+  const [trips, setTrips] = useState<Trip[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [assignTripId, setAssignTripId] = useState<string | null>(null);

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
+import type { Trip } from "@/types/trip";
 
 interface RevenueData {
   currentMonthRevenue: number;
@@ -22,7 +23,7 @@ interface AnalyticsStats {
 
 export default function AnalyticsPage() {
   const [revenue, setRevenue] = useState<RevenueData | null>(null);
-  const [trips, setTrips] = useState<any[]>([]);
+  const [trips, setTrips] = useState<Trip[]>([]);
   const [stats, setStats] = useState<AnalyticsStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -121,7 +122,7 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="flex h-64 items-end gap-4 px-2">
-            {revenue?.monthlyChart?.map((item: any, i: number) => {
+            {revenue?.monthlyChart?.map((item: { month: string; revenue: number }, i: number) => {
               const max = Math.max(...revenue.monthlyChart.map((m) => m.revenue), 1);
               const height = (item.revenue / max) * 100;
               return (

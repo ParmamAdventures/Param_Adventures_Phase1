@@ -7,11 +7,13 @@ import { Button } from "../../../components/ui/Button";
 import BlogListTable from "../../../components/admin/BlogListTable";
 import TripListTable from "../../../components/admin/TripListTable";
 import Spinner from "../../../components/ui/Spinner";
+import type { Trip } from "@/types/trip";
+import type { Blog } from "@/types/blog";
 
 export default function AdminModerationPage() {
   const [activeTab, setActiveTab] = useState<"trips" | "blogs">("trips");
-  const [data, setData] = useState<{ trips: any[]; blogs: any[] }>({ trips: [], blogs: [] });
-  const [summary, setSummary] = useState<any>(null);
+  const [data, setData] = useState<{ trips: Trip[]; blogs: Blog[] }>({ trips: [], blogs: [] });
+  const [summary, setSummary] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

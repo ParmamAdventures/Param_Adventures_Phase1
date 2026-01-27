@@ -4,9 +4,10 @@ import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../../../lib/api";
 import { Button } from "../../../components/ui/Button";
 import BlogListTable from "../../../components/admin/BlogListTable";
+import type { Blog } from "@/types/blog";
 
 export default function AdminBlogsPage() {
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const load = useCallback(async () => {

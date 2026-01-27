@@ -6,9 +6,10 @@ import { apiFetch } from "../../../lib/api";
 import GlobalBookingList from "../../../components/admin/GlobalBookingList";
 import ErrorBlock from "../../../components/ui/ErrorBlock";
 import { useToast } from "../../../components/ui/ToastProvider";
+import type { Booking } from "@/types/booking";
 
 export default function AdminBookingsPage() {
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { showToast } = useToast();
@@ -21,9 +22,10 @@ export default function AdminBookingsPage() {
       if (!res.ok) throw new Error("Failed to load global bookings");
       const data = await res.json();
       setBookings(Array.isArray(data) ? data : []);
-    } catch (err: any) {
-      setError(err.message);
-      showToast(err.message, "error");
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message);
+      showToast(error.message, "error");
     } finally {
       setIsLoading(false);
     }
