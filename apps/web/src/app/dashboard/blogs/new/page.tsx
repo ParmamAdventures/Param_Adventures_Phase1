@@ -8,21 +8,29 @@ import { apiFetch } from "@/lib/api";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ImageUploader } from "@/components/media/ImageUploader";
 import { useEffect } from "react";
+import { Trip } from "@/types/trip";
+import { Content } from "@tiptap/react";
+
+type ImageDetails = {
+  id: string;
+  mediumUrl: string;
+  originalUrl: string;
+};
 
 export default function NewBlogPage() {
   const [title, setTitle] = useState("");
   const [theme, setTheme] = useState("modern");
   const [excerpt, setExcerpt] = useState("");
-  const [coverImage, setCoverImage] = useState<any | null>(null);
-  const [content, setContent] = useState<any | null>(null);
+  const [coverImage, setCoverImage] = useState<ImageDetails | null>(null);
+  const [content, setContent] = useState<Content | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const searchParams = useSearchParams();
   const tripIdParam = searchParams?.get("tripId");
-  const [tripDetails, setTripDetails] = useState<any | null>(null);
+  const [tripDetails, setTripDetails] = useState<Trip | null>(null);
 
-  const BLOG_TEMPLATES: Record<string, any | null> = {
+  const BLOG_TEMPLATES: Record<string, Content | null> = {
     journal: {
       type: "doc",
       content: [
@@ -59,7 +67,15 @@ export default function NewBlogPage() {
   const handleThemeChange = (t: string) => {
     setTheme(t);
     // Ask user or auto-apply? Let's auto-apply if content is empty.
-    if (!content || (Array.isArray(content.content) && content.content.length <= 1)) {
+    const isContentEmpty =
+      !content ||
+      (typeof content === "object" &&
+        !Array.isArray(content) &&
+        content.content &&
+        Array.isArray(content.content) &&
+        content.content.length <= 1);
+
+    if (isContentEmpty) {
       if (BLOG_TEMPLATES[t]) {
         setContent(BLOG_TEMPLATES[t]);
       }
@@ -244,7 +260,7 @@ export default function NewBlogPage() {
           <label className="text-sm font-semibold tracking-wider uppercase opacity-70">
             Content
           </label>
-          <BlogEditor value={content} onChange={setContent} />
+          <BlogEditor value={content} onChange={(v) => setContent(v as Content)} />
         </div>
       </div>
 

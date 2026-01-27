@@ -11,28 +11,21 @@ import { useAsyncOperation } from "../../hooks/useAsyncOperation";
 import { useFormState } from "../../hooks/useFormState";
 import PaymentErrorBoundary from "./PaymentErrorBoundary";
 import { Booking } from "@/types/booking";
+import { Trip } from "@/types/trip";
 
-interface Trip {
-  id: string;
-  title: string;
-  price: number;
-  durationDays: number;
-  startDate?: string | Date;
-}
-
-interface GuestDetail {
+type GuestDetail = {
   name: string;
   email: string;
   phone: string;
   age?: string | number;
   gender?: string;
-}
+};
 
-interface BookingForm {
+type BookingForm = {
   guests: number;
   startDate: string;
   guestDetails: GuestDetail[];
-}
+};
 
 interface Props {
   isOpen: boolean;
@@ -58,10 +51,12 @@ interface Props {
 export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { state, execute } = useAsyncOperation<any>();
+  const { state, execute } = useAsyncOperation<Booking>();
   // Store the booking/order details for successful/dev transactions
-  const [bookingResult, setBookingResult] = React.useState<any | null>(null);
-  const { values: formData, setField } = useFormState<any>({
+  const [bookingResult, setBookingResult] = React.useState<{ id: string; orderId: string } | null>(
+    null,
+  );
+  const { values: formData, setField } = useFormState<BookingForm>({
     guests: 1,
     startDate: "",
     guestDetails: [],
@@ -69,10 +64,8 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
 
   // Update guest details when guest count changes
   useEffect(() => {
-    const currentDetails = formData.guestDetails || [];
-
-    setField("guestDetails", (prev: any) => {
-      const previous = (prev as GuestDetail[] | undefined) || [];
+    setField("guestDetails", ((prev: GuestDetail[] | undefined) => {
+      const previous = prev || [];
       const newDetails = [...previous];
       if (formData.guests > newDetails.length) {
         // Add new guests
@@ -95,7 +88,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
         newDetails.splice(formData.guests);
       }
       return newDetails;
-    });
+    }) as (prev: string | number | GuestDetail[] | undefined) => GuestDetail[]);
   }, [formData.guests, user, setField]);
 
   const updateGuestDetail = (index: number, field: keyof GuestDetail, value: string) => {
@@ -138,7 +131,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
           tripId: trip.id,
           startDate: new Date(formData.startDate).toISOString(),
           guests: Number(formData.guests),
-          guestDetails: formData.guestDetails.map((g: any) => ({
+          guestDetails: formData.guestDetails.map((g: GuestDetail) => ({
             ...g,
             age: g.age ? Number(g.age) : undefined,
           })),
@@ -179,7 +172,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
     });
   };
 
-  const totalPrice = trip.price * formData.guests;
+  const totalPrice = (trip.price || 0) * formData.guests;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -193,11 +186,11 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
           <div className="bg-muted/30 space-y-2 rounded-lg p-4 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Price per person</span>
-              <span className="font-medium">₹{trip.price.toLocaleString()}</span>
+              <span className="font-medium">₹{trip.price?.toLocaleString() || 0}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Duration</span>
-              <span className="font-medium">{trip.durationDays} Days</span>
+              <span className="font-medium">{trip.durationDays || 0} Days</span>
             </div>
           </div>
 
@@ -333,7 +326,9 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
               <Button
                 variant="outline"
                 className="w-full border-yellow-500 text-yellow-600 hover:bg-yellow-500 hover:text-white"
-                onClick={() => simulateDevSuccess(bookingResult?.id, bookingResult?.orderId)}
+                onClick={() =>
+                  bookingResult && simulateDevSuccess(bookingResult.id, bookingResult.orderId)
+                }
               >
                 Simulate Successful Payment
               </Button>

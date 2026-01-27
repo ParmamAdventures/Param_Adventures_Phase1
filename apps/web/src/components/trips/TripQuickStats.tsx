@@ -1,10 +1,6 @@
-/**
- * TripQuickStats - React component for UI presentation and interaction.
- * @param {Object} props - Component props
- * @param {React.ReactNode} [props.children] - Component children
- * @returns {React.ReactElement} Component element
- */
-export default function TripQuickStats({ trip }: { trip: any }) {
+import { Trip } from "@/types/trip";
+
+export default function TripQuickStats({ trip }: { trip: Trip }) {
   if (!trip) return null;
 
   const stats = [

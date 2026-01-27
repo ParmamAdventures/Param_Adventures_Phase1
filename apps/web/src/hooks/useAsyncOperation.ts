@@ -25,7 +25,7 @@ export interface AsyncState {
  *   });
  * };
  */
-export function useAsyncOperation<T extends Record<string, unknown> = Record<string, unknown>>() {
+export function useAsyncOperation<T extends object = object>() {
   const [state, setState] = useState<AsyncState>({
     status: "idle",
   });

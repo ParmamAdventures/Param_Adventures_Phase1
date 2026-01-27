@@ -9,9 +9,9 @@ export default function TripInclusions({
   exclusions = [],
   thingsToPack = [],
 }: {
-  inclusions?: any[];
-  exclusions?: any[];
-  thingsToPack?: any[];
+  inclusions?: string[];
+  exclusions?: string[];
+  thingsToPack?: string[];
 }) {
   return (
     <div className="space-y-12">

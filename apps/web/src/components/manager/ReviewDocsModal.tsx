@@ -13,7 +13,7 @@ import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
 import { Loader2, CheckCircle2, FileText, ExternalLink, Image as ImageIcon } from "lucide-react";
 
-import { Trip } from "../../types/trip";
+import { Trip, TripDocument } from "../../types/trip";
 
 interface ReviewDocsModalProps {
   isOpen: boolean;
@@ -39,7 +39,7 @@ export default function ReviewDocsModal({
 }: ReviewDocsModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const docs = (trip.itinerary as any[]) || [];
+  const docs = (trip.itinerary as unknown as TripDocument[]) || [];
 
   const handleComplete = async () => {
     if (!confirm("Are you sure you want to close this trip? This will mark it as Completed."))

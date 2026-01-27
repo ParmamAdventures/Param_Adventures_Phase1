@@ -1,6 +1,7 @@
 import Image from "next/image";
 import StatusBadge from "../ui/StatusBadge";
 import HeartButton from "./HeartButton";
+import { Trip } from "@/types/trip";
 
 interface TripImage {
   originalUrl?: string;
@@ -9,7 +10,7 @@ interface TripImage {
 }
 
 interface TripHeroProps {
-  trip: any;
+  trip: Trip;
 }
 
 export default function TripHero({ trip }: TripHeroProps) {

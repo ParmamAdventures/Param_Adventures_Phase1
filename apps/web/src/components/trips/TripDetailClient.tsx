@@ -74,7 +74,7 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
 
             {/* Itinerary */}
             <section id="itinerary" className="scroll-mt-24">
-              <TripItinerary itinerary={trip.itinerary} />
+              <TripItinerary itinerary={trip.itinerary as any} />
               {trip.itineraryPdf && (
                 <div className="mt-8">
                   <a
@@ -145,7 +145,7 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
               <section>
                 <h2 className="mb-6 text-2xl font-bold">Gallery</h2>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {trip.gallery.map((item: any, i: number) => (
+                  {trip.gallery.map((item: { image: { mediumUrl: string } }, i: number) => (
                     <div
                       key={i}
                       className="group relative aspect-square cursor-zoom-in overflow-hidden rounded-xl"

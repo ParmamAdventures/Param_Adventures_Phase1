@@ -1,4 +1,5 @@
 ﻿import React, { useEffect } from "react";
+import type { Booking } from "../../types/booking";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
@@ -6,11 +7,12 @@ import { useToast } from "../ui/ToastProvider";
 import { ImageUploader } from "../media/ImageUploader";
 import { useAsyncOperation } from "../../hooks/useAsyncOperation";
 import { useFormState } from "../../hooks/useFormState";
+import { Trip } from "@/types/trip";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  booking: any | null;
+  booking: Booking | null;
   onSuccess: () => void;
 }
 
@@ -96,7 +98,7 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
               <strong>Booking:</strong> {booking.trip.title}
             </p>
             <p>
-              <strong>User:</strong> {booking.user.name}
+              <strong>User:</strong> {booking.user?.name || "Anonymous"}
             </p>
             <p>
               <strong>Total Due:</strong> ₹{booking.totalPrice.toLocaleString()}

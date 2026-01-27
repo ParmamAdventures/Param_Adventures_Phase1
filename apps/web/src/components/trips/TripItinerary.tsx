@@ -3,22 +3,7 @@
 import { useState } from "react";
 
 import { MapPin, Clock, Tent, Utensils, Coffee, Cookie, ChevronDown } from "lucide-react";
-
-type ItineraryDay = {
-  day: number;
-  title: string;
-  description: string;
-  activities?: string[];
-  meals?: {
-    breakfast: boolean;
-    lunch: boolean;
-    dinner: boolean;
-    snacks: boolean;
-  };
-  accommodation?: string;
-  distance?: string;
-  travelTime?: string;
-};
+import { ItineraryDay } from "@/types/trip";
 
 /**
  * TripItinerary - React component for UI presentation and interaction.
@@ -26,7 +11,11 @@ type ItineraryDay = {
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function TripItinerary({ itinerary }: { itinerary: any }) {
+export default function TripItinerary({
+  itinerary,
+}: {
+  itinerary: ItineraryDay[] | { days: ItineraryDay[] } | null | undefined;
+}) {
   const days = (Array.isArray(itinerary) ? itinerary : itinerary?.days || []) as ItineraryDay[];
   const [openDay, setOpenDay] = useState<number | null>(null);
 

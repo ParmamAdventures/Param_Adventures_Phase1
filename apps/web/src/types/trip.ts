@@ -1,3 +1,27 @@
+import { User } from "./auth";
+
+export type ItineraryDay = {
+  day: number;
+  title: string;
+  description: string;
+  activities?: string[];
+  meals?: {
+    breakfast: boolean;
+    lunch: boolean;
+    dinner: boolean;
+    snacks: boolean;
+  };
+  accommodation?: string;
+  distance?: string;
+  travelTime?: string;
+};
+
+export type TripDocument = {
+  type?: string;
+  uploadedAt: string;
+  url: string;
+};
+
 export interface Trip {
   id: string;
   title: string;
@@ -28,7 +52,7 @@ export interface Trip {
       type?: "IMAGE" | "VIDEO";
     };
   }[];
-  itinerary?: Record<string, unknown>[];
+  itinerary?: ItineraryDay[] | { days: ItineraryDay[] } | TripDocument[];
   highlights?: string[];
   inclusions?: string[];
   exclusions?: string[];
@@ -45,5 +69,5 @@ export interface Trip {
   updatedAt?: string | Date;
   itineraryPdf?: string;
   _count?: { bookings: number };
-  guides?: any[];
+  guides?: { id: string; guide: User }[];
 }

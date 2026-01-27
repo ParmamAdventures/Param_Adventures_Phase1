@@ -9,8 +9,10 @@ import { apiFetch } from "@/lib/api";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 
+import { Blog } from "@/types/blog";
+
 export default function Page() {
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadBlogs = useCallback(async () => {

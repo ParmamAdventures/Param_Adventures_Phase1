@@ -94,28 +94,24 @@ export default function ManagerTripCard({ trip, onUpdate }: ManagerTripCardProps
             </span>
             {trip.guides && trip.guides.length > 0 ? (
               <div className="flex -space-x-2">
-                {trip.guides.map(
-                  (g: {
-                    guide: { id: string; name: string; avatarImage?: { mediumUrl: string } };
-                  }) => (
-                    <div
-                      key={g.guide.id}
-                      title={g.guide.name}
-                      className="border-background bg-accent relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border text-[10px] text-white"
-                    >
-                      {g.guide.avatarImage?.mediumUrl ? (
-                        <Image
-                          src={g.guide.avatarImage.mediumUrl}
-                          fill
-                          alt={g.guide.name}
-                          className="object-cover"
-                        />
-                      ) : (
-                        g.guide.name[0]
-                      )}
-                    </div>
-                  ),
-                )}
+                {trip.guides.map((g) => (
+                  <div
+                    key={g.guide.id}
+                    title={g.guide.name || "Guide"}
+                    className="border-background bg-accent relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border text-[10px] text-white"
+                  >
+                    {g.guide.avatarImage?.mediumUrl ? (
+                      <Image
+                        src={g.guide.avatarImage.mediumUrl}
+                        fill
+                        alt={g.guide.name || "Avatar"}
+                        className="object-cover"
+                      />
+                    ) : (
+                      (g.guide.name || "?")[0]
+                    )}
+                  </div>
+                ))}
               </div>
             ) : (
               <span className="flex items-center gap-1 text-xs text-orange-500">
