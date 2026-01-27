@@ -136,7 +136,7 @@ function renderTrip(trip: TripFull) {
 
             {/* Itinerary */}
             <section id="itinerary" className="scroll-mt-24">
-              <TripItinerary itinerary={trip.itinerary as any} />
+              <TripItinerary itinerary={trip.itinerary} />
 
               {/* Download Button (Visible on all devices now) */}
               {trip.itineraryPdf && (

@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { MapPin, Clock, Tent, Utensils, Coffee, Cookie, ChevronDown } from "lucide-react";
-import { ItineraryDay } from "@/types/trip";
+import { ItineraryDay, TripDocument } from "@/types/trip";
 
 /**
  * TripItinerary - React component for UI presentation and interaction.
@@ -14,9 +14,11 @@ import { ItineraryDay } from "@/types/trip";
 export default function TripItinerary({
   itinerary,
 }: {
-  itinerary: ItineraryDay[] | { days: ItineraryDay[] } | null | undefined;
+  itinerary: ItineraryDay[] | { days: ItineraryDay[] } | TripDocument[] | null | undefined;
 }) {
-  const days = (Array.isArray(itinerary) ? itinerary : itinerary?.days || []) as ItineraryDay[];
+  const rawDays = Array.isArray(itinerary) ? itinerary : itinerary?.days || [];
+  // Filter out TripDocument objects if any (ItineraryDay must have a 'day' property)
+  const days = rawDays.filter((d): d is ItineraryDay => "day" in d);
   const [openDay, setOpenDay] = useState<number | null>(null);
 
   if (!days || days.length === 0) return null;

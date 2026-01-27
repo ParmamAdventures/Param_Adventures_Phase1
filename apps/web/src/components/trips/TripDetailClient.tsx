@@ -74,7 +74,7 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
 
             {/* Itinerary */}
             <section id="itinerary" className="scroll-mt-24">
-              <TripItinerary itinerary={trip.itinerary as any} />
+              <TripItinerary itinerary={trip.itinerary} />
               {trip.itineraryPdf && (
                 <div className="mt-8">
                   <a
