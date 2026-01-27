@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma, MediaType } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 /**
@@ -12,9 +13,9 @@ export async function listMedia(req: Request, res: Response) {
   const skip = (Number(page) - 1) * Number(limit);
 
   try {
-    const where: any = {};
+    const where: Prisma.ImageWhereInput = {};
     if (type && type !== "ALL") {
-      where.type = type;
+      where.type = type as MediaType;
     }
 
     const [mediaItems, total] = await Promise.all([
@@ -102,15 +103,18 @@ export async function deleteMedia(req: Request, res: Response) {
     ]);
 
     res.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Delete media error:", error);
-    if (error.code === "P2003") {
-      return res.status(400).json({
-        error: "Cannot delete media because it is being used by other records (Trips/Blogs/Users).",
-      });
-    }
-    if (error.code === "P2025") {
-      return res.status(404).json({ error: "Media not found." });
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2003") {
+        return res.status(400).json({
+          error:
+            "Cannot delete media because it is being used by other records (Trips/Blogs/Users).",
+        });
+      }
+      if (error.code === "P2025") {
+        return res.status(404).json({ error: "Media not found." });
+      }
     }
     res.status(500).json({ error: "Failed to delete media" });
   }

@@ -5,13 +5,14 @@ import {
   inferResourceType,
   resolvePublicId,
 } from "./cloudinary.utils";
+import { CloudinaryFile } from "../types/cloudinary";
 
 /**
  * Creates a Prisma Image Create Input from a Cloudinary file object.
  * Handles both Image and Video resource types.
  */
 export function createImageInput(
-  file: any, // Cloudinary File Object (Express.Multer.File)
+  file: CloudinaryFile, // Cloudinary File Object (Express.Multer.File)
   userId: string,
   extraData: {
     tripId?: string;

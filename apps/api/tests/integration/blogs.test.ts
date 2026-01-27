@@ -23,7 +23,7 @@ describe("Blog Endpoints", () => {
       await prisma.user?.deleteMany();
       await prisma.role?.deleteMany();
       await prisma.permission?.deleteMany();
-    } catch (e) {
+    } catch {
       /* cleanup errors ignored */
     }
 
@@ -274,7 +274,7 @@ describe("Blog Endpoints", () => {
 
       expect(response.status).toBe(200);
       if (Array.isArray(response.body)) {
-        const foundBlog = response.body.find((b: any) => b.id === publishedBlog.id);
+        const foundBlog = response.body.find((b: { id: string }) => b.id === publishedBlog.id);
         expect(foundBlog).toBeDefined();
       }
     });

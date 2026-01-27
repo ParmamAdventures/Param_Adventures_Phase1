@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { AuditAction } from "@prisma/client";
+import { AuditAction, Prisma } from "@prisma/client";
 import { auditService } from "./audit.service";
 
 export class UserService {
@@ -45,11 +45,11 @@ export class UserService {
 
     if (!user) return null;
 
-    const roles = user.roles.map((r: any) => r.role.name);
+    const roles = user.roles.map((r) => r.role.name);
     const permissions = new Set<string>();
 
-    user.roles.forEach((ur: any) => {
-      ur.role.permissions.forEach((rp: any) => {
+    user.roles.forEach((ur) => {
+      ur.role.permissions.forEach((rp) => {
         permissions.add(rp.permission.key);
       });
     });
@@ -75,19 +75,21 @@ export class UserService {
   /**
    * Updates a user's profile and logs the action.
    */
-  async updateProfile(userId: string, data: any) {
+  async updateProfile(userId: string, data: Prisma.UserUpdateInput & { avatarImageId?: string }) {
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
         name: data.name,
         nickname: data.nickname,
         bio: data.bio,
-        age: data.age ? Number(data.age) : null,
+        age: typeof data.age === "number" ? data.age : undefined, // Ensure number
         gender: data.gender,
         phoneNumber: data.phoneNumber,
         address: data.address,
-        avatarImageId: data.avatarImageId,
-        preferences: data.preferences,
+        avatarImage: data.avatarImageId
+          ? { connect: { id: data.avatarImageId as string } }
+          : undefined,
+        preferences: data.preferences ?? undefined,
       },
       include: {
         avatarImage: true,

@@ -1,8 +1,9 @@
 import { EntityStatus } from "../constants/status";
 
-type WhereCondition = {
-  OR?: Array<{ status: string } | Record<string, any>>;
-  status?: string;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WhereCondition<T = Record<string, any>> = {
+  OR?: Array<T | Record<string, any>>;
+  status?: any; // Allow generic Prisma enum filters
   [key: string]: any;
 };
 

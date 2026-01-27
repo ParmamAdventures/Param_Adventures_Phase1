@@ -20,7 +20,7 @@ export class ApiResponse {
   /**
    * Send a success response
    */
-  static success(res: Response, data: any, message?: string, statusCode: number = 200) {
+  static success(res: Response, data: unknown, message?: string, statusCode: number = 200) {
     return res.status(statusCode).json({
       success: true,
       data,
@@ -39,14 +39,14 @@ export class ApiResponse {
     code: string,
     message: string,
     statusCode: number = 500,
-    details?: any
+    details?: unknown,
   ) {
     return res.status(statusCode).json({
       success: false,
       error: {
         code,
         message,
-        ...(details && { details }),
+        ...(details ? { details } : {}),
       },
       meta: {
         timestamp: new Date().toISOString(),
@@ -63,7 +63,7 @@ export class ApiResponse {
     page: number,
     limit: number,
     total: number,
-    message?: string
+    message?: string,
   ) {
     const totalPages = Math.ceil(total / limit);
 
@@ -116,7 +116,7 @@ export class ApiResponse {
   /**
    * Send a bad request (400) error
    */
-  static badRequest(res: Response, message: string, details?: any) {
+  static badRequest(res: Response, message: string, details?: unknown) {
     return this.error(res, "BAD_REQUEST", message, 400, details);
   }
 
@@ -144,14 +144,14 @@ export class ApiResponse {
   /**
    * Send a conflict (409) error
    */
-  static conflict(res: Response, message: string, details?: any) {
+  static conflict(res: Response, message: string, details?: unknown) {
     return this.error(res, "CONFLICT", message, 409, details);
   }
 
   /**
    * Send an internal server error (500)
    */
-  static serverError(res: Response, message: string = "Internal server error", details?: any) {
+  static serverError(res: Response, message: string = "Internal server error", details?: unknown) {
     return this.error(res, "INTERNAL_SERVER_ERROR", message, 500, details);
   }
 }

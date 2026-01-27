@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { Prisma } from "@prisma/client";
 import { auditService, AuditAction } from "../services/audit.service";
 
 // Re-export AuditAction for convenience
@@ -12,7 +13,7 @@ export const logAudit = async (
   action: AuditAction,
   targetType: string,
   targetId?: string,
-  metadata?: any,
+  metadata?: Prisma.InputJsonValue,
 ) => {
   if (!actor?.id) return;
 
@@ -33,7 +34,7 @@ export const logReqAudit = async (
   action: AuditAction,
   targetType: string,
   targetId?: string,
-  metadata?: any,
+  metadata?: Prisma.InputJsonValue,
 ) => {
   return logAudit(req.user, action, targetType, targetId, metadata);
 };

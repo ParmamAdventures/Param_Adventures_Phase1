@@ -1,4 +1,3 @@
-import { Request, Response } from "express";
 import { mockDeep } from "jest-mock-extended";
 import { PrismaClient } from "@prisma/client";
 
@@ -14,20 +13,7 @@ jest.mock("../../src/lib/prisma", () => ({
 // However, separating it helps clarity and safety with internal modules)
 import { createInquiry } from "../../src/controllers/inquiry.controller";
 
-// Mocking Response methods
-const mockResponse = () => {
-  const res: Partial<Response> = {};
-  res.status = jest.fn().mockReturnValue(res);
-  res.json = jest.fn().mockReturnValue(res);
-  return res as Response;
-};
-
-// Mocking Request properties
-const mockRequest = (body: any) => {
-  return {
-    body,
-  } as Request;
-};
+import { mockRequest, mockResponse, mockNext } from "../helpers/test-utils";
 
 describe("InquiryController", () => {
   describe("createInquiry", () => {
@@ -42,7 +28,7 @@ describe("InquiryController", () => {
         details: "Looking for fun",
       };
 
-      const req = mockRequest(data);
+      const req = mockRequest({ body: data });
       const res = mockResponse();
 
       const createdInquiry = { id: "1", ...data, status: "NEW", createdAt: new Date() };
@@ -58,7 +44,7 @@ describe("InquiryController", () => {
 
       (prismaMock.tripInquiry.create as jest.Mock).mockResolvedValue(createdInquiry);
 
-      await createInquiry(req, res, jest.fn());
+      await createInquiry(req, res, mockNext());
 
       expect(prismaMock.tripInquiry.create).toHaveBeenCalledWith({
         data: {

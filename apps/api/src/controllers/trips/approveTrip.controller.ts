@@ -1,16 +1,14 @@
 import { Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { getTripOrThrow } from "../../utils/entityHelpers";
 import { validateTripStatusTransition } from "../../utils/statusValidation";
-import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
-import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
+import { ErrorCodes } from "../../constants/errorMessages";
 import { tripService } from "../../services/trip.service";
 import { EntityStatus } from "../../constants/status";
 
 export const approveTrip = catchAsync(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const { id } = req.params;
 
   const trip = await getTripOrThrow(id, res);
@@ -19,8 +17,9 @@ export const approveTrip = catchAsync(async (req: Request, res: Response) => {
   // Validate status transition
   try {
     validateTripStatusTransition(trip.status, EntityStatus.APPROVED);
-  } catch (error: any) {
-    return ApiResponse.error(res, ErrorCodes.INVALID_STATUS_TRANSITION, error.message, 400);
+  } catch (error: unknown) {
+    const err = error as Error;
+    return ApiResponse.error(res, ErrorCodes.INVALID_STATUS_TRANSITION, err.message, 400);
   }
 
   const updated = await tripService.approveTrip(id, user.id);

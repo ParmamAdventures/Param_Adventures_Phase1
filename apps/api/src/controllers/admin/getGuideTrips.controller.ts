@@ -8,7 +8,7 @@ import { prisma } from "../../lib/prisma";
  * @returns {Promise<void>}
  */
 export async function getGuideTrips(req: Request, res: Response) {
-  const userId = (req as any).user.id;
+  const userId = req.user!.id;
 
   try {
     const assignments = await prisma.tripsOnGuides.findMany({

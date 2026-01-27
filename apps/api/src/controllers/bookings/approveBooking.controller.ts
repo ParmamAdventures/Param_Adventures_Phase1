@@ -10,7 +10,7 @@ import { catchAsync } from "../../utils/catchAsync";
  * @returns {Promise<void>}
  */
 export const approveBooking = catchAsync(async (req: Request, res: Response) => {
-  const admin = (req as any).user;
+  const admin = req.user!;
   const { id } = req.params;
 
   const updated = await bookingService.approveBooking(id, admin.id);

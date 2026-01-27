@@ -1,4 +1,5 @@
 import { cloudinary } from "../config/cloudinary";
+import { CloudinaryFile } from "../types/cloudinary";
 
 export type CloudinaryResourceType = "image" | "video";
 
@@ -32,7 +33,7 @@ export function extractPublicIdFromUrl(url?: string | null): string | null {
   }
 }
 
-export function resolvePublicId(file: any): string | null {
+export function resolvePublicId(file: Partial<CloudinaryFile>): string | null {
   return (
     file?.public_id || file?.filename || extractPublicIdFromUrl(file?.path || file?.secure_url)
   );

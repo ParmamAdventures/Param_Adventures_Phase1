@@ -25,11 +25,9 @@ import {
   PaymentMethod,
   Difficulty,
 } from "@prisma/client";
-import { RAW_TRIP_DATA, TRIP_IMAGES } from "./seed_data";
+import { RAW_TRIP_DATA } from "./seed_data";
 
-// (Code removed)
 import * as bcrypt from "bcryptjs";
-import * as crypto from "crypto";
 
 const prisma = new PrismaClient();
 
@@ -249,7 +247,7 @@ async function assignPermissions(roleId: string, permissionIds: string[]) {
   }
 }
 
-async function createUsers(roles: any) {
+async function createUsers(roles: { [key: string]: { id: string } }) {
   console.log("\n👥 Creating users...");
 
   // Use single password for ALL users (super admin, admin, manager, guides, customers)
@@ -416,7 +414,7 @@ async function createUsers(roles: any) {
   }
 }
 
-async function createImages(users: any) {
+async function createImages(users: { admin: { id: string } }) {
   console.log("\n🖼️  Creating images...");
 
   const imageData = [
@@ -473,7 +471,15 @@ async function createImages(users: any) {
   return images;
 }
 
-async function createTrips(users: any, images: any[]) {
+async function createTrips(
+  users: {
+    admin: { id: string };
+    manager: { id: string };
+    guide1: { id: string };
+    guide2: { id: string };
+  },
+  images: Array<{ id: string }>,
+) {
   console.log("\n🌍 Creating a massive expedition fleet (35+ trips)...");
 
   const trips = [];
@@ -487,8 +493,8 @@ async function createTrips(users: any, images: any[]) {
       .replace(/[^\w-]/g, "");
 
     // Rotate images from our pool
-    const coverImage = images[count % images.length];
-    const heroImage = images[(count + 1) % images.length];
+    // const coverImage = images[count % images.length];
+    // const heroImage = images[(count + 1) % images.length];
 
     // Determine status and assignments based on count for variety
     let status: TripStatus = "PUBLISHED";
@@ -498,7 +504,7 @@ async function createTrips(users: any, images: any[]) {
     if (count % 15 === 0) status = "IN_PROGRESS";
     if (count % 12 === 0) status = "COMPLETED";
 
-    const tripData: any = {
+    const tripData: Omit<Prisma.TripCreateInput, "createdBy" | "approvedBy" | "manager"> = {
       title: data.title,
       slug,
       description: `Join us for an unforgettable ${data.category.toLowerCase()} adventure in ${data.location}. Experience the best of ${data.title} with our professional team.`,
@@ -606,7 +612,11 @@ async function createHeroSlides() {
   console.log(`✅ Created ${slides.length} hero slides`);
 }
 
-async function createBlogs(users: any, trips: any[], images: any[]) {
+async function createBlogs(
+  users: { admin: { id: string }; manager: { id: string } },
+  trips: Array<{ id: string }>,
+  images: Array<{ id: string }>,
+) {
   console.log("\n📝 Creating blogs...");
 
   const blogs = [
@@ -668,7 +678,10 @@ async function createBlogs(users: any, trips: any[], images: any[]) {
   console.log(`✅ Created ${blogs.length} blogs`);
 }
 
-async function createBookingsAndPayments(users: any, trips: any[]) {
+async function createBookingsAndPayments(
+  users: { customers: Array<{ id: string }> },
+  trips: Array<{ id: string }>,
+) {
   console.log("\n📅 Creating bookings and payments...");
 
   const date1 = new Date("2026-03-15");
@@ -774,7 +787,10 @@ async function createBookingsAndPayments(users: any, trips: any[]) {
   console.log("✅ Created 3 bookings with payments");
 }
 
-async function createReviewsAndInquiries(users: any, trips: any[]) {
+async function createReviewsAndInquiries(
+  users: { customers: Array<{ id: string }> },
+  trips: Array<{ id: string }>,
+) {
   console.log("\n⭐ Creating reviews and inquiries...");
 
   // Use count check or unique key for reviews if possible, but here we'll just check existence
@@ -984,7 +1000,7 @@ async function createServerConfiguration() {
       try {
         const bcrypt = await import("bcryptjs").then((m) => m.default);
         finalValue = await bcrypt.hash(finalValue, 12);
-      } catch (error) {
+      } catch (_error) {
         console.warn(`Failed to encrypt ${config.key}, using plaintext`);
       }
     }
@@ -1059,12 +1075,12 @@ async function main() {
     const users = await createUsers(roles);
 
     if (process.env.SEED_DEMO_DATA === "true") {
-      const images = await createImages(users);
-      const trips = await createTrips(users, images);
+      const images = await createImages(users as any);
+      const trips = await createTrips(users as any, images);
       await createHeroSlides();
-      await createBlogs(users, trips, images);
-      await createBookingsAndPayments(users, trips);
-      await createReviewsAndInquiries(users, trips);
+      await createBlogs(users as any, trips, images);
+      await createBookingsAndPayments(users as any, trips);
+      await createReviewsAndInquiries(users as any, trips);
     }
 
     await createSiteConfig();
@@ -1099,10 +1115,11 @@ async function main() {
       console.log(`   Guide:    guide.rahul@paramadventures.com / Demo@2026`);
       console.log(`   Customer: amit.patel@email.com / Demo@2026\n`);
     }
-  } catch (error: any) {
-    console.error("\n❌ Seed failed:", error);
-    console.error("Stack trace:", error.stack);
-    throw error;
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("\n❌ Seed failed:", err);
+    console.error("Stack trace:", err.stack);
+    throw err;
   } finally {
     await prisma.$disconnect();
   }

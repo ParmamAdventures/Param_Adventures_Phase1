@@ -5,7 +5,7 @@ jest.mock("../../src/lib/logger"); // Mock the logger to spy on its methods
 
 import { prisma } from "../../src/lib/prisma";
 import { MediaService } from "../../src/services/media.service";
-import { HttpError } from "../../src/utils/httpError";
+
 import * as cloudinaryUtils from "../../src/utils/cloudinary.utils"; // Import the mocked cloudinary.utils module
 import * as cloudinaryConfig from "../../src/config/cloudinary";
 import * as logger from "../../src/lib/logger";
@@ -92,9 +92,9 @@ describe("MediaService", () => {
     it("throws error when no file is provided", async () => {
       const userId = "user_123";
 
-      await expect(mediaService.createImage(null as any, userId)).rejects.toThrow(
-        "No file uploaded",
-      );
+      await expect(
+        mediaService.createImage(null as unknown as Express.Multer.File, userId),
+      ).rejects.toThrow("No file uploaded");
     });
 
     it("creates image with custom media type", async () => {
@@ -366,8 +366,8 @@ describe("MediaService", () => {
 
     it("throws error when media is in use (P2003)", async () => {
       const mediaId = "media_in_use";
-      const error = new Error("Foreign key constraint failed");
-      (error as any).code = "P2003";
+      const error = new Error("Foreign key constraint failed") as Error & { code: string };
+      error.code = "P2003";
 
       (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique
       (prisma.image.delete as jest.Mock).mockRejectedValue(error);
@@ -383,8 +383,8 @@ describe("MediaService", () => {
 
     it("throws error when media not found (P2025)", async () => {
       const mediaId = "non_existent";
-      const error = new Error("Record not found");
-      (error as any).code = "P2025";
+      const error = new Error("Record not found") as Error & { code: string };
+      error.code = "P2025";
 
       // For P2025, the findUnique should succeed, but the delete should fail
       (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique

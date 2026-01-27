@@ -8,12 +8,13 @@ export const getBookingById = async (req: Request, res: Response) => {
 
     const booking = await bookingService.getBookingById(id, userId);
     res.json(booking);
-  } catch (error: any) {
-    const status = error.message.includes("not found")
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal Server Error";
+    const status = message.includes("not found")
       ? 404
-      : error.message.includes("Unauthorized")
+      : message.includes("Unauthorized")
         ? 403
         : 500;
-    res.status(status).json({ error: error.message });
+    res.status(status).json({ error: message });
   }
 };

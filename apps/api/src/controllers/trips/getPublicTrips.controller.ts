@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { Prisma } from "@prisma/client";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { TripCacheService } from "../../services/trip-cache.service";
@@ -60,17 +61,17 @@ export const getPublicTrips = catchAsync(async (req: Request, res: Response) => 
   }
 
   // Build query
-  const where: any = { status: "PUBLISHED" };
+  const where: Prisma.TripWhereInput = { status: "PUBLISHED" };
 
   if (search) {
     where.OR = [
-      { title: { search: String(search).split(" ").join(" & ") } },
-      { description: { search: String(search).split(" ").join(" & ") } },
+      { title: { contains: String(search).split(" ").join(" & ") } }, // Assuming search was intended as full text or contains
+      { description: { contains: String(search).split(" ").join(" & ") } },
     ];
   }
 
-  if (category) where.category = category;
-  if (difficulty) where.difficulty = difficulty;
+  if (category) where.category = category as Prisma.EnumTripCategoryFilter<"Trip">;
+  if (difficulty) where.difficulty = difficulty as Prisma.EnumDifficultyFilter<"Trip">;
   if (capacity) where.capacity = { gte: Number(capacity) };
 
   if (maxPrice || minPrice) {

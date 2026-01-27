@@ -9,7 +9,7 @@ import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
 import { TripIncludes } from "../../constants/prismaIncludes";
 
 export const updateTrip = catchAsync(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const { id } = req.params;
 
   const trip = await getTripOrThrow(id, res);
@@ -17,7 +17,8 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
 
   // Check permissions: Owner OR Admin (trip:edit)
   const isOwner = trip.createdById === user.id;
-  const canEditAny = user.permissions?.includes("trip:edit");
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const canEditAny = (user as any).permissions?.includes("trip:edit");
 
   if (!isOwner && !canEditAny) {
     return ApiResponse.error(
@@ -73,7 +74,7 @@ export const updateTrip = catchAsync(async (req: Request, res: Response) => {
       gallery: req.body.gallery
         ? {
             deleteMany: {},
-            create: req.body.gallery.map((g: any, index: number) => ({
+            create: req.body.gallery.map((g: Record<string, string>, index: number) => ({
               imageId: g.id,
               order: index,
             })),

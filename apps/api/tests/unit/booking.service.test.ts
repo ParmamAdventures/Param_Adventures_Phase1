@@ -1,22 +1,16 @@
 jest.mock("../../src/lib/prisma", () => ({
   __esModule: true,
   prisma: {
-    trip: {
-      findUnique: jest.fn(),
-    },
-    booking: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-      update: jest.fn(),
-      findMany: jest.fn(),
-    },
-    payment: {
-      update: jest.fn(),
-    },
+    trip: { findUnique: jest.fn() },
+    booking: { create: jest.fn(), findUnique: jest.fn(), update: jest.fn(), findMany: jest.fn() },
+    payment: { update: jest.fn() },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
   },
 }));
+
+import { mockDeep, DeepMockProxy } from "jest-mock-extended";
+import { PrismaClient } from "@prisma/client";
 
 jest.mock("../../src/lib/queue", () => ({
   notificationQueue: {
@@ -28,7 +22,7 @@ import { bookingService } from "../../src/services/booking.service";
 import { prisma } from "../../src/lib/prisma";
 import { notificationQueue } from "../../src/lib/queue";
 
-const prismaMock = prisma as any;
+const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
 
 describe("BookingService", () => {
   beforeEach(() => {
@@ -50,16 +44,21 @@ describe("BookingService", () => {
         title: "Test Trip",
         slug: "test-trip",
         capacity: 10,
-      };
+      } as any; // Using rough cast for mock data
 
-      prismaMock.trip.findUnique.mockResolvedValue(mockTrip);
+      prismaMock.trip.findUnique.mockResolvedValue(mockTrip as any);
       prismaMock.booking.create.mockResolvedValue({
         id: "booking-1",
         ...bookingData,
+        startDate: new Date(bookingData.startDate), // Fix date type
         totalPrice: 200,
         status: "REQUESTED",
-        trip: { title: "Test Trip", slug: "test-trip" },
-      });
+        paymentStatus: "PENDING",
+        guestDetails: {},
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        notes: null,
+      } as any);
 
       const result = await bookingService.createBooking(bookingData);
 
@@ -77,7 +76,7 @@ describe("BookingService", () => {
     });
 
     it("should throw error if trip is not published", async () => {
-      prismaMock.trip.findUnique.mockResolvedValue({ status: "DRAFT" });
+      prismaMock.trip.findUnique.mockResolvedValue({ status: "DRAFT" } as any);
       await expect(
         bookingService.createBooking({ userId: "u1", tripId: "t1", startDate: "2024", guests: 1 }),
       ).rejects.toThrow("Trip is not available for booking");
@@ -87,8 +86,8 @@ describe("BookingService", () => {
   describe("cancelBooking", () => {
     it("should cancel a booking successfully", async () => {
       const mockBooking = { id: "b1", userId: "u1", status: "REQUESTED", payments: [] };
-      prismaMock.booking.findUnique.mockResolvedValue(mockBooking);
-      prismaMock.booking.update.mockResolvedValue({ ...mockBooking, status: "CANCELLED" });
+      prismaMock.booking.findUnique.mockResolvedValue(mockBooking as any);
+      prismaMock.booking.update.mockResolvedValue({ ...mockBooking, status: "CANCELLED" } as any);
 
       const result = await bookingService.cancelBooking("b1", "u1");
 
@@ -103,7 +102,7 @@ describe("BookingService", () => {
     });
 
     it("should throw error if unauthorized", async () => {
-      prismaMock.booking.findUnique.mockResolvedValue({ id: "b1", userId: "other" });
+      prismaMock.booking.findUnique.mockResolvedValue({ id: "b1", userId: "other" } as any);
       await expect(bookingService.cancelBooking("b1", "u1")).rejects.toThrow("Unauthorized");
     });
   });

@@ -10,7 +10,7 @@ import { bookingService } from "../../services/booking.service";
  */
 export async function getMyBookings(req: Request, res: Response) {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user!.id;
     const bookings = await bookingService.getMyBookings(userId);
     return ApiResponse.success(res, bookings, "Bookings retrieved successfully");
   } catch (error) {

@@ -1,4 +1,5 @@
 import { prisma } from "../lib/prisma";
+import { Prisma } from "@prisma/client";
 import { HttpError } from "../utils/httpError";
 
 export class ReviewService {
@@ -8,7 +9,7 @@ export class ReviewService {
    * @param userId The ID of the user creating the review.
    * @returns The created review object.
    */
-  async createReview(data: any, userId: string) {
+  async createReview(data: Prisma.ReviewUncheckedCreateInput, userId: string) {
     const { tripId, rating, comment } = data;
 
     // Validate required fields

@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prisma";
-import { AuditAction } from "@prisma/client";
+import { AuditAction, Prisma } from "@prisma/client";
 
 export interface AuditLogData {
   action: AuditAction;
@@ -7,7 +7,7 @@ export interface AuditLogData {
   actorName?: string;
   targetType: string;
   targetId?: string;
-  metadata?: any;
+  metadata?: Prisma.InputJsonValue;
 }
 
 export const AuditTargetTypes = {

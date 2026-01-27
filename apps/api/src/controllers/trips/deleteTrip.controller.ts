@@ -8,7 +8,8 @@ import { getTripOrThrowError } from "../../utils/entityHelpers";
 export const deleteTrip = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const trip = (await getTripOrThrowError(id, { include: { bookings: true } })) as any;
+  const trip = await getTripOrThrowError(id, { include: { bookings: true } });
+  if (!trip) return;
 
   // Constraint 1: Cannot delete PUBLISHED trips
   if (trip.status === "PUBLISHED") {
@@ -33,8 +34,10 @@ export const deleteTrip = catchAsync(async (req: Request, res: Response) => {
   // If Booking exists, delete usually fails.
   // We should warn user or block it.
 
-  const hasActiveBookings = trip.bookings.some(
-    (b: any) => ["CONFIRMED", "PAID"].includes(b.status as any) || b.paymentStatus === "PAID",
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const bookings = (trip as any).bookings || [];
+  const hasActiveBookings = bookings.some(
+    (b: any) => ["CONFIRMED", "PAID"].includes(b.status) || b.paymentStatus === "PAID",
   );
 
   if (hasActiveBookings) {

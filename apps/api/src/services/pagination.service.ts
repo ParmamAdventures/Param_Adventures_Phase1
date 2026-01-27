@@ -80,8 +80,8 @@ export class PaginationService {
    * @param direction - Original direction
    * @returns Processed items, next cursor, has more flag
    */
-  static processCursorResponse(
-    items: any[],
+  static processCursorResponse<T extends { id: string }>(
+    items: T[],
     pageSize: number,
     direction: "next" | "prev" = "next",
   ) {
@@ -107,7 +107,11 @@ export class PaginationService {
   /**
    * Process keyset pagination response
    */
-  static processKeysetResponse(items: any[], pageSize: number, keyField: string = "createdAt") {
+  static processKeysetResponse<T extends { [key: string]: any }>(
+    items: T[],
+    pageSize: number,
+    keyField: string = "createdAt",
+  ) {
     const hasMore = items.length > pageSize;
     const processedItems = items.slice(0, pageSize);
 
@@ -171,7 +175,7 @@ export class PaginationService {
   ) {
     const { take, cursor: cursorVal } = this.calculateCursorPagination(cursor, direction, limit);
 
-    const args: any = { take };
+    const args: { take: number; cursor?: { id: string }; skip?: number } = { take };
 
     if (cursorVal) {
       args.cursor = { id: cursorVal };
@@ -184,15 +188,23 @@ export class PaginationService {
   /**
    * Generate pagination metadata
    */
-  static generateMetadata(
-    items: any[],
+  static generateMetadata<T>(
+    items: T[],
     totalCount: number,
     page?: number,
     pageSize?: number,
     nextCursor?: string | null,
     hasMore?: boolean,
   ) {
-    const metadata: any = {
+    const metadata: {
+      count: number;
+      total: number;
+      page?: number;
+      pageSize?: number;
+      totalPages?: number;
+      hasMore?: boolean;
+      nextCursor?: string | null;
+    } = {
       count: items.length,
       total: totalCount,
     };
@@ -236,7 +248,7 @@ export class PaginationService {
   /**
    * Create paginated response object
    */
-  static createPaginatedResponse(items: any[], pagination: any, metadata: any) {
+  static createPaginatedResponse<T>(items: T[], pagination: object, metadata: object) {
     return {
       data: items,
       pagination: {
@@ -304,8 +316,8 @@ export class PaginationHelper {
   /**
    * Format paginated response for API
    */
-  static formatPaginatedResponse(
-    items: any[],
+  static formatPaginatedResponse<T>(
+    items: T[],
     totalCount: number,
     page?: number,
     pageSize?: number,

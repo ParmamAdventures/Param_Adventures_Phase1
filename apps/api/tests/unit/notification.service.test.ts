@@ -5,13 +5,13 @@ import { notificationService } from "../../src/services/notification.service";
 
 describe("notificationService", () => {
   let mockSendMail: jest.Mock;
-  let mockTransporter: any;
+  let mockTransporter: { sendMail: jest.Mock };
 
   beforeEach(() => {
     jest.clearAllMocks();
 
     // Reset the cached transporter
-    (notificationService as any).transporter = null;
+    (notificationService as unknown as { transporter: unknown }).transporter = null;
 
     mockSendMail = jest.fn().mockResolvedValue({ messageId: "msg_123" });
     mockTransporter = { sendMail: mockSendMail };

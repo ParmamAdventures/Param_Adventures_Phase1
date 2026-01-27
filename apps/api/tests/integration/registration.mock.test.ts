@@ -10,6 +10,11 @@ import request from "supertest";
 import { app } from "../../src/app";
 import { prismaMock } from "../helpers/prisma.mock";
 
+// Helper type for partial mocking
+type RecursivePartial<T> = {
+  [P in keyof T]?: RecursivePartial<T[P]>;
+};
+
 describe("User Registration Flow (Mocked)", () => {
   it("should register a new user successfully", async () => {
     const userData = {
@@ -42,7 +47,9 @@ describe("User Registration Flow (Mocked)", () => {
   });
 
   it("should fail if email is already registered", async () => {
-    prismaMock.user.findUnique.mockResolvedValue({ id: "existing-123" } as any);
+    prismaMock.user.findUnique.mockResolvedValue({
+      id: "existing-123",
+    } as unknown as RecursivePartial<PrismaClient["user"]["fields"]> as any);
 
     const res = await request(app).post("/api/v1/auth/register").send({
       email: "existing@example.com",

@@ -3,6 +3,7 @@ import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { resolvePublicId } from "../../utils/cloudinary.utils";
 import { createImageInput } from "../../utils/mediaFactory";
+import { CloudinaryFile } from "../../types/cloudinary";
 
 /**
  * Upload Trip Cover
@@ -16,14 +17,14 @@ export async function uploadTripCover(req: Request, res: Response) {
   }
 
   const { tripId } = req.params;
-  const file = req.file as any; // Cloudinary File
+  const file = req.file as unknown as CloudinaryFile; // Cloudinary File
 
   const publicId = resolvePublicId(file);
   if (!publicId) {
     throw new HttpError(500, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID");
   }
 
-  const imageInput = createImageInput(file, (req as any).user.id);
+  const imageInput = createImageInput(file, req.user!.id);
   const image = await prisma.image.create({ data: imageInput });
 
   // Update Trip

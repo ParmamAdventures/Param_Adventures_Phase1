@@ -8,20 +8,21 @@ import {
   inferResourceType,
   resolvePublicId,
 } from "../utils/cloudinary.utils";
+import { CloudinaryFile } from "../types/cloudinary";
 
 export const uploadImage = catchAsync(async (req: Request, res: Response) => {
   if (!req.file) {
     return ApiResponse.error(res, "NO_FILE_UPLOADED", "No file uploaded", 400);
   }
 
-  const file = req.file as any; // Multer Cloudinary File
+  const file = req.file as unknown as CloudinaryFile;
   const publicId = resolvePublicId(file);
 
   if (!publicId) {
     return ApiResponse.error(res, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID", 500);
   }
 
-  const version = (file as any).version;
+  const version = file.version;
   const resourceType = inferResourceType(file.mimetype);
   const urls =
     resourceType === "video"
@@ -42,7 +43,7 @@ export const uploadImage = catchAsync(async (req: Request, res: Response) => {
       mimeType: file.mimetype,
       type,
       duration,
-      uploadedById: (req.user as any).id,
+      uploadedById: req.user!.id,
     },
   });
 

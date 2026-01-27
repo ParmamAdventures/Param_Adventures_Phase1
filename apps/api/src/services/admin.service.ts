@@ -1,7 +1,7 @@
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
 import { auditService } from "./audit.service";
-import { AuditAction } from "@prisma/client";
+import { AuditAction, Prisma, UserStatus } from "@prisma/client";
 
 export class AdminService {
   /**
@@ -51,7 +51,7 @@ export class AdminService {
    * @returns Array of users with their roles.
    */
   async listUsers(roleFilter?: string) {
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
 
     if (roleFilter) {
       where.roles = {
@@ -111,7 +111,7 @@ export class AdminService {
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
-        status: status as "ACTIVE" | "SUSPENDED" | "BANNED",
+        status: status as UserStatus,
         statusReason: reason,
       },
       select: {

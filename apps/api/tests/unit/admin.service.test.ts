@@ -2,7 +2,6 @@ jest.mock("../../src/lib/prisma");
 
 import { prisma } from "../../src/lib/prisma";
 import { AdminService } from "../../src/services/admin.service";
-import { HttpError } from "../../src/utils/httpError";
 
 describe("AdminService", () => {
   let adminService: AdminService;

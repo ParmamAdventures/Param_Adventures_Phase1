@@ -6,7 +6,7 @@ import { auditService, AuditActions, AuditTargetTypes } from "../../services/aud
 import { TripIncludes } from "../../constants/prismaIncludes";
 
 export const createTrip = catchAsync(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
 
   const trip = await prisma.trip.create({
     data: {
@@ -42,7 +42,7 @@ export const createTrip = catchAsync(async (req: Request, res: Response) => {
       gallery:
         req.body.gallery && req.body.gallery.length > 0
           ? {
-              create: req.body.gallery.map((g: any, index: number) => ({
+              create: req.body.gallery.map((g: Record<string, string>, index: number) => ({
                 imageId: g.id,
                 order: index,
               })),

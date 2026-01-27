@@ -84,7 +84,7 @@ export async function updateRolePermissions(req: Request, res: Response) {
  * @returns {Promise<void>}
  */
 export async function assignRole(req: Request, res: Response) {
-  const actor = (req as any).user;
+  const actor = req.user;
   const { userId, roleName } = req.body;
 
   if (!actor || !actor.id) {
@@ -129,7 +129,7 @@ export async function assignRole(req: Request, res: Response) {
  * @returns {Promise<void>}
  */
 export async function revokeRole(req: Request, res: Response) {
-  const actor = (req as any).user;
+  const actor = req.user;
   const { userId, roleName } = req.body;
 
   if (!actor || !actor.id) {

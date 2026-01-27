@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { CloudinaryFile } from "../../types/cloudinary";
 
 /**
  * Upload Document
@@ -14,7 +15,7 @@ export async function uploadDocument(req: Request, res: Response) {
   // The 'uploadDocument' middleware now uses Cloudinary.
   // The req.file object contains the response from Cloudinary.
   // The `path` property is the URL to the uploaded file.
-  const file = req.file as any;
+  const file = req.file as unknown as CloudinaryFile;
 
   res.status(201).json({
     url: file.path,

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma, ServerConfiguration } from "@prisma/client";
 import { serverConfigService } from "../../services/server-config.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { HttpError } from "../../utils/httpError";
@@ -23,7 +24,7 @@ export async function getServerConfigurations(req: Request, res: Response) {
         }));
         return acc;
       },
-      {} as Record<string, any[]>,
+      {} as Record<string, ServerConfiguration[]>,
     );
 
     return ApiResponse.success(res, maskedConfigs, "Configurations fetched successfully");
@@ -120,20 +121,18 @@ export async function updateServerConfiguration(req: Request, res: Response) {
       },
       "Configuration updated successfully",
     );
-  } catch (error) {
-    const typedError = error as
-      | HttpError
-      | (HttpError & { status?: number; code?: string; message?: string });
+  } catch (error: unknown) {
+    if (error instanceof HttpError) {
+      return ApiResponse.error(res, error.code, error.message, error.status);
+    }
 
-    if (
-      typedError instanceof HttpError ||
-      (typedError && (typedError as any).status && (typedError as any).code)
-    ) {
+    const typedError = error as { status?: number; code?: string; message?: string };
+    if (typedError && typedError.status && typedError.code) {
       return ApiResponse.error(
         res,
-        (typedError as any).code,
-        (typedError as any).message,
-        (typedError as any).status,
+        typedError.code,
+        typedError.message || "An error occurred",
+        typedError.status,
       );
     }
 

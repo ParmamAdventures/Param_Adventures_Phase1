@@ -21,7 +21,7 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
   }
 
   // If not published, check for internal permission
-  const user = (req as any).user;
+  const user = req.user;
   if (user) {
     // We need to fetch permissions effectively since optionalAuth doesn't hydration them
     const dbUser = await prisma.user.findUnique({
@@ -45,8 +45,8 @@ export const getTripBySlug = catchAsync(async (req: Request, res: Response) => {
 
     if (dbUser) {
       const permissions = new Set<string>();
-      dbUser.roles.forEach((ur: any) => {
-        ur.role.permissions.forEach((rp: any) => {
+      dbUser.roles.forEach((ur) => {
+        ur.role.permissions.forEach((rp) => {
           permissions.add(rp.permission.key);
         });
       });

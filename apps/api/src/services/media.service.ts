@@ -1,6 +1,7 @@
 import { cloudinary } from "../config/cloudinary";
 import { logger } from "../lib/logger";
 import { prisma } from "../lib/prisma";
+import { Prisma, MediaType } from "@prisma/client";
 import { HttpError } from "../utils/httpError";
 import {
   buildImageUrls,
@@ -46,6 +47,7 @@ export class MediaService {
       throw new HttpError(500, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID");
     }
 
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const version = (file as any).version;
     const resourceType = inferResourceType(file.mimetype);
     const urls =
@@ -54,6 +56,7 @@ export class MediaService {
         : buildImageUrls(publicId, version, file.path);
 
     const resolvedType = mediaType === "VIDEO" || resourceType === "video" ? "VIDEO" : "IMAGE";
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const duration = resolvedType === "VIDEO" ? (file as any).duration || 0 : 0;
 
     return prisma.image.create({
@@ -96,9 +99,9 @@ export class MediaService {
     const { type, page = 1, limit = 50 } = options;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Prisma.ImageWhereInput = {};
     if (type && type !== "ALL") {
-      where.type = type;
+      where.type = type as MediaType;
     }
 
     const [mediaItems, total] = await Promise.all([
@@ -157,15 +160,15 @@ export class MediaService {
       await prisma.image.delete({
         where: { id },
       });
-    } catch (error: any) {
-      if (error.code === "P2003") {
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2003") {
         throw new HttpError(
           400,
           "IN_USE",
           "Cannot delete media because it is being used by other records (Trips/Blogs/Users).",
         );
       }
-      if (error.code === "P2025") {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") {
         throw new HttpError(404, "NOT_FOUND", "Media not found.");
       }
       throw error;

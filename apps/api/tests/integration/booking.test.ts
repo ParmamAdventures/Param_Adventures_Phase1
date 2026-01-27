@@ -13,7 +13,8 @@ describe("Booking Integration", () => {
 
   beforeAll(async () => {
     // Spy on queue to prevent actual Redis jobs and potential errors
-    jest.spyOn(notificationQueue, "add").mockResolvedValue({} as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    jest.spyOn(notificationQueue, "add").mockResolvedValue({} as any); // Job type is complex to mock fully
 
     // Clean up
     try {

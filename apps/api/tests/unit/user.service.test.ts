@@ -277,7 +277,8 @@ describe("UserService", () => {
         address: "456 New St",
         avatarImageId: "img-456",
         preferences: { theme: "light", notifications: true },
-      };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
 
       const mockUpdatedUser = {
         id: "user-123",
@@ -385,7 +386,8 @@ describe("UserService", () => {
     it("should convert age to number if provided", async () => {
       const updateData = {
         age: "35", // String age
-      };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any;
 
       const mockUpdatedUser = {
         id: "user-123",
@@ -449,7 +451,7 @@ describe("UserService", () => {
       expect(prisma.user.update).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            age: null,
+            age: undefined, // Prisma handles undefined as "do not update"
           }),
         }),
       );

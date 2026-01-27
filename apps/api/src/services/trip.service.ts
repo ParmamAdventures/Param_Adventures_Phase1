@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { logAudit, AuditAction } from "../utils/audit.helper";
 import { EntityStatus } from "../constants/status";
@@ -9,23 +10,28 @@ export class TripService {
    * @param userId The ID of the user creating the trip.
    * @returns The created trip object.
    */
-  async createTrip(data: any, userId: string) {
+  async createTrip(data: Record<string, any>, userId: string) {
+    const { gallery, startDate, endDate, ...rest } = data;
+
+    const tripData: Prisma.TripCreateInput = {
+      ...rest,
+      startDate: startDate ? new Date(startDate) : new Date(),
+      endDate: endDate ? new Date(endDate) : new Date(),
+      createdBy: { connect: { id: userId } },
+      itinerary: rest.itinerary || {},
+      gallery:
+        gallery && gallery.length > 0
+          ? {
+              create: gallery.map((g: { id: string }, index: number) => ({
+                image: { connect: { id: g.id } },
+                order: index,
+              })),
+            }
+          : undefined,
+    } as any;
+
     const trip = await prisma.trip.create({
-      data: {
-        ...data,
-        startDate: data.startDate ? new Date(data.startDate) : null,
-        endDate: data.endDate ? new Date(data.endDate) : null,
-        createdById: userId,
-        gallery:
-          data.gallery && data.gallery.length > 0
-            ? {
-                create: data.gallery.map((g: any, index: number) => ({
-                  imageId: g.id,
-                  order: index,
-                })),
-              }
-            : undefined,
-      },
+      data: tripData,
       include: {
         coverImage: true,
         gallery: {
@@ -68,24 +74,27 @@ export class TripService {
   /**
    * Logic for updating an existing trip (to be implemented).
    */
-  async updateTrip(id: string, data: any, userId: string) {
-    // Basic implementation for now, mirroring createTrip logic
+  async updateTrip(id: string, data: Record<string, any>, userId: string) {
+    const { gallery, startDate, endDate, ...rest } = data;
+
+    const tripData: Prisma.TripUpdateInput = {
+      ...rest,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+      gallery: gallery
+        ? {
+            deleteMany: {},
+            create: gallery.map((g: { id: string }, index: number) => ({
+              image: { connect: { id: g.id } },
+              order: index,
+            })),
+          }
+        : undefined,
+    } as any;
+
     const trip = await prisma.trip.update({
       where: { id },
-      data: {
-        ...data,
-        startDate: data.startDate ? new Date(data.startDate) : undefined,
-        endDate: data.endDate ? new Date(data.endDate) : undefined,
-        gallery: data.gallery
-          ? {
-              deleteMany: {},
-              create: data.gallery.map((g: any, index: number) => ({
-                imageId: g.id,
-                order: index,
-              })),
-            }
-          : undefined,
-      },
+      data: tripData,
     });
 
     await logAudit({ id: userId }, AuditAction.TRIP_UPDATED, "TRIP", trip.id);

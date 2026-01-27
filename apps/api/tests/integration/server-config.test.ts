@@ -83,7 +83,7 @@ describe("Admin Server Configuration API", () => {
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data.smtp).toBeDefined();
-    const smtpHost = res.body.data.smtp.find((c: any) => c.key === "smtp_host");
+    const smtpHost = res.body.data.smtp.find((c: { key: string }) => c.key === "smtp_host");
     expect(smtpHost.isEnvironmentVar).toBe(false);
   });
 

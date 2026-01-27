@@ -149,8 +149,8 @@ describe("paymentService.reconcilePayment", () => {
       bookingId,
     });
 
-    const timeoutError = new Error("Gateway Timeout");
-    (timeoutError as any).code = "ETIMEDOUT"; // Simulate network code if relevant, or just generic error
+    const timeoutError = new Error("Gateway Timeout") as Error & { code: string };
+    timeoutError.code = "ETIMEDOUT"; // Simulate network code if relevant, or just generic error
     (razorpayService.fetchPayment as jest.Mock).mockRejectedValue(timeoutError);
 
     await expect(paymentService.reconcilePayment(paymentId)).rejects.toThrow("Gateway Timeout");

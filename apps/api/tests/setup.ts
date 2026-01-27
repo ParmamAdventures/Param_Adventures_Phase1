@@ -2,7 +2,7 @@ import { execSync } from "child_process";
 import path from "path";
 
 process.env.PORT = "3000";
-(process.env as any).NODE_ENV = "test";
+process.env.NODE_ENV = "test";
 // Use CI DATABASE_URL if set, otherwise default to local port 5433
 if (!process.env.CI && !process.env.DATABASE_URL?.includes("5432")) {
   process.env.DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/param_adventures_test";

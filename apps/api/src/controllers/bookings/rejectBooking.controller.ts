@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { BookingStatus } from "@prisma/client";
 import { assertBookingTransition } from "../../domain/booking/bookingTransitions";
 import { HttpError } from "../../utils/httpError";
 import { ErrorMessages } from "../../constants/errorMessages";
@@ -12,7 +13,7 @@ import { auditService, AuditActions, AuditTargetTypes } from "../../services/aud
  * @returns {Promise<void>}
  */
 export async function rejectBooking(req: Request, res: Response) {
-  const admin = (req as any).user;
+  const admin = req.user!;
   const { id } = req.params;
 
   try {
@@ -24,7 +25,7 @@ export async function rejectBooking(req: Request, res: Response) {
     }
 
     try {
-      assertBookingTransition(booking.status as any, "reject");
+      assertBookingTransition(booking.status as BookingStatus, "reject");
     } catch {
       throw new HttpError(
         403,
@@ -47,7 +48,7 @@ export async function rejectBooking(req: Request, res: Response) {
     });
 
     return res.json(updated);
-  } catch (err: any) {
+  } catch (err: unknown) {
     if (err instanceof HttpError) throw err;
     throw new HttpError(500, "INTERNAL_ERROR", "Internal Server Error");
   }

@@ -2,7 +2,6 @@ jest.mock("../../src/lib/prisma");
 
 import { prisma } from "../../src/lib/prisma";
 import { ReviewService } from "../../src/services/review.service";
-import { HttpError } from "../../src/utils/httpError";
 
 describe("ReviewService", () => {
   let reviewService: ReviewService;
@@ -175,7 +174,9 @@ describe("ReviewService", () => {
       (prisma.review.findUnique as jest.Mock).mockResolvedValue(null);
       (prisma.review.create as jest.Mock).mockRejectedValue(error);
 
-      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow("Database error");
+      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow(
+        "Database error",
+      );
     });
   });
 
@@ -382,7 +383,9 @@ describe("ReviewService", () => {
 
       (prisma.review.findUnique as jest.Mock).mockResolvedValue(null);
 
-      await expect(reviewService.deleteReview(reviewId, userId)).rejects.toThrow("Review not found");
+      await expect(reviewService.deleteReview(reviewId, userId)).rejects.toThrow(
+        "Review not found",
+      );
     });
   });
 

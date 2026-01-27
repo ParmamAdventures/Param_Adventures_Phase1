@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma, AuditAction } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 /**
@@ -12,10 +13,10 @@ export async function listAuditLogs(req: Request, res: Response) {
   const skip = (Number(page) - 1) * Number(limit);
 
   try {
-    const where: any = {};
-    if (action) where.action = action;
-    if (actorId) where.actorId = actorId;
-    if (targetType) where.targetType = targetType;
+    const where: Prisma.AuditLogWhereInput = {};
+    if (action) where.action = action as AuditAction;
+    if (actorId) where.actorId = actorId as string;
+    if (targetType) where.targetType = targetType as string;
 
     const [logs, total] = await Promise.all([
       prisma.auditLog.findMany({

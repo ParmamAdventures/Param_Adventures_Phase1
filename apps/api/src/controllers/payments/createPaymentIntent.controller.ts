@@ -4,6 +4,7 @@ import { createRazorpayOrder } from "../../services/razorpay.service";
 import { HttpError } from "../../utils/httpError";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { env } from "../../config/env";
+import { Orders } from "razorpay/dist/types/orders";
 
 /**
  * Create Payment Intent
@@ -12,7 +13,7 @@ import { env } from "../../config/env";
  * @returns {Promise<void>}
  */
 export async function createPaymentIntent(req: Request, res: Response) {
-  const userId = (req.user as any).id; // Using non-null assertion as it's a protected route
+  const userId = req.user!.id; // Using non-null assertion as it's a protected route
   const { bookingId } = req.body;
 
   if (!bookingId) {
@@ -54,7 +55,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
     env.RAZORPAY_KEY_ID !== "rzp_test_placeholder" &&
     env.RAZORPAY_KEY_SECRET !== "placeholder_secret";
 
-  let finalOrder: any = null;
+  let finalOrder: Orders.RazorpayOrder | null = null;
   try {
     if (!razorpayConfigured) throw new Error("RazorpayNotConfigured");
 
@@ -64,7 +65,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
       receipt: booking.id,
     });
     finalOrder = order;
-  } catch (err: any) {
+  } catch (err: unknown) {
     // CRITICAL: Never allow fallback in production
     if (env.NODE_ENV === "production") {
       throw new HttpError(
@@ -77,21 +78,31 @@ export async function createPaymentIntent(req: Request, res: Response) {
     // In DEV/TEST, allow fallback if not configured or if call fails
     console.warn("[Payments] Using dev fallback Razorpay order", {
       bookingId,
-      error: err?.message,
+      error: (err as Error)?.message,
     });
     finalOrder = {
       id: `order_test_${Date.now()}`,
+      entity: "order",
       amount: amount,
+      amount_paid: 0,
+      amount_due: amount,
       currency: "INR",
       receipt: booking.id,
-    } as any;
+      offer_id: null,
+      status: "created",
+      attempts: 0,
+      notes: {},
+      created_at: Math.floor(Date.now() / 1000),
+      description: undefined,
+      token: undefined,
+    } as unknown as Orders.RazorpayOrder;
   }
 
   const payment = await prisma.payment.create({
     data: {
       bookingId: booking.id,
       provider: "RAZORPAY",
-      providerOrderId: finalOrder.id,
+      providerOrderId: finalOrder!.id,
       amount,
       status: "CREATED",
       method: "OTHER",
@@ -100,7 +111,7 @@ export async function createPaymentIntent(req: Request, res: Response) {
 
   res.status(201).json({
     paymentId: payment.id,
-    orderId: finalOrder.id,
+    orderId: finalOrder!.id,
     amount,
     currency: "INR",
     key: env.RAZORPAY_KEY_ID,

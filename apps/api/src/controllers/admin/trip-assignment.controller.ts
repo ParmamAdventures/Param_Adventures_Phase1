@@ -69,7 +69,7 @@ export async function assignGuide(req: Request, res: Response) {
   const { tripId } = req.params;
   const { guideId } = req.body;
   const userId = req.user!.id;
-  const userRoles = (req as any).roles || [];
+  const userRoles = req.user!.roles || [];
 
   if (!guideId) {
     throw new HttpError(400, "INVALID_REQUEST", "guideId is required");
@@ -130,7 +130,7 @@ export async function assignGuide(req: Request, res: Response) {
 export async function removeGuide(req: Request, res: Response) {
   const { tripId, guideId } = req.params;
   const userId = req.user!.id;
-  const userRoles = (req as any).roles || [];
+  const userRoles = req.user!.roles || [];
 
   const trip = await prisma.trip.findUnique({ where: { id: tripId } });
   if (!trip) {

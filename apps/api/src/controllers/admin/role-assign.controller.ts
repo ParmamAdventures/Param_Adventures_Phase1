@@ -9,7 +9,7 @@ import { auditService, AuditActions, AuditTargetTypes } from "../../services/aud
  * @returns {Promise<void>}
  */
 export async function assignRole(req: Request, res: Response) {
-  const actor = (req as any).user;
+  const actor = req.user;
   const { userId, roleName } = req.body;
 
   if (!actor || !actor.id) {

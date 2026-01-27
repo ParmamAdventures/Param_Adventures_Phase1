@@ -12,7 +12,7 @@ import { sanitizeHtml } from "../../utils/sanitize";
  */
 export async function createBlog(req: Request, res: Response) {
   const { title, content, excerpt, tripId, coverImageId } = req.body;
-  const user = (req as any).user;
+  const user = req.user!;
 
   const slug = slugify(title);
 

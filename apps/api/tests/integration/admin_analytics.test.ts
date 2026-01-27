@@ -104,7 +104,7 @@ describe("Admin Analytics Integration", () => {
         amount: 200000, // 2000 INR
         currency: "INR",
         status: "CAPTURED",
-        provider: "RAZORPAY" as any,
+        provider: "RAZORPAY",
         providerPaymentId: "pay_1",
         providerOrderId: "order_1",
         method: "CARD",

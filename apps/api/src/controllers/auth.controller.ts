@@ -155,7 +155,7 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
   const authHeader = req.headers.authorization;
   if (authHeader?.startsWith("Bearer ")) {
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.decode(token) as any;
+    const decoded = jwt.decode(token) as jwt.JwtPayload;
     if (decoded?.jti && decoded?.exp) {
       const ttl = Math.max(0, decoded.exp - Math.floor(Date.now() / 1000));
       await tokenDenylistService.denylistToken(decoded.jti, ttl);
@@ -165,7 +165,7 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
   // Revoke Refresh Token if present in cookie
   const refreshToken = req.cookies?.refresh_token;
   if (refreshToken) {
-    const decoded = jwt.decode(refreshToken) as any;
+    const decoded = jwt.decode(refreshToken) as jwt.JwtPayload;
     if (decoded?.jti && decoded?.exp) {
       const ttl = Math.max(0, decoded.exp - Math.floor(Date.now() / 1000));
       await tokenDenylistService.denylistToken(decoded.jti, ttl);
@@ -182,8 +182,7 @@ export const logout = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const me = catchAsync(async (req: Request, res: Response) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userId = (req as any).user?.id;
+  const userId = req.user!.id;
   const { prisma } = await import("../lib/prisma");
 
   const user = await prisma.user.findUnique({
@@ -252,16 +251,15 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
 
 export const changePassword = catchAsync(async (req: Request, res: Response) => {
   const { currentPassword, newPassword } = req.body;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userId = (req as any).user?.id;
+  const userId = req.user!.id;
 
   await authService.changePassword(userId, currentPassword, newPassword);
   return ApiResponse.success(res, "Password changed successfully");
 });
 
 export const googleCallback = catchAsync(async (req: Request, res: Response) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const user = (req as any).user as GoogleProfile | undefined; // User attached by Passport Strategy
+  // req.user is populated by passport
+  const user = req.user as unknown as GoogleProfile | undefined;
   if (!user) {
     return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
   }

@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma, UserStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { logReqAudit, AuditAction } from "../../utils/audit.helper";
 import { ApiResponse } from "../../utils/ApiResponse";
@@ -12,7 +13,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 export async function listUsers(req: Request, res: Response) {
   const { role } = req.query;
 
-  const where: any = {};
+  const where: Prisma.UserWhereInput = {};
 
   if (role) {
     where.roles = {
@@ -75,7 +76,7 @@ export async function updateUserStatus(req: Request, res: Response) {
   const user = await prisma.user.update({
     where: { id },
     data: {
-      status,
+      status: status as UserStatus,
       statusReason: reason,
     },
     select: {

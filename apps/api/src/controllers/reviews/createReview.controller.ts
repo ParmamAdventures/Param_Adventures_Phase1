@@ -9,7 +9,7 @@ export const createReview = catchAsync(async (req: Request, res: Response) => {
   const { tripId, rating, comment } = req.body;
   const userId = (req as any).user.id;
 
-  const review = await reviewService.createReview({ tripId, rating, comment }, userId);
+  const review = await reviewService.createReview({ tripId, rating, comment } as any, userId);
 
   return ApiResponse.success(res, review, "Review created successfully", 201);
 });

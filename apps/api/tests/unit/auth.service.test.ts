@@ -5,6 +5,7 @@ import { signAccessToken, signRefreshToken } from "../../src/utils/jwt";
 import { auditService } from "../../src/services/audit.service";
 
 jest.mock("../../src/lib/prisma", () => ({
+  __esModule: true,
   prisma: {
     user: {
       findUnique: jest.fn(),
@@ -13,6 +14,9 @@ jest.mock("../../src/lib/prisma", () => ({
     },
   },
 }));
+
+import { mockDeep, DeepMockProxy } from "jest-mock-extended";
+import { PrismaClient } from "@prisma/client";
 
 jest.mock("../../src/utils/password", () => ({
   hashPassword: jest.fn(),
@@ -44,7 +48,7 @@ jest.mock("../../src/services/notification.service", () => ({
 }));
 
 describe("AuthService", () => {
-  const prismaMock = prisma as any;
+  const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -55,7 +59,7 @@ describe("AuthService", () => {
       const data = { email: "a@b.com", password: "p", name: "n" };
       prismaMock.user.findUnique.mockResolvedValue(null);
       (hashPassword as jest.Mock).mockResolvedValue("hashed");
-      prismaMock.user.create.mockResolvedValue({ id: "1", ...data });
+      prismaMock.user.create.mockResolvedValue({ id: "1", ...data } as any);
 
       const res = await authService.register(data);
       expect(res.id).toBe("1");
@@ -66,7 +70,7 @@ describe("AuthService", () => {
   describe("login", () => {
     it("should login successfully", async () => {
       const user = { id: "1", email: "a@b.com", password: "hp" };
-      prismaMock.user.findUnique.mockResolvedValue(user);
+      prismaMock.user.findUnique.mockResolvedValue(user as any);
       (verifyPassword as jest.Mock).mockResolvedValue(true);
       (signAccessToken as jest.Mock).mockReturnValue("at");
       (signRefreshToken as jest.Mock).mockReturnValue("rt");
@@ -98,7 +102,7 @@ describe("AuthService", () => {
         googleId: googleProfile.id,
         password: null,
       };
-      prismaMock.user.findUnique.mockResolvedValue(user); // Mock finding by googleId
+      prismaMock.user.findUnique.mockResolvedValue(user as any); // Mock finding by googleId
 
       (signAccessToken as jest.Mock).mockReturnValue("at_social");
       (signRefreshToken as jest.Mock).mockReturnValue("rt_social");
@@ -123,14 +127,14 @@ describe("AuthService", () => {
       };
       prismaMock.user.findUnique
         .mockResolvedValueOnce(null) // Not found by googleId
-        .mockResolvedValueOnce(existingUser); // Found by email
+        .mockResolvedValueOnce(existingUser as any); // Found by email
 
       const updatedUser = {
         ...existingUser,
         googleId: googleProfile.id,
         password: existingUser.password,
       }; // Keep existing password if present
-      prismaMock.user.update.mockResolvedValue(updatedUser);
+      prismaMock.user.update.mockResolvedValue(updatedUser as any);
 
       (signAccessToken as jest.Mock).mockReturnValue("at_social_linked");
       (signRefreshToken as jest.Mock).mockReturnValue("rt_social_linked");
@@ -164,7 +168,7 @@ describe("AuthService", () => {
         .mockResolvedValueOnce(null) // Not found by googleId
         .mockResolvedValueOnce(null); // Not found by email
 
-      prismaMock.user.create.mockResolvedValue(newUser);
+      prismaMock.user.create.mockResolvedValue(newUser as any);
 
       (signAccessToken as jest.Mock).mockReturnValue("at_social_new");
       (signRefreshToken as jest.Mock).mockReturnValue("rt_social_new");

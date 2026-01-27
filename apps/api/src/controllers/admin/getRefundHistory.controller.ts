@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { ApiResponse } from "../../utils/ApiResponse";
 
@@ -14,7 +15,7 @@ export const getRefundHistory = async (req: Request, res: Response) => {
   const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
   // Build where clause
-  const where: any = {
+  const where: Prisma.PaymentWhereInput = {
     status: "REFUNDED", // or we could look for 'razorpayRefundId' not null
   };
 

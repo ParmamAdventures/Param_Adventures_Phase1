@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { Prisma } from "@prisma/client";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 
@@ -11,12 +12,12 @@ export const getManagerTrips = catchAsync(async (req: Request, res: Response) =>
 
   // Optional status filter
   const { status } = req.query;
-  const where: any = {
+  const where: Prisma.TripWhereInput = {
     managerId: userId,
   };
 
   if (status) {
-    where.status = status;
+    where.status = status as Prisma.EnumTripStatusFilter<"Trip">;
   }
 
   const trips = await prisma.trip.findMany({

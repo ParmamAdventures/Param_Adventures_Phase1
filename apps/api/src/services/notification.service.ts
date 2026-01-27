@@ -7,6 +7,40 @@ export interface EmailOptions {
   html: string;
 }
 
+export interface BookingDetails {
+  userName: string;
+  tripTitle: string;
+  status: string;
+  bookingId: string;
+  startDate: string | Date;
+}
+
+export interface PaymentDetails {
+  userName: string;
+  tripTitle: string;
+  amount: number;
+}
+
+export interface AssignmentDetails {
+  userName: string;
+  role: string;
+  tripTitle: string;
+}
+
+export interface RefundDetails {
+  userName: string;
+  tripTitle: string;
+  amount: number;
+  refundId: string;
+}
+
+export interface PaymentFailureDetails {
+  userName: string;
+  tripTitle: string;
+  amount: number;
+  reason?: string;
+}
+
 class NotificationService {
   private transporter: nodemailer.Transporter | null = null;
 
@@ -62,7 +96,7 @@ class NotificationService {
   }
 
   // Pre-defined templates
-  async sendBookingConfirmation(email: string, bookingDetails: any) {
+  async sendBookingConfirmation(email: string, bookingDetails: BookingDetails) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
         <h2 style="color: #f97316;">Adventure Awaits! 🏔️</h2>
@@ -84,7 +118,7 @@ class NotificationService {
     });
   }
 
-  async sendPaymentSuccess(email: string, paymentDetails: any) {
+  async sendPaymentSuccess(email: string, paymentDetails: PaymentDetails) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
         <h2 style="color: #22c55e;">Payment Confirmed! ✅</h2>
@@ -106,7 +140,7 @@ class NotificationService {
     });
   }
 
-  async sendAssignmentNotification(email: string, assignmentDetails: any) {
+  async sendAssignmentNotification(email: string, assignmentDetails: AssignmentDetails) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
         <h2 style="color: #6366f1;">New Assignment! 📋</h2>
@@ -145,7 +179,7 @@ class NotificationService {
     return this.sendEmail({ to: email, subject: "Reset Your Password", html });
   }
 
-  async sendRefundEmail(email: string, refundDetails: any) {
+  async sendRefundEmail(email: string, refundDetails: RefundDetails) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
         <h2 style="color: #6366f1;">Refund Processed 💸</h2>
@@ -168,7 +202,7 @@ class NotificationService {
     });
   }
 
-  async sendPaymentInitiated(email: string, details: any) {
+  async sendPaymentInitiated(email: string, details: PaymentDetails & { orderId: string }) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
         <h2 style="color: #3b82f6;">Payment Initiated 💳</h2>
@@ -186,7 +220,7 @@ class NotificationService {
     return this.sendEmail({ to: email, subject: "Payment Initiated: " + details.tripTitle, html });
   }
 
-  async sendPaymentFailed(email: string, details: any) {
+  async sendPaymentFailed(email: string, details: PaymentFailureDetails) {
     const html = `
       <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee;">
         <h2 style="color: #ef4444;">Payment Failed ❌</h2>

@@ -119,7 +119,8 @@ describe("Razorpay Webhooks", () => {
     await prisma.user.deleteMany();
   });
 
-  const postWebhook = (payload: any, signature = "valid") =>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const postWebhook = (payload: Record<string, any>, signature = "valid") =>
     request(app)
       .post("/webhooks/razorpay")
       .set("x-razorpay-signature", signature)

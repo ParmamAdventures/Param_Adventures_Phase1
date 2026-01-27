@@ -1,16 +1,12 @@
 import { Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { getTripOrThrow } from "../../utils/entityHelpers";
-import { validateTripStatusTransition } from "../../utils/statusValidation";
-import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
-import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
+import { ErrorCodes } from "../../constants/errorMessages";
 import { tripService } from "../../services/trip.service";
-import { EntityStatus } from "../../constants/status";
 
 export const rejectTrip = catchAsync(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const { id } = req.params;
   const { reason } = req.body;
 

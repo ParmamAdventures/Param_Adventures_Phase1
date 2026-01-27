@@ -81,7 +81,7 @@ describe("Query Performance Tests - OPT-016", () => {
 
       // Simulating getTripBySlug with full relations
       queryCounter.log("Get trip by slug with all relations");
-      const trip = await prisma.trip.findUnique({
+      const _trip = await prisma.trip.findUnique({
         where: { slug: testSlug },
         include: {
           coverImage: true,
@@ -141,7 +141,7 @@ describe("Query Performance Tests - OPT-016", () => {
       const userId = "test-user-id";
 
       queryCounter.log("Get user bookings with trip and payment info");
-      const bookings = await prisma.booking.findMany({
+      const _bookings = await prisma.booking.findMany({
         where: { userId },
         include: {
           trip: {
@@ -180,7 +180,7 @@ describe("Query Performance Tests - OPT-016", () => {
       const bookingId = "test-booking-id";
 
       queryCounter.log("Get booking with all related data");
-      const booking = await prisma.booking.findUnique({
+      const _booking = await prisma.booking.findUnique({
         where: { id: bookingId },
         include: {
           trip: {
@@ -216,7 +216,7 @@ describe("Query Performance Tests - OPT-016", () => {
       const userId = "test-user-id";
 
       queryCounter.log("Get user with bookings and reviews");
-      const user = await prisma.user.findUnique({
+      const _user = await prisma.user.findUnique({
         where: { id: userId },
         include: {
           bookings: {
@@ -249,7 +249,7 @@ describe("Query Performance Tests - OPT-016", () => {
       queryCounter.reset();
 
       queryCounter.log("Get published blogs with author");
-      const blogs = await prisma.blog.findMany({
+      const _blogs = await prisma.blog.findMany({
         where: { status: "PUBLISHED" },
         select: {
           id: true,
@@ -305,7 +305,7 @@ describe("Query Performance Tests - OPT-016", () => {
       const months = 12;
 
       queryCounter.log("Get grouped sales data");
-      const salesByMonth = await prisma.booking.groupBy({
+      const _salesByMonth = await prisma.booking.groupBy({
         by: ["createdAt"],
         _sum: { totalPrice: true },
         _count: true,
@@ -362,7 +362,7 @@ describe("Query Performance Tests - OPT-016", () => {
         queryCounter.log(q.name);
         try {
           await q.query();
-        } catch (e) {
+        } catch {
           // Ignore errors if data doesn't exist
         }
       }
@@ -374,7 +374,7 @@ describe("Query Performance Tests - OPT-016", () => {
       queryCounter.reset();
 
       queryCounter.log("Get active users");
-      const activeUsers = await prisma.user.findMany({
+      const _activeUsers = await prisma.user.findMany({
         where: { status: "ACTIVE" }, // ✅ Indexed
         take: 100,
         select: { id: true, name: true, email: true },
@@ -397,7 +397,7 @@ describe("Query Performance Tests - OPT-016", () => {
 
       queryCounter.log("Batch update trip statuses");
       // ✅ Correct way - single batch update
-      const result = await prisma.trip.updateMany({
+      const _result = await prisma.trip.updateMany({
         where: { id: { in: tripIds } },
         data: { status: "PUBLISHED" },
       });
@@ -414,7 +414,7 @@ describe("Query Performance Tests - OPT-016", () => {
 
       queryCounter.log("Batch delete bookings");
       // ✅ Correct way - single batch delete
-      const result = await prisma.booking.deleteMany({
+      const _result = await prisma.booking.deleteMany({
         where: { id: { in: bookingIds } },
       });
 
@@ -433,7 +433,7 @@ describe("Query Performance Tests - OPT-016", () => {
       queryCounter.reset();
 
       queryCounter.log("Fetch page with cursor pagination");
-      const trips = await prisma.trip.findMany({
+      const _trips = await prisma.trip.findMany({
         take: 20,
         skip: 0,
         where: { status: "PUBLISHED" },

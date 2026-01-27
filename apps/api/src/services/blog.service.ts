@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { logAudit, AuditAction } from "../utils/audit.helper";
 import { HttpError } from "../utils/httpError";
@@ -12,7 +13,7 @@ export class BlogService {
    * @param userId The ID of the user creating the blog.
    * @returns The created blog object.
    */
-  async createBlog(data: any, userId: string) {
+  async createBlog(data: Record<string, any>, userId: string) {
     const { title, content, excerpt, tripId, coverImageId } = data;
 
     if (!tripId) {
@@ -68,7 +69,7 @@ export class BlogService {
     const canViewInternal =
       permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 
-    const whereCondition: any = { id };
+    const whereCondition: Prisma.BlogWhereInput = { id };
 
     applyPublicOrAuthorFilter(whereCondition, userId, canViewInternal);
 
@@ -104,7 +105,7 @@ export class BlogService {
     const canViewInternal =
       permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 
-    const whereCondition: any = { slug };
+    const whereCondition: Prisma.BlogWhereInput = { slug };
 
     applyPublicOrAuthorFilter(whereCondition, userId, canViewInternal);
 
@@ -136,12 +137,12 @@ export class BlogService {
    * @param permissions Optional permission array.
    * @returns Paginated blog list.
    */
-  async listBlogs(filters: any = {}, userId?: string, permissions: string[] = []) {
+  async listBlogs(filters: Record<string, any> = {}, userId?: string, permissions: string[] = []) {
     const { status, authorId, page = 1, limit = 10 } = filters;
     const canViewInternal =
       permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 
-    const whereCondition: any = {};
+    const whereCondition: Prisma.BlogWhereInput = {};
 
     if (status) {
       whereCondition.status = status;
@@ -202,7 +203,7 @@ export class BlogService {
    * @param userId The ID of the user updating the blog.
    * @returns The updated blog object.
    */
-  async updateBlog(id: string, data: any, userId: string) {
+  async updateBlog(id: string, data: Record<string, any>, userId: string) {
     const blog = await prisma.blog.findUnique({ where: { id } });
 
     if (!blog || blog.authorId !== userId) {
@@ -211,7 +212,7 @@ export class BlogService {
 
     const { title, content, excerpt, tripId, coverImageId } = data;
 
-    const updateData: any = {
+    const updateData: Prisma.BlogUncheckedUpdateInput = {
       title,
       content,
       excerpt,

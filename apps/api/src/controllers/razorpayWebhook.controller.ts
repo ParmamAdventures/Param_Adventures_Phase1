@@ -31,7 +31,7 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
     throw new HttpError(400, "INVALID_SIGNATURE", "Signature verification failed");
   }
 
-  let event: any;
+  let event: Record<string, any>;
   try {
     event = JSON.parse(payloadString);
   } catch {
@@ -55,13 +55,13 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
         await handleRefundProcessed(event);
         break;
       case "payment.dispute.created":
-        await import("./paymentEvents").then(m => m.handleDisputeCreated(event));
+        await import("./paymentEvents").then((m) => m.handleDisputeCreated(event));
         break;
       case "payment.dispute.won":
-        await import("./paymentEvents").then(m => m.handleDisputeWon(event));
+        await import("./paymentEvents").then((m) => m.handleDisputeWon(event));
         break;
       case "payment.dispute.lost":
-        await import("./paymentEvents").then(m => m.handleDisputeLost(event));
+        await import("./paymentEvents").then((m) => m.handleDisputeLost(event));
         break;
       default:
         logger.info(`Ignoring Razorpay webhook event: ${event.event}`);

@@ -8,7 +8,7 @@ import { auditService, AuditActions, AuditTargetTypes } from "../../services/aud
 import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
 
 export const submitTrip = catchAsync(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const { id } = req.params;
 
   // Use new utility for fetch and validation
@@ -23,8 +23,9 @@ export const submitTrip = catchAsync(async (req: Request, res: Response) => {
   // Validate status transition using state machine
   try {
     validateTripStatusTransition(trip.status, "PENDING_REVIEW");
-  } catch (error: any) {
-    return ApiResponse.error(res, ErrorCodes.INVALID_STATUS_TRANSITION, error.message, 400);
+  } catch (error: unknown) {
+    const err = error as Error;
+    return ApiResponse.error(res, ErrorCodes.INVALID_STATUS_TRANSITION, err.message, 400);
   }
 
   const updated = await prisma.trip.update({

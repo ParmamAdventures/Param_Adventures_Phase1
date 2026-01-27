@@ -10,7 +10,7 @@ import { analyticsService } from "../../services/analytics.service";
  */
 export async function getDashboardStats(req: Request, res: Response) {
   try {
-    const [pendingBlogs, totalUsers, activeTrips, recentActivity, revenueStats] = await prisma
+    const data = await prisma
       .$transaction([
         // 1. Pending Blogs
         prisma.blog.count({
@@ -37,19 +37,25 @@ export async function getDashboardStats(req: Request, res: Response) {
           },
         }),
       ])
-      .then(async (results) => {
-        const rev = await analyticsService.getRevenueStats();
-        return [...results, rev];
+      .then(async ([pendingBlogs, totalUsers, activeTrips, recentActivity]) => {
+        const revenueStats = await analyticsService.getRevenueStats();
+        return {
+          pendingBlogs,
+          totalUsers,
+          activeTrips,
+          recentActivity,
+          revenueStats,
+        };
       });
 
     res.json({
       counts: {
-        pendingBlogs,
-        totalUsers,
-        activeTrips,
-        monthlyRevenue: (revenueStats as any).currentMonthRevenue,
+        pendingBlogs: data.pendingBlogs,
+        totalUsers: data.totalUsers,
+        activeTrips: data.activeTrips,
+        monthlyRevenue: data.revenueStats.currentMonthRevenue,
       },
-      recentActivity,
+      recentActivity: data.recentActivity,
     });
   } catch (error) {
     console.error("Failed to fetch dashboard stats", error);

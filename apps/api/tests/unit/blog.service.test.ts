@@ -4,7 +4,6 @@ jest.mock("../../src/services/audit.service");
 import { prisma } from "../../src/lib/prisma";
 import { auditService } from "../../src/services/audit.service";
 import { BlogService } from "../../src/services/blog.service";
-import { HttpError } from "../../src/utils/httpError";
 
 describe("BlogService", () => {
   let blogService: BlogService;

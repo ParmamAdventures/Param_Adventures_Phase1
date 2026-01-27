@@ -11,6 +11,11 @@ import { app } from "../../src/app";
 import { prismaMock } from "../helpers/prisma.mock";
 import { generateAuthToken } from "./auth_helper";
 
+// Helper type for partial mocking
+type RecursivePartial<T> = {
+  [P in keyof T]?: RecursivePartial<T[P]>;
+};
+
 describe("Trip Creation Flow (Mocked)", () => {
   const userId = "admin-123";
   const token = generateAuthToken(userId);
@@ -55,7 +60,7 @@ describe("Trip Creation Flow (Mocked)", () => {
           },
         },
       ],
-    } as any);
+    } as unknown as RecursivePartial<PrismaClient["user"]["fields"]> as any);
 
     // Mock trip creation
     prismaMock.trip.create.mockResolvedValue(createdTrip as any);
@@ -79,7 +84,7 @@ describe("Trip Creation Flow (Mocked)", () => {
       id: userId,
       status: "ACTIVE",
       roles: [],
-    } as any);
+    } as unknown as RecursivePartial<PrismaClient["user"]["fields"]> as any);
 
     const res = await request(app)
       .post("/api/v1/trips")

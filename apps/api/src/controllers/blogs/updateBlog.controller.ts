@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
 import { slugify } from "../../utils/slugify";
@@ -7,7 +8,7 @@ import { sanitizeHtml } from "../../utils/sanitize";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
-import { EntityStatus } from "../../constants/status";
+import { EntityStatus, EntityStatusType } from "../../constants/status";
 
 /**
  * Update Blog
@@ -23,9 +24,9 @@ export const updateBlog = catchAsync(async (req: Request, res: Response) => {
     throw new HttpError(404, "NOT_FOUND", ErrorMessages.BLOG_NOT_FOUND);
   }
 
-  const updateData: any = {
+  const updateData: Prisma.BlogUncheckedUpdateInput = {
     title,
-    content: content ? sanitizeHtml(content) : undefined,
+    content: content ? (sanitizeHtml(content) as any) : undefined,
     excerpt,
     tripId,
     coverImageId,
@@ -33,7 +34,7 @@ export const updateBlog = catchAsync(async (req: Request, res: Response) => {
   };
 
   // If editing an approved or published blog, revert to pending review
-  if ([EntityStatus.APPROVED, EntityStatus.PUBLISHED].includes(blog.status as any)) {
+  if (blog.status === EntityStatus.APPROVED || blog.status === EntityStatus.PUBLISHED) {
     updateData.status = EntityStatus.PENDING_REVIEW;
   }
 

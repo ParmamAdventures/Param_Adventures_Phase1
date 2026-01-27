@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { Image } from "@prisma/client";
 import { HttpError } from "../../utils/httpError";
 import { resolvePublicId } from "../../utils/cloudinary.utils";
 import { createImageInput } from "../../utils/mediaFactory";
+import { CloudinaryFile } from "../../types/cloudinary";
 
 /**
  * Upload Trip Gallery
@@ -16,7 +18,7 @@ export async function uploadTripGallery(req: Request, res: Response) {
   }
 
   const { tripId } = req.params;
-  const imageRecords: any[] = [];
+  const imageRecords: Image[] = [];
 
   // Calculate starting order index
   const lastImage = await prisma.tripGalleryImage.findFirst({
@@ -27,13 +29,13 @@ export async function uploadTripGallery(req: Request, res: Response) {
 
   // The `upload` middleware has already uploaded the files to Cloudinary.
   // We just need to create the database records.
-  for (const file of req.files as any[]) {
+  for (const file of req.files as unknown as CloudinaryFile[]) {
     const publicId = resolvePublicId(file);
     if (!publicId) {
       throw new HttpError(500, "UPLOAD_FAILED", "Unable to resolve Cloudinary public ID");
     }
 
-    const imageInput = createImageInput(file, (req as any).user.id, {
+    const imageInput = createImageInput(file, req.user!.id, {
       tripId,
       galleryOrder: nextOrder++,
     });

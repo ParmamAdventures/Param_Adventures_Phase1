@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { logWebhookReplay } from "../utils/webhookLogger";
 import { notificationQueue } from "../lib/queue";
@@ -8,7 +9,7 @@ import { notificationQueue } from "../lib/queue";
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handlePaymentCaptured(event: any) {
+export async function handlePaymentCaptured(event: Record<string, any>) {
   const paymentEntity = event.payload?.payment?.entity;
   const razorpayPaymentId = paymentEntity?.id;
   const razorpayOrderId = paymentEntity?.order_id;
@@ -85,7 +86,7 @@ export async function handlePaymentCaptured(event: any) {
           data: {
             providerPaymentId: razorpayPaymentId,
             status: "CAPTURED",
-            rawPayload: event,
+            rawPayload: event as Prisma.InputJsonValue,
             method: paymentEntity?.method, // e.g. "upi", "card", "netbanking"
           },
         });
@@ -146,7 +147,7 @@ export async function handlePaymentCaptured(event: any) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handlePaymentFailed(event: any) {
+export async function handlePaymentFailed(event: Record<string, any>) {
   const paymentEntity = event.payload?.payment?.entity;
   const razorpayPaymentId = paymentEntity?.id;
   const razorpayOrderId = paymentEntity?.order_id;
@@ -183,7 +184,7 @@ export async function handlePaymentFailed(event: any) {
       data: {
         providerPaymentId: razorpayPaymentId,
         status: "FAILED",
-        rawPayload: event,
+        rawPayload: event as Prisma.InputJsonValue,
       },
     }),
     prisma.booking.update({
@@ -225,7 +226,7 @@ export async function handlePaymentFailed(event: any) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleRefundProcessed(event: any) {
+export async function handleRefundProcessed(event: Record<string, any>) {
   const refundEntity = event.payload?.refund?.entity;
   const razorpayPaymentId = refundEntity?.payment_id;
 
@@ -242,7 +243,7 @@ export async function handleRefundProcessed(event: any) {
       where: { id: payment.id },
       data: {
         status: "REFUNDED",
-        rawPayload: event,
+        rawPayload: event as Prisma.InputJsonValue,
       },
     }),
     prisma.booking.update({
@@ -283,7 +284,7 @@ export async function handleRefundProcessed(event: any) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleDisputeCreated(event: any) {
+export async function handleDisputeCreated(event: Record<string, any>) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
 
@@ -305,7 +306,7 @@ export async function handleDisputeCreated(event: any) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleDisputeLost(event: any) {
+export async function handleDisputeLost(event: Record<string, any>) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
 
@@ -334,7 +335,7 @@ export async function handleDisputeLost(event: any) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleDisputeWon(event: any) {
+export async function handleDisputeWon(event: Record<string, any>) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
 
