@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { BlogEditor } from "@/components/editor/BlogEditor";
+import { Blog } from "@/types/blog";
 
 export default function BlogPreviewPage() {
   const params = useParams();
@@ -38,6 +39,7 @@ export default function BlogPreviewPage() {
   }, [id]);
 
   async function action(type: "approve" | "reject") {
+    if (!blog) return;
     try {
       const response = await apiFetch(`/blogs/${blog.id}/${type}`, { method: "POST" });
       if (response.ok) {

@@ -7,19 +7,7 @@ import StatusBadge from "../ui/StatusBadge";
 import Spinner from "../ui/Spinner";
 import TableLoading from "../ui/DataTable/TableLoading";
 import TableEmptyState from "../ui/DataTable/TableEmptyState";
-
-type Blog = {
-  id: string;
-  title: string;
-  slug: string;
-  author?: {
-    name?: string | null;
-    email: string;
-  };
-  excerpt?: string | null;
-  status: string;
-  createdAt: string;
-};
+import type { Blog } from "@/types/blog";
 
 type Props = {
   blogs: Blog[];

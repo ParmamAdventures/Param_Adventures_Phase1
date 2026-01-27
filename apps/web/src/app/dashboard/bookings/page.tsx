@@ -11,9 +11,7 @@ import { Button } from "../../../components/ui/Button";
 import StatusBadge from "../../../components/ui/StatusBadge";
 import Spinner from "../../../components/ui/Spinner";
 import Card from "../../../components/ui/Card";
-import { useAuth } from "../../../context/AuthContext";
 import CancelBookingDialog from "@/components/bookings/CancelBookingDialog";
-import InvoiceModal from "@/components/bookings/InvoiceModal";
 import { FileText, Star } from "lucide-react";
 import ReviewBookingModal from "@/components/reviews/ReviewBookingModal";
 

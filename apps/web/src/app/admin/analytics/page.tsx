@@ -21,9 +21,15 @@ interface AnalyticsStats {
   successRate: number;
 }
 
+interface TripAnalytics extends Trip {
+  bookingCount: number;
+  revenue: number;
+  impact: "High" | "Medium" | "Low";
+}
+
 export default function AnalyticsPage() {
   const [revenue, setRevenue] = useState<RevenueData | null>(null);
-  const [trips, setTrips] = useState<Trip[]>([]);
+  const [trips, setTrips] = useState<TripAnalytics[]>([]);
   const [stats, setStats] = useState<AnalyticsStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

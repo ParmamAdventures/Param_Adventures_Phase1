@@ -1,6 +1,5 @@
 import type { NextConfig } from "next";
 
-// @ts-expect-error Sentry config import issue
 import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {

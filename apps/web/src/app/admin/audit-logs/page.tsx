@@ -12,7 +12,11 @@ interface AuditLog extends Entity {
   action: string;
   targetType: string;
   targetId: string;
+  actorId?: string;
+  actorName?: string;
+  actor?: { name?: string; email?: string };
   details?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }
 
 export default function AuditLogsPage() {

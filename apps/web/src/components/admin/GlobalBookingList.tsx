@@ -8,29 +8,6 @@ import { apiFetch } from "../../lib/api";
 import TableLoading from "../ui/DataTable/TableLoading";
 import TableEmptyState from "../ui/DataTable/TableEmptyState";
 import type { Booking } from "@/types/booking";
-interface Booking {
-  id: string;
-  status: string;
-  paymentStatus: string;
-  createdAt: string;
-  user: {
-    name: string | null;
-    email: string;
-  };
-  trip: {
-    id: string;
-    title: string;
-    slug: string;
-    location: string;
-    price: number;
-    startDate: string | null;
-  };
-  payments: Array<{
-    status: string;
-    amount: number;
-    providerOrderId: string;
-  }>;
-}
 
 interface GlobalBookingListProps {
   bookings: Booking[];
