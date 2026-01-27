@@ -1,6 +1,0 @@
-﻿src/middlewares/audit.middleware.ts(34,11): error TS2322: Type 'string' is not assignable to type 'AuditAction'.
-src/services/auth.service.ts(39,7): error TS2322: Type '"USER_REGISTER"' is not assignable to type 'AuditAction'.
-src/services/auth.service.ts(66,7): error TS2322: Type '"USER_LOGIN"' is not assignable to type 'AuditAction'.
-src/services/auth.service.ts(132,7): error TS2322: Type '"USER_CHANGE_PASSWORD"' is not assignable to type 'AuditAction'.
-src/services/blog.service.ts(289,7): error TS2322: Type '"BLOG_DELETED"' is not assignable to type 'AuditAction'.
-src/services/user.service.ts(98,7): error TS2322: Type '"USER_UPDATE_PROFILE"' is not assignable to type 'AuditAction'.

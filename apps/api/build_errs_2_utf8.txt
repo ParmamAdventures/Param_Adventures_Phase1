@@ -1,2 +1,0 @@
-﻿src/routes/admin/users.routes.ts(20,13): error TS2322: Type '"USER_LIST_VIEW"' is not assignable to type 'AuditAction'.
-src/routes/admin/users.routes.ts(29,13): error TS2820: Type '"USER_STATUS_CHANGE"' is not assignable to type 'AuditAction'. Did you mean '"USER_STATUS_CHANGED"'?
