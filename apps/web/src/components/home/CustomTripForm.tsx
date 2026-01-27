@@ -21,6 +21,7 @@ export function CustomTripForm() {
   const {
     values: formData,
     handleChange,
+    setField,
     reset: resetForm,
   } = useFormState({
     name: "",

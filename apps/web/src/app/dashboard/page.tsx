@@ -10,7 +10,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function Page() {
-  const [blogs, setBlogs] = useState<Array<Record<string, unknown>>>([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadBlogs = useCallback(async () => {

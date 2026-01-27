@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/ToastProvider";
+import { Trip } from "@/types/trip";
 
 interface HeartButtonProps {
   tripId: string;

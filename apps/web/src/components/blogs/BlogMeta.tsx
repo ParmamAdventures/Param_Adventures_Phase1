@@ -7,7 +7,7 @@ import { Blog } from "@/types/blog";
  * @returns {React.ReactElement} Component element
  */
 export default function BlogMeta({ blog }: { blog: Blog }) {
-  const authorName = blog.author?.name || blog.author?.email || blog.author || "Param Adventures";
+  const authorName = blog.author?.name || "Param Adventures";
   const dateStr = blog.createdAt || blog.publishedAt;
   const formattedDate = dateStr ? new Date(dateStr).toLocaleDateString() : "";
 

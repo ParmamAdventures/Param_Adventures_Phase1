@@ -6,23 +6,7 @@ import StatusBadge from "../ui/StatusBadge";
 import { useRazorpay } from "../../hooks/useRazorpay";
 import { useAuth } from "../../context/AuthContext";
 import Spinner from "../ui/Spinner";
-
-type Booking = {
-  id: string;
-  status: string;
-  createdAt: string;
-  paymentStatus?: string | null;
-  trip: {
-    id: string;
-    title: string;
-    slug: string;
-    location: string;
-    startDate?: string | null;
-    endDate?: string | null;
-    price: number;
-    coverImage?: { mediumUrl: string } | null;
-  };
-};
+import type { Booking } from "@/types/booking";
 
 interface Props {
   bookings: Booking[];
@@ -173,7 +157,7 @@ export default function BookingList({ bookings, loading }: Props) {
                           });
                           if (result?.orderId) {
                             // Temporary store for simulation button
-                            const windowData = window as Record<string, string>;
+                            const windowData = window as any;
                             windowData[`order_${booking.id}`] = result.orderId;
                           }
                         }}
@@ -212,7 +196,7 @@ export default function BookingList({ bookings, loading }: Props) {
                     <Button
                       variant="subtle"
                       onClick={() => {
-                        const windowData = window as Record<string, string>;
+                        const windowData = window as any;
                         simulateDevSuccess(booking.id, windowData[`order_${booking.id}`]);
                       }}
                       className="rounded-full px-6"

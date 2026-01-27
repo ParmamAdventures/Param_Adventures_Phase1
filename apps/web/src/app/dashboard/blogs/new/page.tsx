@@ -13,16 +13,16 @@ export default function NewBlogPage() {
   const [title, setTitle] = useState("");
   const [theme, setTheme] = useState("modern");
   const [excerpt, setExcerpt] = useState("");
-  const [coverImage, setCoverImage] = useState<Record<string, unknown> | null>(null);
-  const [content, setContent] = useState<Record<string, unknown> | null>(null);
+  const [coverImage, setCoverImage] = useState<any | null>(null);
+  const [content, setContent] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const searchParams = useSearchParams();
   const tripIdParam = searchParams?.get("tripId");
-  const [tripDetails, setTripDetails] = useState<Record<string, unknown> | null>(null);
+  const [tripDetails, setTripDetails] = useState<any | null>(null);
 
-  const BLOG_TEMPLATES: Record<string, Record<string, unknown> | null> = {
+  const BLOG_TEMPLATES: Record<string, any | null> = {
     journal: {
       type: "doc",
       content: [
@@ -59,7 +59,7 @@ export default function NewBlogPage() {
   const handleThemeChange = (t: string) => {
     setTheme(t);
     // Ask user or auto-apply? Let's auto-apply if content is empty.
-    if (!content || (content.content && content.content.length <= 1)) {
+    if (!content || (Array.isArray(content.content) && content.content.length <= 1)) {
       if (BLOG_TEMPLATES[t]) {
         setContent(BLOG_TEMPLATES[t]);
       }

@@ -28,12 +28,12 @@ export type TripFormData = {
   coverImageId?: string | null;
   heroImageId?: string | null;
   gallery?: { id: string; thumbUrl: string }[];
-  itinerary: Array<{ day: number; title: string; description: string; activities: string[] }>;
+  itinerary: Array<{ day: number; title: string; description: string; activities?: string[] }>;
   itineraryPdf?: string;
   highlights: string[];
   inclusions: string[];
   exclusions: string[];
-  cancellationPolicy: Record<string, unknown>;
+  cancellationPolicy: any;
   thingsToPack: string[];
   faqs: { question: string; answer: string }[];
   seasons: string[];

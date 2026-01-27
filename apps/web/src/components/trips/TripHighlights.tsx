@@ -4,7 +4,7 @@
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function TripHighlights({ trip }: { trip: Record<string, unknown> }) {
+export default function TripHighlights({ trip }: { trip: any }) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div>

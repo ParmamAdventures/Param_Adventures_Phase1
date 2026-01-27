@@ -14,7 +14,7 @@ interface AssignCrewModalProps {
   onClose: () => void;
   tripId: string | null;
   onSuccess: () => void;
-  currentGuides?: User[]; // Already assigned guides
+  currentGuides?: any[]; // Already assigned guides
 }
 
 /**
@@ -132,7 +132,7 @@ export default function AssignCrewModal({
               <p className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                 Assigned
               </p>
-              {currentGuides.map((item: User) => (
+              {currentGuides.map((item: any) => (
                 <div
                   key={item.id}
                   className="flex items-center justify-between rounded-lg border border-green-500/20 bg-green-500/10 p-2"
@@ -184,7 +184,7 @@ export default function AssignCrewModal({
                   >
                     <div className="flex items-center gap-3">
                       <div className="bg-accent/10 text-accent flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold">
-                        {guide.name[0]}
+                        {guide.name?.[0]}
                       </div>
                       <div className="flex flex-col">
                         <span className="text-foreground text-sm font-medium">{guide.name}</span>

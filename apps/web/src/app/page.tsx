@@ -14,7 +14,6 @@ import { AdventureCategories } from "@/components/home/AdventureCategories";
 import { CustomTripForm } from "@/components/home/CustomTripForm";
 import { Trip } from "@/types/trip";
 import { Blog } from "@/types/blog";
-import { Blog } from "@/types/blog";
 
 export const metadata = constructMetadata({
   title: "Param Adventures | Expedition into the Unknown",

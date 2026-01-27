@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "../../../lib/api";
 import { useAuth } from "@/context/AuthContext";
-import ManualPaymentModal from "@/components/bookings/ManualPaymentModal";
+
 import InvoiceModal from "@/components/bookings/InvoiceModal";
+
 import type { Booking } from "@/types/booking";
 import { Button } from "../../../components/ui/Button";
 import StatusBadge from "../../../components/ui/StatusBadge";

@@ -145,7 +145,7 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
               <section>
                 <h2 className="mb-6 text-2xl font-bold">Gallery</h2>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {trip.gallery.map((item: Record<string, unknown>, i: number) => (
+                  {trip.gallery.map((item: any, i: number) => (
                     <div
                       key={i}
                       className="group relative aspect-square cursor-zoom-in overflow-hidden rounded-xl"
@@ -197,7 +197,7 @@ export default function TripDetailClient({
   initialTrip,
   slug,
 }: {
-  initialTrip: Record<string, unknown> | null; // Using Record<string, unknown> to accept server-side prop, validated inside
+  initialTrip: TripFull | null;
   slug: string;
 }) {
   const [trip, setTrip] = useState<TripFull | null>(initialTrip as TripFull);

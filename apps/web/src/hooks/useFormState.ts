@@ -46,7 +46,7 @@ export function useFormState<T extends Record<string, unknown>>(initialValues: T
     (field: keyof T, value: T[keyof T] | ((prev: T[keyof T]) => T[keyof T])) => {
       setValues((prev) => ({
         ...prev,
-        [field]: typeof value === "function" ? value(prev[field]) : value,
+        [field]: typeof value === "function" ? (value as any)(prev[field]) : value,
       }));
     },
     [],

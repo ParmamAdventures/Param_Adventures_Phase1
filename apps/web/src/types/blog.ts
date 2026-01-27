@@ -15,7 +15,7 @@ export interface Blog {
   slug: string;
   excerpt: string;
   content: string | Record<string, unknown>;
-  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "PENDING_REVIEW" | "APPROVED" | "REJECTED";
   coverImage?: {
     id: string;
     originalUrl: string;
@@ -23,6 +23,7 @@ export interface Blog {
     thumbUrl: string;
     type?: "IMAGE" | "VIDEO";
   };
+  image?: string;
   author?: {
     id: string;
     name: string;

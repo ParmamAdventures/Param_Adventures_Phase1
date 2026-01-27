@@ -39,7 +39,7 @@ export default function ReviewDocsModal({
 }: ReviewDocsModalProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const docs = (trip.itinerary as Array<{ documentation?: string }>) || [];
+  const docs = (trip.itinerary as any[]) || [];
 
   const handleComplete = async () => {
     if (!confirm("Are you sure you want to close this trip? This will mark it as Completed."))

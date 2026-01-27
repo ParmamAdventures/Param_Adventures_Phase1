@@ -44,4 +44,6 @@ export interface Trip {
   createdAt?: string | Date;
   updatedAt?: string | Date;
   itineraryPdf?: string;
+  _count?: { bookings: number };
+  guides?: any[];
 }

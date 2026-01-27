@@ -220,7 +220,7 @@ function UserMenu({
   isHome,
   isScrolled,
 }: {
-  user: { name?: string; roles?: string[] };
+  user: any;
   logout: () => void;
   isHome: boolean;
   isScrolled: boolean;

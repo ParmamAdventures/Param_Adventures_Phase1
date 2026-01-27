@@ -14,7 +14,7 @@ import PaymentErrorBoundary from "../bookings/PaymentErrorBoundary";
 import { Trip } from "../../types/trip";
 
 interface Props {
-  trip: Trip;
+  trip: any;
 }
 
 /**

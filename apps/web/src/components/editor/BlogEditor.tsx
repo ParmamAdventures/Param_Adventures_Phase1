@@ -108,7 +108,7 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
 
   const editor = useEditor({
     extensions,
-    content: value,
+    content: value as any,
     editable: !readOnly,
     onUpdate({ editor }) {
       onChange?.(editor.getJSON());
@@ -133,7 +133,7 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
       !editor.isFocused &&
       JSON.stringify(value) !== JSON.stringify(editor.getJSON())
     ) {
-      editor.commands.setContent(value);
+      editor.commands.setContent(value as any);
     }
   }, [value, editor]);
 

@@ -58,10 +58,10 @@ interface Props {
 export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const { state, execute } = useAsyncOperation<Booking>();
+  const { state, execute } = useAsyncOperation<any>();
   // Store the booking/order details for successful/dev transactions
-  const [bookingResult, setBookingResult] = React.useState<Booking | null>(null);
-  const { values: formData, setField } = useFormState<BookingForm>({
+  const [bookingResult, setBookingResult] = React.useState<any | null>(null);
+  const { values: formData, setField } = useFormState<any>({
     guests: 1,
     startDate: "",
     guestDetails: [],
@@ -71,7 +71,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
   useEffect(() => {
     const currentDetails = formData.guestDetails || [];
 
-    setField("guestDetails", (prev) => {
+    setField("guestDetails", (prev: any) => {
       const previous = (prev as GuestDetail[] | undefined) || [];
       const newDetails = [...previous];
       if (formData.guests > newDetails.length) {
@@ -138,7 +138,7 @@ export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }
           tripId: trip.id,
           startDate: new Date(formData.startDate).toISOString(),
           guests: Number(formData.guests),
-          guestDetails: formData.guestDetails.map((g) => ({
+          guestDetails: formData.guestDetails.map((g: any) => ({
             ...g,
             age: g.age ? Number(g.age) : undefined,
           })),

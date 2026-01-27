@@ -6,6 +6,11 @@ export interface Booking {
   id: string;
   tripId: string;
   userId: string;
+  user?: {
+    name: string;
+    email: string;
+    phoneNumber?: string;
+  };
   startDate: string | Date;
   endDate?: string | Date;
   guests: number;
@@ -15,6 +20,20 @@ export interface Booking {
   guestDetails?: GuestDetail[];
   createdAt: string | Date;
   updatedAt: string | Date;
+  payments?: Payment[];
+  trip: {
+    id: string;
+    title: string;
+    slug: string;
+    location: string;
+    price: number;
+    startDate?: string | Date;
+    endDate?: string | Date;
+    coverImage?: { mediumUrl: string };
+    coverImageLegacy?: string;
+    durationDays?: number;
+    difficulty?: string;
+  };
 }
 
 export interface GuestDetail {

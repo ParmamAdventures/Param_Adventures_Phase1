@@ -18,8 +18,13 @@ import Link from "next/link";
 
 type GuideBooking = {
   id: string;
-  guestName?: string;
-  guestEmail?: string;
+
+  user?: {
+    name: string;
+    email: string;
+    phoneNumber?: string;
+  };
+  guests: number;
   status?: string;
 };
 
@@ -28,6 +33,7 @@ type GuideAssignment = {
   title: string;
   startDate: string;
   location: string;
+  slug: string;
   status?: string;
   coverImage?: { mediumUrl?: string };
   coverImageLegacy?: string;
@@ -131,7 +137,7 @@ export default function GuideViewPage() {
                         </span>
                       </div>
                     </div>
-                    <StatusBadge status={trip.status} />
+                    <StatusBadge status={trip.status || "CONFIRMED"} />
                   </div>
 
                   <div className="flex flex-wrap gap-4 pt-2">

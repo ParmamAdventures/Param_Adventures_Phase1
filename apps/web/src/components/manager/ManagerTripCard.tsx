@@ -39,7 +39,10 @@ export default function ManagerTripCard({ trip, onUpdate }: ManagerTripCardProps
       {/* Image Thumbnail */}
       <div className="relative h-32 w-full shrink-0 md:h-auto md:w-48">
         <Image
-          src={trip.coverImage?.mediumUrl || "/placeholder-trip.jpg"}
+          src={
+            (typeof trip.coverImage === "string" ? trip.coverImage : trip.coverImage?.mediumUrl) ||
+            "/placeholder-trip.jpg"
+          }
           alt={trip.title}
           fill
           className="object-cover"

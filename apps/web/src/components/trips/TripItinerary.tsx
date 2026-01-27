@@ -26,11 +26,7 @@ type ItineraryDay = {
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function TripItinerary({
-  itinerary,
-}: {
-  itinerary: Array<Record<string, unknown>> | Record<string, unknown>;
-}) {
+export default function TripItinerary({ itinerary }: { itinerary: any }) {
   const days = (Array.isArray(itinerary) ? itinerary : itinerary?.days || []) as ItineraryDay[];
   const [openDay, setOpenDay] = useState<number | null>(null);
 

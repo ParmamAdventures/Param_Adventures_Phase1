@@ -10,13 +10,7 @@ import { useFormState } from "../../hooks/useFormState";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  booking: {
-    id: string;
-    trip: { title: string; price: number };
-    user: { name: string | null };
-    guests: number;
-    totalPrice: number;
-  } | null;
+  booking: any | null;
   onSuccess: () => void;
 }
 

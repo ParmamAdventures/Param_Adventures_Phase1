@@ -9,17 +9,7 @@ interface TripImage {
 }
 
 interface TripHeroProps {
-  trip: {
-    id?: string;
-    title?: string;
-    status?: string;
-    durationDays?: number;
-    location?: string;
-    difficulty?: string;
-    price?: number;
-    heroImage?: TripImage | string | null;
-    coverImage?: TripImage | string | null;
-  };
+  trip: any;
 }
 
 export default function TripHero({ trip }: TripHeroProps) {
