@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { env } from "../config/env";
-import { EncryptionService } from "./encryption";
+import { EncryptionService } from "../utils/encryption";
 
 /**
  * ConfigService provides centralized access to server configuration
@@ -66,11 +66,11 @@ class ConfigService {
    */
   async getSMTPConfig() {
     return {
-      host: await this.getConfig("smtp", "smtp_host", env.SMTP_HOST),
-      port: await this.getConfig("smtp", "smtp_port", env.SMTP_PORT),
-      user: await this.getConfig("smtp", "smtp_user", env.SMTP_USER),
-      pass: await this.getConfig("smtp", "smtp_pass", env.SMTP_PASS),
-      from: await this.getConfig("smtp", "smtp_from", env.SMTP_FROM),
+      host: (await this.getConfig("smtp", "smtp_host", env.SMTP_HOST)) || "",
+      port: (await this.getConfig("smtp", "smtp_port", env.SMTP_PORT)) || "",
+      user: (await this.getConfig("smtp", "smtp_user", env.SMTP_USER)) || "",
+      pass: (await this.getConfig("smtp", "smtp_pass", env.SMTP_PASS)) || "",
+      from: (await this.getConfig("smtp", "smtp_from", env.SMTP_FROM)) || "",
     };
   }
 
@@ -79,13 +79,12 @@ class ConfigService {
    */
   async getRazorpayConfig() {
     return {
-      keyId: await this.getConfig("payment", "razorpay_key_id", env.RAZORPAY_KEY_ID),
-      keySecret: await this.getConfig("payment", "razorpay_key_secret", env.RAZORPAY_KEY_SECRET),
-      webhookSecret: await this.getConfig(
-        "payment",
-        "razorpay_webhook_secret",
-        env.RAZORPAY_WEBHOOK_SECRET,
-      ),
+      keyId: (await this.getConfig("payment", "razorpay_key_id", env.RAZORPAY_KEY_ID)) || "",
+      keySecret:
+        (await this.getConfig("payment", "razorpay_key_secret", env.RAZORPAY_KEY_SECRET)) || "",
+      webhookSecret:
+        (await this.getConfig("payment", "razorpay_webhook_secret", env.RAZORPAY_WEBHOOK_SECRET)) ||
+        "",
     };
   }
 
@@ -94,8 +93,9 @@ class ConfigService {
    */
   async getJWTConfig() {
     return {
-      accessSecret: await this.getConfig("system", "jwt_secret", env.JWT_ACCESS_SECRET),
-      refreshSecret: await this.getConfig("system", "jwt_refresh_secret", env.JWT_REFRESH_SECRET),
+      accessSecret: (await this.getConfig("system", "jwt_secret", env.JWT_ACCESS_SECRET)) || "",
+      refreshSecret:
+        (await this.getConfig("system", "jwt_refresh_secret", env.JWT_REFRESH_SECRET)) || "",
     };
   }
 
@@ -104,17 +104,14 @@ class ConfigService {
    */
   async getCloudinaryConfig() {
     return {
-      cloudName: await this.getConfig(
-        "external",
-        "cloudinary_cloud_name",
-        env.CLOUDINARY_CLOUD_NAME,
-      ),
-      apiKey: await this.getConfig("external", "cloudinary_api_key", env.CLOUDINARY_API_KEY),
-      apiSecret: await this.getConfig(
-        "external",
-        "cloudinary_api_secret",
-        env.CLOUDINARY_API_SECRET,
-      ),
+      cloudName:
+        (await this.getConfig("external", "cloudinary_cloud_name", env.CLOUDINARY_CLOUD_NAME)) ||
+        "",
+      apiKey:
+        (await this.getConfig("external", "cloudinary_api_key", env.CLOUDINARY_API_KEY)) || "",
+      apiSecret:
+        (await this.getConfig("external", "cloudinary_api_secret", env.CLOUDINARY_API_SECRET)) ||
+        "",
     };
   }
 
@@ -123,7 +120,7 @@ class ConfigService {
    * Maps database keys to environment variable names
    */
   private getEnvValue(category: string, key: string): string | undefined {
-    const keyMap: Record<string, Record<string, string>> = {
+    const keyMap: Record<string, Record<string, string | undefined>> = {
       smtp: {
         smtp_host: env.SMTP_HOST,
         smtp_port: env.SMTP_PORT,
