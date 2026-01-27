@@ -54,3 +54,4 @@ tmp/
 # Project specific
 CURRENT_STATUS.md
 LOCAL_TEST_REPORT.md
+.qoder

@@ -81,6 +81,10 @@ enum AuditAction {
   PAYMENT_FAILED
   PAYMENT_REFUNDED
   PAYMENT_DISPUTED
+
+  // Server configuration actions
+  SETTING_UPDATED
+  CONFIG_CHANGED
 }
 
 enum TripInquiryStatus {
@@ -137,9 +141,10 @@ model User {
   managedTrips Trip[]          @relation("TripManagedBy")
   guidedTrips  TripsOnGuides[]
 
-  reviews    Review[]
-  savedTrips SavedTrip[]
-  auditLogs  AuditLog[]
+  reviews            Review[]
+  savedTrips         SavedTrip[]
+  auditLogs          AuditLog[]
+  configUpdatedBy    ServerConfiguration[] @relation("ServerConfigUpdatedBy")
 
   @@index([status])
   @@index([createdAt])
@@ -619,4 +624,26 @@ model NewsletterSubscriber {
 
   @@index([isSubscribed, createdAt]) // Query active subscribers
   // Removed redundant @@index([email]) - @unique already creates index
+}
+
+model ServerConfiguration {
+  id               String   @id @default(uuid())
+  category         String   // e.g., "smtp", "payment", "system", "external"
+  key              String   // e.g., "smtp_host", "razorpay_key_id"
+  value            String
+  description      String?
+  dataType         String   @default("string") // string, number, boolean, json
+  isEncrypted      Boolean  @default(false)
+  isEnvironmentVar Boolean  @default(false) // true if value comes from env var (read-only)
+  
+  updatedBy        String?
+  updatedByUser    User?    @relation("ServerConfigUpdatedBy", fields: [updatedBy], references: [id], onDelete: SetNull)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([category, key])
+  @@index([category])
+  @@index([updatedBy])
+  @@index([createdAt])
 }

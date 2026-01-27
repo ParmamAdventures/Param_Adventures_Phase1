@@ -17,6 +17,7 @@ import { logger } from "./lib/logger";
 import authRoutes from "./routes/auth.routes";
 import adminUsersRoutes from "./routes/admin/users.routes";
 import adminRolesRoutes from "./routes/admin/roles.routes";
+import adminServerConfigRoutes from "./routes/admin/server-config.routes";
 import tripRoutes from "./routes/trips.routes";
 import adminTripBookingsRoutes from "./routes/admin/trip-bookings.routes";
 import adminBookingsRoutes from "./routes/admin/bookings.routes";
@@ -144,6 +145,7 @@ app.use(`${API_V1}/newsletter`, newsletterRoutes);
 // Admin routes
 app.use(`${API_V1}/admin/users`, adminUsersRoutes);
 app.use(`${API_V1}/admin/roles`, adminRolesRoutes);
+app.use(`${API_V1}/admin/server-config`, adminServerConfigRoutes);
 app.use(`${API_V1}/admin/trips`, adminTripBookingsRoutes);
 app.use(`${API_V1}/admin/bookings`, adminBookingsRoutes);
 app.use(`${API_V1}/admin/analytics`, adminAnalyticsRoutes);

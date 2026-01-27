@@ -107,6 +107,7 @@ async function createRolesAndPermissions() {
     { key: "payments:read", description: "View payments", category: "payments" },
     { key: "payments:refund", description: "Process refunds", category: "payments" },
     { key: "analytics:view", description: "View analytics", category: "analytics" },
+    { key: "admin:settings", description: "Manage server configuration", category: "system" },
   ];
 
   const createdPermissions: Prisma.PermissionGetPayload<{}>[] = [];
@@ -835,7 +836,183 @@ async function createSiteConfig() {
   console.log("✅ Created site configuration");
 }
 
-// ============================================================================
+async function createServerConfiguration() {
+  console.log("\n⚙️  Creating server configurations...");
+
+  // In development, mark as editable (isEnvironmentVar: false)
+  // In production, only mark as ENV VAR if truly from env
+  const isProduction = process.env.NODE_ENV === "production";
+
+  const defaultConfigs = [
+    // SMTP Configuration
+    {
+      category: "smtp",
+      key: "smtp_host",
+      value: process.env.SMTP_HOST || "smtp.ethereal.email",
+      description: "SMTP server hostname",
+      dataType: "string",
+      isEncrypted: false,
+      isEnvironmentVar: isProduction && !!process.env.SMTP_HOST,
+    },
+    {
+      category: "smtp",
+      key: "smtp_port",
+      value: process.env.SMTP_PORT || "587",
+      description: "SMTP server port (typically 587 for TLS, 465 for SSL)",
+      dataType: "number",
+      isEncrypted: false,
+      isEnvironmentVar: isProduction && !!process.env.SMTP_PORT,
+    },
+    {
+      category: "smtp",
+      key: "smtp_user",
+      value: process.env.SMTP_USER || "demo@ethereal.email",
+      description: "SMTP authentication username",
+      dataType: "string",
+      isEncrypted: false,
+      isEnvironmentVar: isProduction && !!process.env.SMTP_USER,
+    },
+    {
+      category: "smtp",
+      key: "smtp_pass",
+      value: process.env.SMTP_PASS || "testpass123",
+      description: "SMTP authentication password (encrypted)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.SMTP_PASS,
+    },
+    {
+      category: "smtp",
+      key: "smtp_from",
+      value: process.env.SMTP_FROM || "noreply@paramadventures.com",
+      description: "From email address for outgoing emails",
+      dataType: "string",
+      isEncrypted: false,
+      isEnvironmentVar: isProduction && !!process.env.SMTP_FROM,
+    },
+    // Payment Gateway (Razorpay) Configuration
+    {
+      category: "payment",
+      key: "razorpay_key_id",
+      value: process.env.RAZORPAY_KEY_ID || "rzp_test_demo",
+      description: "Razorpay Key ID (public key)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.RAZORPAY_KEY_ID,
+    },
+    {
+      category: "payment",
+      key: "razorpay_key_secret",
+      value: process.env.RAZORPAY_KEY_SECRET || "test_secret_key",
+      description: "Razorpay Key Secret (private key, encrypted)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.RAZORPAY_KEY_SECRET,
+    },
+    {
+      category: "payment",
+      key: "razorpay_webhook_secret",
+      value: process.env.RAZORPAY_WEBHOOK_SECRET || "test_webhook_secret",
+      description: "Razorpay Webhook Secret (encrypted)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.RAZORPAY_WEBHOOK_SECRET,
+    },
+    // System Configuration
+    {
+      category: "system",
+      key: "jwt_secret",
+      value: process.env.JWT_SECRET || "your-secret-key-change-in-production",
+      description: "JWT signing secret (encrypted)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.JWT_SECRET,
+    },
+    {
+      category: "system",
+      key: "jwt_refresh_secret",
+      value: process.env.JWT_REFRESH_SECRET || "your-refresh-secret-change-in-production",
+      description: "JWT refresh secret (encrypted)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.JWT_REFRESH_SECRET,
+    },
+    {
+      category: "system",
+      key: "api_rate_limit",
+      value: "100",
+      description: "API rate limit (requests per minute)",
+      dataType: "number",
+      isEncrypted: false,
+      isEnvironmentVar: false,
+    },
+    // External Services
+    {
+      category: "external",
+      key: "cloudinary_cloud_name",
+      value: process.env.CLOUDINARY_CLOUD_NAME || "demo",
+      description: "Cloudinary cloud name",
+      dataType: "string",
+      isEncrypted: false,
+      isEnvironmentVar: isProduction && !!process.env.CLOUDINARY_CLOUD_NAME,
+    },
+    {
+      category: "external",
+      key: "cloudinary_api_key",
+      value: process.env.CLOUDINARY_API_KEY || "demo_key",
+      description: "Cloudinary API key (encrypted)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.CLOUDINARY_API_KEY,
+    },
+    {
+      category: "external",
+      key: "cloudinary_api_secret",
+      value: process.env.CLOUDINARY_API_SECRET || "demo_secret",
+      description: "Cloudinary API secret (encrypted)",
+      dataType: "string",
+      isEncrypted: true,
+      isEnvironmentVar: isProduction && !!process.env.CLOUDINARY_API_SECRET,
+    },
+  ];
+
+  for (const config of defaultConfigs) {
+    let finalValue = config.value;
+
+    // Encrypt sensitive values if they're not already encrypted
+    if (config.isEncrypted && !finalValue.startsWith("$2")) {
+      try {
+        const bcrypt = require("bcryptjs");
+        finalValue = await bcrypt.hash(finalValue, 12);
+      } catch (error) {
+        console.warn(`Failed to encrypt ${config.key}, using plaintext`);
+      }
+    }
+
+    await prisma.serverConfiguration.upsert({
+      where: {
+        category_key: { category: config.category, key: config.key },
+      },
+      update: {
+        description: config.description,
+        dataType: config.dataType,
+        isEncrypted: config.isEncrypted,
+        isEnvironmentVar: config.isEnvironmentVar,
+      },
+      create: {
+        category: config.category,
+        key: config.key,
+        value: finalValue,
+        description: config.description,
+        dataType: config.dataType,
+        isEncrypted: config.isEncrypted,
+        isEnvironmentVar: config.isEnvironmentVar,
+      },
+    });
+  }
+
+  console.log("✅ Created server configurations");
+}
 // MAIN SEED FUNCTION
 // ============================================================================
 
@@ -891,6 +1068,7 @@ async function main() {
     }
 
     await createSiteConfig();
+    await createServerConfiguration();
 
     console.log("\n╔════════════════════════════════════════════════════════════╗");
     console.log("║              ✨ SEED COMPLETED SUCCESSFULLY ✨             ║");

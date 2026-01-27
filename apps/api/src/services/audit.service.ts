@@ -18,6 +18,7 @@ export const AuditTargetTypes = {
   PAYMENT: "PAYMENT",
   ROLE: "ROLE",
   PERMISSION: "PERMISSION",
+  SERVER_CONFIG: "SERVER_CONFIG",
 } as const;
 
 export { AuditAction } from "@prisma/client";
