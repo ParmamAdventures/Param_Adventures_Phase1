@@ -28,12 +28,12 @@ export type TripFormData = {
   coverImageId?: string | null;
   heroImageId?: string | null;
   gallery?: { id: string; thumbUrl: string }[];
-  itinerary: any[];
+  itinerary: Array<{ day: number; title: string; description: string; activities: string[] }>;
   itineraryPdf?: string;
   highlights: string[];
   inclusions: string[];
   exclusions: string[];
-  cancellationPolicy: any; // Simplified for now
+  cancellationPolicy: Record<string, unknown>;
   thingsToPack: string[];
   faqs: { question: string; answer: string }[];
   seasons: string[];
@@ -72,7 +72,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
     endPoint: initialData?.endPoint || "",
     durationDays: initialData?.durationDays || 1,
     difficulty: initialData?.difficulty || "Easy",
-    category: (initialData?.category as any) || "TREK",
+    category: (initialData?.category as TripFormData["category"]) || "TREK",
     price: initialData?.price || 0,
     capacity: initialData?.capacity || 10,
     description: initialData?.description || "",
@@ -88,7 +88,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
     exclusions: (initialData?.exclusions as string[]) || [],
     cancellationPolicy: initialData?.cancellationPolicy || {},
     thingsToPack: (initialData?.thingsToPack as string[]) || [],
-    faqs: (initialData?.faqs as any[]) || [],
+    faqs: (initialData?.faqs as Array<{ question: string; answer: string }>) || [],
     seasons: (initialData?.seasons as string[]) || [],
     altitude: initialData?.altitude || "",
     distance: initialData?.distance || "",
@@ -167,7 +167,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
                 <label className={labelClass}>Category</label>
                 <Select
                   value={form.category}
-                  onChange={(val) => update("category", val as any)}
+                  onChange={(val) => update("category", val as TripFormData["category"])}
                   options={[
                     { value: "TREK", label: "Trekking" },
                     { value: "CAMPING", label: "Camping" },

@@ -1,4 +1,3 @@
-
 /**
  * TripPolicies - React component for UI presentation and interaction.
  * @param {Object} props - Component props
@@ -9,7 +8,7 @@ export default function TripPolicies({
   cancellationPolicy,
   faqs,
 }: {
-  cancellationPolicy?: any;
+  cancellationPolicy?: Record<string, unknown>;
   faqs?: { question: string; answer: string }[];
 }) {
   if (!cancellationPolicy && (!faqs || faqs.length === 0)) return null;
@@ -38,7 +37,7 @@ export default function TripPolicies({
             </svg>
             Cancellation Policy
           </h3>
-          <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground whitespace-pre-wrap">
+          <div className="prose prose-sm dark:prose-invert text-muted-foreground max-w-none whitespace-pre-wrap">
             {typeof cancellationPolicy === "string"
               ? cancellationPolicy
               : JSON.stringify(cancellationPolicy, null, 2)}
@@ -54,15 +53,13 @@ export default function TripPolicies({
             {faqs.map((faq, i) => (
               <details
                 key={i}
-                className="group border-border rounded-lg border bg-card px-4 open:pb-4"
+                className="group border-border bg-card rounded-lg border px-4 open:pb-4"
               >
                 <summary className="data-[state=open]:text-primary flex cursor-pointer list-none items-center justify-between py-4 font-semibold transition-colors [&::-webkit-details-marker]:hidden">
                   {faq.question}
-                  <span className="ml-2 transition-transform group-open:rotate-180">
-                    ▼
-                  </span>
+                  <span className="ml-2 transition-transform group-open:rotate-180">▼</span>
                 </summary>
-                <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground whitespace-pre-line pt-2">
+                <div className="prose prose-sm dark:prose-invert text-muted-foreground max-w-none pt-2 whitespace-pre-line">
                   {faq.answer}
                 </div>
               </details>

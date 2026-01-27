@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { Loader2 } from "lucide-react";
@@ -144,7 +145,7 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
               <section>
                 <h2 className="mb-6 text-2xl font-bold">Gallery</h2>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {trip.gallery.map((item: any, i: number) => (
+                  {trip.gallery.map((item: Record<string, unknown>, i: number) => (
                     <div
                       key={i}
                       className="group relative aspect-square cursor-zoom-in overflow-hidden rounded-xl"
@@ -196,7 +197,7 @@ export default function TripDetailClient({
   initialTrip,
   slug,
 }: {
-  initialTrip: any; // Using any to avoid strict type mismatch with server-side prop, validated inside
+  initialTrip: Record<string, unknown> | null; // Using Record<string, unknown> to accept server-side prop, validated inside
   slug: string;
 }) {
   const [trip, setTrip] = useState<TripFull | null>(initialTrip as TripFull);
@@ -245,11 +246,12 @@ export default function TripDetailClient({
       <div className="flex min-h-[50vh] flex-col items-center justify-center p-8 text-center">
         <h1 className="mb-4 text-4xl font-bold">Adventure Not Found</h1>
         <p className="text-muted-foreground mb-8 text-lg">
-          We couldn't find the trip you're looking for. It might have been moved or removed.
+          We couldn&apos;t find the trip you&apos;re looking for. It might have been moved or
+          removed.
         </p>
-        <a href="/trips" className="text-accent hover:underline">
+        <Link href="/trips" className="text-accent hover:underline">
           Browse all trips
-        </a>
+        </Link>
       </div>
     );
   }

@@ -2,16 +2,7 @@
 
 import { useState } from "react";
 
-
-import {
-  MapPin,
-  Clock,
-  Tent,
-  Utensils,
-  Coffee,
-  Cookie,
-  ChevronDown,
-} from "lucide-react";
+import { MapPin, Clock, Tent, Utensils, Coffee, Cookie, ChevronDown } from "lucide-react";
 
 type ItineraryDay = {
   day: number;
@@ -35,7 +26,11 @@ type ItineraryDay = {
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function TripItinerary({ itinerary }: { itinerary: any }) {
+export default function TripItinerary({
+  itinerary,
+}: {
+  itinerary: Array<Record<string, unknown>> | Record<string, unknown>;
+}) {
   const days = (Array.isArray(itinerary) ? itinerary : itinerary?.days || []) as ItineraryDay[];
   const [openDay, setOpenDay] = useState<number | null>(null);
 
@@ -133,51 +128,51 @@ export default function TripItinerary({ itinerary }: { itinerary: any }) {
                     {/* Meals */}
                     {day.meals && Object.values(day.meals).some(Boolean) && (
                       <div className="space-y-2">
-                         <p className="text-muted-foreground text-xs font-bold uppercase">
-                            Meals Included
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                             {day.meals.breakfast && (
-                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
-                                   <Coffee size={12} /> Breakfast
-                                </span>
-                             )}
-                              {day.meals.lunch && (
-                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
-                                   <Utensils size={12} /> Lunch
-                                </span>
-                             )}
-                              {day.meals.snacks && (
-                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
-                                   <Cookie size={12} /> Snacks
-                                </span>
-                             )}
-                              {day.meals.dinner && (
-                                <span className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium">
-                                   <Utensils size={12} className="rotate-12" /> Dinner
-                                </span>
-                             )}
-                          </div>
+                        <p className="text-muted-foreground text-xs font-bold uppercase">
+                          Meals Included
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {day.meals.breakfast && (
+                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                              <Coffee size={12} /> Breakfast
+                            </span>
+                          )}
+                          {day.meals.lunch && (
+                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                              <Utensils size={12} /> Lunch
+                            </span>
+                          )}
+                          {day.meals.snacks && (
+                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                              <Cookie size={12} /> Snacks
+                            </span>
+                          )}
+                          {day.meals.dinner && (
+                            <span className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                              <Utensils size={12} className="rotate-12" /> Dinner
+                            </span>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
-                   
-                   {/* Activities */}
-                   {day.activities && day.activities.length > 0 && (
-                      <div>
-                         <p className="text-muted-foreground mb-2 text-xs font-bold uppercase">
-                            Highlights & Activities
-                          </p>
-                          <ul className="space-y-1">
-                             {day.activities.map((act, i) => (
-                                <li key={i} className="flex items-start gap-2 text-sm">
-                                   <span className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
-                                   {act}
-                                </li>
-                             ))}
-                          </ul>
-                      </div>
-                   )}
+
+                  {/* Activities */}
+                  {day.activities && day.activities.length > 0 && (
+                    <div>
+                      <p className="text-muted-foreground mb-2 text-xs font-bold uppercase">
+                        Highlights & Activities
+                      </p>
+                      <ul className="space-y-1">
+                        {day.activities.map((act, i) => (
+                          <li key={i} className="flex items-start gap-2 text-sm">
+                            <span className="bg-primary mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
+                            {act}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

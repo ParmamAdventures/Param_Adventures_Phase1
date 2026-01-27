@@ -28,7 +28,7 @@ import { useState, useCallback } from "react";
  *   </form>
  * );
  */
-export function useFormState<T extends Record<string, any>>(initialValues: T) {
+export function useFormState<T extends Record<string, string | number | boolean>>(initialValues: T) {
   const [values, setValues] = useState<T>(initialValues);
 
   const handleChange = useCallback(
@@ -42,16 +42,19 @@ export function useFormState<T extends Record<string, any>>(initialValues: T) {
     [],
   );
 
-  const setField = useCallback((field: keyof T, value: any) => {
-    setValues((prev) => ({
-      ...prev,
-      [field]: typeof value === "function" ? value(prev[field]) : value,
-    }));
-  }, []);
+  const setField = useCallback(
+    (field: keyof T, value: string | number | boolean | ((prev: string | number | boolean) => string | number | boolean)) => {
+      setValues((prev) => ({
+        ...prev,
+        [field]: typeof value === "function" ? value(prev[field]) : value,
+      }));
+    },
+    [],
+  );
 
   const reset = useCallback(() => {
     setValues(initialValues);
-  }, [initialValues]);
+  }, [initialValues, setValues]);
 
   return {
     values,

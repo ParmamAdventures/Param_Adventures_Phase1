@@ -6,12 +6,12 @@ export default function ContactPage() {
         Have questions about our upcoming expeditions? We&apos;d love to hear from you.
       </p>
       <div className="mx-auto mt-12 grid max-w-lg gap-6 text-left">
-        <div className="rounded-lg bg-accent/10 p-6 border border-accent/20">
-          <h2 className="text-xl font-bold mb-2">General Inquiry</h2>
+        <div className="bg-accent/10 border-accent/20 rounded-lg border p-6">
+          <h2 className="mb-2 text-xl font-bold">General Inquiry</h2>
           <p className="opacity-70">Email: adventure@paramadventures.com</p>
         </div>
-        <div className="rounded-lg bg-accent/10 p-6 border border-accent/20">
-          <h2 className="text-xl font-bold mb-2">Direct Support</h2>
+        <div className="bg-accent/10 border-accent/20 rounded-lg border p-6">
+          <h2 className="mb-2 text-xl font-bold">Direct Support</h2>
           <p className="opacity-70">Phone: +91 98765 43210</p>
         </div>
       </div>

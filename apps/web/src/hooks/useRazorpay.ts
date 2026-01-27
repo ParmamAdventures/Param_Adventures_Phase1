@@ -10,7 +10,7 @@ interface RazorpayOptions {
   order_id: string;
   name: string;
   description: string;
-  handler: (response: any) => void;
+  handler: (response: Record<string, unknown>) => void;
   modal: {
     ondismiss: () => void;
   };
@@ -78,7 +78,7 @@ export function useRazorpay() {
           // Debugging
           console.log("[Polling] /bookings/me response:", json);
 
-          let bookings: any[] = [];
+          let bookings: Array<Record<string, unknown>> = [];
           if (Array.isArray(json)) {
             bookings = json;
           } else if (json.data && Array.isArray(json.data)) {
@@ -88,7 +88,7 @@ export function useRazorpay() {
             return;
           }
 
-          const booking = bookings.find((b: any) => b.id === bookingId);
+          const booking = bookings.find((b: Record<string, unknown>) => b.id === bookingId);
 
           if (booking?.paymentStatus === "PAID") {
             clearPolling();
@@ -175,7 +175,7 @@ export function useRazorpay() {
           theme: {
             color: accentColor,
           },
-          handler: async (response: any) => {
+          handler: async (response: Record<string, unknown>) => {
             setMessage("Payment received. Verifying...");
             setIsLoading(true);
             try {
@@ -212,7 +212,7 @@ export function useRazorpay() {
 
         const rzp = new Razorpay(options);
         rzp.open();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Payment error:", error);
         const errMsg = error.message || "Payment failed to start";
         setMessage(errMsg);
@@ -222,7 +222,7 @@ export function useRazorpay() {
       }
       return { isDev: false };
     },
-    [loadScript, showToast, startPolling],
+    [loadScript, showToast, startPolling, router],
   );
 
   const simulateDevSuccess = useCallback(

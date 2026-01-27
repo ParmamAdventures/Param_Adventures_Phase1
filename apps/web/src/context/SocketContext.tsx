@@ -62,21 +62,27 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       });
 
       socketRef.current = socket;
-      setSocket(socket);
+      // Defer state update to avoid synchronous setState in effect
+      setTimeout(() => {
+        setSocket(socket);
+      }, 0);
     }
 
     if (!user && socketRef.current) {
       socketRef.current.disconnect();
       socketRef.current = null;
-      setSocket(null);
-      socketRef.current = null;
+      setTimeout(() => {
+        setSocket(null);
+      }, 0);
     }
 
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
-        setSocket(null);
+        setTimeout(() => {
+          setSocket(null);
+        }, 0);
       }
     };
   }, [user, showToast]);

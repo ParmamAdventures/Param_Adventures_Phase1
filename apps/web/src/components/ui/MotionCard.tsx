@@ -20,11 +20,11 @@ export function MotionCard(props: React.ComponentProps<typeof Card>) {
       initial={fadeInUp.initial}
       animate={fadeInUp.animate}
       exit={fadeInUp.exit}
-      transition={fadeInUp.transition as any}
+      transition={fadeInUp.transition as Record<string, unknown>}
       whileHover={scaleOnHover.whileHover}
       whileTap={scaleOnHover.whileTap}
     >
-      <Card className={className} {...(rest as any)}>
+      <Card className={className} {...(rest as Record<string, unknown>)}>
         {children}
       </Card>
     </motion.div>

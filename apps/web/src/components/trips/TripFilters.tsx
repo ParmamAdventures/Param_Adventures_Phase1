@@ -10,7 +10,7 @@ const DIFFICULTIES = ["Easy", "Moderate", "Hard"];
 
 interface TripFiltersProps {
   filters: TripFiltersState;
-  setFilter: (key: keyof TripFiltersState, value: any) => void;
+  setFilter: (key: keyof TripFiltersState, value: string | number | boolean) => void;
   clearFilters: () => void;
   activeFilterCount: number;
   meta: { minPrice: number; maxPrice: number };

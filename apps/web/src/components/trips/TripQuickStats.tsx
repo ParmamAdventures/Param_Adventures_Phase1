@@ -4,7 +4,7 @@
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function TripQuickStats({ trip }: { trip: any }) {
+export default function TripQuickStats({ trip }: { trip: Record<string, unknown> }) {
   if (!trip) return null;
 
   const stats = [
