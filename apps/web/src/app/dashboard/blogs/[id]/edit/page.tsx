@@ -102,7 +102,7 @@ export default function EditBlogPage() {
             {coverImage ? (
               <div className="group relative aspect-video overflow-hidden rounded-xl">
                 <img
-                  src={coverImage.mediumUrl}
+                  src={(coverImage as { mediumUrl: string }).mediumUrl}
                   alt="Cover"
                   className="h-full w-full object-cover"
                 />
@@ -157,7 +157,10 @@ export default function EditBlogPage() {
           <label className="text-sm font-semibold tracking-wider uppercase opacity-70">
             Content
           </label>
-          <BlogEditor value={content} onChange={setContent} />
+          <BlogEditor
+            value={content}
+            onChange={(v) => setContent(v as Record<string, unknown> | null)}
+          />
         </div>
       </div>
 

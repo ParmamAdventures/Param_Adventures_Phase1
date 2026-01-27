@@ -96,13 +96,17 @@ export default function AdminModerationPage() {
             <p className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
               Pending Trips
             </p>
-            <p className="text-primary pt-2 text-4xl font-bold">{(summary?.pendingTrips as number) || 0}</p>
+            <p className="text-primary pt-2 text-4xl font-bold">
+              {(summary?.pendingTrips as number) || 0}
+            </p>
           </div>
           <div className="bg-card rounded-2xl border p-6 shadow-sm">
             <p className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
               Pending Stories
             </p>
-            <p className="text-accent pt-2 text-4xl font-bold">{(summary?.pendingBlogs as number) || 0}</p>
+            <p className="text-accent pt-2 text-4xl font-bold">
+              {(summary?.pendingBlogs as number) || 0}
+            </p>
           </div>
         </div>
 

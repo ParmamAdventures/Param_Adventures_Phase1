@@ -140,8 +140,9 @@ export default function RolesPage() {
         const data = await refreshRes.json();
         setRoles(data || []);
       }
-    } catch (err: Error) {
-      showToast(err.message, "error");
+    } catch (err: unknown) {
+      const error = err as Error;
+      showToast(error.message, "error");
     } finally {
       setIsSaving(false);
     }
