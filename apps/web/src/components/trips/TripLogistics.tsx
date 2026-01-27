@@ -4,7 +4,9 @@
  * @param {React.ReactNode} [props.children] - Component children
  * @returns {React.ReactElement} Component element
  */
-export default function TripLogistics({ trip }: { trip: any }) {
+import { Trip } from "@/types/trip";
+
+export default function TripLogistics({ trip }: { trip: Trip }) {
   return (
     <div className="bg-card border-border space-y-6 rounded-xl border p-6">
       <h3 className="text-lg font-bold">Trip Logistics</h3>

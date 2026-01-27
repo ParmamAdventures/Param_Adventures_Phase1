@@ -1,4 +1,4 @@
-import { EditorContent, useEditor } from "@tiptap/react";
+import { Content, EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import ImageExtension from "@tiptap/extension-image";
@@ -108,7 +108,7 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
 
   const editor = useEditor({
     extensions,
-    content: value as any,
+    content: value as Content,
     editable: !readOnly,
     onUpdate({ editor }) {
       onChange?.(editor.getJSON());
@@ -133,7 +133,7 @@ export function BlogEditor({ value, onChange, readOnly = false }: BlogEditorProp
       !editor.isFocused &&
       JSON.stringify(value) !== JSON.stringify(editor.getJSON())
     ) {
-      editor.commands.setContent(value as any);
+      editor.commands.setContent(value as Content);
     }
   }, [value, editor]);
 

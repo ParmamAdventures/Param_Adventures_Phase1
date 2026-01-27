@@ -157,7 +157,7 @@ export default function BookingList({ bookings, loading }: Props) {
                           });
                           if (result?.orderId) {
                             // Temporary store for simulation button
-                            const windowData = window as any;
+                            const windowData = window as unknown as Record<string, string>;
                             windowData[`order_${booking.id}`] = result.orderId;
                           }
                         }}
@@ -196,7 +196,7 @@ export default function BookingList({ bookings, loading }: Props) {
                     <Button
                       variant="subtle"
                       onClick={() => {
-                        const windowData = window as any;
+                        const windowData = window as unknown as Record<string, string>;
                         simulateDevSuccess(booking.id, windowData[`order_${booking.id}`]);
                       }}
                       className="rounded-full px-6"

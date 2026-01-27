@@ -214,7 +214,7 @@ export function useRazorpay() {
         rzp.open();
       } catch (error: unknown) {
         console.error("Payment error:", error);
-        const errMsg = (error as any).message || "Payment failed to start";
+        const errMsg = error instanceof Error ? error.message : "Payment failed to start";
         setMessage(errMsg);
         setError(errMsg);
         showToast(errMsg, "error");

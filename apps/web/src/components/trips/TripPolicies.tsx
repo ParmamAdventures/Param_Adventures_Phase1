@@ -8,8 +8,8 @@ export default function TripPolicies({
   cancellationPolicy,
   faqs,
 }: {
-  cancellationPolicy?: any;
-  faqs?: any[];
+  cancellationPolicy?: string | Record<string, unknown>;
+  faqs?: { question: string; answer: string }[];
 }) {
   if (!cancellationPolicy && (!faqs || faqs.length === 0)) return null;
 

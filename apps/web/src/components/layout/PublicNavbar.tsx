@@ -214,13 +214,15 @@ import {
   UploadCloud,
 } from "lucide-react";
 
+import { User as AuthUser } from "../../types/auth";
+
 function UserMenu({
   user,
   logout,
   isHome,
   isScrolled,
 }: {
-  user: any;
+  user: AuthUser;
   logout: () => void;
   isHome: boolean;
   isScrolled: boolean;
