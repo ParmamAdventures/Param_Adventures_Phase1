@@ -11,6 +11,7 @@ describe("Admin Server Configuration API", () => {
     // Clean relevant tables (order matters due to foreign keys)
     await prisma.auditLog.deleteMany();
     await prisma.serverConfiguration.deleteMany();
+    await prisma.payment.deleteMany();
     await prisma.booking.deleteMany();
     await prisma.userRole.deleteMany();
     await prisma.rolePermission.deleteMany();
