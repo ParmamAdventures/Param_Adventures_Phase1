@@ -3,7 +3,7 @@ export default function ContactPage() {
     <div className="py-12 text-center text-[var(--text)]">
       <h1 className="mb-4 text-4xl font-bold">Contact Us</h1>
       <p className="mx-auto max-w-2xl text-lg opacity-80">
-        Have questions about our upcoming expeditions? We'd love to hear from you.
+        Have questions about our upcoming expeditions? We&apos;d love to hear from you.
       </p>
       <div className="mx-auto mt-12 grid max-w-lg gap-6 text-left">
         <div className="rounded-lg bg-accent/10 p-6 border border-accent/20">
