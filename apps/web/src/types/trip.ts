@@ -28,11 +28,11 @@ export interface Trip {
       type?: "IMAGE" | "VIDEO";
     };
   }[];
-  itinerary?: any[];
+  itinerary?: Record<string, unknown>[];
   highlights?: string[];
   inclusions?: string[];
   exclusions?: string[];
-  cancellationPolicy?: any;
+  cancellationPolicy?: Record<string, unknown>;
   thingsToPack?: string[];
   faqs?: { question: string; answer: string }[];
   seasons?: string[];

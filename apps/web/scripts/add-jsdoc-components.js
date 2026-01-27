@@ -3,9 +3,9 @@
  * Adds documentation for exported component functions
  */
 
-const fs = require("fs");
-const path = require("path");
-const glob = require("glob");
+import fs from "fs";
+import path from "path";
+import { glob } from "glob";
 
 // Generate JSDoc for components based on component name patterns
 const getComponentJSDoc = (componentName) => {

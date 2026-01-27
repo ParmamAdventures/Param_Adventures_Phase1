@@ -106,7 +106,11 @@ test.describe("Booking Flow", () => {
 
         // To create a robust test, we can inject a script to mock window.Razorpay
         await page.evaluate(() => {
-            (window as any).Razorpay = function(options: any) {
+            interface RazorpayOptions {
+                handler: (response: Record<string, string>) => void;
+                order_id: string;
+            }
+            (window as Record<string, unknown>).Razorpay = function(options: RazorpayOptions) {
                 this.open = function() {
                     // Simulate Success Callback immediately
                     options.handler({

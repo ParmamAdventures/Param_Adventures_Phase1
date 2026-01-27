@@ -27,8 +27,9 @@ export default function LoginPage() {
     try {
       await login(email, password);
       router.push("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Invalid email or password");
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message || "Invalid email or password");
     } finally {
       setIsLoading(false);
     }

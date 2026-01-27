@@ -1,9 +1,9 @@
 /**
  * TYPESCRIPT LINT ERROR FIXES FOR PARAM ADVENTURES WEB APP
- * 
+ *
  * This document provides all necessary fixes to resolve ESLint "Unexpected any" errors
  * Run these fixes manually in VS Code since auto-replace tools are disabled
- * 
+ *
  * After each fix, the lint count should decrease
  */
 
@@ -15,13 +15,13 @@
 
 // BEFORE (Line 1-4):
 // import type { NextConfig } from "next";
-// 
+//
 // // @ts-ignore
 // import { withSentryConfig } from "@sentry/nextjs";
 
 // AFTER (Line 1-4):
 // import type { NextConfig } from "next";
-// 
+//
 // // @ts-expect-error - Sentry types compatibility
 // import { withSentryConfig } from "@sentry/nextjs";
 
@@ -41,7 +41,7 @@
 // import TripFilters from "./TripFilters";
 // import { useTripFilters } from "@/hooks/useTripFilters";
 // import { useAuth } from "@/context/AuthContext";
-// 
+//
 // export default function TripsClient() {
 //   const [trips, setTrips] = useState<any[] | null>(null);
 
@@ -56,7 +56,7 @@
 // import { useTripFilters } from "@/hooks/useTripFilters";
 // import { useAuth } from "@/context/AuthContext";
 // import { Trip } from "@/types/trip";
-// 
+//
 // export default function TripsClient() {
 //   const [trips, setTrips] = useState<Trip[] | null>(null);
 
@@ -71,7 +71,7 @@
 
 // AFTER (Line 13-16):
 // import { Trip } from "@/types/trip";
-// 
+//
 // export default function TripsGrid({ trips, savedTripIds }: { trips: Trip[], savedTripIds?: Set<string> }) {
 
 // ============================================================================
@@ -247,7 +247,7 @@
 // (obj as any).property → (obj as Record<string, unknown>).property
 // Or better: Create interface for obj type
 
-// Pattern 4: Event Handlers  
+// Pattern 4: Event Handlers
 // (e: any) → (e: React.ChangeEvent<HTMLInputElement>)
 // Or for FormEvent: FormEventHandler from @/types/common
 
@@ -258,4 +258,3 @@
 // import { Blog } from "@/types/blog";
 // import { Booking } from "@/types/booking";
 // import { Metadata, FormEventHandler } from "@/types/common";
-

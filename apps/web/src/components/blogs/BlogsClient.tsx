@@ -5,6 +5,7 @@ import BlogCard from "./BlogCard";
 import { apiFetch } from "../../lib/api";
 import { Search, X, Loader2 } from "lucide-react";
 import Card from "../ui/Card";
+import type { Blog } from "@/types/blog";
 
 /**
  * BlogsClient - React component for UI presentation and interaction.
@@ -13,7 +14,7 @@ import Card from "../ui/Card";
  * @returns {React.ReactElement} Component element
  */
 export default function BlogsClient() {
-  const [blogs, setBlogs] = useState<any[] | null>(null);
+  const [blogs, setBlogs] = useState<Blog[] | null>(null);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,8 +34,9 @@ export default function BlogsClient() {
       // Handle standardized ApiResponse with pagination
       const blogsList = data.data?.blogs || data.data || data;
       setBlogs(Array.isArray(blogsList) ? blogsList : []);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message);
       setBlogs([]);
     } finally {
       setIsLoading(false);
@@ -119,7 +121,7 @@ export default function BlogsClient() {
           </Card>
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {blogs.map((blog: any, index: number) => (
+            {blogs.map((blog, index: number) => (
               <BlogCard key={blog.id} blog={blog} index={index} />
             ))}
           </div>

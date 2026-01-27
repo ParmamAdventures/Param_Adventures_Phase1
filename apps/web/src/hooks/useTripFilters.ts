@@ -57,7 +57,7 @@ export function useTripFilters(maxPriceMeta: number) {
   }));
 
   // Helper to update a single filter
-  const setFilter = useCallback((key: keyof TripFiltersState, value: any) => {
+  const setFilter = useCallback((key: keyof TripFiltersState, value: string | number | boolean) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   }, []);
 

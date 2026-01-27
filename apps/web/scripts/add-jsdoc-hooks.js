@@ -3,9 +3,9 @@
  * Adds documentation for component functions and hook exports
  */
 
-const fs = require("fs");
-const path = require("path");
-const glob = require("glob");
+import fs from "fs";
+import path from "path";
+import { glob } from "glob";
 
 // Generate JSDoc for hooks based on function name
 const getHookJSDoc = (functionName) => {

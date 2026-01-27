@@ -173,7 +173,8 @@ export default function BookingList({ bookings, loading }: Props) {
                           });
                           if (result?.orderId) {
                             // Temporary store for simulation button
-                            (window as any)[`order_${booking.id}`] = result.orderId;
+                            const windowData = window as Record<string, string>;
+                            windowData[`order_${booking.id}`] = result.orderId;
                           }
                         }}
                         loading={paymentLoading}
@@ -210,9 +211,10 @@ export default function BookingList({ bookings, loading }: Props) {
                   {message?.includes("Dev order created") && (
                     <Button
                       variant="subtle"
-                      onClick={() =>
-                        simulateDevSuccess(booking.id, (window as any)[`order_${booking.id}`])
-                      }
+                      onClick={() => {
+                        const windowData = window as Record<string, string>;
+                        simulateDevSuccess(booking.id, windowData[`order_${booking.id}`]);
+                      }}
                       className="rounded-full px-6"
                     >
                       Simulate Success

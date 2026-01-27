@@ -3,7 +3,7 @@ import { apiFetch } from "@/lib/api";
 
 type UseUploadOptions = {
   endpoint?: string;
-  onSuccess?: (data: any) => void;
+  onSuccess?: (data: Record<string, unknown>) => void;
   onError?: (error: Error) => void;
 };
 
@@ -42,11 +42,12 @@ export function useUpload({
 
       onSuccess?.(json);
       return json;
-    } catch (err: any) {
-      const message = err.message || "Upload failed";
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      const message = error.message || "Upload failed";
       setError(message);
-      onError?.(err);
-      throw err;
+      onError?.(error);
+      throw error;
     } finally {
       setIsUploading(false);
     }

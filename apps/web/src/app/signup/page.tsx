@@ -54,7 +54,7 @@ export default function SignupPage() {
         let errorMessage = data.error || data.message || "Registration failed";
         if (data.details) {
           const details = Object.entries(data.details)
-            .map(([field, msgs]: any) => `${field}: ${msgs.join(", ")}`)
+            .map(([field, msgs]: [string, unknown]) => `${field}: ${Array.isArray(msgs) ? msgs.join(", ") : msgs}`)
             .join(" | ");
           errorMessage = `${errorMessage} (${details})`;
         }
@@ -64,8 +64,9 @@ export default function SignupPage() {
       setSuccess(true);
       // optional: redirect to login after a short delay
       setTimeout(() => router.push("/login"), 2000);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error.message || "Something went wrong.");
     } finally {
       setIsLoading(false);
     }

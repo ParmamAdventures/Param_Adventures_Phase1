@@ -41,7 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic Trip routes
   const trips = await safeFetch(`${apiBase}/api/v1/trips/public`);
-  const tripRoutes = trips.map((trip: any) => ({
+  const tripRoutes = trips.map((trip: Record<string, unknown>) => ({
     url: `${baseUrl}/trips/${trip.slug}`,
     lastModified: trip.updatedAt || trip.createdAt,
     changeFrequency: "weekly" as const,
@@ -50,7 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic Blog routes
   const blogs = await safeFetch(`${apiBase}/api/v1/blogs/public`);
-  const blogRoutes = blogs.map((blog: any) => ({
+  const blogRoutes = blogs.map((blog: Record<string, unknown>) => ({
     url: `${baseUrl}/blogs/${blog.slug}`,
     lastModified: blog.updatedAt || blog.createdAt,
     changeFrequency: "weekly" as const,

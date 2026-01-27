@@ -7,7 +7,7 @@ import ManualPaymentModal from "./ManualPaymentModal";
 import { apiFetch } from "../../lib/api";
 import TableLoading from "../ui/DataTable/TableLoading";
 import TableEmptyState from "../ui/DataTable/TableEmptyState";
-
+import type { Booking } from "@/types/booking";
 interface Booking {
   id: string;
   status: string;
@@ -54,7 +54,7 @@ export default function GlobalBookingList({
 }: GlobalBookingListProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [selectedBookingForPayment, setSelectedBookingForPayment] = useState<any>(null);
+  const [selectedBookingForPayment, setSelectedBookingForPayment] = useState<Booking | null>(null);
 
   const filteredBookings = useMemo(() => {
     return bookings.filter((b) => {

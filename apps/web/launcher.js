@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 // 1. Install Dependencies
 console.log(">>> [Launcher] Installing dependencies...");

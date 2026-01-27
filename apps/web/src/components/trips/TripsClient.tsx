@@ -8,6 +8,7 @@ import { Filter, X } from "lucide-react";
 import TripFilters from "./TripFilters";
 import { useTripFilters } from "@/hooks/useTripFilters";
 import { useAuth } from "@/context/AuthContext";
+import type { Trip } from "@/types/trip";
 
 /**
  * TripsClient - React component for UI presentation and interaction.
@@ -16,7 +17,7 @@ import { useAuth } from "@/context/AuthContext";
  * @returns {React.ReactElement} Component element
  */
 export default function TripsClient() {
-  const [trips, setTrips] = useState<any[] | null>(null);
+  const [trips, setTrips] = useState<Trip[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState<{
@@ -50,7 +51,7 @@ export default function TripsClient() {
     if (user) {
       apiFetch("/wishlist")
         .then((res) => res.json())
-        .then((data: any[]) => {
+        .then((data: Trip[]) => {
           const ids = new Set(data.map((t) => t.id));
           setSavedTripIds(ids);
         })

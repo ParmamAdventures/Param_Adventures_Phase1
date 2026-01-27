@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useRef } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { getAccessToken, API_URL } from "../lib/api";
@@ -21,6 +21,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const socketRef = useRef<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     if (user && !socketRef.current) {
@@ -61,10 +62,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       });
 
       socketRef.current = socket;
+      setSocket(socket);
     }
 
     if (!user && socketRef.current) {
       socketRef.current.disconnect();
+      socketRef.current = null;
+      setSocket(null);
       socketRef.current = null;
     }
 
@@ -72,12 +76,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
+        setSocket(null);
       }
     };
   }, [user, showToast]);
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current }}>
+    <SocketContext.Provider value={{ socket }}>
       {children}
     </SocketContext.Provider>
   );
