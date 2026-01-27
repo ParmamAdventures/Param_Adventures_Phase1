@@ -1,4 +1,4 @@
-const CloudinaryStorage = require("multer-storage-cloudinary");
+import CloudinaryStorage from "multer-storage-cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 
 const requiredEnv = ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];

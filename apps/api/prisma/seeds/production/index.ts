@@ -110,7 +110,7 @@ async function createRolesAndPermissions() {
     { key: "admin:settings", description: "Manage server configuration", category: "system" },
   ];
 
-  const createdPermissions: Prisma.PermissionGetPayload<{}>[] = [];
+  const createdPermissions: Array<Prisma.PermissionGetPayload<object>> = [];
   for (const perm of permissions) {
     const created = await prisma.permission.upsert({
       where: { key: perm.key },
@@ -492,7 +492,7 @@ async function createTrips(users: any, images: any[]) {
 
     // Determine status and assignments based on count for variety
     let status: TripStatus = "PUBLISHED";
-    let isFeatured = count <= 5;
+    const isFeatured = count <= 5;
 
     if (count % 10 === 0) status = "DRAFT";
     if (count % 15 === 0) status = "IN_PROGRESS";
@@ -982,7 +982,7 @@ async function createServerConfiguration() {
     // Encrypt sensitive values if they're not already encrypted
     if (config.isEncrypted && !finalValue.startsWith("$2")) {
       try {
-        const bcrypt = require("bcryptjs");
+        const bcrypt = await import("bcryptjs").then((m) => m.default);
         finalValue = await bcrypt.hash(finalValue, 12);
       } catch (error) {
         console.warn(`Failed to encrypt ${config.key}, using plaintext`);

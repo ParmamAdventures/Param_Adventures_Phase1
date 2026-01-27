@@ -7,10 +7,12 @@ import { prisma } from "../../src/lib/prisma";
 import { MediaService } from "../../src/services/media.service";
 import { HttpError } from "../../src/utils/httpError";
 import * as cloudinaryUtils from "../../src/utils/cloudinary.utils"; // Import the mocked cloudinary.utils module
+import * as cloudinaryConfig from "../../src/config/cloudinary";
+import * as logger from "../../src/lib/logger";
 
 // Import the mocked modules using jest.mocked
-const mockedCloudinary = jest.mocked(require("../../src/config/cloudinary"));
-const mockedLogger = jest.mocked(require("../../src/lib/logger"));
+const mockedCloudinary = jest.mocked(cloudinaryConfig);
+const mockedLogger = jest.mocked(logger);
 
 describe("MediaService", () => {
   let mediaService: MediaService;
