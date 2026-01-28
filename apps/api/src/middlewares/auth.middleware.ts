@@ -158,7 +158,8 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
       const fs = require("fs");
       const path = require("path");
       const logPath = path.join(process.cwd(), "api_auth_debug.txt");
-      const msg = `${new Date().toISOString()} - Auth Fail: ${err.message} | Token: ${token.substring(0, 10)}... | Secret: ${process.env.JWT_ACCESS_SECRET?.substring(0, 5)}...\n`;
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      const msg = `${new Date().toISOString()} - Auth Fail: ${errorMsg} | Token: ${token.substring(0, 10)}... | Secret: ${process.env.JWT_ACCESS_SECRET?.substring(0, 5)}...\n`;
       fs.appendFileSync(logPath, msg);
     } catch (e) {
       /* ignore */
