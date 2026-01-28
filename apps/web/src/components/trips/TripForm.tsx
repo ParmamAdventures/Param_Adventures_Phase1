@@ -71,7 +71,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
     startPoint: initialData?.startPoint || "",
     endPoint: initialData?.endPoint || "",
     durationDays: initialData?.durationDays || 1,
-    difficulty: initialData?.difficulty || "Easy",
+    difficulty: initialData?.difficulty || "EASY",
     category: (initialData?.category as TripFormData["category"]) || "TREK",
     price: initialData?.price || 0,
     capacity: initialData?.capacity || 10,
@@ -184,10 +184,10 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
                   value={form.difficulty}
                   onChange={(val) => update("difficulty", val)}
                   options={[
-                    { value: "Easy", label: "Easy" },
-                    { value: "Moderate", label: "Moderate" },
-                    { value: "Difficult", label: "Difficult" },
-                    { value: "Challenging", label: "Challenging" },
+                    { value: "EASY", label: "Easy" },
+                    { value: "MODERATE", label: "Moderate" },
+                    { value: "HARD", label: "Difficult" },
+                    { value: "EXTREME", label: "Challenging" },
                   ]}
                 />
               </div>

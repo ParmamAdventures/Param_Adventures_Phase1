@@ -153,6 +153,16 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     next();
   } catch (err) {
     console.error("Auth Fail", err);
+    // DEBUG: Write to file to debug E2E failure
+    try {
+      const fs = require("fs");
+      const path = require("path");
+      const logPath = path.join(process.cwd(), "api_auth_debug.txt");
+      const msg = `${new Date().toISOString()} - Auth Fail: ${err.message} | Token: ${token.substring(0, 10)}... | Secret: ${process.env.JWT_ACCESS_SECRET?.substring(0, 5)}...\n`;
+      fs.appendFileSync(logPath, msg);
+    } catch (e) {
+      /* ignore */
+    }
     return res.status(401).json({ error: "Invalid token" });
   }
 }
