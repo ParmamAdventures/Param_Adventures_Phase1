@@ -78,11 +78,10 @@ These files contain test data with hardcoded credentials. **Never use in product
 
 ### Available Test Seeds
 
-- `seed_comprehensive.js` - Full demo data
-- `seed_demo_full.js` - Realistic demo content
-- `seed_test_users.js` - Test users only
-- `seed_e2e.js` - Minimal E2E test data
-- `seed_legacy.js` - Old comprehensive seed
+- `seed_comprehensive.mjs` - Full demo data
+- `seed_test_users.mjs` - Test users only
+- `seed_e2e.mjs` - Minimal E2E test data
+- `seed_minimal.cjs` - Minimal test data
 
 ### Usage
 

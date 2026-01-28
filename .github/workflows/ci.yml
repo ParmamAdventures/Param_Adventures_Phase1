@@ -74,7 +74,7 @@ jobs:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/param_adventures_test"
 
       - name: Seed Test Database
-        run: node apps/api/prisma/seeds/test/seed_comprehensive.js
+        run: node apps/api/prisma/seeds/test/seed_comprehensive.mjs
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/param_adventures_test"
 

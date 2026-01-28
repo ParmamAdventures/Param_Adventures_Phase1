@@ -517,7 +517,6 @@ async function main() {
   const allTrips = await prisma.trip.findMany({ where: { status: "PUBLISHED" } });
 
   const bookingStatuses = ["REQUESTED", "CONFIRMED", "COMPLETED", "CANCELLED"];
-  const paymentStatuses = ["PENDING", "COMPLETED", "FAILED", "REFUNDED"];
 
   let bookingCount = 0;
   let paymentCount = 0;
