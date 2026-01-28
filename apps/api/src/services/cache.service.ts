@@ -41,7 +41,7 @@ export class CacheService {
    * @param value Value to cache (will be JSON stringified)
    * @param ttl Time to live in seconds (default: 3600 = 1 hour)
    */
-  async set(key: string, value: any, ttl: number = 3600): Promise<void> {
+  async set(key: string, value: unknown, ttl: number = 3600): Promise<void> {
     if (!this.isConnected) {
       logger.warn(`Cache set skipped - Redis not connected: ${key}`);
       return;
@@ -65,7 +65,7 @@ export class CacheService {
    * @param key Cache key
    * @returns Parsed value or null if not found
    */
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     if (!this.isConnected) {
       return null;
     }
@@ -181,7 +181,7 @@ export class CacheService {
   /**
    * Get cache statistics
    */
-  async getStats(): Promise<any> {
+  async getStats(): Promise<unknown> {
     if (!this.isConnected) {
       return { connected: false };
     }

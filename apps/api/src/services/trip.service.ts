@@ -10,8 +10,8 @@ export class TripService {
    * @param userId The ID of the user creating the trip.
    * @returns The created trip object.
    */
-  async createTrip(data: Record<string, any>, userId: string) {
-    const { gallery, startDate, endDate, ...rest } = data;
+  async createTrip(data: Record<string, unknown>, userId: string) {
+    const { gallery, startDate, endDate, ...rest } = data as any; // Cast data to any for destructuring if needed, or better type it
 
     const tripData: Prisma.TripCreateInput = {
       ...rest,
@@ -28,7 +28,7 @@ export class TripService {
               })),
             }
           : undefined,
-    } as any;
+    } as unknown as Prisma.TripCreateInput;
 
     const trip = await prisma.trip.create({
       data: tripData,
@@ -74,8 +74,8 @@ export class TripService {
   /**
    * Logic for updating an existing trip (to be implemented).
    */
-  async updateTrip(id: string, data: Record<string, any>, userId: string) {
-    const { gallery, startDate, endDate, ...rest } = data;
+  async updateTrip(id: string, data: Record<string, unknown>, userId: string) {
+    const { gallery, startDate, endDate, ...rest } = data as any;
 
     const tripData: Prisma.TripUpdateInput = {
       ...rest,
@@ -90,7 +90,7 @@ export class TripService {
             })),
           }
         : undefined,
-    } as any;
+    } as unknown as Prisma.TripUpdateInput;
 
     const trip = await prisma.trip.update({
       where: { id },

@@ -8,6 +8,12 @@ import { ApiResponse } from "./ApiResponse";
 
 export type ResourceType = "blog" | "trip" | "booking" | "review" | "user";
 
+interface UserWithPermissions {
+  id: string;
+  permissions?: string[];
+  [key: string]: unknown;
+}
+
 /**
  * Checks if user has ownership of a resource or has the required permission
  * @param entity - The entity to check ownership for
@@ -17,9 +23,9 @@ export type ResourceType = "blog" | "trip" | "booking" | "review" | "user";
  * @returns Object with ownership status and authorization result
  */
 export function checkEntityOwnership(
-  entity: any,
+  entity: Record<string, unknown>,
   userId: string,
-  user: any,
+  user: UserWithPermissions,
   resourceType: ResourceType,
 ): {
   isOwner: boolean;
@@ -45,7 +51,8 @@ export function checkEntityOwnership(
   const hasPermission =
     user.permissions?.includes(permissionKey) ||
     user.permissions?.includes(`${resourceType}:*`) ||
-    user.permissions?.includes("*");
+    user.permissions?.includes("*") ||
+    false;
 
   // User is authorized if they're the owner OR have the permission
   const authorized = isOwner || hasPermission;
@@ -63,9 +70,9 @@ export function checkEntityOwnership(
  * @returns true if authorized, false if not (and sends error response)
  */
 export function requireEntityAuthorization(
-  entity: any,
+  entity: Record<string, unknown>,
   userId: string,
-  user: any,
+  user: UserWithPermissions,
   resourceType: ResourceType,
   res: Response,
 ): boolean {
@@ -90,7 +97,7 @@ export function requireEntityAuthorization(
  * @param permissions - Array of permission strings to check
  * @returns true if user has at least one of the permissions
  */
-export function hasAnyPermission(user: any, permissions: string[]): boolean {
+export function hasAnyPermission(user: UserWithPermissions, permissions: string[]): boolean {
   if (!user?.permissions || !Array.isArray(user.permissions)) {
     return false;
   }
@@ -103,8 +110,8 @@ export function hasAnyPermission(user: any, permissions: string[]): boolean {
   // Check if user has any of the specified permissions
   return permissions.some(
     (permission) =>
-      user.permissions.includes(permission) ||
-      user.permissions.includes(permission.split(":")[0] + ":*"),
+      user.permissions?.includes(permission) ||
+      user.permissions?.includes(permission.split(":")[0] + ":*"),
   );
 }
 
@@ -114,7 +121,7 @@ export function hasAnyPermission(user: any, permissions: string[]): boolean {
  * @param permissions - Array of permission strings to check
  * @returns true if user has all of the permissions
  */
-export function hasAllPermissions(user: any, permissions: string[]): boolean {
+export function hasAllPermissions(user: UserWithPermissions, permissions: string[]): boolean {
   if (!user?.permissions || !Array.isArray(user.permissions)) {
     return false;
   }
@@ -127,7 +134,7 @@ export function hasAllPermissions(user: any, permissions: string[]): boolean {
   // Check if user has all specified permissions
   return permissions.every(
     (permission) =>
-      user.permissions.includes(permission) ||
-      user.permissions.includes(permission.split(":")[0] + ":*"),
+      user.permissions?.includes(permission) ||
+      user.permissions?.includes(permission.split(":")[0] + ":*"),
   );
 }

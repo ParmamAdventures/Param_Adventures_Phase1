@@ -8,14 +8,25 @@ import { Trip, Blog, Booking, User } from "@prisma/client";
  * Fetches a trip or returns 404 error (for use in controllers with Response)
  * Consolidates 17+ duplicate trip fetch/validation patterns
  */
+
+type EntityQueryOptions = {
+  include?: Record<string, unknown>;
+  select?: Record<string, unknown>;
+};
+
+/**
+ * Fetches a trip or returns 404 error (for use in controllers with Response)
+ * Consolidates 17+ duplicate trip fetch/validation patterns
+ */
 export async function getTripOrThrow(
   tripId: string,
   res: Response,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<Trip | null> {
   const trip = await prisma.trip.findUnique({
     where: { id: tripId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!trip) {
@@ -31,11 +42,12 @@ export async function getTripOrThrow(
  */
 export async function getTripOrThrowError(
   tripId: string,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<Trip> {
   const trip = await prisma.trip.findUnique({
     where: { id: tripId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!trip) {
@@ -51,11 +63,12 @@ export async function getTripOrThrowError(
 export async function getBlogOrThrow(
   blogId: string,
   res: Response,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<Blog | null> {
   const blog = await prisma.blog.findUnique({
     where: { id: blogId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!blog) {
@@ -71,11 +84,12 @@ export async function getBlogOrThrow(
  */
 export async function getBlogOrThrowError(
   blogId: string,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<Blog> {
   const blog = await prisma.blog.findUnique({
     where: { id: blogId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!blog) {
@@ -91,11 +105,12 @@ export async function getBlogOrThrowError(
 export async function getBookingOrThrow(
   bookingId: string,
   res: Response,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<Booking | null> {
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!booking) {
@@ -111,11 +126,12 @@ export async function getBookingOrThrow(
  */
 export async function getBookingOrThrowError(
   bookingId: string,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<Booking> {
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!booking) {
@@ -131,11 +147,12 @@ export async function getBookingOrThrowError(
 export async function getUserOrThrow(
   userId: string,
   res: Response,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<User | null> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!user) {
@@ -151,11 +168,12 @@ export async function getUserOrThrow(
  */
 export async function getUserOrThrowError(
   userId: string,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<User> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!user) {
@@ -165,20 +183,25 @@ export async function getUserOrThrowError(
   return user as User;
 }
 
+interface PrismaModelDelegate<T> {
+  findUnique(args: { where: { id: string } } & EntityQueryOptions): Promise<T | null>;
+}
+
 /**
  * Generic entity fetch helper (for advanced use cases)
  */
 export async function getEntityOrThrow<T>(
-  model: any, // Prisma model
+  model: PrismaModelDelegate<T>,
   id: string,
   res: Response,
   errorCode: string,
   errorMessage: string,
-  options?: { include?: any; select?: any },
+  options?: EntityQueryOptions,
 ): Promise<T | null> {
   const entity = await model.findUnique({
     where: { id },
-    ...options,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...(options as any),
   });
 
   if (!entity) {

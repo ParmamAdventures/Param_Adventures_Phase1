@@ -22,9 +22,9 @@ export class ServerConfigService {
 
     try {
       // Try to get from cache
-      const cached = await this.cacheService.get(cacheKey);
+      const cached = await this.cacheService.get<Record<string, ServerConfiguration[]>>(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return cached;
       }
     } catch (error) {
       console.warn("Cache retrieval failed, falling back to database:", error);
@@ -49,7 +49,7 @@ export class ServerConfigService {
 
     // Cache the result
     try {
-      await this.cacheService.set(cacheKey, JSON.stringify(grouped), CACHE_TTL);
+      await this.cacheService.set(cacheKey, grouped, CACHE_TTL);
     } catch (error) {
       console.warn("Cache set failed:", error);
     }
@@ -65,9 +65,9 @@ export class ServerConfigService {
     const cacheKey = `server_config:category:${category}`;
 
     try {
-      const cached = await this.cacheService.get(cacheKey);
+      const cached = await this.cacheService.get<ServerConfiguration[]>(cacheKey);
       if (cached) {
-        return JSON.parse(cached);
+        return cached;
       }
     } catch (error) {
       console.warn("Cache retrieval failed, falling back to database:", error);
@@ -81,7 +81,7 @@ export class ServerConfigService {
 
     // Cache the result
     try {
-      await this.cacheService.set(cacheKey, JSON.stringify(configs), CACHE_TTL);
+      await this.cacheService.set(cacheKey, configs, CACHE_TTL);
     } catch (error) {
       console.warn("Cache set failed:", error);
     }

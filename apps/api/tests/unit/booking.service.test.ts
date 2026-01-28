@@ -20,7 +20,7 @@ jest.mock("../../src/lib/queue", () => ({
 
 import { bookingService } from "../../src/services/booking.service";
 import { prisma } from "../../src/lib/prisma";
-import { notificationQueue } from "../../src/lib/queue";
+// import { notificationQueue } from "../../src/lib/queue";
 
 const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
 
@@ -89,8 +89,11 @@ describe("BookingService", () => {
   describe("cancelBooking", () => {
     it("should cancel a booking successfully", async () => {
       const mockBooking = { id: "b1", userId: "u1", status: "REQUESTED", payments: [] };
-      prismaMock.booking.findUnique.mockResolvedValue(mockBooking as any);
-      prismaMock.booking.update.mockResolvedValue({ ...mockBooking, status: "CANCELLED" } as any);
+      prismaMock.booking.findUnique.mockResolvedValue(mockBooking as unknown as Booking);
+      prismaMock.booking.update.mockResolvedValue({
+        ...mockBooking,
+        status: "CANCELLED",
+      } as unknown as Booking);
 
       const result = await bookingService.cancelBooking("b1", "u1");
 
@@ -105,7 +108,10 @@ describe("BookingService", () => {
     });
 
     it("should throw error if unauthorized", async () => {
-      prismaMock.booking.findUnique.mockResolvedValue({ id: "b1", userId: "other" } as any);
+      prismaMock.booking.findUnique.mockResolvedValue({
+        id: "b1",
+        userId: "other",
+      } as unknown as Booking);
       await expect(bookingService.cancelBooking("b1", "u1")).rejects.toThrow("Unauthorized");
     });
   });

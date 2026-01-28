@@ -8,7 +8,7 @@ import { Request, Response, NextFunction } from "express";
  * @returns {Function} - Express middleware that wraps the handler with error catching
  */
 export const catchAsync = (
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>,
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>,
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
     fn(req, res, next).catch(next);

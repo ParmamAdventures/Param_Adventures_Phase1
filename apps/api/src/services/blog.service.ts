@@ -13,8 +13,9 @@ export class BlogService {
    * @param userId The ID of the user creating the blog.
    * @returns The created blog object.
    */
-  async createBlog(data: Record<string, any>, userId: string) {
-    const { title, content, excerpt, tripId, coverImageId } = data;
+  async createBlog(data: Record<string, unknown>, userId: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { title, content, excerpt, tripId, coverImageId } = data as any;
 
     if (!tripId) {
       throw new HttpError(400, "INVALID_REQUEST", "Blogs must be linked to a completed adventure.");
@@ -137,8 +138,13 @@ export class BlogService {
    * @param permissions Optional permission array.
    * @returns Paginated blog list.
    */
-  async listBlogs(filters: Record<string, any> = {}, userId?: string, permissions: string[] = []) {
-    const { status, authorId, page = 1, limit = 10 } = filters;
+  async listBlogs(
+    filters: Record<string, unknown> = {},
+    userId?: string,
+    permissions: string[] = [],
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { status, authorId, page = 1, limit = 10 } = filters as any;
     const canViewInternal =
       permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 
@@ -203,14 +209,15 @@ export class BlogService {
    * @param userId The ID of the user updating the blog.
    * @returns The updated blog object.
    */
-  async updateBlog(id: string, data: Record<string, any>, userId: string) {
+  async updateBlog(id: string, data: Record<string, unknown>, userId: string) {
     const blog = await prisma.blog.findUnique({ where: { id } });
 
     if (!blog || blog.authorId !== userId) {
       throw new HttpError(404, "NOT_FOUND", "Blog not found");
     }
 
-    const { title, content, excerpt, tripId, coverImageId } = data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { title, content, excerpt, tripId, coverImageId } = data as any;
 
     const updateData: Prisma.BlogUncheckedUpdateInput = {
       title,

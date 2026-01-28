@@ -1,5 +1,5 @@
 import { mockDeep } from "jest-mock-extended";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User, Trip, AuditLog } from "@prisma/client";
 
 jest.mock("../../src/lib/prisma", () => ({
   __esModule: true,
@@ -10,11 +10,6 @@ import request from "supertest";
 import { app } from "../../src/app";
 import { prismaMock } from "../helpers/prisma.mock";
 import { generateAuthToken } from "./auth_helper";
-
-// Helper type for partial mocking
-type RecursivePartial<T> = {
-  [P in keyof T]?: RecursivePartial<T[P]>;
-};
 
 describe("Trip Creation Flow (Mocked)", () => {
   const userId = "admin-123";
@@ -60,13 +55,13 @@ describe("Trip Creation Flow (Mocked)", () => {
           },
         },
       ],
-    } as unknown as RecursivePartial<PrismaClient["user"]["fields"]> as any);
+    } as unknown as User);
 
     // Mock trip creation
-    prismaMock.trip.create.mockResolvedValue(createdTrip as any);
+    prismaMock.trip.create.mockResolvedValue(createdTrip as unknown as Trip);
 
     // Mock audit log
-    prismaMock.auditLog.create.mockResolvedValue({ id: "audit-123" } as any);
+    prismaMock.auditLog.create.mockResolvedValue({ id: "audit-123" } as unknown as AuditLog);
 
     const res = await request(app)
       .post("/api/v1/trips")
@@ -84,7 +79,7 @@ describe("Trip Creation Flow (Mocked)", () => {
       id: userId,
       status: "ACTIVE",
       roles: [],
-    } as unknown as RecursivePartial<PrismaClient["user"]["fields"]> as any);
+    } as unknown as User);
 
     const res = await request(app)
       .post("/api/v1/trips")

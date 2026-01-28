@@ -13,7 +13,7 @@ describe("Trip Endpoints", () => {
     // Clean up existing data
     try {
       await resetDb(prisma);
-    } catch (_e) {
+    } catch {
       /* cleanup errors ignored */
     }
 

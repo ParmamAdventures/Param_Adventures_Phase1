@@ -34,7 +34,7 @@ export interface RazorpayPaymentEntity {
   email: string;
   contact: string;
   customer_id: string | null;
-  notes: Record<string, any>;
+  notes: Record<string, unknown>;
   fee: number;
   tax: number;
   error_code: string | null;
@@ -42,7 +42,7 @@ export interface RazorpayPaymentEntity {
   error_source: string | null;
   error_step: string | null;
   error_reason: string | null;
-  acquirer_data: Record<string, any>;
+  acquirer_data: Record<string, unknown>;
   created_at: number;
 }
 
@@ -52,9 +52,9 @@ export interface RazorpayRefundEntity {
   amount: number;
   currency: string;
   payment_id: string;
-  notes: Record<string, any>;
+  notes: Record<string, unknown>;
   receipt: string | null;
-  acquirer_data: Record<string, any>;
+  acquirer_data: Record<string, unknown>;
   created_at: number;
   batch_id: string | null;
   status: RefundStatus;
@@ -74,11 +74,11 @@ export interface RazorpayDisputeEntity {
   status: "open" | "closed" | "under_review";
   phase: "chargeback" | "pre_arbitration" | "arbitration";
   created_at: number;
-  evidence: any;
-  comments: any[];
+  evidence: unknown;
+  comments: unknown[];
 }
 
-export interface RazorpayWebhookEventBase<T = any> {
+export interface RazorpayWebhookEventBase<T = unknown> {
   entity: string;
   account_id: string;
   event: string;

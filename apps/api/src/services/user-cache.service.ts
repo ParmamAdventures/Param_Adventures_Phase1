@@ -1,3 +1,4 @@
+import { User, Booking, Trip, Review } from "@prisma/client";
 import { CacheService, cacheService } from "./cache.service";
 import { logger } from "../lib/logger";
 
@@ -34,10 +35,10 @@ export class UserCacheService {
    * Get cached user by ID
    * Falls back to null if not in cache
    */
-  static async getUserById(userId: string): Promise<any | null> {
+  static async getUserById(userId: string): Promise<User | null> {
     try {
       const key = `user:${userId}`;
-      const cached = await this.cache.get(key);
+      const cached = await this.cache.get<User>(key);
       if (cached) {
         logger.info(`Cache HIT: User ${userId} loaded from cache`);
         return cached;
@@ -52,7 +53,7 @@ export class UserCacheService {
   /**
    * Cache user by ID
    */
-  static async cacheUserById(userId: string, userData: any): Promise<void> {
+  static async cacheUserById(userId: string, userData: unknown): Promise<void> {
     try {
       const key = `user:${userId}`;
       await this.cache.set(key, userData, this.TTL.USER_PROFILE);
@@ -65,10 +66,10 @@ export class UserCacheService {
   /**
    * Get cached user by email
    */
-  static async getUserByEmail(email: string): Promise<any | null> {
+  static async getUserByEmail(email: string): Promise<User | null> {
     try {
       const key = `user:email:${email}`;
-      const cached = await this.cache.get(key);
+      const cached = await this.cache.get<User>(key);
       if (cached) {
         logger.info(`Cache HIT: User email ${email} loaded from cache`);
         return cached;
@@ -83,7 +84,7 @@ export class UserCacheService {
   /**
    * Cache user by email
    */
-  static async cacheUserByEmail(email: string, userData: any): Promise<void> {
+  static async cacheUserByEmail(email: string, userData: unknown): Promise<void> {
     try {
       const key = `user:email:${email}`;
       await this.cache.set(key, userData, this.TTL.EMAIL_LOOKUP);
@@ -96,10 +97,10 @@ export class UserCacheService {
   /**
    * Get cached user bookings
    */
-  static async getUserBookings(userId: string): Promise<any[] | null> {
+  static async getUserBookings(userId: string): Promise<Booking[] | null> {
     try {
       const key = `user:${userId}:bookings`;
-      const cached = await this.cache.get(key);
+      const cached = await this.cache.get<Booking[]>(key);
       if (cached) {
         logger.info(`Cache HIT: User ${userId} bookings loaded from cache`);
         return cached;
@@ -114,7 +115,7 @@ export class UserCacheService {
   /**
    * Cache user bookings
    */
-  static async cacheUserBookings(userId: string, bookings: any[]): Promise<void> {
+  static async cacheUserBookings(userId: string, bookings: Booking[]): Promise<void> {
     try {
       const key = `user:${userId}:bookings`;
       await this.cache.set(key, bookings, this.TTL.USER_BOOKINGS);
@@ -127,10 +128,10 @@ export class UserCacheService {
   /**
    * Get cached user saved trips
    */
-  static async getUserSavedTrips(userId: string): Promise<any[] | null> {
+  static async getUserSavedTrips(userId: string): Promise<Trip[] | null> {
     try {
       const key = `user:${userId}:saved-trips`;
-      const cached = await this.cache.get(key);
+      const cached = await this.cache.get<Trip[]>(key);
       if (cached) {
         logger.info(`Cache HIT: User ${userId} saved trips loaded from cache`);
         return cached;
@@ -145,7 +146,7 @@ export class UserCacheService {
   /**
    * Cache user saved trips
    */
-  static async cacheUserSavedTrips(userId: string, trips: any[]): Promise<void> {
+  static async cacheUserSavedTrips(userId: string, trips: Trip[]): Promise<void> {
     try {
       const key = `user:${userId}:saved-trips`;
       await this.cache.set(key, trips, this.TTL.USER_SAVED_TRIPS);
@@ -158,10 +159,10 @@ export class UserCacheService {
   /**
    * Get cached user reviews
    */
-  static async getUserReviews(userId: string): Promise<any[] | null> {
+  static async getUserReviews(userId: string): Promise<Review[] | null> {
     try {
       const key = `user:${userId}:reviews`;
-      const cached = await this.cache.get(key);
+      const cached = await this.cache.get<Review[]>(key);
       if (cached) {
         logger.info(`Cache HIT: User ${userId} reviews loaded from cache`);
         return cached;
@@ -176,7 +177,7 @@ export class UserCacheService {
   /**
    * Cache user reviews
    */
-  static async cacheUserReviews(userId: string, reviews: any[]): Promise<void> {
+  static async cacheUserReviews(userId: string, reviews: Review[]): Promise<void> {
     try {
       const key = `user:${userId}:reviews`;
       await this.cache.set(key, reviews, this.TTL.USER_REVIEWS);
@@ -189,10 +190,10 @@ export class UserCacheService {
   /**
    * Get cached admin list
    */
-  static async getAdminList(): Promise<any[] | null> {
+  static async getAdminList(): Promise<User[] | null> {
     try {
       const key = `users:admins`;
-      const cached = await this.cache.get(key);
+      const cached = await this.cache.get<User[]>(key);
       if (cached) {
         logger.info(`Cache HIT: Admin list loaded from cache`);
         return cached;
@@ -207,7 +208,7 @@ export class UserCacheService {
   /**
    * Cache admin list
    */
-  static async cacheAdminList(admins: any[]): Promise<void> {
+  static async cacheAdminList(admins: User[]): Promise<void> {
     try {
       const key = `users:admins`;
       await this.cache.set(key, admins, this.TTL.ADMIN_LIST);

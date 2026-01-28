@@ -1,5 +1,5 @@
 import { mockDeep } from "jest-mock-extended";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, User, AuditLog } from "@prisma/client";
 
 jest.mock("../../src/lib/prisma", () => ({
   __esModule: true,
@@ -9,11 +9,6 @@ jest.mock("../../src/lib/prisma", () => ({
 import request from "supertest";
 import { app } from "../../src/app";
 import { prismaMock } from "../helpers/prisma.mock";
-
-// Helper type for partial mocking
-type RecursivePartial<T> = {
-  [P in keyof T]?: RecursivePartial<T[P]>;
-};
 
 describe("User Registration Flow (Mocked)", () => {
   it("should register a new user successfully", async () => {
@@ -30,10 +25,10 @@ describe("User Registration Flow (Mocked)", () => {
     prismaMock.user.findUnique.mockResolvedValue(null);
 
     // Mock user creation
-    prismaMock.user.create.mockResolvedValue(userData as any);
+    prismaMock.user.create.mockResolvedValue(userData as unknown as User);
 
     // Mock audit log creation
-    prismaMock.auditLog.create.mockResolvedValue({ id: "audit-123" } as any);
+    prismaMock.auditLog.create.mockResolvedValue({ id: "audit-123" } as unknown as AuditLog);
 
     const res = await request(app).post("/api/v1/auth/register").send({
       email: "newuser@example.com",
@@ -49,7 +44,7 @@ describe("User Registration Flow (Mocked)", () => {
   it("should fail if email is already registered", async () => {
     prismaMock.user.findUnique.mockResolvedValue({
       id: "existing-123",
-    } as unknown as RecursivePartial<PrismaClient["user"]["fields"]> as any);
+    } as unknown as User);
 
     const res = await request(app).post("/api/v1/auth/register").send({
       email: "existing@example.com",

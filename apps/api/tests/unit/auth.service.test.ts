@@ -59,7 +59,7 @@ describe("AuthService", () => {
       const data = { email: "a@b.com", password: "p", name: "n" };
       prismaMock.user.findUnique.mockResolvedValue(null);
       (hashPassword as jest.Mock).mockResolvedValue("hashed");
-      prismaMock.user.create.mockResolvedValue({ id: "1", ...data } as any);
+      prismaMock.user.create.mockResolvedValue({ id: "1", ...data } as unknown as User);
 
       const res = await authService.register(data);
       expect(res.id).toBe("1");
@@ -70,7 +70,7 @@ describe("AuthService", () => {
   describe("login", () => {
     it("should login successfully", async () => {
       const user = { id: "1", email: "a@b.com", password: "hp" };
-      prismaMock.user.findUnique.mockResolvedValue(user as any);
+      prismaMock.user.findUnique.mockResolvedValue(user as unknown as User);
       (verifyPassword as jest.Mock).mockResolvedValue(true);
       (signAccessToken as jest.Mock).mockReturnValue("at");
       (signRefreshToken as jest.Mock).mockReturnValue("rt");
@@ -102,7 +102,7 @@ describe("AuthService", () => {
         googleId: googleProfile.id,
         password: null,
       };
-      prismaMock.user.findUnique.mockResolvedValue(user as any); // Mock finding by googleId
+      prismaMock.user.findUnique.mockResolvedValue(user as unknown as User); // Mock finding by googleId
 
       (signAccessToken as jest.Mock).mockReturnValue("at_social");
       (signRefreshToken as jest.Mock).mockReturnValue("rt_social");
@@ -168,7 +168,7 @@ describe("AuthService", () => {
         .mockResolvedValueOnce(null) // Not found by googleId
         .mockResolvedValueOnce(null); // Not found by email
 
-      prismaMock.user.create.mockResolvedValue(newUser as any);
+      prismaMock.user.create.mockResolvedValue(newUser as unknown as User);
 
       (signAccessToken as jest.Mock).mockReturnValue("at_social_new");
       (signRefreshToken as jest.Mock).mockReturnValue("rt_social_new");
