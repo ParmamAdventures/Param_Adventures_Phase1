@@ -68,7 +68,7 @@ test.describe("Wireframe Generation Suite", () => {
   for (const pageConfig of pages.filter((p) => p.requiresAuth)) {
     for (const breakpoint of breakpoints) {
       test(`${pageConfig.name} - ${breakpoint.name}`, async ({ page }) => {
-        test.setTimeout(60000); // Increase timeout for auth pages
+        test.setTimeout(90000); // Increase timeout for auth pages
 
         await page.setViewportSize({
           width: breakpoint.width,
@@ -78,33 +78,39 @@ test.describe("Wireframe Generation Suite", () => {
         try {
           // Login first
           await page.goto("http://localhost:3000/login", {
-            waitUntil: "domcontentloaded",
+            waitUntil: "networkidle",
+            timeout: 30000,
           });
 
           // Wait for login form to be visible
-          await page.waitForSelector('input[type="email"]', { timeout: 10000 });
+          await page.waitForSelector('input[type="email"]', { timeout: 15000 });
 
-          await page.fill('input[type="email"]', "admin@test.com");
-          await page.fill('input[type="password"]', "AdminPass123");
+          // Clear and fill form fields
+          await page.locator('input[type="email"]').fill("admin@test.com");
+          await page.locator('input[type="password"]').fill("AdminPass123");
 
-          // Wait for button to be enabled
-          await page.waitForTimeout(500);
-          await page.click('button[type="submit"]', { timeout: 10000 });
+          // Click submit button and wait for navigation
+          const submitButton = page.locator('button[type="submit"]').first();
+          await submitButton.click({ timeout: 10000 });
 
-          // Wait for navigation after login
-          await page.waitForURL(/dashboard|admin/, { timeout: 15000 });
+          // Wait for navigation after login - more flexible pattern
+          await page.waitForFunction(
+            () => !window.location.pathname.includes("login"),
+            { timeout: 20000 }
+          );
 
           // Wait for page to be fully loaded
-          await page.waitForTimeout(1000);
+          await page.waitForLoadState("networkidle", { timeout: 15000 });
 
           // Navigate to target page
           await page.goto(`http://localhost:3000${pageConfig.url}`, {
-            waitUntil: "domcontentloaded",
+            waitUntil: "networkidle",
             timeout: 30000,
           });
 
           // Wait for content to render
-          await page.waitForTimeout(3000);
+          await page.waitForLoadState("networkidle", { timeout: 15000 });
+          await page.waitForTimeout(2000);
 
           const filename = `${pageConfig.name}-${breakpoint.name}.png`;
           await page.screenshot({

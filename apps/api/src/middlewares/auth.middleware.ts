@@ -3,6 +3,8 @@ import { verifyAccessToken } from "../utils/jwt";
 import { prisma } from "../lib/prisma";
 import { tokenDenylistService } from "../services/tokenDenylist.service";
 import { USER_WITH_ROLES_INCLUDE } from "../utils/prismaSelects";
+import * as fs from "fs";
+import * as path from "path";
 
 /**
  * Middleware to verify Bearer token and attach authenticated user to request.
@@ -155,13 +157,11 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     console.error("Auth Fail", err);
     // DEBUG: Write to file to debug E2E failure
     try {
-      const fs = require("fs");
-      const path = require("path");
       const logPath = path.join(process.cwd(), "api_auth_debug.txt");
       const errorMsg = err instanceof Error ? err.message : String(err);
       const msg = `${new Date().toISOString()} - Auth Fail: ${errorMsg} | Token: ${token.substring(0, 10)}... | Secret: ${process.env.JWT_ACCESS_SECRET?.substring(0, 5)}...\n`;
       fs.appendFileSync(logPath, msg);
-    } catch (e) {
+    } catch {
       /* ignore */
     }
     return res.status(401).json({ error: "Invalid token" });
