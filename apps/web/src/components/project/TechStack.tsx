@@ -52,6 +52,18 @@ const technologies = [
     color: "bg-pink-100",
     description: "Monorepo Management",
   },
+  {
+    name: "Jest",
+    icon: <Code2 className="text-red-600" />,
+    color: "bg-red-100",
+    description: "Unit Testing (372 Tests)",
+  },
+  {
+    name: "Playwright",
+    icon: <ShieldCheck className="text-green-600" />,
+    color: "bg-green-100",
+    description: "E2E Testing (38 Tests)",
+  },
 ];
 
 /**

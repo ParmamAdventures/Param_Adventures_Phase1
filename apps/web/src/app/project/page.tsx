@@ -58,6 +58,9 @@ export default function ProjectShowcasePage() {
                   "Responsive & Animated UI (Framer Motion)",
                   "Dynamic Guide Assignment System",
                   "Booking & Payment Workflows (Simulated)",
+                  "Comprehensive Testing Suite (372 Tests)",
+                  "End-to-End Testing with Playwright",
+                  "CI/CD Pipeline with GitHub Actions",
                 ].map((item) => (
                   <li
                     key={item}
