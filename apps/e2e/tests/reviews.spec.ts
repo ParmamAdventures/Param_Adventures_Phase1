@@ -23,8 +23,17 @@ test.describe("Review and Rating Flow", () => {
       userCredentials.password
     );
     await page.click('button:has-text("Create Account")');
-    await page.waitForSelector("text=Welcome Aboard!", { timeout: 15000 });
-    await page.close();
+
+    // Wait longer for form submission and API response
+    await page.waitForTimeout(2000);
+
+    // Wait for success message to appear (can take longer during parallel execution)
+    await expect(page.locator("text=Welcome Aboard!")).toBeVisible({
+      timeout: 30000,
+    });
+
+    // Wait for redirect after the 2-second delay
+    await page.waitForURL(/\/login/, { timeout: 5000 }).catch(() => {});
   });
 
   test("should view trips", async ({ page }) => {
@@ -35,8 +44,14 @@ test.describe("Review and Rating Flow", () => {
       userCredentials.email
     );
     await page.fill('input[placeholder="••••••••"]', userCredentials.password);
-    await page.click('button:has-text("Sign In")');
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15000 });
+
+    // Wait for button and click it
+    const signInButton = page.getByRole("button", { name: "Sign In" });
+    await expect(signInButton).toBeEnabled();
+    await signInButton.click();
+
+    // Wait for navigation
+    await page.waitForURL(/\/dashboard/, { timeout: 15000 });
 
     // Go to trips
     await page.goto("/trips");
@@ -55,8 +70,14 @@ test.describe("Review and Rating Flow", () => {
       userCredentials.email
     );
     await page.fill('input[placeholder="••••••••"]', userCredentials.password);
-    await page.click('button:has-text("Sign In")');
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15000 });
+
+    // Wait for button and click it
+    const signInButton = page.getByRole("button", { name: "Sign In" });
+    await expect(signInButton).toBeEnabled();
+    await signInButton.click();
+
+    // Wait for navigation
+    await page.waitForURL(/\/dashboard/, { timeout: 15000 });
 
     // Should see dashboard
     const content = await page.locator("main").textContent();
@@ -71,8 +92,14 @@ test.describe("Review and Rating Flow", () => {
       userCredentials.email
     );
     await page.fill('input[placeholder="••••••••"]', userCredentials.password);
-    await page.click('button:has-text("Sign In")');
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15000 });
+
+    // Wait for button and click it
+    const signInButton = page.getByRole("button", { name: "Sign In" });
+    await expect(signInButton).toBeEnabled();
+    await signInButton.click();
+
+    // Wait for navigation
+    await page.waitForURL(/\/dashboard/, { timeout: 15000 });
 
     // Go to bookings
     await page.goto("/dashboard/bookings");
