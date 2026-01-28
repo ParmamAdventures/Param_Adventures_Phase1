@@ -85,7 +85,7 @@ describe("ReviewService", () => {
         rating: 5,
       };
 
-      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow(
+      await expect(reviewService.createReview(reviewData as any, userId)).rejects.toThrow(
         "Trip ID and rating are required",
       );
     });
@@ -96,7 +96,7 @@ describe("ReviewService", () => {
         tripId: "trip_123",
       };
 
-      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow(
+      await expect(reviewService.createReview(reviewData as any, userId)).rejects.toThrow(
         "Trip ID and rating are required",
       );
     });
@@ -108,7 +108,7 @@ describe("ReviewService", () => {
         rating: 6,
       };
 
-      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow(
+      await expect(reviewService.createReview(reviewData as any, userId)).rejects.toThrow(
         "Rating must be between 1 and 5",
       );
     });
@@ -120,7 +120,7 @@ describe("ReviewService", () => {
         rating: 0,
       };
 
-      await expect(reviewService.createReview(reviewDataLow, userId)).rejects.toThrow(
+      await expect(reviewService.createReview(reviewDataLow as any, userId)).rejects.toThrow(
         "Rating must be between 1 and 5",
       );
     });
@@ -134,7 +134,7 @@ describe("ReviewService", () => {
 
       (prisma.booking.findFirst as jest.Mock).mockResolvedValue(null);
 
-      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow(
+      await expect(reviewService.createReview(reviewData as any, userId)).rejects.toThrow(
         "You can only review trips you have completed.",
       );
     });
@@ -157,7 +157,7 @@ describe("ReviewService", () => {
       (prisma.booking.findFirst as jest.Mock).mockResolvedValue(mockBooking);
       (prisma.review.findUnique as jest.Mock).mockResolvedValue(mockExistingReview);
 
-      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow(
+      await expect(reviewService.createReview(reviewData as any, userId)).rejects.toThrow(
         "You have already reviewed this trip.",
       );
     });
@@ -174,7 +174,7 @@ describe("ReviewService", () => {
       (prisma.review.findUnique as jest.Mock).mockResolvedValue(null);
       (prisma.review.create as jest.Mock).mockRejectedValue(error);
 
-      await expect(reviewService.createReview(reviewData, userId)).rejects.toThrow(
+      await expect(reviewService.createReview(reviewData as any, userId)).rejects.toThrow(
         "Database error",
       );
     });

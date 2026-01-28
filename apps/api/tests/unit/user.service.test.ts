@@ -306,7 +306,7 @@ describe("UserService", () => {
           gender: "FEMALE",
           phoneNumber: "+9876543210",
           address: "456 New St",
-          avatarImageId: "img-456",
+          avatarImage: { connect: { id: "img-456" } },
           preferences: { theme: "light", notifications: true },
         },
         include: {

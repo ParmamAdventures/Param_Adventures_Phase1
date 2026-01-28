@@ -9,7 +9,7 @@ export class ReviewService {
    * @param userId The ID of the user creating the review.
    * @returns The created review object.
    */
-  async createReview(data: Prisma.ReviewUncheckedCreateInput, userId: string) {
+  async createReview(data: Omit<Prisma.ReviewUncheckedCreateInput, "userId">, userId: string) {
     const { tripId, rating, comment } = data;
 
     // Validate required fields
