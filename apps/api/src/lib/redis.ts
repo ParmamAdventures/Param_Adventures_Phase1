@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import Redis, { RedisOptions } from "ioredis";
 import { env } from "../config/env";
 
 export const createRedisClient = (options = {}) => {
@@ -6,7 +6,7 @@ export const createRedisClient = (options = {}) => {
     console.log(`Connecting to Redis: ${env.REDIS_URL.replace(/:[^:@]+@/, ":****@")}`);
   }
 
-  const redisOptions: any = {
+  const redisOptions: RedisOptions = {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
     family: 4, // Force IPv4 to avoid ENOTFOUND on some environments

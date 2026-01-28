@@ -37,9 +37,9 @@ const documentStorage = CloudinaryStorage({
   params: {
     folder: "param_adventures_uploads/documents",
     allowed_formats: ["pdf"],
-    public_id: (req: any, file: any) => file.fieldname + "-" + Date.now(),
+    public_id: (_req: Request, file: Express.Multer.File) => file.fieldname + "-" + Date.now(),
     resource_type: "raw",
-  } as any,
+  } as Record<string, unknown>,
 });
 
 export const uploadDocument = multer({

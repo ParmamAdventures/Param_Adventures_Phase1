@@ -11,7 +11,7 @@ import { ApiResponse } from "../utils/ApiResponse";
  * @throws {Error} - Throws if user not found or validation fails
  */
 export const updateProfile = catchAsync(async (req: Request, res: Response) => {
-  const userId = (req as any).user.id;
+  const userId = req.user!.id;
 
   const user = await userService.updateProfile(userId, req.body);
 

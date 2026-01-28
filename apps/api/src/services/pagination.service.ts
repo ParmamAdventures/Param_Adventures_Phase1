@@ -1,5 +1,3 @@
-import { Prisma } from "@prisma/client";
-
 /**
  * Pagination Service
  * Advanced pagination with cursor-based approach for optimal performance
@@ -107,7 +105,7 @@ export class PaginationService {
   /**
    * Process keyset pagination response
    */
-  static processKeysetResponse<T extends { [key: string]: any }>(
+  static processKeysetResponse<T extends { [key: string]: unknown }>(
     items: T[],
     pageSize: number,
     keyField: string = "createdAt",
@@ -173,6 +171,7 @@ export class PaginationService {
     direction: "next" | "prev" = "next",
     limit: number = 10,
   ) {
+    // Simplified cursor args building
     const { take, cursor: cursorVal } = this.calculateCursorPagination(cursor, direction, limit);
 
     const args: { take: number; cursor?: { id: string }; skip?: number } = { take };
@@ -229,7 +228,7 @@ export class PaginationService {
    */
   static recommendPaginationStrategy(
     totalCount: number,
-    pageSize: number,
+    _pageSize: number,
   ): "offset" | "cursor" | "keyset" {
     // For small datasets (< 10k items), offset is fine
     if (totalCount < 10000) {

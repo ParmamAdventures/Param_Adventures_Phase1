@@ -12,7 +12,7 @@ import { prisma } from "../lib/prisma";
 export const createReview = async (req: Request, res: Response) => {
   try {
     const { tripId, rating, comment } = req.body;
-    const userId = (req.user as any).id; // AuthenticatedUser uses 'id' not 'userId'
+    const userId = req.user!.id; // AuthenticatedUser uses 'id' not 'userId'
 
     // Validate inputs
     if (!tripId || !rating) {
@@ -176,8 +176,8 @@ export const getFeaturedReviews = async (req: Request, res: Response) => {
 export const deleteReview = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const userId = (req.user as any).id;
-    const userRoles = (req.user as any).roles;
+    const userId = req.user!.id;
+    const userRoles = req.user!.roles;
 
     const review = await prisma.review.findUnique({ where: { id } });
 
@@ -210,7 +210,7 @@ export const deleteReview = async (req: Request, res: Response) => {
 export const checkReviewEligibility = async (req: Request, res: Response) => {
   try {
     const { tripId } = req.params;
-    const userId = (req.user as any).id;
+    const userId = req.user!.id;
 
     // 1. Check for Completed Booking
     const booking = await prisma.booking.findFirst({

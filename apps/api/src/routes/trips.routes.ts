@@ -14,7 +14,6 @@ import { archiveTrip } from "../controllers/trips/archiveTrip.controller";
 import { getInternalTrips } from "../controllers/trips/internalTrips.controller";
 import { getPublicTrips } from "../controllers/trips/getPublicTrips.controller";
 import { restoreTrip } from "../controllers/trips/restoreTrip.controller";
-import { prisma } from "../lib/prisma";
 const router = Router();
 
 import { validate } from "../middlewares/validate.middleware";

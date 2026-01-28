@@ -13,7 +13,7 @@ import { notificationQueue } from "../../lib/queue";
  */
 export async function createManualPayment(req: Request, res: Response) {
   const { bookingId, amount, method, transactionId, proofUrl } = req.body;
-  const adminId = (req.user as any).id;
+  const adminId = req.user!.id;
 
   if (!bookingId || !amount || !method) {
     throw new HttpError(400, "INVALID_REQUEST", "Missing required fields");

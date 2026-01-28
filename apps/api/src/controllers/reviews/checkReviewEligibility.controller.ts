@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
-import { ApiResponse } from "../../utils/ApiResponse";
 import { catchAsync } from "../../utils/catchAsync";
 import { reviewService } from "../../services/review.service";
 
 export const checkReviewEligibility = catchAsync(async (req: Request, res: Response) => {
   const { tripId } = req.params;
-  const userId = (req as any).user.id;
+  const userId = req.user!.id;
 
   const result = await reviewService.checkEligibility(tripId, userId);
 

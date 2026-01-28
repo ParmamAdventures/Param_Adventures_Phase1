@@ -1,4 +1,11 @@
 import { Prisma } from "@prisma/client";
+import {
+  PaymentCapturedEvent,
+  PaymentFailedEvent,
+  RefundProcessedEvent,
+  DisputeCreatedEvent,
+  DisputeClosedEvent,
+} from "../types/razorpay.types";
 import { prisma } from "../lib/prisma";
 import { logWebhookReplay } from "../utils/webhookLogger";
 import { notificationQueue } from "../lib/queue";
@@ -9,7 +16,7 @@ import { notificationQueue } from "../lib/queue";
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handlePaymentCaptured(event: Record<string, any>) {
+export async function handlePaymentCaptured(event: PaymentCapturedEvent) {
   const paymentEntity = event.payload?.payment?.entity;
   const razorpayPaymentId = paymentEntity?.id;
   const razorpayOrderId = paymentEntity?.order_id;
@@ -66,7 +73,7 @@ export async function handlePaymentCaptured(event: Record<string, any>) {
             data: {
               providerPaymentId: razorpayPaymentId,
               status: "FAILED",
-              rawPayload: { ...event, overbooked: true },
+              rawPayload: { ...event, overbooked: true } as unknown as Prisma.InputJsonValue,
             },
           });
           await tx.booking.update({
@@ -86,8 +93,10 @@ export async function handlePaymentCaptured(event: Record<string, any>) {
           data: {
             providerPaymentId: razorpayPaymentId,
             status: "CAPTURED",
-            rawPayload: event as Prisma.InputJsonValue,
-            method: paymentEntity?.method, // e.g. "upi", "card", "netbanking"
+            rawPayload: event as unknown as Prisma.InputJsonValue,
+            method:
+              (paymentEntity?.method?.toUpperCase() as import("@prisma/client").PaymentMethod) ||
+              "OTHER",
           },
         });
 
@@ -103,9 +112,11 @@ export async function handlePaymentCaptured(event: Record<string, any>) {
         isolationLevel: "Serializable",
       },
     );
-  } catch (error: any) {
+  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const err = error as any;
     // Handle uniqueness error (P2002) as an idempotent success if providerPaymentId already exists
-    if (error.code === "P2002") {
+    if (err.code === "P2002") {
       logWebhookReplay({
         provider: "razorpay",
         event: "payment.captured",
@@ -147,7 +158,7 @@ export async function handlePaymentCaptured(event: Record<string, any>) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handlePaymentFailed(event: Record<string, any>) {
+export async function handlePaymentFailed(event: PaymentFailedEvent) {
   const paymentEntity = event.payload?.payment?.entity;
   const razorpayPaymentId = paymentEntity?.id;
   const razorpayOrderId = paymentEntity?.order_id;
@@ -184,7 +195,7 @@ export async function handlePaymentFailed(event: Record<string, any>) {
       data: {
         providerPaymentId: razorpayPaymentId,
         status: "FAILED",
-        rawPayload: event as Prisma.InputJsonValue,
+        rawPayload: event as unknown as Prisma.InputJsonValue,
       },
     }),
     prisma.booking.update({
@@ -226,7 +237,7 @@ export async function handlePaymentFailed(event: Record<string, any>) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleRefundProcessed(event: Record<string, any>) {
+export async function handleRefundProcessed(event: RefundProcessedEvent) {
   const refundEntity = event.payload?.refund?.entity;
   const razorpayPaymentId = refundEntity?.payment_id;
 
@@ -243,7 +254,7 @@ export async function handleRefundProcessed(event: Record<string, any>) {
       where: { id: payment.id },
       data: {
         status: "REFUNDED",
-        rawPayload: event as Prisma.InputJsonValue,
+        rawPayload: event as unknown as Prisma.InputJsonValue,
       },
     }),
     prisma.booking.update({
@@ -284,7 +295,7 @@ export async function handleRefundProcessed(event: Record<string, any>) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleDisputeCreated(event: Record<string, any>) {
+export async function handleDisputeCreated(event: DisputeCreatedEvent) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
 
@@ -295,7 +306,7 @@ export async function handleDisputeCreated(event: Record<string, any>) {
     data: {
       status: "DISPUTED",
       disputeId: dispute.id,
-      rawPayload: event, // Log the dispute event
+      rawPayload: event as unknown as Prisma.InputJsonValue,
     },
   });
 }
@@ -306,7 +317,7 @@ export async function handleDisputeCreated(event: Record<string, any>) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleDisputeLost(event: Record<string, any>) {
+export async function handleDisputeLost(event: DisputeClosedEvent) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
 
@@ -316,7 +327,7 @@ export async function handleDisputeLost(event: Record<string, any>) {
     where: { providerPaymentId: paymentId },
     data: {
       status: "REFUNDED",
-      rawPayload: event,
+      rawPayload: event as unknown as Prisma.InputJsonValue,
     },
   });
 
@@ -335,7 +346,7 @@ export async function handleDisputeLost(event: Record<string, any>) {
  * @param {Response} res - Express response object
  * @returns {Promise<void>}
  */
-export async function handleDisputeWon(event: Record<string, any>) {
+export async function handleDisputeWon(event: DisputeClosedEvent) {
   const dispute = event.payload?.dispute?.entity;
   const paymentId = dispute?.payment_id;
 
@@ -345,7 +356,7 @@ export async function handleDisputeWon(event: Record<string, any>) {
     where: { providerPaymentId: paymentId },
     data: {
       status: "CAPTURED",
-      rawPayload: event,
+      rawPayload: event as unknown as Prisma.InputJsonValue,
     },
   });
 }

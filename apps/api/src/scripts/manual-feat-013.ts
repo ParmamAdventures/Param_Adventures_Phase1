@@ -1,6 +1,4 @@
 import { prisma } from "../lib/prisma";
-import request from "supertest";
-import { app } from "../app";
 import {
   handleDisputeCreated,
   handleDisputeLost,
@@ -72,11 +70,11 @@ async function run() {
         dispute: {
           entity: {
             id: disputeId,
-            payment_id: payment.providerPaymentId,
+            payment_id: payment.providerPaymentId!,
           },
         },
       },
-    });
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     const paymentDisputed = await prisma.payment.findUnique({ where: { id: payment.id } });
     console.log(`Payment Status after Dispute: ${paymentDisputed?.status} (Expected: DISPUTED)`);
@@ -93,11 +91,11 @@ async function run() {
         dispute: {
           entity: {
             id: disputeId,
-            payment_id: payment.providerPaymentId,
+            payment_id: payment.providerPaymentId!,
           },
         },
       },
-    });
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     const paymentWon = await prisma.payment.findUnique({ where: { id: payment.id } });
     console.log(`Payment Status after Won: ${paymentWon?.status} (Expected: CAPTURED)`);
 
@@ -112,11 +110,11 @@ async function run() {
         dispute: {
           entity: {
             id: disputeId,
-            payment_id: payment.providerPaymentId,
+            payment_id: payment.providerPaymentId!,
           },
         },
       },
-    });
+    } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
     const paymentLost = await prisma.payment.findUnique({ where: { id: payment.id } });
     const bookingLost = await prisma.booking.findUnique({ where: { id: booking.id } });
 

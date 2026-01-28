@@ -4,9 +4,15 @@ import { redisConnection } from "./redis";
 import { verifyAccessToken } from "../utils/jwt";
 import { logger } from "./logger";
 
+declare module "socket.io" {
+  interface Socket {
+    userId?: string;
+  }
+}
+
 let io: Server;
 
-export function initSocket(httpServer: any) {
+export function initSocket(httpServer: import("http").Server | import("https").Server) {
   const pubClient = redisConnection;
   const subClient = redisConnection.duplicate();
 
@@ -37,7 +43,7 @@ export function initSocket(httpServer: any) {
     try {
       const actualToken = token.startsWith("Bearer ") ? token.slice(7) : token;
       const payload = verifyAccessToken(actualToken);
-      (socket as any).userId = payload.sub;
+      socket.userId = payload.sub;
       next();
     } catch {
       next(new Error("Authentication error: Invalid token"));
@@ -45,7 +51,7 @@ export function initSocket(httpServer: any) {
   });
 
   io.on("connection", (socket) => {
-    const userId = (socket as any).userId;
+    const userId = socket.userId;
     logger.info(`🔌 Socket connected: ${socket.id} (User: ${userId})`);
 
     // Join a private room for this user
@@ -69,7 +75,7 @@ export function getIO() {
 /**
  * Emit an event to a specific user
  */
-export function emitToUser(userId: string, event: string, data: any) {
+export function emitToUser(userId: string, event: string, data: unknown) {
   if (!io) return;
   io.to(`user:${userId}`).emit(event, data);
 }

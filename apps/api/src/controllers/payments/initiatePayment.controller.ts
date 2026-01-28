@@ -14,7 +14,7 @@ import { notificationQueue } from "../../lib/queue";
  * @returns {Promise<void>}
  */
 export async function initiatePayment(req: Request, res: Response) {
-  const userId = (req.user as any).id;
+  const userId = req.user!.id;
   const { id: bookingId } = req.params;
   console.log("HIT INITIATE PAYMENT", bookingId);
 
@@ -80,7 +80,7 @@ export async function initiatePayment(req: Request, res: Response) {
         currency: order.currency,
         status: "CREATED",
         method: "OTHER",
-        rawPayload: order as any,
+        rawPayload: order as unknown as import("@prisma/client").Prisma.InputJsonValue,
       },
     });
 

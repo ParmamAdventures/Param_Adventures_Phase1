@@ -1,8 +1,6 @@
 import CloudinaryStorage from "multer-storage-cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 
-import { Request } from "express";
-
 const requiredEnv = ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
 const missingEnv = requiredEnv.filter((key) => !process.env[key]);
 
@@ -19,6 +17,7 @@ cloudinary.config({
 
 const storage = CloudinaryStorage({
   cloudinary: cloudinary,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   params: async (_req: any, file: any) => {
     const isVideo = file.mimetype.startsWith("video/");
     return {

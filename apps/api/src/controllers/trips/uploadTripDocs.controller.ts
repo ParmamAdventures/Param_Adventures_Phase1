@@ -18,7 +18,7 @@ export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => 
     throw new HttpError(400, "INVALID_REQUEST", "URL and Type are required");
   }
 
-  const trip = (await getTripOrThrowError(id)) as any;
+  const trip = (await getTripOrThrowError(id)) as import("@prisma/client").Trip;
 
   // Authz: Guide assigned to trip OR Manager/Admin
   const isAssignedGuide = await prisma.tripsOnGuides.findUnique({
@@ -36,8 +36,10 @@ export const uploadTripDocs = catchAsync(async (req: Request, res: Response) => 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let existingDocs: any[] = [];
 
-  if (Array.isArray(trip.documentation)) {
-    existingDocs = trip.documentation as any[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  if (Array.isArray((trip as any).documentation)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    existingDocs = (trip as any).documentation as any[];
   }
 
   const newDoc = {

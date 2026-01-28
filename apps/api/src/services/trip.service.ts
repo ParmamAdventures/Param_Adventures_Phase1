@@ -11,7 +11,8 @@ export class TripService {
    * @returns The created trip object.
    */
   async createTrip(data: Record<string, unknown>, userId: string) {
-    const { gallery, startDate, endDate, ...rest } = data as any; // Cast data to any for destructuring if needed, or better type it
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { gallery, startDate, endDate, ...rest } = data as any;
 
     const tripData: Prisma.TripCreateInput = {
       ...rest,
@@ -75,6 +76,7 @@ export class TripService {
    * Logic for updating an existing trip (to be implemented).
    */
   async updateTrip(id: string, data: Record<string, unknown>, userId: string) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { gallery, startDate, endDate, ...rest } = data as any;
 
     const tripData: Prisma.TripUpdateInput = {

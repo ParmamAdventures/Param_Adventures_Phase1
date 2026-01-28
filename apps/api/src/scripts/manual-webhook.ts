@@ -1,6 +1,5 @@
 import crypto from "crypto";
 import { prisma } from "../lib/prisma";
-import { signAccessToken } from "../utils/jwt";
 
 // 1. Setup Environment & Mock Secret
 process.env.RAZORPAY_WEBHOOK_SECRET = "test_secret";

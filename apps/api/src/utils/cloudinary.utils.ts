@@ -28,7 +28,7 @@ export function extractPublicIdFromUrl(url?: string | null): string | null {
     publicIdSegments[lastIndex] = publicIdSegments[lastIndex].replace(/\.[^.]+$/, "");
 
     return publicIdSegments.join("/");
-  } catch (error) {
+  } catch {
     return null;
   }
 }

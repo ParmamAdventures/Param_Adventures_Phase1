@@ -15,11 +15,6 @@ export type JobType =
   | "SEND_PAYMENT_INITIATED"
   | "SEND_PAYMENT_FAILED";
 
-interface JobData {
-  type: JobType;
-  payload: any;
-}
-
 const QUEUE_NAME = "param_adventures_notifications";
 
 // 1. Create the Queue
@@ -38,6 +33,7 @@ export const notificationQueue = new Queue(QUEUE_NAME, {
 // 2. Create the Worker
 export const notificationWorker = new Worker(
   QUEUE_NAME,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async (job: Job<any>) => {
     // Relaxed type to allow flexible data
     const type = job.name as JobType;

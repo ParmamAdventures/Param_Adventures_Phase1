@@ -32,9 +32,9 @@ export const invoiceService = {
       const doc = new PDFDocument({ margin: 50 });
       const buffers: Buffer[] = [];
 
-      doc.on("data", (buffer: any) => buffers.push(buffer));
+      doc.on("data", (buffer: Buffer) => buffers.push(buffer));
       doc.on("end", () => resolve(Buffer.concat(buffers)));
-      doc.on("error", (err: any) => reject(err));
+      doc.on("error", (err: Error) => reject(err));
 
       // --- Header ---
       doc.fontSize(20).text("PARAM ADVENTURES", { align: "center" }).moveDown();

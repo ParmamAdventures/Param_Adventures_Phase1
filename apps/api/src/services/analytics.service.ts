@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import { subMonths, startOfMonth, endOfMonth } from "date-fns";
+import { RazorpayWebhookEvent, isPaymentEvent } from "../types/razorpay.types";
 
 export class AnalyticsService {
   async getRevenueStats() {
@@ -144,55 +145,57 @@ export class AnalyticsService {
     const [total, captured, failed, refunded, refundAmountInfo] = await Promise.all([
       prisma.payment.count(),
       prisma.payment.count({ where: { status: "CAPTURED" } }),
-      prisma.payment.findMany({ 
-          where: { status: "FAILED" },
-          select: { rawPayload: true } 
+      prisma.payment.findMany({
+        where: { status: "FAILED" },
+        select: { rawPayload: true },
       }),
       prisma.payment.count({ where: { status: "REFUNDED" } }),
       prisma.payment.aggregate({
-          where: { status: "REFUNDED" },
-          _sum: { amount: true }
-      })
+        where: { status: "REFUNDED" },
+        _sum: { amount: true },
+      }),
     ]);
 
     const successRate = total > 0 ? (captured / total) * 100 : 0;
-    
+
     // Aggregating failure reasons
     const reasonCounts: Record<string, number> = {};
-    failed.forEach(p => {
-        let reason = "Unknown";
-        if (p.rawPayload && typeof p.rawPayload === 'object') {
-            const payload = p.rawPayload as any;
-            // Razorpay error structure in webhook payload usually: payload.payment.entity.error_description
-            // or sometimes top level error field depending on webhook type
-            const entity = payload.payload?.payment?.entity;
-            if (entity?.error_description) {
-                reason = entity.error_description;
-            } else if (entity?.error_code) {
-                reason = entity.error_code;
-            }
+    failed.forEach((p) => {
+      let reason = "Unknown";
+      if (p.rawPayload && typeof p.rawPayload === "object") {
+        const payload = p.rawPayload as unknown as RazorpayWebhookEvent;
+        if (isPaymentEvent(payload)) {
+          // Razorpay error structure in webhook payload usually: payload.payment.entity.error_description
+          // or sometimes top level error field depending on webhook type
+          const entity = payload.payload?.payment?.entity;
+          if (entity?.error_description) {
+            reason = entity.error_description;
+          } else if (entity?.error_code) {
+            reason = entity.error_code;
+          }
         }
-        reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
+      }
+      reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
     });
 
     const topFailureReasons = Object.entries(reasonCounts)
-        .map(([reason, count]) => ({ reason, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
+      .map(([reason, count]) => ({ reason, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
 
     return {
-        totalTransactions: total,
-        successRate: parseFloat(successRate.toFixed(2)),
-        refunds: {
-            count: refunded,
-            totalAmount: (refundAmountInfo._sum.amount || 0) / 100
-        },
-        breakdown: {
-            captured,
-            failed: failed.length,
-            refunded
-        },
-        topFailureReasons
+      totalTransactions: total,
+      successRate: parseFloat(successRate.toFixed(2)),
+      refunds: {
+        count: refunded,
+        totalAmount: (refundAmountInfo._sum.amount || 0) / 100,
+      },
+      breakdown: {
+        captured,
+        failed: failed.length,
+        refunded,
+      },
+      topFailureReasons,
     };
   }
 }

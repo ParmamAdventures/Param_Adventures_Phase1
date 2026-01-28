@@ -478,7 +478,7 @@ async function createTrips(
     guide1: { id: string };
     guide2: { id: string };
   },
-  images: Array<{ id: string }>,
+  _images: Array<{ id: string }>,
 ) {
   console.log("\n🌍 Creating a massive expedition fleet (35+ trips)...");
 
@@ -1000,7 +1000,7 @@ async function createServerConfiguration() {
       try {
         const bcrypt = await import("bcryptjs").then((m) => m.default);
         finalValue = await bcrypt.hash(finalValue, 12);
-      } catch (_error) {
+      } catch {
         console.warn(`Failed to encrypt ${config.key}, using plaintext`);
       }
     }
@@ -1075,12 +1075,14 @@ async function main() {
     const users = await createUsers(roles);
 
     if (process.env.SEED_DEMO_DATA === "true") {
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       const images = await createImages(users as any);
       const trips = await createTrips(users as any, images);
       await createHeroSlides();
       await createBlogs(users as any, trips, images);
       await createBookingsAndPayments(users as any, trips);
       await createReviewsAndInquiries(users as any, trips);
+      /* eslint-enable @typescript-eslint/no-explicit-any */
     }
 
     await createSiteConfig();

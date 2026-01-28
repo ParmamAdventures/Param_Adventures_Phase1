@@ -19,12 +19,8 @@ export interface JwtPayload {
  * @returns {string} - Signed JWT access token
  */
 export function signAccessToken(userId: string) {
-  const opts: jwt.SignOptions = { expiresIn: env.ACCESS_TOKEN_TTL as any };
-  return jwt.sign(
-    { sub: userId, jti: randomUUID() },
-    env.JWT_ACCESS_SECRET as unknown as jwt.Secret,
-    opts,
-  );
+  const opts: jwt.SignOptions = { expiresIn: env.ACCESS_TOKEN_TTL as jwt.SignOptions["expiresIn"] };
+  return jwt.sign({ sub: userId, jti: randomUUID() }, env.JWT_ACCESS_SECRET as string, opts);
 }
 
 /**
@@ -33,12 +29,10 @@ export function signAccessToken(userId: string) {
  * @returns {string} - Signed JWT refresh token
  */
 export function signRefreshToken(userId: string) {
-  const opts: jwt.SignOptions = { expiresIn: env.REFRESH_TOKEN_TTL as any };
-  return jwt.sign(
-    { sub: userId, jti: randomUUID() },
-    env.JWT_REFRESH_SECRET as unknown as jwt.Secret,
-    opts,
-  );
+  const opts: jwt.SignOptions = {
+    expiresIn: env.REFRESH_TOKEN_TTL as jwt.SignOptions["expiresIn"],
+  };
+  return jwt.sign({ sub: userId, jti: randomUUID() }, env.JWT_REFRESH_SECRET as string, opts);
 }
 
 /**
@@ -58,7 +52,7 @@ export function verifyRefreshToken(token: string) {
 export function signResetToken(userId: string) {
   return jwt.sign(
     { sub: userId, jti: randomUUID() },
-    env.JWT_ACCESS_SECRET as unknown as jwt.Secret, // Resusing access secret for now, ideally dedicated secret
+    env.JWT_ACCESS_SECRET as string, // Resusing access secret for now, ideally dedicated secret
     { expiresIn: "15m" },
   );
 }

@@ -8,7 +8,7 @@ import { sanitizeHtml } from "../../utils/sanitize";
 import { ErrorMessages } from "../../constants/errorMessages";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
-import { EntityStatus, EntityStatusType } from "../../constants/status";
+import { EntityStatus } from "../../constants/status";
 
 /**
  * Update Blog
@@ -26,7 +26,7 @@ export const updateBlog = catchAsync(async (req: Request, res: Response) => {
 
   const updateData: Prisma.BlogUncheckedUpdateInput = {
     title,
-    content: content ? (sanitizeHtml(content) as any) : undefined,
+    content: content ? (sanitizeHtml(content) as unknown as Prisma.InputJsonValue) : undefined,
     excerpt,
     tripId,
     coverImageId,

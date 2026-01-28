@@ -99,12 +99,9 @@ export const refundBooking = async (req: Request, res: Response) => {
       },
       "Refund processed successfully",
     );
-  } catch (error: any) {
-    console.error("Refund Controller Error:", error);
-    throw new HttpError(
-      502,
-      "GATEWAY_ERROR",
-      error.error?.description || "Refund processing failed",
-    );
+  } catch (error) {
+    const err = error as { error?: { description?: string } };
+    console.error("Refund Controller Error:", err);
+    throw new HttpError(502, "GATEWAY_ERROR", err.error?.description || "Refund processing failed");
   }
 };

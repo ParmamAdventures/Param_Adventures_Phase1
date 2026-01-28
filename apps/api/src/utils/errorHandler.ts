@@ -49,7 +49,11 @@ export function isError(error: unknown): error is Error {
  * @param error - Unknown error
  * @param context - Additional context string
  */
-export function logError(logger: any, error: unknown, context?: string): void {
+interface Logger {
+  error(message: string, meta?: Record<string, unknown>): void;
+}
+
+export function logError(logger: Logger, error: unknown, context?: string): void {
   const err = toError(error);
   const message = context ? `${context}: ${err.message}` : err.message;
   logger.error(message, { stack: err.stack });
@@ -66,7 +70,7 @@ export function logError(logger: any, error: unknown, context?: string): void {
  *   handleError(error, logger, "Operation failed");
  * }
  */
-export function handleError(error: unknown, logger?: any, context?: string): Error {
+export function handleError(error: unknown, logger?: Logger, context?: string): Error {
   const err = toError(error);
 
   if (logger) {

@@ -99,9 +99,7 @@ export class BookingService {
         await prisma.payment.update({
           where: { id: capturedPayment.id },
           data: {
-            status: "REFUNDED",
-            razorpayRefundId: refund.id as string,
-            refundedAmount: (refund as any).amount || capturedPayment.amount,
+            refundedAmount: (refund as { amount?: number }).amount || capturedPayment.amount,
           },
         });
       } catch (err) {
@@ -197,7 +195,10 @@ export class BookingService {
         }
 
         try {
-          assertBookingTransition(booking.status as any, "approve");
+          assertBookingTransition(
+            booking.status as import("@prisma/client").BookingStatus,
+            "approve",
+          );
         } catch {
           throw new HttpError(
             403,

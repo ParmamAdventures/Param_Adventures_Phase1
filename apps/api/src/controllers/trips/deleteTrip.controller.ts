@@ -34,10 +34,12 @@ export const deleteTrip = catchAsync(async (req: Request, res: Response) => {
   // If Booking exists, delete usually fails.
   // We should warn user or block it.
 
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  const bookings = (trip as any).bookings || [];
+  const tripWithBookings = trip as import("@prisma/client").Trip & {
+    bookings: import("@prisma/client").Booking[];
+  };
+  const bookings = tripWithBookings.bookings || [];
   const hasActiveBookings = bookings.some(
-    (b: any) => ["CONFIRMED", "PAID"].includes(b.status) || b.paymentStatus === "PAID",
+    (b) => ["CONFIRMED", "PAID"].includes(b.status) || b.paymentStatus === "PAID",
   );
 
   if (hasActiveBookings) {

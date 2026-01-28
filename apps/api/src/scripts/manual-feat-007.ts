@@ -1,4 +1,3 @@
-import { signAccessToken } from "../utils/jwt";
 import { prisma } from "../lib/prisma";
 import { notificationQueue } from "../lib/queue";
 

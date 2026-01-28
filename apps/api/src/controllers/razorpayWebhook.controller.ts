@@ -31,7 +31,8 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
     throw new HttpError(400, "INVALID_SIGNATURE", "Signature verification failed");
   }
 
-  let event: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let event: any;
   try {
     event = JSON.parse(payloadString);
   } catch {
@@ -44,24 +45,34 @@ export async function razorpayWebhookHandler(req: Request, res: Response) {
 
   try {
     switch (event.event) {
-      case "payment.captured":
       case "order.paid":
-        await handlePaymentCaptured(event);
+      case "payment.captured":
+        await handlePaymentCaptured(
+          event as import("../types/razorpay.types").PaymentCapturedEvent,
+        );
         break;
       case "payment.failed":
-        await handlePaymentFailed(event);
+        await handlePaymentFailed(event as import("../types/razorpay.types").PaymentFailedEvent);
         break;
       case "refund.processed":
-        await handleRefundProcessed(event);
+        await handleRefundProcessed(
+          event as import("../types/razorpay.types").RefundProcessedEvent,
+        );
         break;
       case "payment.dispute.created":
-        await import("./paymentEvents").then((m) => m.handleDisputeCreated(event));
+        await import("./paymentEvents").then((m) =>
+          m.handleDisputeCreated(event as import("../types/razorpay.types").DisputeCreatedEvent),
+        );
         break;
       case "payment.dispute.won":
-        await import("./paymentEvents").then((m) => m.handleDisputeWon(event));
+        await import("./paymentEvents").then((m) =>
+          m.handleDisputeWon(event as import("../types/razorpay.types").DisputeClosedEvent),
+        );
         break;
       case "payment.dispute.lost":
-        await import("./paymentEvents").then((m) => m.handleDisputeLost(event));
+        await import("./paymentEvents").then((m) =>
+          m.handleDisputeLost(event as import("../types/razorpay.types").DisputeClosedEvent),
+        );
         break;
       default:
         logger.info(`Ignoring Razorpay webhook event: ${event.event}`);

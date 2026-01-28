@@ -17,7 +17,7 @@ razorpayService.refundPayment = async (paymentId: string, options) => {
     created_at: Math.floor(Date.now() / 1000),
     status: "processed",
     speed: "normal",
-  } as any;
+  } as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 };
 
 async function run() {

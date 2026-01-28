@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { Prisma, BlogStatus } from "@prisma/client";
 import { HttpError } from "../../utils/httpError";
 import { ErrorMessages } from "../../constants/errorMessages";
 
@@ -17,14 +18,14 @@ export async function getBlogBySlug(req: Request, res: Response) {
   const canViewInternal =
     permissions.includes("blog:approve") || permissions.includes("blog:view:internal");
 
-  const whereCondition: any = { slug };
+  const whereCondition: Prisma.BlogWhereInput = { slug };
 
   if (!canViewInternal) {
     if (user) {
       // Allow if PUBLISHED or if the user is the author
       whereCondition.OR = [{ status: "PUBLISHED" }, { authorId: user.id }];
     } else {
-      whereCondition.status = "PUBLISHED";
+      whereCondition.status = "PUBLISHED" as BlogStatus;
     }
   }
 

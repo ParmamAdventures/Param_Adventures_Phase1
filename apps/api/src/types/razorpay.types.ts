@@ -99,7 +99,7 @@ export interface RazorpayWebhookEventBase<T = unknown> {
 
 // Specific event types
 export type PaymentCapturedEvent = RazorpayWebhookEventBase<RazorpayPaymentEntity> & {
-  event: "payment.captured";
+  event: "payment.captured" | "order.paid";
   contains: ["payment"];
 };
 

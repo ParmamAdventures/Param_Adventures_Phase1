@@ -228,13 +228,14 @@ export class BlogService {
       updatedAt: new Date(),
     };
 
-    // If editing an approved or published blog, revert to pending review
-    if ([EntityStatus.APPROVED, EntityStatus.PUBLISHED].includes(blog.status as any)) {
+    const statusStr = blog.status as string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ([EntityStatus.APPROVED, EntityStatus.PUBLISHED].includes(statusStr as any)) {
       updateData.status = EntityStatus.PENDING_REVIEW;
     }
 
     if (title && title !== blog.title) {
-      updateData.slug = slugify(title);
+      updateData.slug = slugify(title as string);
     }
 
     const updated = await prisma.blog.update({

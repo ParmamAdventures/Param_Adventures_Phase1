@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
+import { BlogStatus } from "@prisma/client";
 
 /**
  * Get Blogs
@@ -11,7 +12,7 @@ export async function getBlogs(req: Request, res: Response) {
   const { status } = req.query;
 
   const blogs = await prisma.blog.findMany({
-    where: status ? { status: status as any } : undefined,
+    where: status ? { status: status as BlogStatus } : undefined,
     include: {
       author: {
         select: {

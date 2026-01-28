@@ -11,7 +11,7 @@ import { prisma } from "../lib/prisma";
  */
 export function requirePermission(permission: string) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const user = (req as any).user;
+    const user = req.user;
 
     if (!user) {
       throw new HttpError(403, "FORBIDDEN", "Unauthenticated");
@@ -50,7 +50,7 @@ export function requirePermission(permission: string) {
         });
       });
       user.permissions = Array.from(permissions);
-      (req as any).user.permissions = user.permissions; // persist for downstream
+      req.user!.permissions = user.permissions; // persist for downstream
     }
 
     // Final check

@@ -29,6 +29,7 @@ export const publishBlog = catchAsync(async (req: Request, res: Response) => {
   }
 
   const validStatuses = [EntityStatus.APPROVED, EntityStatus.PENDING_REVIEW];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!validStatuses.includes(blog.status as any)) {
     throw new HttpError(403, "INVALID_STATE", "Blog must be approved or in review to be published");
   }

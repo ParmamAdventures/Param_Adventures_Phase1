@@ -27,7 +27,7 @@ export function autoLog(options: AutoLogOptions) {
       // Usually, audit logs track what *happened*.
       // If the status is 2xx, the action succeeded.
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        const actorId = (req as any).user?.id;
+        const actorId = req.user?.id;
         const targetId = options.getTargetId ? options.getTargetId(req) : req.params.id;
 
         auditService.logAudit({

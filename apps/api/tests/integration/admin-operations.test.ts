@@ -18,7 +18,7 @@ describe("Admin Operations", () => {
       await prisma.user?.deleteMany();
       await prisma.role?.deleteMany();
       await prisma.permission?.deleteMany();
-    } catch (e) {
+    } catch {
       /* cleanup errors ignored */
     }
 

@@ -14,23 +14,7 @@ type MaybeHttpError = {
 
 const isDev = process.env.NODE_ENV === "development";
 
-type ErrorPayload = {
-  code: string;
-  message: string;
-  details?: unknown;
-  stack?: string;
-};
-
-function buildError(code: string, message: string, details?: unknown, stack?: string) {
-  const payload: ErrorPayload = {
-    code,
-    message,
-    ...(isDev && details ? { details } : {}),
-    ...(isDev && stack ? { stack } : {}),
-  };
-
-  return { error: payload };
-}
+// Unused ErrorPayload removed
 
 /**
  * Global error handler middleware.

@@ -48,7 +48,9 @@ export async function attachPermissions(req: Request, res: Response, next: NextF
 
     const roles = user.roles;
 
-    const roleNames = roles.map((r: any) => r.role?.name).filter(Boolean) as string[];
+    const roleNames = roles
+      .map((r) => (r as { role: { name: string } }).role?.name)
+      .filter(Boolean) as string[];
 
     const permissionsSet = new Set<string>();
     for (const r of roles) {

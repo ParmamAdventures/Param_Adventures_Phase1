@@ -1,5 +1,5 @@
 import passport from "passport";
-import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { prisma } from "../lib/prisma";
 import { env } from "./env";
 import { logger } from "../lib/logger";
@@ -12,7 +12,8 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
         clientSecret: env.GOOGLE_CLIENT_SECRET,
         callbackURL: "/api/auth/google/callback", // Proxied via Nginx or direct
       },
-      async (_accessToken: any, _refreshToken: any, profile: any, done: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      async (_accessToken: string, _refreshToken: string, profile: any, done: any) => {
         try {
           // 1. Check if user exists by Google ID
           let user = await prisma.user.findUnique({
