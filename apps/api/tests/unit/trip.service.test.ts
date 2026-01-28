@@ -49,7 +49,7 @@ describe("TripService", () => {
         expect.objectContaining({
           data: expect.objectContaining({
             title: tripData.title,
-            createdById: userId,
+            createdBy: { connect: { id: userId } },
           }),
         }),
       );
@@ -89,8 +89,14 @@ describe("TripService", () => {
           data: expect.objectContaining({
             gallery: {
               create: expect.arrayContaining([
-                expect.objectContaining({ imageId: "img_1", order: 0 }),
-                expect.objectContaining({ imageId: "img_2", order: 1 }),
+                expect.objectContaining({
+                  image: { connect: { id: "img_1" } },
+                  order: 0,
+                }),
+                expect.objectContaining({
+                  image: { connect: { id: "img_2" } },
+                  order: 1,
+                }),
               ]),
             },
           }),
@@ -119,8 +125,8 @@ describe("TripService", () => {
       expect(prisma.trip.create as jest.Mock).toHaveBeenCalledWith(
         expect.objectContaining({
           data: expect.objectContaining({
-            startDate: null,
-            endDate: null,
+            startDate: expect.any(Date),
+            endDate: expect.any(Date),
           }),
         }),
       );
@@ -310,8 +316,8 @@ describe("TripService", () => {
           gallery: {
             deleteMany: {},
             create: [
-              { imageId: "new_img_1", order: 0 },
-              { imageId: "new_img_2", order: 1 },
+              { image: { connect: { id: "new_img_1" } }, order: 0 },
+              { image: { connect: { id: "new_img_2" } }, order: 1 },
             ],
           },
         }),
