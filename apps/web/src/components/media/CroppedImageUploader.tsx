@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import Cropper from "react-easy-crop";
 import {
   Dialog,
@@ -51,7 +52,7 @@ export default function CroppedImageUploader({
     height: number;
   } | null>(null);
 
-  const { upload, isUploading, error } = useUpload();
+  const { upload, isUploading } = useUpload(); // Using hook
   const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,8 +136,8 @@ export default function CroppedImageUploader({
       <input id={id} type="file" accept="image/*" onChange={onFileChange} className="hidden" />
 
       {uploadedUrl && (
-        <div className="border-border group relative overflow-hidden rounded-xl border">
-          <img src={uploadedUrl} alt="Uploaded" className="h-48 w-full object-cover" />
+        <div className="border-border group relative h-48 w-full overflow-hidden rounded-xl border">
+          <Image src={uploadedUrl} alt="Uploaded" fill className="object-cover" />
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
             <Button
               variant="outline"

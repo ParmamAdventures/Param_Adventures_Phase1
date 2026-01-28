@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import Image from "next/image";
+// import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import TripHero from "./TripHero";
@@ -150,10 +151,11 @@ function RenderTripLayout({ trip }: { trip: TripFull }) {
                       key={i}
                       className="group relative aspect-square cursor-zoom-in overflow-hidden rounded-xl"
                     >
-                      <img
+                      <Image
                         src={item.image.mediumUrl}
                         alt={`Gallery ${i}`}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
                   ))}

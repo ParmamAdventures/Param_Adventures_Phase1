@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/api";
 import { useEffect, useState } from "react";
 import { StarRating } from "../ui/StarRating";
 import { formatDistanceToNow } from "date-fns";
+import Image from "next/image";
 
 interface Review {
   id: string;
@@ -77,10 +78,11 @@ export default function ReviewList({ tripId, refreshTrigger }: ReviewListProps) 
               {/* Avatar */}
               <div className="h-10 w-10 overflow-hidden rounded-full bg-slate-200">
                 {review.user.avatarImage?.thumbUrl ? (
-                  <img
+                  <Image
                     src={review.user.avatarImage.thumbUrl}
                     alt="User"
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="bg-primary/20 text-primary flex h-full w-full items-center justify-center font-bold">

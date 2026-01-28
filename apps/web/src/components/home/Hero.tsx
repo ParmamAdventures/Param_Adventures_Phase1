@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "../ui/Button";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/context/AuthContext";
+// import { useAuth } from "@/context/AuthContext";
 
 interface HeroSlide {
   id: string;
@@ -26,7 +26,7 @@ interface HeroProps {
  * @returns {React.ReactElement} Component element
  */
 export function Hero({ slides = [] }: HeroProps) {
-  const { user } = useAuth();
+  // const { user: _user } = useAuth();
   const [activeIndex, setActiveIndex] = useState(0);
 
   // If no slides, fallback to default static content or a placeholder list

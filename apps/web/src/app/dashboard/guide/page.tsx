@@ -15,6 +15,7 @@ import {
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import Spinner from "@/components/ui/Spinner";
 import Link from "next/link";
+import Image from "next/image";
 
 type GuideBooking = {
   id: string;
@@ -111,14 +112,15 @@ export default function GuideViewPage() {
               <div className="flex flex-col gap-6 p-6 md:flex-row md:p-8">
                 {/* Image */}
                 <div className="bg-muted relative h-32 w-full flex-shrink-0 overflow-hidden rounded-2xl md:w-32">
-                  <img
+                  <Image
                     src={
                       trip.coverImage?.mediumUrl ||
                       trip.coverImageLegacy ||
                       "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&q=80"
                     }
                     alt={trip.title}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
 

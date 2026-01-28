@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { BlogEditor } from "@/components/editor/BlogEditor";
 import { Blog } from "@/types/blog";
@@ -81,11 +82,7 @@ export default function BlogPreviewPage() {
 
       {blog.coverImage && (
         <div className="bg-muted relative aspect-video overflow-hidden rounded-xl">
-          <img
-            src={blog.coverImage.mediumUrl}
-            alt={blog.title}
-            className="h-full w-full object-cover"
-          />
+          <Image src={blog.coverImage.mediumUrl} alt={blog.title} fill className="object-cover" />
         </div>
       )}
 

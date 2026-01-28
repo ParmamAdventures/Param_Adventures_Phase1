@@ -4,18 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import Spinner from "../ui/Spinner";
-import { motion } from "framer-motion";
-import {
-  Plus,
-  CheckSquare,
-  Users,
-  Eye,
-  ArrowRight,
-  Activity,
-  FileText,
-  Map,
-  Settings,
-} from "lucide-react";
+import { Plus, CheckSquare, Users, Eye, Activity, FileText, Map, Settings } from "lucide-react";
 
 interface DashboardStats {
   counts: {
@@ -246,4 +235,3 @@ export default function DashboardOverview() {
     </div>
   );
 }
-

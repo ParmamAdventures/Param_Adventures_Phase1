@@ -5,14 +5,13 @@ import { useAuth } from "../../../context/AuthContext";
 import { apiFetch } from "../../../lib/api";
 import { Loader2, ShieldAlert, Briefcase } from "lucide-react";
 import ManagerTripCard from "../../../components/manager/ManagerTripCard";
-import { useRouter } from "next/navigation";
+// useRouter removed if unused
 import { Trip } from "@/types/trip";
 
 export default function ManagerDashboard() {
   const { user, isLoading } = useAuth();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [fetching, setFetching] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && user) {
@@ -92,4 +91,4 @@ export default function ManagerDashboard() {
   );
 }
 
-import AssignCrewModal from "../../../components/manager/AssignCrewModal";
+// AssignCrewModal removed as it was unused

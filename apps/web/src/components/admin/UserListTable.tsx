@@ -8,7 +8,7 @@ import { useRoles } from "../../hooks/useRoles";
 import Button from "../ui/Button";
 import StatusBadge from "../ui/StatusBadge";
 import Spinner from "../ui/Spinner";
-import { Select } from "../ui/Select";
+// import { Select } from "../ui/Select";
 
 type Props = {
   users: User[];
@@ -72,32 +72,7 @@ export default function UserListTable({ users, loading, onRefresh }: Props) {
     }
   };
 
-  const handleUpdateStatus = async (userId: string, status: string) => {
-    let reason = "";
-    if (status !== "ACTIVE") {
-      reason = prompt("Provide a reason for this action:") || "";
-      if (!reason && status === "BANNED") {
-        alert("A reason is required for banning.");
-        return;
-      }
-    }
-
-    setActionLoading(userId);
-    try {
-      const res = await apiFetch(`/admin/users/${userId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, reason }),
-      });
-      if (res.ok) onRefresh();
-      else alert("Failed to update status");
-    } catch (e) {
-      console.error(e);
-      alert("Failed to update status");
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  /* Removed handleUpdateStatus as it is unused */
 
   const handleDelete = async (userId: string) => {
     if (

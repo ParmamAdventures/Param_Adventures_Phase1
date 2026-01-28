@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { apiFetch } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import Spinner from "@/components/ui/Spinner";
 import { ImageUploader } from "@/components/media/ImageUploader";
 
@@ -33,8 +34,8 @@ export default function EditBlogPage() {
         } else {
           console.error("Failed to fetch blog");
         }
-      } catch (error) {
-        console.error("Failed to load blog", error);
+      } catch {
+        console.error("Failed to load blog");
       } finally {
         setLoading(false);
       }
@@ -73,8 +74,8 @@ export default function EditBlogPage() {
         const err = await response.json();
         alert(err.error?.message || err.message || "Failed to save blog");
       }
-    } catch (error) {
-      console.error("Error saving blog", error);
+    } catch {
+      console.error("Error saving blog");
     } finally {
       setSaving(false);
     }
@@ -101,10 +102,11 @@ export default function EditBlogPage() {
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
             {coverImage ? (
               <div className="group relative aspect-video overflow-hidden rounded-xl">
-                <img
+                <Image
                   src={(coverImage as { mediumUrl: string }).mediumUrl}
                   alt="Cover"
-                  className="h-full w-full object-cover"
+                  fill
+                  className="object-cover"
                 />
                 <button
                   onClick={() => setCoverImage(null)}

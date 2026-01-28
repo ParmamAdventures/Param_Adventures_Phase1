@@ -48,7 +48,7 @@ interface Props {
  * @example
  * <BookingModal isOpen={true} trip={trip} onClose={() => {}} onBookingSuccess={() => {}} />
  */
-export default function BookingModal({ isOpen, onClose, trip, onBookingSuccess }: Props) {
+export default function BookingModal({ isOpen, onClose, trip }: Props) {
   const { user } = useAuth();
   const { showToast } = useToast();
   const { state, execute } = useAsyncOperation<Booking>();

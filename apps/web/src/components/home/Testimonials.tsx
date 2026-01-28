@@ -1,6 +1,7 @@
 ﻿"use client";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { apiFetch } from "../../lib/api";
 
 type Review = {
@@ -36,8 +37,8 @@ export function Testimonials({ tripId }: { tripId?: string }) {
           const data = await res.json();
           setReviews(data);
         }
-      } catch (error) {
-        console.error("Failed to fetch reviews", error);
+      } catch (_error) {
+        console.error("Failed to fetch reviews", _error);
       } finally {
         setIsLoading(false);
       }
@@ -77,11 +78,14 @@ export function Testimonials({ tripId }: { tripId?: string }) {
               </div>
               <div className="mt-4 flex items-center gap-4">
                 {t.user.avatarImage?.thumbUrl ? (
-                  <img
-                    src={t.user.avatarImage.thumbUrl}
-                    alt={t.user.name}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
+                  <div className="relative h-10 w-10 overflow-hidden rounded-full">
+                    <Image
+                      src={t.user.avatarImage.thumbUrl}
+                      alt={t.user.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 ) : (
                   <div className="bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold">
                     {t.user.name.charAt(0)}

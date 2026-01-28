@@ -19,9 +19,9 @@ export default function PermissionGroup({
   allSystemPermissions,
   icon,
 }: PermissionGroupProps) {
-  const domainPermissions = allSystemPermissions.filter((p) =>
+  /* const domainPermissions = allSystemPermissions.filter((p) =>
     p.startsWith(title.toLowerCase().slice(0, -1)),
-  );
+  ); */
 
   // Actually, let's make the filtering more robust based on common prefixes
   const getPrefix = (t: string) => {

@@ -1,7 +1,7 @@
 import { Hero } from "@/components/home/Hero";
 import { FeaturedSection } from "@/components/home/FeaturedSection";
 import TripCarousel from "@/components/trips/TripCarousel";
-import TripCard from "@/components/trips/TripCard";
+// import TripCard from "@/components/trips/TripCard"; (Removed)
 import BlogCard from "@/components/blogs/BlogCard";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";

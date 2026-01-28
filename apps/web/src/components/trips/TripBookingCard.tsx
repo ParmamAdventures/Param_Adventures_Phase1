@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import { useAuth } from "../../context/AuthContext";
-import { apiFetch } from "../../lib/api";
+// import { apiFetch } from "../../lib/api";
 import { useToast } from "../ui/ToastProvider";
 import { useRazorpay } from "../../hooks/useRazorpay";
 import Link from "next/link";
@@ -37,10 +37,9 @@ export default function TripBookingCard({ trip }: Props) {
     error,
   } = useRazorpay();
 
-  const [isLoading, setIsLoading] = useState(false);
   const [bookingId, setBookingId] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [paymentInitiated, setPaymentInitiated] = useState(false);
+  const [, setPaymentInitiated] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const disabled = trip?.status !== "PUBLISHED";

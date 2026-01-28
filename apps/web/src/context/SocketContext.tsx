@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
-import { getAccessToken, API_URL } from "../lib/api";
+import { getAccessToken } from "../lib/api";
 import { useToast } from "../components/ui/ToastProvider";
 
 interface SocketContextValue {

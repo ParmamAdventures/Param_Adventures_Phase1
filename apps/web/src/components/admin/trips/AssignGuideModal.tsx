@@ -1,4 +1,5 @@
 ﻿"use client";
+import Image from "next/image";
 
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../ui/Dialog";
@@ -110,11 +111,14 @@ export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) 
                   <div className="flex items-center gap-3">
                     <div className="bg-muted flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full">
                       {guide.avatarImage ? (
-                        <img
-                          src={guide.avatarImage.thumbUrl}
-                          alt={guide.name}
-                          className="h-full w-full object-cover"
-                        />
+                        <div className="relative h-full w-full">
+                          <Image
+                            src={guide.avatarImage.thumbUrl}
+                            alt={guide.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
                         <User size={16} className="text-muted-foreground" />
                       )}
@@ -143,4 +147,3 @@ export default function AssignGuideModal({ tripId, onClose, onSuccess }: Props) 
     </Dialog>
   );
 }
-

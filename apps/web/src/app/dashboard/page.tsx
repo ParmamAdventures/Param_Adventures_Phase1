@@ -1,8 +1,6 @@
 ﻿"use client";
 
-import React, { useEffect, useState, useCallback } from "react";
-import ProtectedRoute from "../../components/ProtectedRoute";
-import AuthStatus from "../../components/AuthStatus";
+import { useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
@@ -42,7 +40,7 @@ export default function Page() {
         const body = await res.json();
         alert(body.message || `Failed to ${action} blog`);
       }
-    } catch (err) {
+    } catch {
       alert("Network error");
     }
   };

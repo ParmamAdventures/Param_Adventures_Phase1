@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../../lib/api";
-import { StatusBadge } from "../../../components/ui/StatusBadge";
 import { Spinner } from "../../../components/ui/Spinner";
-import { Select } from "../../../components/ui/Select";
 
 interface TripInquiry {
   id: string;
@@ -74,9 +72,7 @@ export default function AdminInquiriesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-black tracking-tight text-[var(--foreground)]">Inquiries</h1>
-        <div className="text-sm text-[var(--muted-foreground)]">
-          Total: {inquiries.length}
-        </div>
+        <div className="text-sm text-[var(--muted-foreground)]">Total: {inquiries.length}</div>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-sm">
@@ -100,29 +96,33 @@ export default function AdminInquiriesPage() {
                 </tr>
               ) : (
                 inquiries.map((inquiry) => (
-                  <tr key={inquiry.id} className="hover:bg-[var(--muted)]/20 transition-colors">
-                    <td className="whitespace-nowrap px-6 py-4 text-[var(--muted-foreground)]">
+                  <tr key={inquiry.id} className="transition-colors hover:bg-[var(--muted)]/20">
+                    <td className="px-6 py-4 whitespace-nowrap text-[var(--muted-foreground)]">
                       {new Date(inquiry.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
                       <div className="font-medium text-[var(--foreground)]">{inquiry.name}</div>
                       <div className="text-xs text-[var(--muted-foreground)]">{inquiry.email}</div>
                       {inquiry.phoneNumber && (
-                        <div className="text-xs text-[var(--muted-foreground)]">{inquiry.phoneNumber}</div>
+                        <div className="text-xs text-[var(--muted-foreground)]">
+                          {inquiry.phoneNumber}
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       <div className="font-medium">{inquiry.destination}</div>
                       {inquiry.dates && (
-                        <div className="text-xs text-[var(--muted-foreground)]">{inquiry.dates}</div>
+                        <div className="text-xs text-[var(--muted-foreground)]">
+                          {inquiry.dates}
+                        </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 max-w-xs truncate" title={inquiry.details}>
+                    <td className="max-w-xs truncate px-6 py-4" title={inquiry.details}>
                       {inquiry.details || "-"}
                       {inquiry.budget && (
-                         <div className="mt-1 text-xs font-mono text-[var(--accent)]">
-                           Budget: {inquiry.budget}
-                         </div>
+                        <div className="mt-1 font-mono text-xs text-[var(--accent)]">
+                          Budget: {inquiry.budget}
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -147,4 +147,3 @@ export default function AdminInquiriesPage() {
     </div>
   );
 }
-

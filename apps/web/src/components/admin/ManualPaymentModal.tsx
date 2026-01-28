@@ -5,9 +5,10 @@ import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
 import { useToast } from "../ui/ToastProvider";
 import { ImageUploader } from "../media/ImageUploader";
+import Image from "next/image";
 import { useAsyncOperation } from "../../hooks/useAsyncOperation";
 import { useFormState } from "../../hooks/useFormState";
-import { Trip } from "@/types/trip";
+// import { Trip } from "@/types/trip"; (Removed)
 
 interface Props {
   isOpen: boolean;
@@ -144,10 +145,11 @@ export default function ManualPaymentModal({ isOpen, onClose, booking, onSuccess
             <div className="h-32">
               {formData.proofUrl ? (
                 <div className="relative h-full w-full">
-                  <img
+                  <Image
                     src={formData.proofUrl}
                     alt="Proof"
-                    className="h-full w-auto rounded-lg object-cover"
+                    fill
+                    className="rounded-lg object-cover"
                   />
                   <Button
                     variant="danger"

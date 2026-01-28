@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { MapPin, Clock, Tent, Utensils, Coffee, Cookie, ChevronDown } from "lucide-react";
+import { MapPin, Tent, Utensils, Coffee, Cookie, ChevronDown } from "lucide-react";
 import { ItineraryDay, TripDocument } from "@/types/trip";
 
 /**

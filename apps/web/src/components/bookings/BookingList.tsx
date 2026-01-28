@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import StatusBadge from "../ui/StatusBadge";
@@ -46,10 +47,11 @@ export default function BookingList({ bookings, loading }: Props) {
             {/* Trip Preview */}
             <div className="relative h-48 w-full shrink-0 overflow-hidden bg-[var(--border)] md:h-auto md:w-64">
               {booking.trip.coverImage ? (
-                <img
+                <Image
                   src={booking.trip.coverImage.mediumUrl}
                   alt={booking.trip.title}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-[var(--muted)]">

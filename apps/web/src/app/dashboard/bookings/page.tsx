@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { apiFetch } from "../../../lib/api";
 import { useAuth } from "@/context/AuthContext";
 
@@ -17,7 +18,7 @@ import { FileText, Star } from "lucide-react";
 import ReviewBookingModal from "@/components/reviews/ReviewBookingModal";
 
 export default function MyBookingsPage() {
-  const { user } = useAuth();
+  useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -77,7 +78,7 @@ export default function MyBookingsPage() {
       } else {
         alert("Failed to cancel booking"); // Could use Toast but focusing on task
       }
-    } catch (e) {
+    } catch {
       alert("Network error");
     }
   };
@@ -120,10 +121,14 @@ export default function MyBookingsPage() {
               {/* Image */}
               <div className="bg-muted relative h-32 w-full shrink-0 overflow-hidden rounded-xl md:w-48">
                 {booking.trip.coverImage?.mediumUrl || booking.trip.coverImageLegacy ? (
-                  <img
-                    src={booking.trip.coverImage?.mediumUrl || booking.trip.coverImageLegacy}
+                  <Image
+                    src={
+                      (booking.trip.coverImage?.mediumUrl ||
+                        booking.trip.coverImageLegacy) as string
+                    }
                     alt={booking.trip.title}
-                    className="h-full w-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 ) : (
                   <div className="bg-accent/10 text-accent flex h-full w-full items-center justify-center font-bold">

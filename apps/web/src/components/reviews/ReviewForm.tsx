@@ -29,7 +29,7 @@ export default function ReviewForm({ tripId, onSuccess }: ReviewFormProps) {
   // Eligibility State
   const [checkingEligibility, setCheckingEligibility] = useState(true);
   const [isEligible, setIsEligible] = useState(false);
-  const [ineligibilityReason, setIneligibilityReason] = useState("");
+  const [, setIneligibilityReason] = useState("");
 
   // Check Eligibility on Mount
   // Check Eligibility on Mount

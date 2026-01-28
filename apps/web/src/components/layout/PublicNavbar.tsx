@@ -7,7 +7,7 @@ import Button from "../../components/ui/Button";
 import { useAuth } from "../../context/AuthContext";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Search, X, Loader2 } from "lucide-react";
+import { Search } from "lucide-react";
 import SearchOverlay from "../search/SearchOverlay";
 
 /**
@@ -207,7 +207,6 @@ import {
   Shield,
   LogOut,
   ChevronDown,
-  Settings,
   ShieldCheck,
   Compass,
   Briefcase,

@@ -4,7 +4,7 @@
 import { useRef, useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import TripCard from "./TripCard";
-import { Button } from "../ui/Button";
+// import { Button } from "../ui/Button";
 
 import { Trip } from "@/types/trip";
 

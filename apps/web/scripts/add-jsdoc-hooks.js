@@ -157,7 +157,7 @@ const processFile = (filePath) => {
 
   // Check if this is a hook or component file
   const isHook = filePath.includes("hooks") || filePath.includes("use");
-  const isComponent = filePath.includes("components");
+  // const isComponent = filePath.includes("components");
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];

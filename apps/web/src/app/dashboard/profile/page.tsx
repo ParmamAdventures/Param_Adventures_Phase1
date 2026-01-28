@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -85,8 +86,8 @@ export default function ProfilePage() {
         await refreshUser(); // Update global auth context without reload
         alert("Profile updated successfully!");
       }
-    } catch (e) {
-      console.error(e);
+    } catch (_e) {
+      console.error(_e);
       alert("Failed to update profile.");
     } finally {
       setIsLoading(false);
@@ -200,8 +201,8 @@ export default function ProfilePage() {
       } else {
         alert(data.error || "Failed to change password");
       }
-    } catch (e) {
-      console.error(e);
+    } catch (_e) {
+      console.error(_e);
       alert("An error occurred");
     } finally {
       setIsLoading(false);
@@ -239,7 +240,7 @@ export default function ProfilePage() {
                   onClick={() => handlePresetSelect(url)}
                   className="group hover:border-accent focus:border-accent relative aspect-square overflow-hidden rounded-xl border-2 border-transparent transition-all hover:scale-105 focus:outline-none"
                 >
-                  <img src={url} alt={`Preset ${i}`} className="h-full w-full object-cover" />
+                  <Image src={url} alt={`Preset ${i}`} fill className="object-cover" />
                   <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
                 </button>
               ))}
@@ -261,7 +262,7 @@ export default function ProfilePage() {
             >
               {avatarUrl ? (
                 <>
-                  <img src={avatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                  <Image src={avatarUrl} alt="Avatar" fill className="object-cover" />
                   {/* Hover Actions Overlay */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
                     <button

@@ -26,8 +26,8 @@ export default function LatestBlogsSection() {
           const parsedBlogs = (data.data || (Array.isArray(data) ? data : [])) as Blog[];
           setBlogs(parsedBlogs);
         }
-      } catch (err) {
-        console.error("Failed to fetch latest blogs:", err);
+      } catch (_err) {
+        console.error("Failed to fetch latest blogs:", _err);
       } finally {
         setIsLoading(false);
       }

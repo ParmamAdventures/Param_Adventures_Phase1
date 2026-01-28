@@ -43,7 +43,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(next);
     try {
       localStorage.setItem("theme", next);
-    } catch (e) {
+    } catch {
       // ignore
     }
     document.documentElement.dataset.theme = next;

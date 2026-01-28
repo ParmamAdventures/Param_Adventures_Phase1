@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
-import { Loader2, Search, UserPlus, Check, Trash2, X } from "lucide-react";
-import Image from "next/image";
+import { Loader2, Search, UserPlus, X } from "lucide-react";
 
 import { User } from "../../types/auth";
 

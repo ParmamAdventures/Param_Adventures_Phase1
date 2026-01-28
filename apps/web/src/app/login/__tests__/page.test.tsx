@@ -29,6 +29,7 @@ jest.mock("@/hooks/useSiteConfig", () => ({
 
 jest.mock("next/image", () => ({
   __esModule: true,
+  // eslint-disable-next-line @next/next/no-img-element
   default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => <img {...props} alt={props.alt} />,
 }));
 

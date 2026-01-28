@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
       // Always show success message for security reasons (email enumeration protection)
       setMessage(data.message || "If an account exists, a reset link has been sent.");
       setEmail("");
-    } catch (err) {
+    } catch {
       // Fallback error, though API usually returns success
       setError("An error occurred. Please try again.");
     } finally {

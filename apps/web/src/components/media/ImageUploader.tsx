@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import imageCompression from "browser-image-compression";
@@ -74,11 +75,12 @@ export function ImageUploader({ onUpload, label = "Upload Image" }: Props) {
         onClick={() => document.getElementById("fileInput")?.click()}
       >
         {preview ? (
-          <div className="group relative">
-            <img
+          <div className="group relative mx-auto h-48 w-full max-w-md overflow-hidden rounded-lg shadow-sm">
+            <Image
               src={preview}
               alt="Preview"
-              className="mx-auto max-h-48 rounded-lg shadow-sm transition-opacity group-hover:opacity-75"
+              fill
+              className="object-cover transition-opacity group-hover:opacity-75"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
               <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-medium text-slate-700 shadow-sm">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "../ui/Button";
-import { Users, Calendar, MapPin, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Users, Calendar, MapPin, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { FileText } from "lucide-react";

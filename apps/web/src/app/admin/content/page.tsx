@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import PermissionRoute from "@/components/PermissionRoute";
-import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
 import { apiFetch } from "@/lib/api";
 
 interface HeroSlide {
@@ -74,8 +74,7 @@ function HeroSlidesEditor() {
           );
           setSlides([]);
         }
-      } catch (e) {
-        console.error(e);
+      } catch {
         setError("Error loading hero slides");
         setSlides([]);
       } finally {
@@ -104,8 +103,7 @@ function HeroSlidesEditor() {
         const errorData = await res.json().catch(() => ({}));
         alert(typeof errorData?.error === "string" ? errorData.error : "Failed to save");
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
       alert("Failed to save");
     } finally {
       setSaving(null);
@@ -218,8 +216,7 @@ function SiteConfigEditor() {
           const data = await res.json();
           setConfig(data);
         }
-      } catch (e) {
-        console.error(e);
+      } catch {
       } finally {
         setIsLoading(false);
       }
@@ -236,7 +233,7 @@ function SiteConfigEditor() {
         body: JSON.stringify({ key, value: config[key] }),
       });
       alert("Updated successfully");
-    } catch (e) {
+    } catch {
       alert("Failed to update");
     } finally {
       setSaving(null);
@@ -277,8 +274,8 @@ function SiteConfigEditor() {
               </Button>
             </div>
             {config[def.key] && (
-              <div className="mt-2 h-32 w-48 overflow-hidden rounded border">
-                <img src={config[def.key]} alt="Preview" className="h-full w-full object-cover" />
+              <div className="relative mt-2 h-32 w-48 overflow-hidden rounded border">
+                <Image src={config[def.key]} alt="Preview" fill className="object-cover" />
               </div>
             )}
           </div>

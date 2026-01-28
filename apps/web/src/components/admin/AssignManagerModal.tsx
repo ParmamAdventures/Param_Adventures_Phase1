@@ -4,6 +4,7 @@ import { Button } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { apiFetch } from "../../lib/api";
 import Spinner from "../ui/Spinner";
+import Image from "next/image";
 
 interface Props {
   isOpen: boolean;
@@ -87,8 +88,8 @@ export default function AssignManagerModal({
       } else {
         alert("Failed to assign manager");
       }
-    } catch (e) {
-      console.error(e);
+    } catch (_e) {
+      console.error(_e);
       alert("Error assigning manager");
     } finally {
       setAssigning(false);
@@ -123,8 +124,11 @@ export default function AssignManagerModal({
                 >
                   <div className="bg-muted h-8 w-8 overflow-hidden rounded-full">
                     {manager.avatarImage ? (
-                      <img
+                      <Image
                         src={manager.avatarImage.thumbUrl}
+                        alt={manager.name || "Manager"}
+                        width={32}
+                        height={32}
                         className="h-full w-full object-cover"
                       />
                     ) : (

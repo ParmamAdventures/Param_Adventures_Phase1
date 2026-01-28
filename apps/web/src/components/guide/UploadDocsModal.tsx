@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "../ui/Dialog";
 import { Button } from "../ui/Button";
 import { apiFetch } from "../../lib/api";
-import { Loader2, UploadCloud, Link as LinkIcon, FileText } from "lucide-react";
+import { Loader2, UploadCloud } from "lucide-react";
 import CroppedImageUploader from "../media/CroppedImageUploader";
 import { DocumentUploader } from "../media/DocumentUploader";
 
@@ -126,7 +126,11 @@ export default function UploadDocsModal({
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading || !url} className="gap-2">
-              {isLoading ? <Loader2 className="animate-spin" size={16} /> : <UploadCloud size={16} />}
+              {isLoading ? (
+                <Loader2 className="animate-spin" size={16} />
+              ) : (
+                <UploadCloud size={16} />
+              )}
               Submit Document
             </Button>
           </div>
@@ -135,4 +139,3 @@ export default function UploadDocsModal({
     </Dialog>
   );
 }
-

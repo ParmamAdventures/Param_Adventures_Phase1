@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { apiFetch } from "@/lib/api";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { ImageUploader } from "@/components/media/ImageUploader";
 import { useEffect } from "react";
 import { Trip } from "@/types/trip";
@@ -143,8 +144,8 @@ export default function NewBlogPage() {
         const err = await response.json();
         alert(err.message || "Failed to save blog");
       }
-    } catch (error) {
-      console.error("Error saving blog", error);
+    } catch {
+      console.error("Error saving blog");
     } finally {
       setIsLoading(false);
     }
@@ -185,11 +186,7 @@ export default function NewBlogPage() {
           <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4">
             {coverImage ? (
               <div className="group relative aspect-video overflow-hidden rounded-xl">
-                <img
-                  src={coverImage.mediumUrl}
-                  alt="Cover"
-                  className="h-full w-full object-cover"
-                />
+                <Image src={coverImage.mediumUrl} alt="Cover" fill className="object-cover" />
                 <button
                   onClick={() => setCoverImage(null)}
                   className="absolute top-2 right-2 rounded-full bg-black/50 p-2 text-white opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500"

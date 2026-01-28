@@ -1,6 +1,5 @@
 import { BlogDetailView } from "@/components/blogs/BlogDetailView";
 import { constructMetadata } from "@/lib/metadata";
-import { notFound } from "next/navigation";
 import Link from "next/link";
 import { headers } from "next/headers";
 

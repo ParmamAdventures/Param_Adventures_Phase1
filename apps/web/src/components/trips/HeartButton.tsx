@@ -97,7 +97,7 @@ export default function HeartButton({
       }
 
       showToast(newState ? "Added to wishlist" : "Removed from wishlist", "success");
-    } catch (error) {
+    } catch {
       // Revert on error
       setIsSaved(!newState);
       showToast("Something went wrong", "error");

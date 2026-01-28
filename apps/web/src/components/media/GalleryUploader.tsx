@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageUploader } from "./ImageUploader";
+import Image from "next/image";
 import { Button } from "@/components/ui/Button";
 
 type Image = {
@@ -52,10 +53,11 @@ export function GalleryUploader({ images, onChange }: GalleryUploaderProps) {
               key={`${img.id}-${i}`}
               className="group relative aspect-square overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm ring-blue-500/20 transition-all hover:ring-2"
             >
-              <img
+              <Image
                 src={img.thumbUrl}
                 alt={`Gallery image ${i + 1}`}
-                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
 
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-900/60 opacity-0 transition-opacity group-hover:opacity-100">

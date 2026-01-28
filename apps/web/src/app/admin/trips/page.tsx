@@ -60,7 +60,7 @@ export default function AdminTripsPage() {
         setTrips(trips);
         setTotalPages(data.data?.metadata?.totalPages || 1);
       }
-    } catch (err) {
+    } catch {
       setError("Network error: Could not reach the server.");
       setTrips([]);
     } finally {
@@ -101,7 +101,7 @@ export default function AdminTripsPage() {
         const data = await res.json();
         alert(data?.error || `Failed to ${action} trip`);
       }
-    } catch (err) {
+    } catch {
       alert(`Network error: Failed to ${action} trip`);
     }
   };

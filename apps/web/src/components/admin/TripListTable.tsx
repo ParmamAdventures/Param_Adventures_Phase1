@@ -37,7 +37,6 @@ type Props = {
 export default function TripListTable({
   trips,
   loading,
-  onRefresh,
   onAction,
   currentPage = 1,
   totalPages = 1,

@@ -68,7 +68,7 @@ export default function TripAssignmentManager({
         const error = await res.json();
         showToast(error.message || "Failed to assign manager", "error");
       }
-    } catch (err) {
+    } catch {
       showToast("Network error", "error");
     } finally {
       setSaving(false);
@@ -90,7 +90,7 @@ export default function TripAssignmentManager({
         const error = await res.json();
         showToast(error.message || "Failed to assign guide", "error");
       }
-    } catch (err) {
+    } catch {
       showToast("Network error", "error");
     } finally {
       setSaving(false);
@@ -110,7 +110,7 @@ export default function TripAssignmentManager({
         const error = await res.json();
         showToast(error.message || "Failed to remove guide", "error");
       }
-    } catch (err) {
+    } catch {
       showToast("Network error", "error");
     } finally {
       setSaving(false);

@@ -1,11 +1,11 @@
 ﻿"use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "@/lib/api";
 import Spinner from "@/components/ui/Spinner";
-import { Button } from "@/components/ui/Button";
-import { Upload, Trash2, Copy, Film, Image as ImageIcon, Filter, Search } from "lucide-react";
+import { Upload, Trash2, Copy, Film } from "lucide-react";
 import { useToast } from "@/components/ui/ToastProvider";
+import Image from "next/image";
 
 type Media = {
   id: string;
@@ -39,8 +39,7 @@ export default function AdminMediaPage() {
         const data = await res.json();
         setMedia(data.media);
       }
-    } catch (e) {
-      console.error(e);
+    } catch {
       showToast("Failed to load media", "error");
     } finally {
       setIsLoading(false);
@@ -83,7 +82,7 @@ export default function AdminMediaPage() {
           typeof err.error === "string" ? err.error : err.error?.message || "Upload failed";
         showToast(errorMessage, "error");
       }
-    } catch (e) {
+    } catch {
       showToast("Upload error", "error");
     } finally {
       setUploading(false);
@@ -102,7 +101,7 @@ export default function AdminMediaPage() {
       } else {
         showToast("Failed to delete", "error");
       }
-    } catch (e) {
+    } catch {
       showToast("Error deleting", "error");
     }
   };
@@ -193,10 +192,11 @@ export default function AdminMediaPage() {
                   </div>
                 </div>
               ) : (
-                <img
+                <Image
                   src={item.mediumUrl || item.originalUrl}
                   alt="Asset"
-                  className="h-full w-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               )}
 

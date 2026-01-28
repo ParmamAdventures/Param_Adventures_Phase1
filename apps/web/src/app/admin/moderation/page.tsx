@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import PermissionRoute from "../../../components/PermissionRoute";
 import { apiFetch } from "../../../lib/api";
-import { Button } from "../../../components/ui/Button";
 import BlogListTable from "../../../components/admin/BlogListTable";
 import TripListTable from "../../../components/admin/TripListTable";
 import Spinner from "../../../components/ui/Spinner";
@@ -38,8 +37,8 @@ export default function AdminModerationPage() {
         trips: Array.isArray(tripsData) ? tripsData : [],
         blogs: Array.isArray(blogsData) ? blogsData : [],
       });
-    } catch (err) {
-      console.error("Moderation fetch error", err);
+    } catch {
+      console.error("Moderation fetch error");
       setError("Failed to load moderation data.");
     } finally {
       setIsLoading(false);
@@ -71,7 +70,7 @@ export default function AdminModerationPage() {
         const body = await res.json();
         alert(body.message || `Failed to ${action} ${type}`);
       }
-    } catch (err) {
+    } catch {
       alert("Network error");
     }
   };

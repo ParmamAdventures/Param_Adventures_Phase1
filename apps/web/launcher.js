@@ -4,7 +4,7 @@ import { execSync } from "child_process";
 console.log(">>> [Launcher] Installing dependencies...");
 try {
   execSync("npm install", { stdio: "inherit" });
-} catch (e) {
+} catch {
   console.error(">>> [Launcher] npm install failed.");
   process.exit(1);
 }
@@ -13,7 +13,7 @@ try {
 console.log(">>> [Launcher] Building application...");
 try {
   execSync("npm run build", { stdio: "inherit" });
-} catch (e) {
+} catch {
   console.error(">>> [Launcher] Build failed.");
   process.exit(1);
 }
