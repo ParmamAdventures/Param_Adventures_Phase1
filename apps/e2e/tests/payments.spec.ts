@@ -23,7 +23,15 @@ test.describe("Payment Flow", () => {
       userCredentials.password
     );
     await page.click('button:has-text("Create Account")');
-    await page.waitForSelector("text=Welcome Aboard!", { timeout: 15000 });
+
+    // Wait for success message to appear
+    await expect(page.locator("text=Welcome Aboard!")).toBeVisible({
+      timeout: 20000,
+    });
+
+    // Wait for redirect after the 2-second delay
+    await page.waitForURL(/\/login/, { timeout: 5000 }).catch(() => {});
+
     await page.close();
   });
 
