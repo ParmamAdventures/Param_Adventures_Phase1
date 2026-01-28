@@ -270,7 +270,7 @@ NEXT_PUBLIC_API_URL="http://localhost:3001"
 
 ## 🧪 Testing
 
-### Run All Tests
+### Unit & Integration Tests (API)
 
 ```bash
 cd apps/api
@@ -279,24 +279,51 @@ npm test
 
 **Results**: 31/31 suites passing, 350/350 tests passing ✅
 
-### Test Specific Suite
+### End-to-End Tests (E2E)
 
 ```bash
-npm test -- payments.test.ts
-npm test -- auth.test.ts
+# Quick start with helper script
+cd apps/e2e
+pwsh ./run-e2e-local.ps1
+
+# Or manually
+npm test
+
+# Interactive UI mode
+npm run test:ui
+
+# View test reports
+npm run test:report
 ```
 
-### Watch Mode
+**Prerequisites**: API and Web servers must be running
+
+- API: `http://localhost:3001`
+- Web: `http://localhost:3000`
+
+See [E2E_TESTING_GUIDE.md](apps/e2e/E2E_TESTING_GUIDE.md) for comprehensive E2E testing documentation.
+
+### Test Coverage
 
 ```bash
-npm test -- --watch
-```
-
-### Coverage Report
-
-```bash
+# Unit tests with coverage
+cd apps/api
 npm test -- --coverage
+
+# E2E test results
+cd apps/e2e
+npx playwright show-report
 ```
+
+### CI/CD Integration
+
+All tests run automatically in GitHub Actions:
+
+- ✅ **Lint**: Code style validation
+- ✅ **Build**: TypeScript compilation
+- ✅ **Unit Tests**: 350 API tests
+- ✅ **E2E Tests**: 64 browser tests
+- ✅ **Artifacts**: Reports & screenshots saved
 
 ### Troubleshooting
 
