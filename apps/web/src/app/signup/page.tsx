@@ -249,6 +249,7 @@ export default function SignupPage() {
             )}
 
             <Button
+              type="submit"
               variant="primary"
               className="h-12 w-full text-base font-semibold"
               disabled={isLoading}
