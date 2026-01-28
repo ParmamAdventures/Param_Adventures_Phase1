@@ -4,3 +4,7 @@ playwright-report/
 blob-report/
 .env
 test_output.txt
+
+# E2E test artifacts
+test_*.txt
+e2e-test-results*.txt
