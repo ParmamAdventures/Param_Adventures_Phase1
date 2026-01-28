@@ -1,4 +1,4 @@
-import { logger } from "../lib/logger";
+import { Prisma } from "@prisma/client";
 
 /**
  * Pagination Service

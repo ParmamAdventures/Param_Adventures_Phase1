@@ -1,8 +1,6 @@
 import PDFDocument from "pdfkit";
 import { prisma } from "../lib/prisma";
 import { HttpError } from "../utils/httpError";
-import fs from "fs";
-import path from "path";
 
 export const invoiceService = {
   async generateInvoice(bookingId: string): Promise<Buffer> {

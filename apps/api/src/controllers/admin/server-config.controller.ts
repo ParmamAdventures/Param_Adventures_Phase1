@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Prisma, ServerConfiguration } from "@prisma/client";
+import { ServerConfiguration } from "@prisma/client";
 import { serverConfigService } from "../../services/server-config.service";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { HttpError } from "../../utils/httpError";

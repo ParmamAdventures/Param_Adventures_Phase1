@@ -88,7 +88,7 @@ export async function deleteMedia(req: Request, res: Response) {
         const fullPath = path.join(process.cwd(), url);
         try {
           await fs.unlink(fullPath);
-        } catch (err) {
+        } catch {
           // If file not found, ignore (it might have been deleted manually)
           console.warn(`[MediaCleanup] File not found or couldn't unlink: ${fullPath}`);
         }

@@ -13,7 +13,7 @@ export async function getMyBookings(req: Request, res: Response) {
     const userId = req.user!.id;
     const bookings = await bookingService.getMyBookings(userId);
     return ApiResponse.success(res, bookings, "Bookings retrieved successfully");
-  } catch (error) {
+  } catch {
     return ApiResponse.error(res, "INTERNAL_SERVER_ERROR", "Failed to load bookings", 500);
   }
 }

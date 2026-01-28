@@ -1,6 +1,4 @@
 import { Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
-import { HttpError } from "../../utils/httpError";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { reviewService } from "../../services/review.service";

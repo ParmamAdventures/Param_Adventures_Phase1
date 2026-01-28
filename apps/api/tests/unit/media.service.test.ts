@@ -2,7 +2,7 @@ jest.mock("../../src/lib/prisma");
 jest.mock("../../src/utils/cloudinary.utils"); // Added mock for cloudinary.utils
 jest.mock("../../src/config/cloudinary"); // Explicitly mock the config file
 jest.mock("../../src/lib/logger"); // Mock the logger to spy on its methods
-
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../src/lib/prisma";
 import { MediaService } from "../../src/services/media.service";
 
@@ -366,10 +366,12 @@ describe("MediaService", () => {
 
     it("throws error when media is in use (P2003)", async () => {
       const mediaId = "media_in_use";
-      const error = new Error("Foreign key constraint failed") as Error & { code: string };
-      error.code = "P2003";
+      const error = new Prisma.PrismaClientKnownRequestError("Foreign key constraint failed", {
+        code: "P2003",
+        clientVersion: "5.0.0",
+      });
 
-      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage);
       (prisma.image.delete as jest.Mock).mockRejectedValue(error);
       (cloudinaryUtils.extractPublicIdFromUrl as jest.Mock).mockReturnValue("some_image");
       // (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image"); // Removed incorrect expectation
@@ -383,11 +385,13 @@ describe("MediaService", () => {
 
     it("throws error when media not found (P2025)", async () => {
       const mediaId = "non_existent";
-      const error = new Error("Record not found") as Error & { code: string };
-      error.code = "P2025";
+      const error = new Prisma.PrismaClientKnownRequestError("Record not found", {
+        code: "P2025",
+        clientVersion: "5.0.0",
+      });
 
       // For P2025, the findUnique should succeed, but the delete should fail
-      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage); // Mock findUnique
+      (prisma.image.findUnique as jest.Mock).mockResolvedValue(mockFoundImage);
       (prisma.image.delete as jest.Mock).mockRejectedValue(error);
       (cloudinaryUtils.extractPublicIdFromUrl as jest.Mock).mockReturnValue("non_existent_image"); // Needs a publicId to attempt cloudinary delete
       // (cloudinaryUtils.inferResourceType as jest.Mock).mockReturnValue("image"); // Removed incorrect expectation

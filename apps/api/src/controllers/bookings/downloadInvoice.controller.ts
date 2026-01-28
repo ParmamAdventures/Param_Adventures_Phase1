@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { invoiceService } from "../../services/invoice.service";
 import { prisma } from "../../lib/prisma";
 import { HttpError } from "../../utils/httpError";
-import { ApiResponse } from "../../utils/ApiResponse";
 import { ErrorMessages } from "../../constants/errorMessages";
 
 export const downloadInvoice = async (req: Request, res: Response) => {

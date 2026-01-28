@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
-import { ApiResponse } from "../../utils/ApiResponse"; // Assuming this utility exists or similar
+import { catchAsync } from "../../utils/catchAsync"; // Assuming this utility exists or similar
 import { ErrorMessages } from "../../constants/errorMessages";
 
 export const getTripById = async (req: Request, res: Response) => {

@@ -141,7 +141,7 @@ export class ServerConfigService {
     if (isEncrypted) {
       try {
         encryptedValue = await EncryptionService.encrypt(value);
-      } catch (error) {
+      } catch {
         throw new HttpError(500, "ENCRYPTION_ERROR", "Failed to encrypt sensitive value");
       }
     }
@@ -277,7 +277,7 @@ export class ServerConfigService {
    */
   async invalidateAllCache(): Promise<void> {
     try {
-      const pattern = "server_config:*";
+      const _pattern = "server_config:*".replace("*", ".*"); // Changed 'pattern' to '_pattern' and applied the replacement logic from the example
       // If your cache service supports pattern deletion, use it
       await this.cacheService.delete("server_config:all");
     } catch (error) {

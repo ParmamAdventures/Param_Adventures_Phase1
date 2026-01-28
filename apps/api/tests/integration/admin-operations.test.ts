@@ -6,8 +6,8 @@ import { signAccessToken } from "../../src/utils/jwt";
 describe("Admin Operations", () => {
   let adminToken: string;
   let userToken: string;
-  let adminId: string;
-  let userId: string;
+  let _adminId: string;
+  let _userId: string;
   let testUserId: string;
 
   beforeAll(async () => {
@@ -75,7 +75,7 @@ describe("Admin Operations", () => {
         name: "Admin User",
       },
     });
-    adminId = admin.id;
+    _adminId = admin.id;
 
     await prisma.userRole.create({
       data: { userId: admin.id, roleId: adminRole.id },
@@ -91,7 +91,7 @@ describe("Admin Operations", () => {
         name: "Regular User",
       },
     });
-    userId = user.id;
+    _userId = user.id;
 
     await prisma.userRole.create({
       data: { userId: user.id, roleId: userRole.id },

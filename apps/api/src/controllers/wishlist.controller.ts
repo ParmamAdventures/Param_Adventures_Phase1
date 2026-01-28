@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { HttpError } from "../utils/httpError";
 import { ErrorMessages } from "../constants/errorMessages";
 import { prisma } from "../lib/prisma";
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
+import { ApiResponse } from "../../utils/ApiResponse";
 import { catchAsync } from "../../utils/catchAsync";
 import { reviewService } from "../../services/review.service";
 

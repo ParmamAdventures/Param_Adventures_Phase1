@@ -82,7 +82,7 @@ export class UserService {
         name: data.name,
         nickname: data.nickname,
         bio: data.bio,
-        age: typeof data.age === "number" ? data.age : undefined, // Ensure number
+        age: data.age !== undefined && data.age !== null ? Number(data.age) : undefined,
         gender: data.gender,
         phoneNumber: data.phoneNumber,
         address: data.address,

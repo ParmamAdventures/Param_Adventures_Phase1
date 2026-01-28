@@ -1,5 +1,6 @@
-import CacheService, { cacheService } from "./cache.service";
+import { cacheService } from "./cache.service";
 import { TripCacheService } from "./trip-cache.service";
+import { redisConnection } from "../lib/redis";
 import { UserCacheService } from "./user-cache.service";
 import { logger } from "../lib/logger";
 

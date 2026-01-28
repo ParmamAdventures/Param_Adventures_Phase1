@@ -36,3 +36,22 @@ jest.mock("bullmq", () => ({
     on: jest.fn(),
   })),
 }));
+
+jest.mock("ioredis", () => {
+  return jest.fn().mockImplementation(() => ({
+    on: jest.fn(),
+    duplicate: jest.fn().mockReturnThis(),
+    // Add other methods used in your code if necessary
+  }));
+});
+
+jest.mock("../src/lib/redis", () => ({
+  createRedisClient: jest.fn(() => ({
+    on: jest.fn(),
+    duplicate: jest.fn().mockReturnThis(),
+  })),
+  redisConnection: {
+    on: jest.fn(),
+    duplicate: jest.fn().mockReturnThis(),
+  },
+}));

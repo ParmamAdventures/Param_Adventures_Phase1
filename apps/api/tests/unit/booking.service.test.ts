@@ -9,8 +9,8 @@ jest.mock("../../src/lib/prisma", () => ({
   },
 }));
 
-import { mockDeep, DeepMockProxy } from "jest-mock-extended";
-import { PrismaClient } from "@prisma/client";
+import { DeepMockProxy } from "jest-mock-extended";
+import { PrismaClient, Trip, Booking } from "@prisma/client";
 
 jest.mock("../../src/lib/queue", () => ({
   notificationQueue: {
@@ -44,9 +44,9 @@ describe("BookingService", () => {
         title: "Test Trip",
         slug: "test-trip",
         capacity: 10,
-      } as any; // Using rough cast for mock data
+      } as unknown as Trip; // Using rough cast for mock data
 
-      prismaMock.trip.findUnique.mockResolvedValue(mockTrip as any);
+      prismaMock.trip.findUnique.mockResolvedValue(mockTrip);
       prismaMock.booking.create.mockResolvedValue({
         id: "booking-1",
         ...bookingData,
@@ -58,7 +58,7 @@ describe("BookingService", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         notes: null,
-      } as any);
+      } as unknown as Booking);
 
       const result = await bookingService.createBooking(bookingData);
 
@@ -76,7 +76,7 @@ describe("BookingService", () => {
     });
 
     it("should throw error if trip is not published", async () => {
-      prismaMock.trip.findUnique.mockResolvedValue({ status: "DRAFT" } as any);
+      prismaMock.trip.findUnique.mockResolvedValue({ status: "DRAFT" } as unknown as Trip);
       await expect(
         bookingService.createBooking({ userId: "u1", tripId: "t1", startDate: "2024", guests: 1 }),
       ).rejects.toThrow("Trip is not available for booking");

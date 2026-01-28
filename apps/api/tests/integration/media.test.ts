@@ -7,7 +7,7 @@ describe("Media Endpoints", () => {
   let adminToken: string;
   let userToken: string;
   let adminId: string;
-  let userId: string;
+  let _userId: string;
   let tripId: string;
   let imageId: string;
 
@@ -21,7 +21,7 @@ describe("Media Endpoints", () => {
       await prisma.user?.deleteMany();
       await prisma.role?.deleteMany();
       await prisma.permission?.deleteMany();
-    } catch (e) {
+    } catch {
       /* cleanup errors ignored */
     }
 
@@ -92,7 +92,7 @@ describe("Media Endpoints", () => {
         name: "Regular User",
       },
     });
-    userId = user.id;
+    _userId = user.id;
 
     await prisma.userRole.create({
       data: { userId: user.id, roleId: userRole.id },

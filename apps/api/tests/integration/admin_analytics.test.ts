@@ -18,7 +18,7 @@ describe("Admin Analytics Integration", () => {
       await prisma.trip.deleteMany();
       await prisma.userRole.deleteMany();
       await prisma.user.deleteMany();
-    } catch (e) {
+    } catch {
       /* cleanup errors ignored */
     }
     // Create roles and permissions

@@ -5,7 +5,7 @@ import { ApiResponse } from "../../utils/ApiResponse";
 import { getTripOrThrow } from "../../utils/entityHelpers";
 import { validateTripStatusTransition } from "../../utils/statusValidation";
 import { auditService, AuditActions, AuditTargetTypes } from "../../services/audit.service";
-import { ErrorCodes, ErrorMessages } from "../../constants/errorMessages";
+import { ErrorCodes } from "../../constants/errorMessages";
 
 export const archiveTrip = catchAsync(async (req: Request, res: Response) => {
   const user = req.user!;

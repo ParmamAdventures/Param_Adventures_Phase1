@@ -5,7 +5,6 @@ import { logger } from "../../lib/logger";
 import { catchAsync } from "../../utils/catchAsync";
 import { ApiResponse } from "../../utils/ApiResponse";
 import { getTripOrThrowError } from "../../utils/entityHelpers";
-import { ErrorMessages } from "../../constants/errorMessages";
 import { notificationService } from "../../services/notification.service";
 
 export const completeTrip = catchAsync(async (req: Request, res: Response) => {
