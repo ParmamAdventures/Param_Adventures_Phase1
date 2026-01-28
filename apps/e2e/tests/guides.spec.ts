@@ -23,9 +23,31 @@ test.describe("Guide Management Flow", () => {
       'input[placeholder="Create a strong password"]',
       guideCredentials.password
     );
+
+    // Wait a moment for form to be ready
+    await page.waitForTimeout(500);
+
+    // Click button and wait for it to process
     await page.click('button:has-text("Create Account")');
-    await page.waitForSelector("text=Welcome Aboard!", { timeout: 15000 });
-    await page.close();
+
+    // Wait longer for form submission and API response
+    await page.waitForTimeout(2000);
+
+    // Check for error message first
+    const errorElement = page.locator(".bg-red-500, [class*='red-500']");
+    const isError = await errorElement.isVisible().catch(() => false);
+    if (isError) {
+      const errorText = await errorElement.textContent();
+      throw new Error(`Guide registration failed: ${errorText}`);
+    }
+
+    // Wait for success message to appear (can take longer during parallel execution)
+    await expect(page.locator("text=Welcome Aboard!")).toBeVisible({
+      timeout: 30000,
+    });
+
+    // Wait for redirect after the 2-second delay
+    await page.waitForURL(/\/login/, { timeout: 5000 }).catch(() => {});
   });
 
   test.beforeEach(async ({ page }) => {
@@ -36,17 +58,20 @@ test.describe("Guide Management Flow", () => {
       guideCredentials.email
     );
     await page.fill('input[placeholder="••••••••"]', guideCredentials.password);
-    await page.click('button:has-text("Sign In")');
-    await expect(page).toHaveURL(/\/dashboard/, { timeout: 15000 });
+
+    // Click and wait for navigation
+    const signInButton = page.getByRole("button", { name: "Sign In" });
+    await signInButton.click();
+    await page.waitForURL(/\/dashboard/, { timeout: 15000 });
   });
 
   test("should view assigned trips as guide", async ({ page }) => {
     // Navigate to dashboard
     await page.goto("/dashboard/bookings");
 
-    // Look for trips assigned to this guide
+    // Look for the My Adventures heading
     await expect(
-      page.locator("text=My Adventures", { exact: false })
+      page.getByRole("heading", { name: "My Adventures" })
     ).toBeVisible();
 
     // Verify there is a trips section or message
