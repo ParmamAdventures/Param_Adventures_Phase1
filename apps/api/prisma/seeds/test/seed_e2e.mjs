@@ -3,7 +3,7 @@
  * Creates minimal data required for E2E Playwright tests
  */
 
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
