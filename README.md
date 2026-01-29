@@ -293,7 +293,8 @@ npm test:ui           # Interactive UI mode
 npm run test:report   # View detailed test report
 ```
 
-**Prerequisites**: 
+**Prerequisites**:
+
 - API server running: `http://localhost:3001`
 - Web server running: `http://localhost:3000`
 - Playwright browsers installed: `npx playwright install`
@@ -301,6 +302,7 @@ npm run test:report   # View detailed test report
 📖 **See [LOCAL_TESTING_GUIDE.md](apps/e2e/LOCAL_TESTING_GUIDE.md)** for comprehensive E2E testing documentation.
 
 **Test Coverage**:
+
 - ✅ Authentication (register, login, OAuth)
 - ✅ Trip browsing & search
 - ✅ Booking workflow
@@ -324,11 +326,11 @@ npm run test:report
 ### CI/CD Pipeline
 
 **Runs on every push to `main`:**
+
 - ✅ Linting (ESLint)
 - ✅ Build (API & Web)
 - ✅ 372 Unit/Integration Tests
 - ❌ E2E Tests (local-only, see guide above)
-
 
 - ✅ **Lint**: Code style validation
 - ✅ **Build**: TypeScript compilation
