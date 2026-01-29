@@ -127,7 +127,7 @@ export default function SignupPage() {
             priority
           />
         </div>
-        <div className="absolute inset-0 z-10 bg-gradient-to-l from-black/80 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-linear-to-l from-black/80 to-transparent" />
 
         <div className="relative z-20 flex h-full w-full flex-col justify-end p-12 text-white">
           <div className="mb-20 max-w-lg space-y-6">

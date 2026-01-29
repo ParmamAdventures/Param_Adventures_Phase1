@@ -262,7 +262,7 @@ export default function BookingModal({ isOpen, onClose, trip }: Props) {
             </div>
 
             {/* Guest Details Forms */}
-            <div className="max-h-[300px] space-y-4 overflow-y-auto pr-2">
+            <div className="max-h-75 space-y-4 overflow-y-auto pr-2">
               {Array.from({ length: formData.guests }).map((_, index) => (
                 <div key={index} className="bg-muted/20 rounded-xl border p-4">
                   <h4 className="text-muted-foreground mb-3 text-xs font-bold tracking-wider uppercase">
@@ -338,7 +338,7 @@ export default function BookingModal({ isOpen, onClose, trip }: Props) {
           {/* Payment Status & Recovery */}
           <div className="space-y-4">
             {message && !error && (
-              <p className="animate-pulse text-center text-[10px] font-medium text-[var(--accent)]">
+              <p className="animate-pulse text-center text-[10px] font-medium text-(--accent)">
                 {message}
               </p>
             )}

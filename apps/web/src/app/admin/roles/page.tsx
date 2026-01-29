@@ -150,7 +150,7 @@ export default function RolesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
+      <div className="flex min-h-100 flex-col items-center justify-center gap-4">
         <Spinner size={32} />
         <p className="text-muted-foreground animate-pulse font-medium">
           Analyzing security clusters...
@@ -165,7 +165,7 @@ export default function RolesPage() {
         <ErrorBlock>{error}</ErrorBlock>
         <button
           onClick={() => window.location.reload()}
-          className="mt-4 text-[10px] font-bold tracking-widest text-[var(--accent)] uppercase hover:underline"
+          className="mt-4 text-[10px] font-bold tracking-widest text-(--accent) uppercase hover:underline"
         >
           Retry Connection ➔
         </button>
@@ -177,10 +177,10 @@ export default function RolesPage() {
     <div className="space-y-10">
       <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
         <div className="space-y-2">
-          <span className="text-xs font-bold tracking-widest text-[var(--accent)] uppercase">
+          <span className="text-xs font-bold tracking-widest text-(--accent) uppercase">
             Access Control
           </span>
-          <h1 className="from-foreground to-foreground/60 bg-gradient-to-r bg-clip-text text-4xl font-black tracking-tighter text-transparent md:text-5xl">
+          <h1 className="from-foreground to-foreground/60 bg-linear-to-r bg-clip-text text-4xl font-black tracking-tighter text-transparent md:text-5xl">
             Roles & Permissions
           </h1>
           <p className="text-muted-foreground text-lg font-medium">
@@ -202,7 +202,7 @@ export default function RolesPage() {
       </div>
 
       {roles.length === 0 && (
-        <div className="flex min-h-[200px] items-center justify-center rounded-3xl border border-dashed border-[var(--border)]">
+        <div className="flex min-h-50 items-center justify-center rounded-3xl border border-dashed border-(--border)">
           <p className="text-muted-foreground font-medium italic">
             No roles identified in the system core.
           </p>
@@ -227,7 +227,7 @@ export default function RolesPage() {
               <button
                 onClick={handleSavePermissions}
                 disabled={isSaving}
-                className="rounded-xl bg-[var(--accent)] px-6 py-2 text-sm font-bold text-white shadow-[var(--accent)]/20 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-[var(--accent)]/40 disabled:opacity-50 disabled:hover:translate-y-0"
+                className="rounded-xl bg-(--accent) px-6 py-2 text-sm font-bold text-white shadow-(--accent)/20 shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-(--accent)/40 disabled:opacity-50 disabled:hover:translate-y-0"
               >
                 {isSaving ? "Saving..." : "Save Changes"}
               </button>
@@ -248,12 +248,12 @@ export default function RolesPage() {
                     onClick={() => togglePermission(perm)}
                     className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-all select-none ${
                       isSelected
-                        ? "border-[var(--accent)] bg-[var(--accent)]/5 text-[var(--accent)] shadow-sm"
-                        : "text-muted-foreground border-[var(--border)] bg-[var(--card)] hover:border-[var(--accent)]/50"
+                        ? "border-(--accent) bg-(--accent)/5 text-(--accent) shadow-sm"
+                        : "text-muted-foreground border-(--border) bg-(--card) hover:border-(--accent)/50"
                     } `}
                   >
                     <div
-                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${isSelected ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--border)] bg-[var(--background)]"} `}
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${isSelected ? "border-(--accent) bg-(--accent)" : "border-(--border) bg-(--background)"} `}
                     >
                       {isSelected && (
                         <svg

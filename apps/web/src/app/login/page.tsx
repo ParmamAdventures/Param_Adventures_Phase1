@@ -52,7 +52,7 @@ export default function LoginPage() {
             unoptimized
           />
         </div>
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/80 to-transparent" />
+        <div className="absolute inset-0 z-10 bg-linear-to-r from-black/80 to-transparent" />
 
         <div className="relative z-20 flex w-full flex-col justify-between p-12 text-white">
           <Link

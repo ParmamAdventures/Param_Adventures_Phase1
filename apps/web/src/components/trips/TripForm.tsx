@@ -206,7 +206,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
             <div>
               <label className={labelClass}>Description / Overview</label>
               <textarea
-                className={`${inputClass} min-h-[120px]`}
+                className={`${inputClass} min-h-30`}
                 value={form.description}
                 onChange={(e) => update("description", e.target.value)}
                 placeholder="Brief overview of the entire journey..."
@@ -435,7 +435,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
                 Detailed text about cancellation terms.
               </p>
               <textarea
-                className={`${inputClass} min-h-[150px]`}
+                className={`${inputClass} min-h-37.5`}
                 value={
                   typeof form.cancellationPolicy === "string"
                     ? form.cancellationPolicy
@@ -517,7 +517,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
                         }}
                       />
                       <textarea
-                        className={`${inputClass} min-h-[80px]`}
+                        className={`${inputClass} min-h-20`}
                         placeholder="Answer..."
                         value={faq.answer}
                         onChange={(e) => {
@@ -575,7 +575,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
       </div>
 
       {/* Content Area */}
-      <div className="min-h-[400px] p-8">{renderTabContent()}</div>
+      <div className="min-h-100 p-8">{renderTabContent()}</div>
 
       {/* Footer Actions */}
       <div className="bg-muted/20 border-border sticky bottom-0 z-10 flex items-center justify-between border-t p-6 backdrop-blur-sm">
@@ -608,7 +608,7 @@ export default function TripForm({ initialData, onSubmit, submitting }: TripForm
             loading={submitting}
             disabled={submitting}
             variant="primary"
-            className="flex-1 shadow-lg shadow-indigo-200 md:min-w-[200px] md:flex-none"
+            className="flex-1 shadow-lg shadow-indigo-200 md:min-w-50 md:flex-none"
           >
             {submitting
               ? "Saving..."
