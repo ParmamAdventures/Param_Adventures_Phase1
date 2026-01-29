@@ -270,54 +270,65 @@ NEXT_PUBLIC_API_URL="http://localhost:3001"
 
 ## 🧪 Testing
 
-### Unit & Integration Tests (API)
+### Unit & Integration Tests (API) ✅ CI/CD
 
 ```bash
 cd apps/api
 npm test
 ```
 
-**Results**: 31/31 suites passing, 350/350 tests passing ✅
+**Results**: 33/33 suites passing, 372/372 tests passing ✅
 
-### End-to-End Tests (E2E)
+**CI/CD**: Runs on every push to `main` branch
+
+### End-to-End Tests (E2E) 🧪 Local Only
+
+E2E tests are run **locally only** (not in CI/CD) for better reliability and faster iteration.
 
 ```bash
-# Quick start with helper script
 cd apps/e2e
-pwsh ./run-e2e-local.ps1
-
-# Or manually
-npm test
-
-# Interactive UI mode
-npm run test:ui
-
-# View test reports
-npm run test:report
+npm test              # Run all tests
+npm test:headed       # See browser while testing
+npm test:ui           # Interactive UI mode
+npm run test:report   # View detailed test report
 ```
 
-**Prerequisites**: API and Web servers must be running
+**Prerequisites**: 
+- API server running: `http://localhost:3001`
+- Web server running: `http://localhost:3000`
+- Playwright browsers installed: `npx playwright install`
 
-- API: `http://localhost:3001`
-- Web: `http://localhost:3000`
+📖 **See [LOCAL_TESTING_GUIDE.md](apps/e2e/LOCAL_TESTING_GUIDE.md)** for comprehensive E2E testing documentation.
 
-See [E2E_TESTING_GUIDE.md](apps/e2e/E2E_TESTING_GUIDE.md) for comprehensive E2E testing documentation.
+**Test Coverage**:
+- ✅ Authentication (register, login, OAuth)
+- ✅ Trip browsing & search
+- ✅ Booking workflow
+- ✅ Payment processing
+- ✅ Reviews & ratings
+- ✅ Admin operations
+- ✅ Blog management
 
-### Test Coverage
+### Test Coverage & Reports
 
 ```bash
-# Unit tests with coverage
+# Unit test coverage
 cd apps/api
 npm test -- --coverage
 
-# E2E test results
+# E2E test reports
 cd apps/e2e
-npx playwright show-report
+npm run test:report
 ```
 
-### CI/CD Integration
+### CI/CD Pipeline
 
-All tests run automatically in GitHub Actions:
+**Runs on every push to `main`:**
+- ✅ Linting (ESLint)
+- ✅ Build (API & Web)
+- ✅ 372 Unit/Integration Tests
+- ❌ E2E Tests (local-only, see guide above)
+
 
 - ✅ **Lint**: Code style validation
 - ✅ **Build**: TypeScript compilation
